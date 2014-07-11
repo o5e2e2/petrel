@@ -110,9 +110,9 @@ void SearchControl::nps(std::ostream& out) const {
         if (duration > duration_t::zero()) {
             out << " time " << duration;
 
-            auto nps = (nodes * duration_t::period::den) / (duration.count() * duration_t::period::num);
             if (duration >= std::chrono::milliseconds{20}) {
-                out << " nps " << nps;
+                auto _nps = (nodes * duration_t::period::den) / (duration.count() * duration_t::period::num);
+                out << " nps " << _nps;
             }
         }
     }

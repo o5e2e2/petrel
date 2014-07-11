@@ -259,11 +259,10 @@ void writeEnPassant(std::ostream& out, const PositionSide& side, Color colorToMo
 
 namespace PositionFen {
 
-Color read(std::istream& in, Position& pos) {
+void read(std::istream& in, Position& pos, Color& colorToMove) {
     ColorTypeSquares colorTypeSquares;
-    colorTypeSquares.readBoard(in);
 
-    Color colorToMove{White};
+    colorTypeSquares.readBoard(in);
     in >> std::ws >> colorToMove;
 
     if (in && !colorTypeSquares.setupBoard(pos, colorToMove)) {
@@ -278,8 +277,6 @@ Color read(std::istream& in, Position& pos) {
         in >> fifty >> moves;
         in.clear(); //ignore missing optional 'fifty' and 'moves' fen fields
     }
-
-    return colorToMove;
 }
 
 void write(std::ostream& out, const Position& pos, Color colorToMove, ChessVariant chessVariant) {

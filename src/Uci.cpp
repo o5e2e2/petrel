@@ -85,7 +85,7 @@ void Uci::ucinewgame() {
 
 void Uci::set_startpos() {
     std::istringstream startpos{"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"};
-    colorToMove = PositionFen::read(startpos, start_position);
+    PositionFen::read(startpos, start_position, colorToMove);
 }
 
 void Uci::log_error() {
@@ -94,7 +94,7 @@ void Uci::log_error() {
 
 bool Uci::operator() (std::istream& uci_in) {
     for (std::string command_line; std::getline(uci_in, command_line); ) {
-        command.clear(); //clear stream error state from the previous usage
+        command.clear(); //clear errors state from the previous command
         command.str(std::move(command_line));
         command >> std::ws;
 
@@ -111,14 +111,14 @@ bool Uci::operator() (std::istream& uci_in) {
         else if (command == "call") { call(); }
         else if (command == "exit") { break; }
         else {
-            auto first = command.peek();
-            if (first == '#' || first == ';') {
+            auto peek = command.peek();
+            if (command.eof() || peek == '#' || peek == ';') {
                 continue; //ignore comment
             }
         }
 
         command >> std::ws;
-        if (command.fail() || !command.eof()) { log_error(); }
+        if (!command.eof()) { log_error(); }
     }
 
     return !uci_in.bad();
@@ -184,8 +184,9 @@ void Uci::position() {
     if (command == "startpos") {
         set_startpos();
     }
-    else if (command == "fen") {
-        colorToMove = PositionFen::read(command, start_position);
+
+    if (command == "fen") {
+        PositionFen::read(command, start_position, colorToMove);
     }
 
     if (command == "moves") {

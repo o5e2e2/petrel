@@ -229,7 +229,7 @@ index_t PositionMoves::countLegalMoves() const {
 
 Color PositionMoves::makeMoves(std::istream& in, Color colorToMove) {
     while (in) {
-        std::streampos before_current_move = in.tellg(); //save the streampos for error reporting
+        auto before_current_move = in.tellg(); //save the streampos for error reporting
 
         Move m{ readMove(in, pos, colorToMove) };
 

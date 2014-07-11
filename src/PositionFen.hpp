@@ -11,7 +11,7 @@ class Position;
  * Setup a chess position from a FEN string with chess legality validation
  **/
 namespace PositionFen {
-    Color read(std::istream&, Position&);
+    void read(std::istream&, Position&, Color&);
     void write(std::ostream&, const Position&, Color, ChessVariant);
 }
 

@@ -10,31 +10,28 @@ void fail_char(std::istream& in) {
 }
 
 void fail_pos(std::istream& in, std::streampos rewind) {
+    in.clear();
     in.seekg(rewind);
     fail_here(in);
 }
 
 bool operator == (std::istream& in, const char keyword []) {
-    if (keyword == nullptr) { return false; }
+    if (keyword == nullptr) { fail_here(in); return false; }
 
-    in >> std::ws;
+    if (in >> std::ws) {
+        auto before_token = in.tellg();
 
-    auto before_token = in.tellg();
+        for (char c; *keyword != '\0' && in.get(c) && *keyword == c; ++keyword) {}
 
-    for (char c; *keyword != '\0' && in.get(c) && *keyword == c; ++keyword) {}
-
-    if (*keyword == '\0') {
-        constexpr auto _EOF = std::char_traits<std::istream::char_type>::eof();
-
-        auto peek = in.peek();
-        if (peek == _EOF || std::isspace(peek)) {
-            return true;
+        if (*keyword == '\0') {
+            auto peek = in.peek();
+            if (in.eof() || std::isspace(peek)) {
+                return true;
+            }
         }
-    }
 
-    in.clear();
-    in.seekg(before_token);
-    in.clear();
+        in.seekg(before_token);
+    }
 
     return false;
 }
