@@ -22,6 +22,9 @@ class PositionSide {
     Zobrist zobrist; //Zobrist hash key of pieces of the current side
     Evaluation evaluation;
 
+    void drop(PieceType, Square);
+    void clear(PieceType, Square);
+
 public:
     PositionSide ();
     PositionSide (const PositionSide&) = delete;
@@ -38,14 +41,15 @@ public:
     const Bb& occ() const { return piecesBb; }
     const Bb& occPawns() const { return pawnsBb; }
     const MatrixPiBb& allAttacks() const { return attacks; }
-    const Zobrist& z() const { return zobrist; }
+
+    static Zobrist zobrist_combine(const PositionSide& my, const PositionSide& op) { return Zobrist::combine(my.zobrist, op.zobrist); }
 
     bool operator [] (Square sq) const { return piecesBb[sq]; }
-    bool isOn(Square sq) const { return squares.isOn(sq); }
 
+    bool isOn(Square sq) const { assert (piecesBb[sq] == squares.isOn(sq)); return squares.isOn(sq); }
     Square squareOf(Pi pi) const { assertValid(pi); return squares.squareOf(pi); }
     Square kingSquare() const { return squareOf(TheKing); }
-    Pi pieceOn(Square sq) const { assert ((*this)[sq]); Pi pi = squares.pieceOn(sq); assertValid(pi); return pi; }
+    Pi pieceOn(Square sq) const { assert (isOn(sq)); Pi pi = squares.pieceOn(sq); assertValid(pi); return pi; }
     CastlingSide castlingSideOf(Pi pi) const { assert (isCastling(pi)); return squareOf(pi) < kingSquare()? QueenSide:KingSide; }
     VectorPiMask on(Square sq) const { return squares.on(sq); }
     template <Rank::_t Rank> VectorPiMask of() const { return squares.of<Rank>(); }
@@ -73,10 +77,8 @@ public:
     VectorPiMask attacksTo(Square a, Square b) const { return attacks[a] | attacks[b]; }
     VectorPiMask attacksTo(Square a, Square b, Square c) const { return attacks[a] | attacks[b] | attacks[c]; }
 
-    void drop(PieceType, Square);
     void drop(Pi, PieceType, Square);
     void capture(Square);
-    void clear(PieceType, Square);
     void clear(Pi, PieceType, Square);
     void move(Pi, PieceType, Square, Square);
     void promote(Pi, PieceType, Square, Square);
@@ -85,12 +87,13 @@ public:
     void setLeaperAttack(Pi, PieceType, Square);
     void updateSliderAttacks(VectorPiMask, Bb);
 
+    void markEnPassant(Pi);
     void setEnPassant(Pi, Square);
     void clearEnPassant(Pi);
     void clearEnPassants() { types.clearEnPassants(); }
 
     void setCastling(Pi);
-    void clearCastling();
+    void clearCastlings();
     void clearCastling(Pi);
 
     void updatePinRays(Square);

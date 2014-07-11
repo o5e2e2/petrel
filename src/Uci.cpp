@@ -14,12 +14,7 @@ std::ostream& operator << (std::ostream& out, Bb bb) {
     FOR_INDEX(Rank, rank) {
         FOR_INDEX(File, file) {
             Square sq(file, rank);
-            if (bb[sq]) {
-                out << file;
-            }
-            else {
-                out << ".";
-            }
+            out << (bb[sq]? file:'.');
         }
         out << '\n';
     }
@@ -89,7 +84,6 @@ Uci::Uci (SearchControl& s, std::ostream& out)
 }
 
 void Uci::ucinewgame() {
-    search.set_uci(*this);
     search.clear();
     search.clear_count();
     set_startpos();
@@ -105,8 +99,7 @@ bool Uci::operator() (int argc, const char* argv[]) {
         //construct startup configuration filename from program's own name
         std::string filename{argv[0]};
         {
-            size_t pos;
-            pos = filename.find_last_of('/');
+            auto pos = filename.find_last_of('/');
             if (pos != std::string::npos) { filename.erase(0, pos+1); }
 
             pos = filename.find_first_of('.', 1);
@@ -117,18 +110,11 @@ bool Uci::operator() (int argc, const char* argv[]) {
 
         return operator()(filename);
     }
-    else if (argc == 2) {
-        std::string option{argv[1]};
-
-        if (option == "--version" || option == "--help") {
-            help_and_quit();
-        }
-        else if (!operator()(option)) {
-            help_and_quit();
-        }
-    }
     else {
-        help_and_quit();
+        std::string option{argv[1]};
+        if (argc > 2 || option == "--version" || option == "--help" || !operator()(option)) {
+            help_and_quit();
+        }
     }
 
     return true;
@@ -139,45 +125,18 @@ bool Uci::operator() (std::istream& uci_in, std::ostream& uci_err) {
         command.clear(); //clear stream error state from the previous usage
         command.str(std::move(command_line));
 
-        if (command == "position") {
-            position();
-        }
-        else if (command == "go") {
-            search.go(command, start_position, colorToMove);
-        }
-        else if (command == "stop") {
-            search.stop();
-        }
-        else if (command == "isready") {
-            if (search.uci_isready()) {
-                OutputBuffer{uci_out} << "readyok\n";
-            }
-        }
-        else if (command == "setoption") {
-            setoption();
-        }
-        else if (command == "ucinewgame") {
-            ucinewgame();
-        }
-        else if (command == "uci") {
-            uci();
-        }
-        else if (command == "quit") {
-            quit();
-            break; //actually noreturn
-        }
-        else if (command == "wait") {
-            search.wait();
-        }
-        else if (command == "echo") {
-            echo();
-        }
-        else if (command == "call") {
-            call(uci_err);
-        }
-        else if (command == "exit") {
-            break;
-        }
+        if (command == "position")  { position(); }
+        else if (command == "go")   { go(); }
+        else if (command == "stop") { search.stop(); }
+        else if (command == "isready")    { isready(); }
+        else if (command == "setoption")  { setoption(); }
+        else if (command == "ucinewgame") { ucinewgame(); }
+        else if (command == "uci")  { uci(); }
+        else if (command == "quit") { quit(); break; /* actually noreturn */ }
+        else if (command == "wait") { search.wait(); }
+        else if (command == "echo") { echo(); }
+        else if (command == "call") { call(uci_err); }
+        else if (command == "exit") { break; }
         else {
             auto first = command.peek();
             if (first == '#' || first == ';') {
@@ -198,6 +157,11 @@ bool Uci::operator() (std::istream& uci_in, std::ostream& uci_err) {
 bool Uci::operator() (const std::string& filename, std::ostream& uci_err) {
     std::ifstream file{filename};
     return file && operator()(file, uci_err);
+}
+
+void Uci::go() {
+    uci_isready_waiting = false;
+    search.go(*this, command, start_position, colorToMove);
 }
 
 void Uci::quit() {
@@ -330,14 +294,28 @@ void Uci::write_perft_move(Move move, index_t currmovenumber, node_count_t perft
     out << " string perft " << perftNodes << '\n';
 }
 
+void Uci::isready() {
+    if (search.isReady()) {
+        uci_isready_waiting = false;
+        OutputBuffer{uci_out} << "readyok\n";
+    }
+    else {
+        uci_isready_waiting = true;
+    }
+}
+
 void Uci::write_info_current() {
-    OutputBuffer out{uci_out};
-    out << "info fen ";
-    write(out, start_position, colorToMove, chessVariant);
-    out << '\n';
-    write_info_nps(out);
-    //write_info_counters(out);
-    out << "readyok\n";
+    if (uci_isready_waiting) {
+        uci_isready_waiting = false;
+
+        OutputBuffer out{uci_out};
+        //out << "info fen ";
+        //write(out, start_position, colorToMove, chessVariant);
+        //out << '\n';
+        write_info_nps(out);
+        //write_info_counters(out);
+        out << "readyok\n";
+    }
 }
 
 /*

@@ -17,13 +17,10 @@ class Uci;
  * Shared data to all search threads (currently the only one)
  */
 class SearchControl {
-    volatile bool ready_ping; //set when got 'isready' command while thinking
-
     TranspositionTable transpositionTable;
 
     SearchThread searchThread;
     Node* root;
-
     Uci* uci;
 
     enum { TickLimit = 1000 };
@@ -38,8 +35,6 @@ class SearchControl {
     static const Ply MaxDepth = 1000;
     Ply depthLimit;
 
-    void resetTicks();
-
 public:
     SearchControl ();
    ~SearchControl () { stop(); }
@@ -49,8 +44,6 @@ public:
     //callbacks from search thread
     void acquireNodesQuota(Node::quota_t&);
     void releaseNodesQuota(Node::quota_t&);
-
-    void info_current() const;
 
     void report_bestmove(Move);
     void report_perft(Move, index_t, node_count_t) const;
@@ -68,9 +61,7 @@ public:
     TranspositionTable::megabytes_t ttMaxSize() { return transpositionTable.getMaxSize(); }
     TranspositionTable::megabytes_t ttResize(TranspositionTable::megabytes_t s) { return transpositionTable.resize(s); }
 
-    void set_uci(Uci& u) { uci = &u; }
-    void go(std::istream&, const Position&, Color);
-    bool uci_isready();
+    void go(Uci&, std::istream&, const Position&, Color);
 
     node_count_t get_total_nodes() const { return totalNodes; }
     duration_t get_total_time() const { return clock.read(); }

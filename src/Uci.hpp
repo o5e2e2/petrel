@@ -22,9 +22,13 @@ class Uci {
     std::istringstream command; //current input command line
     std::ostream& uci_out; //output stream
 
+    volatile bool uci_isready_waiting; //set when got 'isready' command while thinking
+
     //UCI command handlers
     void uci();
     void ucinewgame();
+    void isready();
+    void go();
     void set_startpos();
     void position();
     void setoption();

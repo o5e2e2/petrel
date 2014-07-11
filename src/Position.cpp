@@ -26,14 +26,12 @@ void Position::swapSides() {
     PositionSide::swap(MY, OP);
     swap(occupied[My], occupied[Op]);
     zobrist.flip();
-    assert ( Zobrist::combine(MY.z(), OP.z()) == ~Zobrist::combine(OP.z(), MY.z()) );
 }
 
 void Position::syncSides() {
     occupied[My] = MY.occ() + ~OP.occ();
     occupied[Op] = ~occupied[My];
-    zobrist = Zobrist::combine(MY.z(), OP.z());
-    assert ( Zobrist::combine(MY.z(), OP.z()) == ~Zobrist::combine(OP.z(), MY.z()) );
+    zobrist = PositionSide::zobrist_combine(MY, OP);
 }
 
 template <Side::_t My>
@@ -186,7 +184,7 @@ void Position::setLegalEnPassant(Pi victim) {
     assert (to.is<Rank6>());
     for (Pi pi : OP.pawns() & OP.attacksTo(to)) {
         if (isLegalEnPassant<Op>(pi, to)) {
-            OP.setEnPassant(pi, to);
+            OP.markEnPassant(pi);
         }
     }
     if (OP.hasEnPassant()) {
@@ -198,7 +196,7 @@ void Position::setKing(Side My, Square to) {
     const Side::_t Op{static_cast<Side::_t>(My ^ Side::Mask)};
 
     MY.setLeaperAttack(TheKing, King, to);
-    MY.clearCastling();
+    MY.clearCastlings();
     OP.updatePinRays(~to);
 }
 

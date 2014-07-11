@@ -38,30 +38,17 @@ void SearchControl::acquireNodesQuota(Node::quota_t& quota) {
         searchThread.commandStop();
     }
 
-    if (ready_ping) {
-        ready_ping = false;
-        info_current();
-    }
+    uci->write_info_current();
 
     totalNodes += quota;
 }
 
-void SearchControl::info_current() const {
-    if (uci) {
-        uci->write_info_current();
-    }
-}
-
 void SearchControl::report_perft(Move move, index_t currmovenumber, node_count_t perftNodes) const {
-    if (uci) {
-        uci->write_perft_move(move, currmovenumber, perftNodes);
-    }
+    uci->write_perft_move(move, currmovenumber, perftNodes);
 }
 
 void SearchControl::report_perft_depth(Ply depth, node_count_t perftNodes) {
-    if (uci) {
-        uci->write_perft_depth(depth, perftNodes);
-    }
+    uci->write_perft_depth(depth, perftNodes);
 
     clear();
 
@@ -71,26 +58,15 @@ void SearchControl::report_perft_depth(Ply depth, node_count_t perftNodes) {
 }
 
 void SearchControl::report_bestmove(Move move) {
-    if (uci) {
-        uci->write_bestmove(move);
-    }
-
+    uci->write_bestmove(move);
     clear();
     delete root;
 }
 
-bool SearchControl::uci_isready() {
-    if (isReady()) {
-        return true;
-    }
-    else {
-        ready_ping = true;
-        return false;
-    }
-}
-
-void SearchControl::go(std::istream& in, const Position& start_position, Color colorToMove) {
+void SearchControl::go(Uci& _uci, std::istream& in, const Position& start_position, Color colorToMove) {
     ::fail_if_not(isReady(), in);
+
+    uci = &_uci;
 
     SearchLimit searchLimit;
     searchLimit.read(in, start_position, colorToMove);

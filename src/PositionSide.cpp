@@ -138,7 +138,7 @@ void PositionSide::clearCastling(Pi pi) {
     zobrist.clearCastling(squareOf(pi));
 }
 
-void PositionSide::clearCastling() {
+void PositionSide::clearCastlings() {
     for (Pi pi : castlingRooks()) {
         clearCastling(pi);
     }
@@ -191,9 +191,13 @@ bool PositionSide::setCastling(File file) {
     return false;
 }
 
-void PositionSide::setEnPassant(Pi pi, Square from) {
+void PositionSide::markEnPassant(Pi pi) {
     assert (is<Pawn>(pi));
     types.setEnPassant(pi);
+}
+
+void PositionSide::setEnPassant(Pi pi, Square from) {
+    markEnPassant(pi);
     zobrist.setEnPassant(from);
 }
 
