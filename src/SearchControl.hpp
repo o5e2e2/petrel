@@ -1,27 +1,29 @@
 #ifndef SEARCH_CONTROL_HPP
 #define SEARCH_CONTROL_HPP
 
-#include "io.hpp"
-
 #include "Clock.hpp"
 #include "Move.hpp"
 #include "Node.hpp"
 #include "Position.hpp"
+#include "SearchLimit.hpp"
 #include "SearchThread.hpp"
 #include "Timer.hpp"
 #include "TranspositionTable.hpp"
 
-class Uci;
+class SearchOutput;
 
 /**
  * Shared data to all search threads (currently the only one)
  */
 class SearchControl {
-    TranspositionTable transpositionTable;
+    friend class Uci;
 
+    TranspositionTable transpositionTable;
     SearchThread searchThread;
     Node* root;
-    Uci* uci;
+    SearchOutput* out;
+
+    SearchLimit searchLimit;
 
     enum { TickLimit = 1000 };
     node_count_t nodeLimit;
@@ -34,10 +36,6 @@ class SearchControl {
 
     static const Ply MaxDepth = 1000;
     Ply depthLimit;
-
-public:
-    void nps(std::ostream&) const;
-    void info_nps(std::ostream&) const;
 
 public:
     SearchControl ();
@@ -65,7 +63,7 @@ public:
     TranspositionTable::megabytes_t ttMaxSize() { return transpositionTable.getMaxSize(); }
     TranspositionTable::megabytes_t ttResize(TranspositionTable::megabytes_t s) { return transpositionTable.resize(s); }
 
-    void go(Uci&, std::istream&, const Position&, Color);
+    void go(SearchOutput&, const Position&);
 };
 
 extern SearchControl The_game;

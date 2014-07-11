@@ -130,7 +130,17 @@ bool Uci::operator() (const std::string& filename) {
 }
 
 void Uci::go() {
-    search.go(*this, command, start_position, colorToMove);
+    if (!search.isReady()) {
+        ::fail_pos(command, 0);
+        return;
+    }
+
+    search.searchLimit.read(command, start_position, colorToMove);
+    if (!command && !command.eof()) {
+        return;
+    }
+
+    search.go(*this, start_position);
 }
 
 void Uci::uci() {
@@ -211,7 +221,7 @@ void Uci::write_info_current() {
         out << "info fen ";
         PositionFen::write(out, start_position, colorToMove, chessVariant);
         out << '\n';
-        search.info_nps(out);
+        info_nps(out);
         out << "readyok\n";
     }
 }
@@ -222,7 +232,7 @@ void Uci::write(std::ostream& out, Move move) const {
 
 void Uci::report_bestmove(Move move) {
     OutputBuffer out{uci_out};
-    search.info_nps(out);
+    info_nps(out);
     out << "bestmove ";
     write(out, move);
     out << '\n';
@@ -231,7 +241,7 @@ void Uci::report_bestmove(Move move) {
 void Uci::report_perft_depth(Ply depth, node_count_t perftNodes) {
     OutputBuffer out{uci_out};
     out << "info depth " << depth;
-    search.nps(out);
+    nps(out);
     out << " string perft " << perftNodes << '\n';
 }
 
@@ -239,6 +249,39 @@ void Uci::report_perft(Move move, index_t currmovenumber, node_count_t perftNode
     OutputBuffer out{uci_out};
     out << "info currmovenumber " << currmovenumber << " currmove ";
     write(out, move);
-    search.nps(out);
+    nps(out);
     out << " string perft " << perftNodes << '\n';
+}
+
+namespace {
+    std::ostream& operator << (std::ostream& out, duration_t duration) {
+        auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
+        return out << milliseconds;
+    }
+}
+
+void Uci::nps(std::ostream& out) const {
+    node_count_t nodes = search.totalNodes;
+    duration_t duration = search.clock.read();
+
+    if (nodes > 0) {
+        out << " nodes " << nodes;
+
+        if (duration > duration_t::zero()) {
+            out << " time " << duration;
+
+            if (duration >= std::chrono::milliseconds{20}) {
+                auto _nps = (nodes * duration_t::period::den) / (duration.count() * duration_t::period::num);
+                out << " nps " << _nps;
+            }
+        }
+    }
+}
+
+void Uci::info_nps(std::ostream& out) const {
+    if (search.totalNodes > 0) {
+        out << "info";
+        nps(out);
+        out << '\n';
+    }
 }

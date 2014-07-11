@@ -9,10 +9,11 @@
 #include "Index.hpp"
 #include "Move.hpp"
 #include "Position.hpp"
+#include "SearchOutput.hpp"
 
 class SearchControl;
 
-class Uci {
+class Uci : public SearchOutput {
     Position start_position; //initial chess position to analyze
 
     SearchControl& search;
@@ -39,6 +40,9 @@ class Uci {
     void call();
 
     void log_error();
+    void write(std::ostream&, Move) const;
+    void nps(std::ostream&) const;
+    void info_nps(std::ostream&) const;
 
 public:
     Uci (SearchControl&, std::ostream& = std::cout, std::ostream& = std::cerr);
@@ -46,12 +50,10 @@ public:
     bool operator() (const std::string& filename);
     bool operator() (std::istream& = std::cin);
 
-    void write_info_current();
-    void write(std::ostream&, Move) const;
-
-    void report_bestmove(Move);
-    void report_perft_depth(Ply, node_count_t);
-    void report_perft(Move, index_t currmovenumber, node_count_t);
+    void write_info_current() override;
+    void report_bestmove(Move) override;
+    void report_perft_depth(Ply, node_count_t) override;
+    void report_perft(Move, index_t currmovenumber, node_count_t) override;
 };
 
 std::ostream& program_version(std::ostream&);
