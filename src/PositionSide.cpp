@@ -37,23 +37,11 @@ void PositionSide::swap(PositionSide& my, PositionSide& op) {
     swap(my.evaluation, op.evaluation);
 }
 
-void PositionSide::capture(Square from) {
-    Pi pi{pieceOn(from)};
-
-    assertValid(pi);
-    clear(pi, typeOf(pi), from);
-}
-
 void PositionSide::clear(PieceType ty, Square from) {
     piecesBb -= from;
+    pawnsBb &= piecesBb;
     zobrist.clear(ty, from);
     evaluation.clear(ty, from);
-}
-
-void PositionSide::drop(PieceType ty, Square to) {
-    piecesBb += to;
-    zobrist.drop(ty, to);
-    evaluation.drop(ty, to);
 }
 
 void PositionSide::clear(Pi pi, PieceType ty, Square from) {
@@ -64,7 +52,22 @@ void PositionSide::clear(Pi pi, PieceType ty, Square from) {
     squares.clear(pi);
 
     clear(ty, from);
-    pawnsBb &= piecesBb;
+}
+
+void PositionSide::capture(Square from) {
+    Pi pi{pieceOn(from)};
+
+    assertValid(pi);
+    clear(pi, typeOf(pi), from);
+}
+
+void PositionSide::drop(PieceType ty, Square to) {
+    piecesBb += to;
+    if (ty == Pawn) {
+        pawnsBb += to;
+    }
+    zobrist.drop(ty, to);
+    evaluation.drop(ty, to);
 }
 
 void PositionSide::drop(Pi pi, PieceType ty, Square to) {
@@ -72,9 +75,6 @@ void PositionSide::drop(Pi pi, PieceType ty, Square to) {
     squares.drop(pi, to);
 
     drop(ty, to);
-    if (ty == Pawn) {
-        pawnsBb += to;
-    }
 
     assertValid(pi);
 }
@@ -85,10 +85,10 @@ void PositionSide::promote(Pi pi, PieceType ty, Square from, Square to) {
     assert (from != to);
 
     types.promote(pi, static_cast<PromoType::_t>(ty));
-    pawnsBb -= from;
 
     squares.move(pi, to);
     piecesBb.move(from, to);
+    pawnsBb -= from;
 
     zobrist.clear(Pawn, from);
     evaluation.clear(Pawn, from);
@@ -103,13 +103,8 @@ void PositionSide::move(Pi pi, PieceType ty, Square from, Square to) {
     assert (from != to);
 
     squares.move(pi, to);
-
     clear(ty, from);
     drop(ty, to);
-
-    if (ty == Pawn) {
-        pawnsBb.move(from, to);
-    }
 
     assertValid(pi);
 }
@@ -160,16 +155,21 @@ void PositionSide::setCastling(Pi rook) {
 
 bool PositionSide::setCastling(CastlingSide side) {
     if (!kingSquare().is<Rank1>()) { return false; }
+
     auto rooks = of<Rook>() & of<Rank1>();
 
     Pi theRook;
-    if (side == KingSide && (rooks & righterTheKing()).any()) {
-        theRook = (rooks & righterTheKing()).last();
+    if (side == KingSide) {
+        auto rightRooks = rooks & squares.rightBackward(kingSquare());
+        if (rightRooks.none()) { return false; }
+        theRook = rightRooks.last();
     }
-    else if (side == QueenSide && (rooks & lefterTheKing()).any()) {
-        theRook = (rooks & lefterTheKing()).first();
+    else {
+        assert (side == QueenSide);
+        auto leftRooks = rooks & squares.leftForward(kingSquare());
+        if (leftRooks.none()) { return false; }
+        theRook = leftRooks.first();
     }
-    else { return false; }
 
     setCastling(theRook);
     return true;
@@ -186,14 +186,6 @@ bool PositionSide::setCastling(File file) {
             setCastling(pi);
             return true;
         }
-    }
-
-    if (kingSquare() < rookFrom) {
-        return setCastling(KingSide);
-    }
-
-    if (rookFrom < kingSquare()) {
-        return setCastling(QueenSide);
     }
 
     return false;

@@ -23,6 +23,12 @@ class PositionSide {
     Evaluation evaluation;
 
 public:
+    PositionSide ();
+    PositionSide (const PositionSide&) = delete;
+    PositionSide& operator = (const PositionSide&) = default;
+
+    static void swap(PositionSide&, PositionSide&);
+
     #ifdef NDEBUG
         void assertValid(Pi) const {}
     #else
@@ -34,41 +40,34 @@ public:
     const MatrixPiBb& allAttacks() const { return attacks; }
     const Zobrist& z() const { return zobrist; }
 
-    template <PieceType::_t Type> bool is(Pi pi) const { assertValid(pi); return types.is<Type>(pi); }
+    bool operator [] (Square sq) const { return piecesBb[sq]; }
     bool isOn(Square sq) const { return squares.isOn(sq); }
-    bool isSlider(Pi pi) const { assertValid(pi); return types.isSlider(pi); }
-    bool isCastling(Pi pi) const { assertValid(pi); return types.isCastling(pi); }
-    bool hasEnPassant() const { return enPassants().any(); }
 
     Square squareOf(Pi pi) const { assertValid(pi); return squares.squareOf(pi); }
     Square kingSquare() const { return squareOf(TheKing); }
-    PieceType typeOf(Pi pi) const { assertValid(pi); return types.typeOf(pi); }
-    Pi pieceOn(Square sq) const { assert (occ()[sq]); Pi pi = squares.pieceOn(sq); assertValid(pi); return pi; }
+    Pi pieceOn(Square sq) const { assert ((*this)[sq]); Pi pi = squares.pieceOn(sq); assertValid(pi); return pi; }
     CastlingSide castlingSideOf(Pi pi) const { assert (isCastling(pi)); return squareOf(pi) < kingSquare()? QueenSide:KingSide; }
-
-    VectorPiMask lefterTheKing() const { return squares.leftForward(kingSquare()); }
-    VectorPiMask righterTheKing() const { return squares.rightBackward(kingSquare()); }
     VectorPiMask on(Square sq) const { return squares.on(sq); }
-    VectorPiMask below(Square sq) const { return squares.leftForward(sq); }
     template <Rank::_t Rank> VectorPiMask of() const { return squares.of<Rank>(); }
+
+    template <PieceType::_t Type> bool is(Pi pi) const { assertValid(pi); return types.is<Type>(pi); }
+    template <PieceType::_t Type> VectorPiMask of() const { return types.of<Type>(); }
+    PieceType typeOf(Pi pi) const { assertValid(pi); return types.typeOf(pi); }
 
     VectorPiMask alive() const { assert (squares.alive() == types.alive()); return squares.alive(); }
     VectorPiMask pawns() const { return types.of<Pawn>(); }
     VectorPiMask sliders() const { return types.sliders(); }
-    template <PieceType::_t Type> VectorPiMask of() const { return types.of<Type>(); }
+    bool isSlider(Pi pi) const { assertValid(pi); return types.isSlider(pi); }
 
-    Pi getEnPassant() const {
-        assert (hasEnPassant());
-        assert (enPassants().isSingleton());
-        Pi pi = enPassants().index();
-        assert (is<Pawn>(pi));
-        return pi;
-    }
+    bool hasEnPassant() const { return enPassants().any(); }
+    Pi getEnPassant() const { return types.getEnPassant(); }
     Square enPassantSquare() const { return squareOf(getEnPassant()); }
     VectorPiMask enPassants() const { return types.enPassants(); }
 
-    VectorPiMask pinnerCandidates() const { return types.pinnerCandidates(); }
     VectorPiMask castlings() const { return types.castlings(); }
+    bool isCastling(Pi pi) const { assertValid(pi); return types.isCastling(pi); }
+
+    VectorPiMask pinnerCandidates() const { return types.pinnerCandidates(); }
 
     VectorPiMask attacksTo(Square a) const { return attacks[a]; }
     VectorPiMask attacksTo(Square a, Square b) const { return attacks[a] | attacks[b]; }
@@ -101,11 +100,6 @@ public:
     bool setCastling(File);
     bool setCastling(CastlingSide);
 
-    PositionSide ();
-    PositionSide (const PositionSide&) = delete;
-    PositionSide& operator = (const PositionSide&) = default;
-
-    static void swap(PositionSide&, PositionSide&);
 };
 
 #endif

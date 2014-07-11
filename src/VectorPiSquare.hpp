@@ -27,7 +27,7 @@ public:
 
     Square squareOf(Pi pi) const { assertValid(pi); return _v[pi]; }
     bool isOn(Square sq) const { return on(sq).any(); }
-    Pi pieceOn(Square sq) const { assert (isOn(sq)); return (_v == sq).index(); }
+    Pi pieceOn(Square sq) const { assert (isOn(sq)); return on(sq).index(); }
 
     VectorPiMask alive() const { return _v.notEmpty(); }
 

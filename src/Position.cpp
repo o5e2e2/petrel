@@ -104,12 +104,13 @@ bool Position::setEnPassant(Square ep) {
     if (occupied[Op][ep.rankDown()]) { return false; }
 
     Square victimSquare{ep.rankUp()};
-    if (!OP.isOn(victimSquare)) { return false; }
 
+    if (!OP.isOn(victimSquare)) { return false; }
     Pi victim{OP.pieceOn(victimSquare)};
+
     if (!OP.is<Pawn>(victim)) { return false; }
 
-    //check against illegal fen like "8/5bk1/8/2Pp4/8/1K6/8/8 w - d6"
+    //check against illegal en passant field like "8/5bk1/8/2Pp4/8/1K6/8/8 w - d6"
     for (Pi pi : OP.pinnerCandidates() & OP.attacksTo(victimSquare)) {
         const Bb& pinLine{::between(~MY.kingSquare(), OP.squareOf(pi))};
         if (pinLine[victimSquare]) {
@@ -282,7 +283,7 @@ void Position::makePawnMove(Pi pi, Square from, Square to) {
         MY.promote(pi, static_cast<PieceType>(ty), from, to);
         set(My, pi, static_cast<PieceType>(ty), to);
 
-        if (OP.occ()[~to]) {
+        if (OP[~to]) {
             OP.capture(~to);
 
             updateSliderAttacksKing<My>(MY.attacksTo(from) | pi);
@@ -294,7 +295,7 @@ void Position::makePawnMove(Pi pi, Square from, Square to) {
         }
 
     }
-    else if (OP.occ()[~to]) {
+    else if (OP[~to]) {
         OP.capture(~to);
 
         if (from.is<Rank5>() && to.is<Rank5>()) {
@@ -341,7 +342,7 @@ void Position::makeMove(Square from, Square to) {
     if (MY.is<Pawn>(pi)) {
         makePawnMove<My>(pi, from, to);
     }
-    else if (OP.occ()[~to]) {
+    else if (OP[~to]) {
         //simple non-pawn capture
         OP.capture(~to);
         move<My>(pi, from, to);
@@ -401,10 +402,10 @@ Move readMove(std::istream& in, const Position& pos, Color colorToMove) {
             //from Chess960 castling encoding
             return Move{to, from, Move::Special};
         }
-        else if (from == E1 && to == G1 && pos.MY.occ()[A1]) {
+        else if (from == E1 && to == G1 && pos.MY[A1]) {
             return Move{A1, E1, Move::Special};
         }
-        else if (from == E1 && to == C1 && pos.MY.occ()[H1]) {
+        else if (from == E1 && to == C1 && pos.MY[H1]) {
             return Move{H1, E1, Move::Special};
         }
     }
@@ -452,11 +453,11 @@ std::ostream& write(std::ostream& out, const Position& pos, Color colorToMove, C
 
             char_type piece_type_symbol;
             {
-                Side color = (pos.side[white].occ()[sq])? white : black;
+                Side color = (pos.side[white][sq])? white : black;
                 Square color_sq = (color == white)? sq : ~sq;
 
                 const PositionSide& side = pos.side[color];
-                assert (side.occ()[color_sq]);
+                assert (side[color_sq]);
 
                 Pi pi = side.pieceOn(color_sq);
                 PieceType ty = side.typeOf(pi);

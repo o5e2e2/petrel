@@ -11,15 +11,15 @@ class VectorPiType {
     //TRICK: EnPassant and Castling flags unioned into one bit field
 
     //Queen, Rook, Bishop, Knight, Pawn, King = 0..5
-    enum piece_tag_t { Castling=6, EnPassant=Castling, PinRay };
+    enum piece_tag_t { Special = 6, Castling = Special, EnPassant = Special, PinRay };
     typedef Index<8, piece_type_t> PieceTag;
 
     struct Value : VectorPiBit<Value, PieceTag> {};
     typedef Value::element_type _t;
 
     enum { SliderMask = ::singleton<_t>(Queen)|::singleton<_t>(Rook)|::singleton<_t>(Bishop) };
-    enum { EnPassantMask = ::singleton<_t>(EnPassant)|::singleton<_t>(Pawn) };
-    enum { CastlingMask = ::singleton<_t>(Castling)|::singleton<_t>(Rook) };
+    enum { EnPassantMask = ::singleton<_t>(Special)|::singleton<_t>(Pawn) };
+    enum { CastlingMask = ::singleton<_t>(Special)|::singleton<_t>(Rook) };
 
     Value _v;
     bool isEmpty(Pi pi) const { return _v.isEmpty(pi); }
@@ -43,7 +43,6 @@ public:
     VectorPiMask alive() const { return _v.notEmpty(); }
 
     PieceType typeOf(Pi pi) const {
-        assert (static_cast<PieceType::_t>(Castling) > Rook);
         assertValid(pi);
         PieceType ty{static_cast<PieceType::_t>( ::bsf(static_cast<U32>(_v[pi])) )};
         assert (ty.isOk());
@@ -63,6 +62,13 @@ public:
 
     VectorPiMask enPassants() const { return _v.getAllMask<EnPassantMask>(); }
     bool isEnPassant(Pi pi) const { return is<Pawn>(pi) && is<EnPassant>(pi); }
+    Pi getEnPassant() const {
+        assert (enPassants().any());
+        assert (enPassants().isSingleton());
+        Pi pi = enPassants().index();
+        assert (is<Pawn>(pi));
+        return pi;
+    }
     void setEnPassant(Pi pi) { assert (is<Pawn>(pi)); assert (!isEnPassant(pi)); set<EnPassant>(pi); }
     void clearEnPassant(Pi pi) { assert (is<Pawn>(pi)); assert (isEnPassant(pi)); clear<EnPassant>(pi); }
     void clearEnPassant() { _v.clearMasked<static_cast<PieceType::_t>(EnPassant), Pawn>(); }

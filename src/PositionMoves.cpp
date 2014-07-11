@@ -7,6 +7,7 @@
 
 #define MY pos.side[My]
 #define OP pos.side[Op]
+#define OCCUPIED pos.occupied[My]
 
 PositionMoves::PositionMoves (const Position& p) : pos(p) { generateMoves<My>(); }
 
@@ -57,7 +58,7 @@ void PositionMoves::excludePinnedMoves(VectorPiMask pinnerCandidates) {
         Square pinFrom{~OP.squareOf(pi)};
         const Bb& pinLine{::between(MY.kingSquare(), pinFrom)};
 
-        Bb betweenPieces{pinLine & pos.occupied[My]};
+        Bb betweenPieces{pinLine & OCCUPIED};
         assert (betweenPieces.any());
         if (betweenPieces.isSingleton() && (betweenPieces & MY.occ()).any()) {
             //we discovered a true pinned piece
@@ -103,7 +104,7 @@ void PositionMoves::generateCheckEvasions() {
             for (Square from : MY.occPawns() & possiblePawns) {
                 Pi pi{MY.pieceOn(from)};
 
-                Bb b{Bb{from.rankUp()} % pos.occupied[My] & checkLine};
+                Bb b{Bb{from.rankUp()} % OCCUPIED & checkLine};
                 b += ::pieceTypeAttack(Pawn, from) & checkFrom;
 
                 Rank rank{from.rankUp()};
@@ -113,7 +114,7 @@ void PositionMoves::generateCheckEvasions() {
 
         //pawns double push over check line
         {
-            Bb possiblePawns{Bb{Rank2} % (Bb{pos.occupied[My]}<<8) & checkLine<<16};
+            Bb possiblePawns{Bb{Rank2} % (Bb{OCCUPIED}<<8) & checkLine<<16};
             for (Square from : MY.occPawns() & possiblePawns) {
                 Pi pi{MY.pieceOn(from)};
                 moves.add(pi, File{from}, Rank4);
@@ -154,20 +155,20 @@ void PositionMoves::generateMoves() {
         Rank rank{ up(Rank{from}) };
 
         BitRank b = moves[rank][pi];
-        b &= pos.occupied[My][rank]; //remove "captures" of free squares
-        b += self % pos.occupied[My][rank]; //add pawn push
+        b &= OCCUPIED[rank]; //remove "captures" of free squares
+        b += self % OCCUPIED[rank]; //add pawn push
         moves.set(pi, rank, b);
 
         if (rank == Rank3) {
             //pawns double push
-            BitRank r4 = self % pos.occupied[My][rank] % pos.occupied[My][Rank4];
+            BitRank r4 = self % OCCUPIED[rank] % OCCUPIED[Rank4];
             moves.set(pi, Rank4, r4);
         }
     }
 
     //generate castling moves
     for (Pi pi : MY.castlings()) {
-        if ( ::castlingRules.isLegal(MY.castlingSideOf(pi), pos.occupied[My], attacked) ) {
+        if ( ::castlingRules.isLegal(MY.castlingSideOf(pi), OCCUPIED, attacked) ) {
             moves.add(pi, MY.kingSquare());
         }
     }
@@ -209,8 +210,8 @@ void PositionMoves::limitMoves(std::istream& in, MatrixPiBb& searchmoves, Color 
 }
 
 bool PositionMoves::eval(Node& node) {
-    for (Pi pi : side(My).alive()) {
-        Square from{ side(My).squareOf(pi) };
+    for (Pi pi : MY.alive()) {
+        Square from{ MY.squareOf(pi) };
 
         for (Square to : moves[pi]) {
             moves.clear(pi, to);
@@ -253,3 +254,4 @@ Color PositionMoves::makeMoves(std::istream& in, Color colorToMove) {
 
 #undef MY
 #undef OP
+#undef OCCUPIED
