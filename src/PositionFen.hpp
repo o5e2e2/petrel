@@ -2,7 +2,7 @@
 #define POSITION_FEN_HPP
 
 #include "io.hpp"
-#include "Square.hpp"
+#include "Index.hpp"
 
 class Position;
 

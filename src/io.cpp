@@ -19,7 +19,8 @@ bool operator == (std::istream& in, const char keyword []) {
     if (keyword == nullptr) { fail_here(in); return false; }
 
     if (in >> std::ws) {
-        auto before_token = in.tellg();
+        auto pos_before = in.tellg();
+        auto state_before = in.rdstate();
 
         for (char c; *keyword != '\0' && in.get(c) && *keyword == c; ++keyword) {}
 
@@ -30,8 +31,8 @@ bool operator == (std::istream& in, const char keyword []) {
             }
         }
 
-        in.seekg(before_token);
+        in.clear(state_before);
+        in.seekg(pos_before);
     }
-
     return false;
 }

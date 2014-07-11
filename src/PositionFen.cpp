@@ -62,7 +62,7 @@ void ColorTypeSquares::readBoard(std::istream& in) {
 
             PieceType ty{PieceType::Begin};
             if (ty.from_char(c) && colorCount[color] < Pi::Size) {
-                if (drop(color, ty, Square{file, rank})) {
+                if (drop(color, ty, Square(file, rank))) {
                     ++colorCount[color];
                     ++file;
                     continue;
