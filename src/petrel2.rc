@@ -1,0 +1,115 @@
+uci
+
+echo 620:
+position fen 6kr///////6K1 b k
+go depth 2
+wait
+
+echo 719:
+position fen 5kr1///////5K2 b k
+go depth 2
+wait
+
+echo 781:
+position fen 4kr2///////4K3 b k
+go depth 2
+wait
+
+echo 901:
+position fen 3kr3///////3K4 b k
+go depth 2
+wait
+
+echo 53392:
+position fen rnbqkb1r/pp1p1ppp/2p5/4P3/2B5/8/PPP1NnPP/RNBQK2R w KQkq - 0 6
+go depth 2
+wait
+
+echo 706045033:
+position fen r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1
+go depth 5
+wait
+
+echo 178633661:
+position fen 8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1
+go depth 6
+wait
+
+echo 11139762:
+position fen rnbqkb1r/ppppp1pp/7n/4Pp2/8/8/PPPP1PPP/RNBQKBNR w KQkq f6 0 3
+go depth 4
+wait
+
+echo 824064:
+position fen 8/5bk1/8/2Pp4/8/1K6/8/8 w - d6 0 1
+go depth 5
+wait
+
+echo 38633283:
+position fen 8/7p/p5pb/4k3/P1pPn3/8/P5PP/1rB2RK1 b - d3 0 28
+go depth 5
+wait
+
+echo 34336777:
+position fen 8/PPP4k/8/8/8/8/4Kppp/8 w - - 0 1
+go depth 5
+wait
+
+echo 94370149:
+position fen 2rkr3/5PP1/8/5Q2/5q2/8/5pp1/2RKR3 w KQkq - 0 1
+go depth 4
+wait
+
+echo 145999259:
+position fen bnrbnkrq/pppppppp/8/8/8/8/PPPPPPPP/BNRBNKRQ w CGkq - 0 1
+go depth 5
+wait
+
+echo 126480040:
+position fen rbknqnbr/pppppppp/8/8/8/8/PPPPPPPP/RBKNQNBR w ahKQ - 0 1
+go depth 5
+wait
+
+echo 121613156:
+position fen qbrnnkbr/pppppppp/8/8/8/8/PPPPPPPP/QBRNNKBR w KQkq - 0 1
+go depth 5
+wait
+
+echo 93888956:
+position fen nqbnrbkr/pppppppp/8/8/8/8/PPPPPPPP/NQBNRBKR w KQkq - 0 1
+go depth 5
+wait
+
+echo 97044730:
+position fen nrnkbqrb/pppppppp/8/8/8/8/PPPPPPPP/NRNKBQRB w KQkq - 0 1
+go depth 5
+wait
+
+echo 493407574:
+position fen 8/3K4/2p5/p2b2r1/5k2/8/8/1q6 b - - 1 67
+go depth 6
+wait
+
+echo 8103790:
+position fen 8/p7/8/1P6/K1k3p1/6P1/7P/8 w - -
+go depth 7
+wait
+
+echo 77054993:
+position fen r3k2r/p6p/8/B7/1pp1p3/3b4/P6P/R3K2R w KQkq -
+go depth 5
+wait
+
+echo 64451405:
+position fen 8/5p2/8/2k3P1/p3K3/8/1P6/8 b - -
+go depth 7
+wait
+
+echo 193690690:
+position fen r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 25
+go depth 4
+wait
+
+echo 8031647685:
+go depth 5
+isready
