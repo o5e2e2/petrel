@@ -47,8 +47,34 @@ int main(int argc, const char* argv[]) {
     std::ios_base::sync_with_stdio(false); //speed trick
     std::cin.tie(nullptr);
 
-    Uci uci{The_game, std::cout};
-    uci(argc, argv); //initialization
+    Uci uci{The_game, std::cout, std::clog};
 
-    return uci(std::cin, std::clog) ? EXIT_SUCCESS : EXIT_FAILURE;
+    if (argc == 1) {
+        //construct startup configuration filename from program's own name
+        std::string filename{argv[0]};
+        {
+            auto pos = filename.find_last_of('/');
+            if (pos != std::string::npos) { filename.erase(0, pos+1); }
+
+            pos = filename.find_first_of('.', 1);
+            if (pos != std::string::npos) { filename.erase(pos); }
+
+            filename.append(".rc");
+        }
+
+        uci(filename);
+    }
+    else {
+        std::string option{argv[1]};
+        if (argc > 2 || option == "--version" || option == "--help" || !uci(option)) {
+            std::cout << program_version << '\n'
+                << "UCI chess engine.\n"
+                << "Copyright (C) 2014 Aleks Peshkov, aleks.peshkov@gmail.com\n"
+                << "For terms of use contact author.\n"
+            ;
+            return EXIT_SUCCESS;
+        }
+    }
+
+    return uci(std::cin) ? EXIT_SUCCESS : EXIT_FAILURE;
 }

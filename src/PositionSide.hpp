@@ -57,6 +57,7 @@ public:
     template <PieceType::_t Type> bool is(Pi pi) const { assertValid(pi); return types.is<Type>(pi); }
     template <PieceType::_t Type> VectorPiMask of() const { return types.of<Type>(); }
     PieceType typeOf(Pi pi) const { assertValid(pi); return types.typeOf(pi); }
+    PieceType typeOf(Square sq) const { return typeOf(pieceOn(sq)); }
 
     VectorPiMask alive() const { assert (squares.alive() == types.alive()); return squares.alive(); }
     VectorPiMask pawns() const { return types.of<Pawn>(); }

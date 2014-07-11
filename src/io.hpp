@@ -6,8 +6,6 @@
 void fail_here(std::istream&);
 void fail_char(std::istream&);
 void fail_pos(std::istream&, std::streampos);
-void fail_if_not(bool, std::istream&, std::streampos = 0);
-void fail_if_any(std::istream&);
 
 bool operator == (std::istream&, const char keyword []);
 

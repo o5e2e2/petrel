@@ -360,23 +360,21 @@ void Position::makeMove(Square from, Square to) {
 
 Move readMove(std::istream& in, const Position& pos, Color colorToMove) {
     in >> std::ws;
-    if (in.peek(), in.eof()) {
-        //end of line, nothing to read
-        in.clear(std::ios::eofbit);
-        return Move{};
-    }
+    if (in.eof()) { return Move::null(); }
+
+    auto before_move = in.tellg();
 
     Square from{Square::Begin};
     Square to{Square::Begin};
     in >> from >> to;
-    if (!in) { return Move{}; }
+    if (!in) { ::fail_pos(in, before_move); return Move::null(); }
 
     if (colorToMove == Black) {
         from.flip();
         to.flip();
     }
 
-    if (!pos.MY.isOn(from) || (from == to)) { return Move{}; }
+    if (!pos.MY.isOn(from) || (from == to)) { ::fail_pos(in, before_move); return Move::null(); }
     Pi pi{pos.MY.pieceOn(from)};
 
     //convert special moves (castling, promotion, ep) to the internal move format
@@ -392,7 +390,7 @@ Move readMove(std::istream& in, const Position& pos, Color colorToMove) {
             if (in >> promo) {
                 return Move{from, Square{to, promo}, Move::Special};
             }
-            else { return Move{}; }
+            else { ::fail_pos(in, before_move); return Move::null(); }
         }
     }
     else if (pi == TheKing && from.is<Rank1>() && to.is<Rank1>()) {
@@ -422,94 +420,6 @@ Move Position::createMove(Side My, Square from, Square to) const {
         move_is_special = (MY.kingSquare() == to); //castling;
     }
     return Move(from, to, static_cast<Move::Type>(move_is_special));
-}
-
-namespace {
-    typedef std::ostream::char_type char_type;
-
-    char_type char_color(char_type c, Color color) {
-        return static_cast<char_type>( (color == White)? std::toupper(c) : std::tolower(c) );
-    }
-}
-
-std::ostream& write(std::ostream& out, const Position& pos, Color colorToMove, ChessVariant chessVariant) {
-    typedef std::ostream::char_type char_type;
-
-    Side white{(colorToMove == White)? My:Op};
-    Side black{(colorToMove == White)? Op:My};
-
-    FOR_INDEX(Rank, rank) {
-        index_t blank_squares = 0;
-
-        FOR_INDEX(File, file) {
-            Square sq(file,rank);
-
-            if (!pos.occupied[white][sq]) {
-                ++blank_squares;
-                continue;
-            }
-
-            char_type piece_type_symbol;
-            {
-                Side color = (pos.side[white][sq])? white : black;
-                Square color_sq = (color == white)? sq : ~sq;
-
-                const PositionSide& side = pos.side[color];
-                assert (side[color_sq]);
-
-                Pi pi = side.pieceOn(color_sq);
-                PieceType ty = side.typeOf(pi);
-
-                piece_type_symbol = ::char_color(ty.to_char(), (color == white)? White : Black);
-            }
-
-            if (blank_squares != 0) { out << blank_squares; blank_squares = 0; }
-            out << piece_type_symbol;
-        }
-
-        if (blank_squares != 0) { out << blank_squares; }
-        if (rank != Rank1) { out << '/'; }
-    }
-
-    out << ' ' << colorToMove;
-
-    std::set<char_type> castlingField;
-    {
-        FOR_INDEX(Side, si) {
-            const PositionSide& side = pos.side[si];
-
-            for (Pi pi : side.castlingRooks()) {
-                char_type castling_symbol =
-                    (chessVariant == Chess960)
-                    ? File{side.squareOf(pi)}.to_char()
-                    : side.castlingSideOf(pi).to_char()
-                ;
-
-                castling_symbol = ::char_color(castling_symbol, (si == white)? White : Black);
-                castlingField.insert(castling_symbol);
-            }
-        }
-    }
-
-    out << ' ';
-    if (!castlingField.empty()) {
-        for (auto castling_symbol : castlingField) { out << castling_symbol; }
-    }
-    else {
-        out << '-';
-    }
-
-    out << ' ';
-    if (pos.side[Op].hasEnPassant()) {
-        Square ep = pos.side[Op].enPassantSquare().rankDown();
-        if (colorToMove == White) { ep.flip(); }
-        out << ep;
-    }
-    else {
-        out << '-';
-    }
-
-    return out;
 }
 
 #undef MY

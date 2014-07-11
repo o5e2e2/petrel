@@ -3,6 +3,7 @@
 
 #include "PositionSide.hpp"
 #include "Move.hpp"
+#include "PositionFen.hpp"
 
 class Position {
     friend class PositionMoves;
@@ -38,7 +39,8 @@ public:
     Position (const Position& parent, Square from, Square to);
     Position& operator = (Position&&) = default;
 
-    friend std::ostream& write(std::ostream&, const Position&, Color, ChessVariant);
+    friend void PositionFen::write(std::ostream&, const Position&, Color, ChessVariant);
+
     //serie of irreversible moves with extra legality check
     friend Move readMove(std::istream&, const Position&, Color);
 

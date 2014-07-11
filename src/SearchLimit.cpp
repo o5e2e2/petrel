@@ -47,7 +47,7 @@ std::istream& SearchLimit::read(std::istream& command, const Position& pos, Colo
         else if (command == "searchmoves") { p.limitMoves(command, searchmoves, color); }
         else if (command == "perft")    { perft = true; }
         else if (command == "divide")   { divide = true; }
-        else { ::fail_if_any(command); }
+        else { break; }
     }
     return command;
 }

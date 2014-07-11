@@ -93,7 +93,7 @@ bool NodePerftRoot::operator() (const Position& parent) {
     }
 
     The_game.releaseNodesQuota(nodesRemaining);
-    The_game.report_bestmove(Move{});
+    The_game.report_bestmove(Move::null());
     return true;
 }
 
@@ -115,6 +115,6 @@ bool NodePerftDivideRoot::operator() (const Position& parent) {
     }
 
     The_game.releaseNodesQuota(nodesRemaining);
-    The_game.report_bestmove(Move{});
+    The_game.report_bestmove(Move::null());
     return true;
 }

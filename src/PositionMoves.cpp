@@ -229,18 +229,18 @@ index_t PositionMoves::countLegalMoves() const {
 
 Color PositionMoves::makeMoves(std::istream& in, Color colorToMove) {
     while (in) {
-        std::streampos err_pos = in.tellg(); //save the streampos for error reporting
+        std::streampos before_current_move = in.tellg(); //save the streampos for error reporting
 
         Move m{ readMove(in, pos, colorToMove) };
 
         if (m.isNull()) {
-            ::fail_if_not(in.eof(), in, err_pos);
+            if (!in.eof()) { ::fail_pos(in, before_current_move); }
             break;
         }
 
         if (!moves.is(MY.pieceOn(m.from()), m.to())) {
             //detected an illegal move
-            ::fail_pos(in, err_pos);
+            ::fail_pos(in, before_current_move);
             break;
         }
 

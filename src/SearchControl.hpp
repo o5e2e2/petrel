@@ -22,7 +22,6 @@ class SearchControl {
     SearchThread searchThread;
     Node* root;
     Uci* uci;
-    std::ostream* uci_out;
 
     enum { TickLimit = 1000 };
     node_count_t nodeLimit;
@@ -37,8 +36,8 @@ class SearchControl {
     Ply depthLimit;
 
 public:
-    void uci_nps(std::ostream&) const;
-    void uci_info_nps(std::ostream&) const;
+    void nps(std::ostream&) const;
+    void info_nps(std::ostream&) const;
 
 public:
     SearchControl ();
@@ -66,7 +65,7 @@ public:
     TranspositionTable::megabytes_t ttMaxSize() { return transpositionTable.getMaxSize(); }
     TranspositionTable::megabytes_t ttResize(TranspositionTable::megabytes_t s) { return transpositionTable.resize(s); }
 
-    void go(Uci&, std::ostream&, std::istream&, const Position&, Color);
+    void go(Uci&, std::istream&, const Position&, Color);
 };
 
 extern SearchControl The_game;

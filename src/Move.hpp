@@ -16,10 +16,12 @@ class Move {
     typedef index_t _t;
     _t _v;
 
+    constexpr Move () : _v(0) {} //null move
+
 public:
     enum Type { Simple = false, Special = true };
-    Move () : _v(0) {} //null move
-    Move (Square f, Square t, Type is_special = Simple)
+
+    constexpr Move (Square f, Square t, Type is_special = Simple)
         : _v(static_cast<_t>(f<<FromShift | t<<ToShift | is_special<<SpecialShift))
         {}
 
@@ -28,6 +30,8 @@ public:
 
     bool isNull() const { return _v == 0; }
     bool isSpecial() const { return (_v & 1<<SpecialShift) != 0; }
+
+    static constexpr Move null() { return Move{}; }
 };
 
 std::ostream& write(std::ostream&, Move, Color, ChessVariant);

@@ -21,6 +21,7 @@ class Uci {
 
     std::istringstream command; //current input command line
     std::ostream& uci_out; //output stream
+    std::ostream& uci_err; //error output stream
 
     volatile bool isready_waiting; //set when got 'isready' command while thinking
 
@@ -32,25 +33,28 @@ class Uci {
     void set_startpos();
     void position();
     void setoption();
-    void quit();
 
     //my own UCI protocol extensions
-    void help_and_quit();
     void echo();
-    void call(std::ostream& = std::cerr);
+    void call();
 
-    bool operator() (const std::string& filename, std::ostream& = std::cerr);
+    void log_error();
 
 public:
-    Uci (SearchControl&, std::ostream& = std::cout);
+    Uci (SearchControl&, std::ostream& = std::cout, std::ostream& = std::cerr);
 
-    bool operator() (int argc, const char* argv[]);
-    bool operator() (std::istream& = std::cin, std::ostream& = std::cerr);
+    bool operator() (const std::string& filename);
+    bool operator() (std::istream& = std::cin);
 
     void write_info_current();
     void write(std::ostream&, Move) const;
 
+    void report_bestmove(Move);
+    void report_perft_depth(Ply, node_count_t);
+    void report_perft(Move, index_t currmovenumber, node_count_t);
 };
+
+std::ostream& program_version(std::ostream&);
 
 //debug output
 std::ostream& operator << (std::ostream&, Bb);

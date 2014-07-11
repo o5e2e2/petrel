@@ -6,7 +6,7 @@
 #include "OutputBuffer.hpp"
 
 SearchControl::SearchControl ()
-    : uci{nullptr}, uci_out{&std::cerr}, moveTimer{}
+    : uci{nullptr}, moveTimer{}
 {
     clear();
 }
@@ -44,20 +44,11 @@ void SearchControl::acquireNodesQuota(Node::quota_t& quota) {
 }
 
 void SearchControl::report_perft(Move move, index_t currmovenumber, node_count_t perftNodes) const {
-    OutputBuffer out{uci_out};
-    out << "info currmovenumber " << currmovenumber << " currmove ";
-    uci->write(out, move);
-    uci_nps(out);
-    out << " string perft " << perftNodes << '\n';
+    uci->report_perft(move, currmovenumber, perftNodes);
 }
 
 void SearchControl::report_perft_depth(Ply depth, node_count_t perftNodes) {
-    {
-        OutputBuffer out{uci_out};
-        out << "info depth " << depth;
-        uci_nps(out);
-        out << " string perft " << perftNodes << '\n';
-    }
+    uci->report_perft_depth(depth, perftNodes);
 
     clear();
 
@@ -67,23 +58,19 @@ void SearchControl::report_perft_depth(Ply depth, node_count_t perftNodes) {
 }
 
 void SearchControl::report_bestmove(Move move) {
-    {
-        OutputBuffer out{uci_out};
-        uci_info_nps(out);
-        out << "bestmove ";
-        uci->write(out, move);
-        out << '\n';
-    }
+    uci->report_bestmove(move);
 
     clear();
     delete root;
 }
 
-void SearchControl::go(Uci& _uci, std::ostream& out, std::istream& in, const Position& start_position, Color colorToMove) {
-    ::fail_if_not(isReady(), in);
+void SearchControl::go(Uci& _uci, std::istream& in, const Position& start_position, Color colorToMove) {
+    if (!isReady()) {
+        ::fail_pos(in, 0);
+        return;
+    }
 
     uci = &_uci;
-    uci_out = &out;
 
     SearchLimit searchLimit;
     searchLimit.read(in, start_position, colorToMove);
@@ -113,7 +100,7 @@ namespace {
     }
 }
 
-void SearchControl::uci_nps(std::ostream& out) const {
+void SearchControl::nps(std::ostream& out) const {
     node_count_t nodes = this->totalNodes;
     duration_t duration = this->clock.read();
 
@@ -131,10 +118,10 @@ void SearchControl::uci_nps(std::ostream& out) const {
     }
 }
 
-void SearchControl::uci_info_nps(std::ostream& out) const {
+void SearchControl::info_nps(std::ostream& out) const {
     if (this->totalNodes > 0) {
         out << "info";
-        uci_nps(out);
+        nps(out);
         out << '\n';
     }
 }

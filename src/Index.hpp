@@ -53,9 +53,9 @@ public:
     }
 
     friend std::istream& operator >> (std::istream& in, Index& i) {
-        char c{};
-        if (in.get(c) && !i.from_char(c)) {
-            ::fail_char(in);
+        char c;
+        if (in.get(c)) {
+            if (!i.from_char(c)) { ::fail_char(in); }
         }
         return in;
     }
