@@ -3,10 +3,10 @@
 #include "PositionFen.hpp"
 #include "SearchLimit.hpp"
 #include "Uci.hpp"
+#include "OutputBuffer.hpp"
 
 SearchControl::SearchControl ()
-    : uci{nullptr},
-    moveTimer{}
+    : uci{nullptr}, uci_out{&std::cerr}, moveTimer{}
 {
     clear();
 }
@@ -44,11 +44,20 @@ void SearchControl::acquireNodesQuota(Node::quota_t& quota) {
 }
 
 void SearchControl::report_perft(Move move, index_t currmovenumber, node_count_t perftNodes) const {
-    uci->write_perft_move(move, currmovenumber, perftNodes);
+    OutputBuffer out{uci_out};
+    out << "info currmovenumber " << currmovenumber << " currmove ";
+    uci->write(out, move);
+    uci_nps(out);
+    out << " string perft " << perftNodes << '\n';
 }
 
 void SearchControl::report_perft_depth(Ply depth, node_count_t perftNodes) {
-    uci->write_perft_depth(depth, perftNodes);
+    {
+        OutputBuffer out{uci_out};
+        out << "info depth " << depth;
+        uci_nps(out);
+        out << " string perft " << perftNodes << '\n';
+    }
 
     clear();
 
@@ -58,15 +67,23 @@ void SearchControl::report_perft_depth(Ply depth, node_count_t perftNodes) {
 }
 
 void SearchControl::report_bestmove(Move move) {
-    uci->write_bestmove(move);
+    {
+        OutputBuffer out{uci_out};
+        uci_info_nps(out);
+        out << "bestmove ";
+        uci->write(out, move);
+        out << '\n';
+    }
+
     clear();
     delete root;
 }
 
-void SearchControl::go(Uci& _uci, std::istream& in, const Position& start_position, Color colorToMove) {
+void SearchControl::go(Uci& _uci, std::ostream& out, std::istream& in, const Position& start_position, Color colorToMove) {
     ::fail_if_not(isReady(), in);
 
     uci = &_uci;
+    uci_out = &out;
 
     SearchLimit searchLimit;
     searchLimit.read(in, start_position, colorToMove);
@@ -87,4 +104,37 @@ void SearchControl::go(Uci& _uci, std::istream& in, const Position& start_positi
     moveTimer.cancel(); //cancel the timer from previous go if any
     searchThread.start(*root, start_position);
     moveTimer.start(searchThread, searchLimit.getThinkingTime() );
+}
+
+namespace {
+    std::ostream& operator << (std::ostream& out, duration_t duration) {
+        auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
+        return out << milliseconds;
+    }
+}
+
+void SearchControl::uci_nps(std::ostream& out) const {
+    node_count_t nodes = this->totalNodes;
+    duration_t duration = this->clock.read();
+
+    if (nodes > 0) {
+        out << " nodes " << nodes;
+
+        if (duration > duration_t::zero()) {
+            out << " time " << duration;
+
+            auto nps = (nodes * duration_t::period::den) / (duration.count() * duration_t::period::num);
+            if (duration >= std::chrono::milliseconds{20}) {
+                out << " nps " << nps;
+            }
+        }
+    }
+}
+
+void SearchControl::uci_info_nps(std::ostream& out) const {
+    if (this->totalNodes > 0) {
+        out << "info";
+        uci_nps(out);
+        out << '\n';
+    }
 }

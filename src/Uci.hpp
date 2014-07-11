@@ -22,7 +22,7 @@ class Uci {
     std::istringstream command; //current input command line
     std::ostream& uci_out; //output stream
 
-    volatile bool uci_isready_waiting; //set when got 'isready' command while thinking
+    volatile bool isready_waiting; //set when got 'isready' command while thinking
 
     //UCI command handlers
     void uci();
@@ -41,22 +41,15 @@ class Uci {
 
     bool operator() (const std::string& filename, std::ostream& = std::cerr);
 
-    void write_nps(std::ostream&);
-    void write_info_nps(std::ostream&);
-
 public:
     Uci (SearchControl&, std::ostream& = std::cout);
 
     bool operator() (int argc, const char* argv[]);
     bool operator() (std::istream& = std::cin, std::ostream& = std::cerr);
 
-    //output from the search
-    void write_bestmove(Move move);
-    void write_perft_depth(Ply, node_count_t);
-    void write_perft_move(Move, index_t, node_count_t);
     void write_info_current();
+    void write(std::ostream&, Move) const;
 
-    //static void write_info_counters(std::ostream&) const;
 };
 
 //debug output

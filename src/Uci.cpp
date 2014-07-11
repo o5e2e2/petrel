@@ -13,8 +13,7 @@
 std::ostream& operator << (std::ostream& out, Bb bb) {
     FOR_INDEX(Rank, rank) {
         FOR_INDEX(File, file) {
-            Square sq(file, rank);
-            out << (bb[sq]? file:'.');
+            out << (bb[Square(file, rank)]? file:'.');
         }
         out << '\n';
     }
@@ -23,6 +22,7 @@ std::ostream& operator << (std::ostream& out, Bb bb) {
 
 std::ostream& operator << (std::ostream& out, VectorPiSquare squares) {
     auto flags = out.flags();
+
     out << std::hex;
     FOR_INDEX(Pi, pi) {
         out << ' ' << pi;
@@ -33,16 +33,12 @@ std::ostream& operator << (std::ostream& out, VectorPiSquare squares) {
         out << std::setw(2) << static_cast<unsigned>(small_cast<unsigned char>((squares._v[pi])));
     }
     out << std::endl;
+
     out.flags(flags);
     return out;
 }
 
 namespace {
-    std::ostream& operator << (std::ostream& out, duration_t duration) {
-        auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
-        return out << milliseconds;
-    }
-
     std::ostream& program_version(std::ostream& out) {
         char year[] {__DATE__[7], __DATE__[8], __DATE__[9], __DATE__[10], '\0'};
 
@@ -78,7 +74,7 @@ namespace {
 }
 
 Uci::Uci (SearchControl& s, std::ostream& out)
-    : start_position{}, search(s), uci_out(out)
+    : start_position{}, search(s), uci_out(out), isready_waiting{false}
 {
     ucinewgame();
 }
@@ -160,8 +156,7 @@ bool Uci::operator() (const std::string& filename, std::ostream& uci_err) {
 }
 
 void Uci::go() {
-    uci_isready_waiting = false;
-    search.go(*this, command, start_position, colorToMove);
+    search.go(*this, uci_out, command, start_position, colorToMove);
 }
 
 void Uci::quit() {
@@ -244,84 +239,28 @@ void Uci::position() {
     }
 }
 
-void Uci::write_nps(std::ostream& out) {
-    node_count_t nodes = search.get_total_nodes();
-    duration_t duration = search.get_total_time();
-
-    if (nodes > 0) {
-        out << " nodes " << nodes;
-
-        if (duration > duration_t::zero()) {
-            out << " time " << duration;
-
-            auto nps = (nodes * duration_t::period::den) / (duration.count() * duration_t::period::num);
-            if (duration >= std::chrono::milliseconds{20}) {
-                out << " nps " << nps;
-            }
-        }
-    }
-}
-
-void Uci::write_info_nps(std::ostream& out) {
-    node_count_t nodes = search.get_total_nodes();
-    if (nodes > 0) {
-        out << "info";
-        write_nps(out);
-        out << '\n';
-    }
-}
-
-void Uci::write_bestmove(Move move) {
-    OutputBuffer out{uci_out};
-    write_info_nps(out);
-    out << "bestmove ";
-    write(out, move, colorToMove, chessVariant);
-    out << '\n';
-}
-
-void Uci::write_perft_depth(Ply depth, node_count_t perftNodes) {
-    OutputBuffer out{uci_out};
-    out << "info depth " << depth;
-    write_nps(out);
-    out << " string perft " << perftNodes << '\n';
-}
-
-void Uci::write_perft_move(Move move, index_t currmovenumber, node_count_t perftNodes) {
-    OutputBuffer out{uci_out};
-    out << "info currmovenumber " << currmovenumber << " currmove ";
-    write(out, move, colorToMove, chessVariant);
-    write_nps(out);
-    out << " string perft " << perftNodes << '\n';
-}
-
 void Uci::isready() {
     if (search.isReady()) {
-        uci_isready_waiting = false;
         OutputBuffer{uci_out} << "readyok\n";
     }
     else {
-        uci_isready_waiting = true;
+        isready_waiting = true;
     }
 }
 
 void Uci::write_info_current() {
-    if (uci_isready_waiting) {
-        uci_isready_waiting = false;
+    if (isready_waiting) {
+        isready_waiting = false;
 
         OutputBuffer out{uci_out};
         //out << "info fen ";
         //write(out, start_position, colorToMove, chessVariant);
         //out << '\n';
-        write_info_nps(out);
-        //write_info_counters(out);
+        search.uci_info_nps(out);
         out << "readyok\n";
     }
 }
 
-/*
-void Uci::write_info_counters(std::ostream& out) const {
-    out << "info string " << counter[0] << ' ' << counter[1] << ' ';
-    out << ((counter[1]>0)? double(counter[0])/double(counter[1]) : double{0.0});
-    out << '\n';
+void Uci::write(std::ostream& out, Move move) const {
+    ::write(out, move, colorToMove, chessVariant);
 }
-*/
