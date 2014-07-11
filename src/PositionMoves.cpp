@@ -31,12 +31,13 @@ template <Side::_t My>
 void PositionMoves::generateUnderpromotions() {
     const Side::_t Op{static_cast<Side::_t>(My ^ Side::Mask)};
 
-    assert (static_cast<Rank::_t>(Queen) == Rank8);
+    //TRICK: promoted piece type encoded inside pawn destination square
     VectorPiRank promotions = moves[Rank8] & VectorPiRank{MY.pawns()};
 
-    moves[static_cast<Rank::_t>(Rook)] |= promotions;
-    moves[static_cast<Rank::_t>(Bishop)] |= promotions;
-    moves[static_cast<Rank::_t>(Knight)] |= promotions;
+    static_assert (static_cast<Rank::_t>(Queen) == Rank8, "invalid promotion piece encoding");
+    moves[static_cast<Rank::_t>(Rook)] += promotions;
+    moves[static_cast<Rank::_t>(Bishop)] += promotions;
+    moves[static_cast<Rank::_t>(Knight)] += promotions;
 }
 
 template <Side::_t My>

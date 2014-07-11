@@ -26,35 +26,38 @@ class Bb;
 struct Square : Index<64, square_t> {
     typedef Index<64, _t> Base;
 
-    enum { RankMask = 070 };
+    enum { RankShift = 3, RankOffset = (1 << RankShift), RankMask = (Rank::Mask << RankShift) };
 
     using Base::Base;
-    constexpr Square (File f, Rank r) : Base{static_cast<_t>(f + (r << 3))} {}
-    constexpr Square (Square sq, PromoType promo) : Square(File{sq}, static_cast<Rank::_t>(+promo)) {}  //encoding of underpromotions
+    constexpr Square (File f, Rank r) : Base{static_cast<_t>(f + (r << RankShift))} {}
 
     constexpr explicit operator File() const { return static_cast<File::_t>(static_cast<unsigned>(*this) & File::Mask); }
-    constexpr explicit operator Rank() const { return static_cast<Rank::_t>(*this >> 3); }
-    constexpr explicit operator PromoType() const { return static_cast<PromoType::_t>(+Rank{*this}); } //encoding of underpromotions
+    constexpr explicit operator Rank() const { return static_cast<Rank::_t>(*this >> RankShift); }
 
     Square& flip() { *this = static_cast<_t>(*this ^ RankMask); return *this; }
     constexpr Square operator ~ () const { return static_cast<_t>(*this ^ RankMask); }
-    constexpr Square rankUp() const { return static_cast<_t>(*this - 010); }
-    constexpr Square rankDown() const { return static_cast<_t>(*this + 010); }
+    constexpr Square rankUp() const { return static_cast<_t>(*this - RankOffset); }
+    constexpr Square rankDown() const { return static_cast<_t>(*this + RankOffset); }
 
-    template <Rank::_t Rank> constexpr bool is() const { return (*this & RankMask) == (Rank << 3); }
+    template <Rank::_t Rank> constexpr bool is() const { return (*this & RankMask) == (Rank << RankShift); }
     template <File::_t File> constexpr bool is() const { return (*this & static_cast<File::_t>(File::Mask)) == File; }
 
-    constexpr signed x88(signed fileOffset, signed rankOffset) const {
-        return static_cast<_t>(*this) + (static_cast<_t>(*this) & 070) + fileOffset + 16*rankOffset;
-    }
-
-    constexpr Bb operator() (signed dFile, signed dRank) const;
+    //PieceTypeAttack table initialization
+    constexpr signed x88(signed d_file, signed d_rank) const;
+    constexpr Bb operator() (signed d_file, signed d_rank) const;
 
     friend std::ostream& operator << (std::ostream& out, Square sq) { return out << File{sq} << Rank{sq}; }
 
     friend std::istream& operator >> (std::istream& in, Square& sq) {
+        auto pos_before = in.tellg();
         File file{File::Begin}; Rank rank{Rank::Begin};
-        if (in >> file >> rank) { sq = Square{file, rank}; }
+
+        if (in >> file >> rank) {
+            sq = Square{file, rank};
+        }
+        else {
+            ::fail_pos(in, pos_before);
+        }
         return in;
     }
 };

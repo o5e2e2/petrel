@@ -40,7 +40,7 @@ public:
     Position& operator = (Position&&) = default;
 
     friend void PositionFen::write(std::ostream&, const Position&, Color, ChessVariant);
-    friend Move createMove(const Position&, Side, Square, Square);
+    Move createMove(Side, Square, Square) const;
 
     //serie of irreversible moves with extra legality check
     friend Move readMove(std::istream&, const Position&, Color);

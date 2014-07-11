@@ -179,9 +179,11 @@ void Position::setLegalEnPassant(Pi victim) {
     assert (!OP.hasEnPassant());
 
     Square ep{~MY.squareOf(victim)};
-    Square to{ep.rankUp()};
     assert (ep.is<Rank5>());
+
+    Square to{ep.rankUp()};
     assert (to.is<Rank6>());
+
     for (Pi pi : OP.pawns() & OP.attacksTo(to)) {
         if (isLegalEnPassant<Op>(pi, to)) {
             OP.markEnPassant(pi);
@@ -275,21 +277,21 @@ void Position::makePawnMove(Pi pi, Square from, Square to) {
 
     if (from.is<Rank7>()) {
         //decoding promotion piece type and destination square
-        PromoType ty{to};
-        to = Square{File{to}, Rank8};
+        PromoType ty = Move::decodePromoType(to);
+        Square promoted_to = Square(File(to), Rank8);
 
-        MY.promote(pi, static_cast<PieceType>(ty), from, to);
-        set(My, pi, static_cast<PieceType>(ty), to);
+        MY.promote(pi, ty, from, promoted_to);
+        set(My, pi, static_cast<PieceType>(ty), promoted_to);
 
-        if (OP[~to]) {
-            OP.capture(~to);
+        if (OP[~promoted_to]) {
+            OP.capture(~promoted_to);
 
             updateSliderAttacksKing<My>(MY.attacksTo(from) | pi);
             updateSliderAttacks<Op>(OP.attacksTo(~from));
         }
         else {
-            updateSliderAttacksKing<My>(MY.attacksTo(from, to) | pi);
-            updateSliderAttacks<Op>(OP.attacksTo(~from, ~to));
+            updateSliderAttacksKing<My>(MY.attacksTo(from, promoted_to) | pi);
+            updateSliderAttacks<Op>(OP.attacksTo(~from, ~promoted_to));
         }
 
     }
@@ -382,13 +384,13 @@ Move readMove(std::istream& in, const Position& pos, Color colorToMove) {
         if (from.is<Rank5>() && pos.OP.hasEnPassant()) {
             Square ep{~pos.OP.enPassantSquare()};
             if (to == ep.rankUp()) {
-                return Move{from, ep, Move::Special};
+                return Move::makeSpecial(from, ep);
             }
         }
         else if (from.is<Rank7>()) {
             PromoType promo{PromoType::Begin};
             if (in >> promo) {
-                return Move{from, Square{to, promo}, Move::Special};
+                return Move(from, to, promo);
             }
             else { ::fail_pos(in, before_move); return Move::null(); }
         }
@@ -396,30 +398,30 @@ Move readMove(std::istream& in, const Position& pos, Color colorToMove) {
     else if (pi == TheKing && from.is<Rank1>() && to.is<Rank1>()) {
         if ( (pos.MY.castlingRooks() & pos.MY.on(to)).any() ) {
             //from Chess960 castling encoding
-            return Move{to, from, Move::Special};
+            return Move::makeCastling(to, from);
         }
         else if (from == E1 && to == G1 && pos.MY[A1]) {
-            return Move{A1, E1, Move::Special};
+            return Move::makeCastling(A1, E1);
         }
         else if (from == E1 && to == C1 && pos.MY[H1]) {
-            return Move{H1, E1, Move::Special};
+            return Move::makeCastling(H1, E1);
         }
     }
-    return Move{from, to};
+    return Move(from, to);
 }
 
-Move createMove(const Position& pos, Side My, Square from, Square to) {
+Move Position::createMove(Side My, Square from, Square to) const {
     const Side Op{~My};
 
-    bool move_is_special;
-    if ( pos.MY.is<Pawn>(pos.MY.pieceOn(from)) ) {
-        move_is_special = from.is<Rank7>() ||
-            (pos.OP.hasEnPassant() && to == ~pos.OP.enPassantSquare());
+    if ( MY.is<Pawn>(MY.pieceOn(from)) ) {
+        if ( from.is<Rank7>() || (OP.hasEnPassant() && to == ~OP.enPassantSquare()) ) {
+            return Move::makeSpecial(from, to);
+        }
     }
-    else {
-        move_is_special = (pos.MY.kingSquare() == to); //castling;
+    else if (MY.kingSquare() == to) {
+        return Move::makeCastling(from, to);
     }
-    return Move(from, to, static_cast<Move::Type>(move_is_special));
+    return Move(from, to);
 }
 
 #undef MY

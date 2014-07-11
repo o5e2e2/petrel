@@ -48,11 +48,6 @@ public:
         matrix[rank] = (matrix[rank] % VectorPiMask{pi}) + (VectorPiRank{b} & VectorPiMask{pi});
     }
 
-    //underpromotions encoding
-    void underpromote(Pi pi, PromoType ty) {
-        set(pi, static_cast<Rank::_t>(static_cast<PromoType::_t>(ty)), matrix[Rank8][pi]);
-    }
-
     void set(Pi pi, Bb b) {
         FOR_INDEX(Rank, rank) {
             set(pi, rank, b[rank]);

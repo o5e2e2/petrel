@@ -79,12 +79,12 @@ void PositionSide::drop(Pi pi, PieceType ty, Square to) {
     assertValid(pi);
 }
 
-void PositionSide::promote(Pi pi, PieceType ty, Square from, Square to) {
+void PositionSide::promote(Pi pi, PromoType ty, Square from, Square to) {
     assertValid(pi);
     assert (types.is<Pawn>(pi));
     assert (from != to);
 
-    types.promote(pi, static_cast<PromoType::_t>(ty));
+    types.promote(pi, ty);
 
     squares.move(pi, to);
     piecesBb.move(from, to);
@@ -92,8 +92,8 @@ void PositionSide::promote(Pi pi, PieceType ty, Square from, Square to) {
 
     zobrist.clear(Pawn, from);
     evaluation.clear(Pawn, from);
-    zobrist.drop(ty, to);
-    evaluation.drop(ty, to);
+    zobrist.drop(static_cast<PieceType::_t>(ty), to);
+    evaluation.drop(static_cast<PieceType::_t>(ty), to);
 
     assertValid(pi);
 }

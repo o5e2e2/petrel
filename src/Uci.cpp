@@ -24,8 +24,9 @@ std::ostream& write(std::ostream& out, Move move, Color colorToMove, ChessVarian
     else {
         if (move.from().is<Rank7>()) {
             //the type of a promoted pawn piece encoded in place of to's rank
-            Square promoted_to{File{move_to}, (colorToMove == White)? Rank8:Rank1};
-            out << move_from << promoted_to << PromoType(move.to());
+            Square promoted_to(File(move_to), (colorToMove == White)? Rank8:Rank1);
+            PromoType promo = Move::decodePromoType(move.to());
+            out << move_from << promoted_to << promo;
         }
         else if (move.from().is<Rank1>()) {
             //castling move internally encoded as the rook captures the king

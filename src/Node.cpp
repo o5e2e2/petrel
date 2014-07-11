@@ -76,7 +76,7 @@ bool NodePerftDivide::operator() (const Position& parent) {
             CUT (child(pos));
 
             The_game.releaseNodesQuota(child.nodesRemaining);
-            The_game.report_perft(createMove(parent, My, from, to), ++currmovenumber, child.perftNodes);
+            The_game.report_perft(parent.createMove(My, from, to), ++currmovenumber, child.perftNodes);
 
             perftNodes += child.perftNodes;
         }

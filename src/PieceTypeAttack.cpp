@@ -1,7 +1,11 @@
 #include "PieceTypeAttack.hpp"
 
-constexpr Bb Square::operator() (signed fileOffset, signed rankOffset) const {
-    return (x88(fileOffset, rankOffset) & 0x88)? Bb::empty() : Bb(static_cast<_t>((x88(fileOffset, rankOffset) + (x88(fileOffset, rankOffset) & 7)) >> 1));
+constexpr signed Square::x88(signed d_file, signed d_rank) const {
+    return static_cast<_t>(*this) + (static_cast<_t>(*this) & 070) + d_file + 16*d_rank;
+}
+
+constexpr Bb Square::operator() (signed d_file, signed d_rank) const {
+    return (x88(d_file, d_rank) & 0x88)? Bb::empty() : Bb(static_cast<_t>((x88(d_file, d_rank) + (x88(d_file, d_rank) & 7)) >> 1));
 }
 
 PieceTypeAttack::PieceTypeAttack () {
