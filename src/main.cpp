@@ -21,7 +21,7 @@ const ReverseBb::Direction ReverseBb::direction; //12k
 const ReverseBb::Singleton ReverseBb::singleton; //1k
 const PieceTypeAttack pieceTypeAttack; //3k
 const VectorOf vectorOfAll; //4k
-const ZobristTable Zobrist::z; //3k
+const Zobrist::Key Zobrist::key; //3k
 const VectorPiSingle vectorPiSingle; //256
 const ReverseBb::BitReverse ReverseBb::bit_reverse; //64
 const VectorBitCount VectorPiRank::popcount; //48
@@ -47,7 +47,7 @@ int main(int argc, const char* argv[]) {
     std::ios_base::sync_with_stdio(false); //speed trick
     std::cin.tie(nullptr);
 
-    Uci uci{The_game, std::cout, std::clog};
+    Uci uci{The_game, std::cout, std::cerr};
 
     if (argc == 1) {
         //construct startup configuration filename from program's own name

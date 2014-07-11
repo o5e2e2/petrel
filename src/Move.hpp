@@ -1,10 +1,7 @@
 #ifndef MOVE_HPP
 #define MOVE_HPP
 
-#include "io.hpp"
 #include "Square.hpp"
-
-enum ChessVariant { Orthodox, Chess960 };
 
 /**
  * Internal move is packed to 12 bits and connected with the position from it was made
@@ -33,7 +30,5 @@ public:
 
     static constexpr Move null() { return Move{}; }
 };
-
-std::ostream& write(std::ostream&, Move, Color, ChessVariant);
 
 #endif

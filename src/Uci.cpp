@@ -7,8 +7,50 @@
 #include "Clock.hpp"
 #include "OutputBuffer.hpp"
 #include "SearchControl.hpp"
+#include "SearchLimit.hpp"
 #include "PositionFen.hpp"
 #include "PositionMoves.hpp"
+
+//convert internal move to long algebraic format
+std::ostream& write(std::ostream& out, Move move, Color colorToMove, ChessVariant chessVariant) {
+    if (move.isNull()) { return out << "0000"; }
+
+    Square move_from = (colorToMove == White)? move.from():~move.from();
+    Square move_to = (colorToMove == White)? move.to():~move.to();
+
+    if (!move.isSpecial()) {
+        out << move_from << move_to;
+    }
+    else {
+        if (move.from().is<Rank7>()) {
+            //the type of a promoted pawn piece encoded in place of to's rank
+            Square promoted_to{File{move_to}, (colorToMove == White)? Rank8:Rank1};
+            out << move_from << promoted_to << PromoType(move.to());
+        }
+        else if (move.from().is<Rank1>()) {
+            //castling move internally encoded as the rook captures the king
+            if (chessVariant == Chess960) {
+                out << move_to << move_from;
+            }
+            else {
+                if (move_from.is<FileA>()) {
+                    out << move_to << Square{FileC, Rank{move_from}};
+                }
+                else {
+                    assert (move_from.is<FileH>());
+                    out << move_to << Square{FileG, Rank{move_from}};
+                }
+            }
+        }
+        else {
+            //en passant capture move encoded as pawn captures pawn
+            assert (move.from().is<Rank5>());
+            assert (move.to().is<Rank5>());
+            out << move_from << Square{File{move_to}, (colorToMove == White)? Rank6:Rank3};
+        }
+    }
+    return out;
+}
 
 std::ostream& operator << (std::ostream& out, Bb bb) {
     FOR_INDEX(Rank, rank) {
@@ -79,17 +121,7 @@ Uci::Uci (SearchControl& s, std::ostream& out, std::ostream& err)
 
 void Uci::ucinewgame() {
     search.clear();
-    search.clear_count();
     set_startpos();
-}
-
-void Uci::set_startpos() {
-    std::istringstream startpos{"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"};
-    PositionFen::read(startpos, start_position, colorToMove);
-}
-
-void Uci::log_error() {
-    OutputBuffer{uci_err} << "parsing error: " << command.rdbuf() << '\n';
 }
 
 bool Uci::operator() (std::istream& uci_in) {
@@ -103,8 +135,8 @@ bool Uci::operator() (std::istream& uci_in) {
         else if (command == "stop") { search.stop(); }
         else if (command == "isready")    { isready(); }
         else if (command == "setoption")  { setoption(); }
-        else if (command == "ucinewgame") { ucinewgame(); }
         else if (command == "uci")  { uci(); }
+        else if (command == "ucinewgame") { ucinewgame(); }
         else if (command == "quit") { std::exit(EXIT_SUCCESS); }
         else if (command == "wait") { search.wait(); }
         else if (command == "echo") { echo(); }
@@ -124,6 +156,10 @@ bool Uci::operator() (std::istream& uci_in) {
     return !uci_in.bad();
 }
 
+void Uci::log_error() {
+    OutputBuffer{uci_err} << "parsing error: " << command.rdbuf() << '\n';
+}
+
 bool Uci::operator() (const std::string& filename) {
     std::ifstream file{filename};
     return file && operator()(file);
@@ -135,19 +171,23 @@ void Uci::go() {
         return;
     }
 
-    search.searchLimit.read(command, start_position, colorToMove);
+    SearchLimit searchLimit;
+    searchLimit.read(command, start_position, colorToMove);
     if (!command && !command.eof()) {
         return;
     }
 
-    search.go(*this, start_position);
+    search.go(*this, start_position, searchLimit);
 }
 
 void Uci::uci() {
+    auto max_mb = search.ttMaxSize() / (1024*1024);
+    auto current_mb = search.ttSize() / (1024*1024);
+
     OutputBuffer{uci_out} << "id name " << program_version << '\n'
         << "id author Aleks Peshkov\n"
         << "option name UCI_Chess960 type check default " << (chessVariant == Chess960? "true":"false") << '\n'
-        << "option name Hash type spin min 0 max " << search.ttMaxSize() << " default " << search.ttSize() << '\n'
+        << "option name Hash type spin min 0 max " << max_mb << " default " << current_mb << '\n'
         << "uciok\n"
     ;
 }
@@ -168,9 +208,9 @@ void Uci::setoption() {
         }
         if (command == "Hash") {
             if (command == "value") {
-                TranspositionTable::megabytes_t Hash;
-                if (command >> Hash) {
-                    search.ttResize(Hash);
+                unsigned megabytes;
+                if (command >> megabytes) {
+                    search.ttResize(static_cast<std::size_t>(megabytes)*1024*1024);
                     return;
                 }
             }
@@ -202,6 +242,11 @@ void Uci::position() {
     if (command == "moves") {
         colorToMove = PositionMoves{start_position}.makeMoves(command, colorToMove);
     }
+}
+
+void Uci::set_startpos() {
+    std::istringstream startpos{"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"};
+    PositionFen::read(startpos, start_position, colorToMove);
 }
 
 void Uci::isready() {
@@ -238,7 +283,7 @@ void Uci::report_bestmove(Move move) {
     out << '\n';
 }
 
-void Uci::report_perft_depth(Ply depth, node_count_t perftNodes) {
+void Uci::report_perft_depth(depth_t depth, node_count_t perftNodes) {
     OutputBuffer out{uci_out};
     out << "info depth " << depth;
     nps(out);
@@ -261,8 +306,10 @@ namespace {
 }
 
 void Uci::nps(std::ostream& out) const {
-    node_count_t nodes = search.totalNodes;
-    duration_t duration = search.clock.read();
+    SearchInfo info;
+    search.getSearchInfo(info);
+    node_count_t nodes = info.nodes;
+    duration_t duration = info.duration;
 
     if (nodes > 0) {
         out << " nodes " << nodes;
@@ -279,7 +326,11 @@ void Uci::nps(std::ostream& out) const {
 }
 
 void Uci::info_nps(std::ostream& out) const {
-    if (search.totalNodes > 0) {
+    SearchInfo info;
+    search.getSearchInfo(info);
+    node_count_t nodes = info.nodes;
+
+    if (nodes > 0) {
         out << "info";
         nps(out);
         out << '\n';

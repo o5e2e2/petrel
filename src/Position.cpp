@@ -408,16 +408,16 @@ Move readMove(std::istream& in, const Position& pos, Color colorToMove) {
     return Move{from, to};
 }
 
-Move Position::createMove(Side My, Square from, Square to) const {
+Move createMove(const Position& pos, Side My, Square from, Square to) {
     const Side Op{~My};
 
     bool move_is_special;
-    if ( MY.is<Pawn>(MY.pieceOn(from)) ) {
+    if ( pos.MY.is<Pawn>(pos.MY.pieceOn(from)) ) {
         move_is_special = from.is<Rank7>() ||
-            (OP.hasEnPassant() && to == ~OP.enPassantSquare());
+            (pos.OP.hasEnPassant() && to == ~pos.OP.enPassantSquare());
     }
     else {
-        move_is_special = (MY.kingSquare() == to); //castling;
+        move_is_special = (pos.MY.kingSquare() == to); //castling;
     }
     return Move(from, to, static_cast<Move::Type>(move_is_special));
 }

@@ -5,7 +5,6 @@
 
 class PositionSide;
 class Position;
-class Node;
 
 class PositionMoves {
     const Position& pos;
@@ -38,7 +37,6 @@ public:
     const Position& getPos() const { return pos;}
 
     Color makeMoves(std::istream&, Color);
-    bool eval(Node&);
 };
 
 #endif

@@ -3,7 +3,6 @@
 
 #include "io.hpp"
 #include "Square.hpp"
-#include "Move.hpp"
 
 class Position;
 

@@ -27,7 +27,7 @@ void SearchLimit::clear() {
     divide = false;
 }
 
-std::istream& SearchLimit::read(std::istream& command, const Position& pos, Color color) {
+void SearchLimit::read(std::istream& command, const Position& pos, Color color) {
     clear();
 
     PositionMoves p(pos);
@@ -49,7 +49,6 @@ std::istream& SearchLimit::read(std::istream& command, const Position& pos, Colo
         else if (command == "divide")   { divide = true; }
         else { break; }
     }
-    return command;
 }
 
 duration_t SearchLimit::getThinkingTime() const {

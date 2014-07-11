@@ -10,8 +10,6 @@ class TranspositionTable {
     enum { MaxHash = 4096 }; //4Gb
 
 public:
-    typedef unsigned megabytes_t;
-
     class CACHE_ALIGN Cluster {
         __m128i _t[4];
 
@@ -19,46 +17,43 @@ public:
         Cluster () { _t[0] = _t[1] = _t[2] = _t[3] = _mm_setzero_si128(); }
     };
 
-    enum { PerMb = 1024*1024/sizeof(Cluster) }; //=16384
-
-    typedef size_t size_type;
+    typedef std::size_t size_type;
 
 private:
     Cluster* hash;
-    size_type size; //number of entries
+    size_type size;
 
-    static unsigned round(megabytes_t mb) {
-        return mb? ::singleton<decltype(mb)>(::bsr(mb)+1):0;
+    static size_type round(size_type bytes) {
+        return (bytes > 0)? ::singleton<decltype(bytes)>(::bsr(bytes)+1):0;
     }
 
 public:
     TranspositionTable () : hash{nullptr}, size{0} {}
    ~TranspositionTable () { delete[] hash; }
 
-    megabytes_t getMaxSize() const { return MaxHash; }
-    megabytes_t getSize() const { return static_cast<megabytes_t>(size / PerMb); }
+    size_type getMaxSize() const { return MaxHash; }
+    size_type getSize() const { return size; }
 
-    megabytes_t resize(megabytes_t mb) {
-        mb = std::min(mb, static_cast<decltype(mb)>(MaxHash));
-
-        mb = round(mb);
-        size_type elements = mb * PerMb;
+    size_type resize(size_type bytes) {
+        bytes = std::min(bytes, static_cast<decltype(bytes)>(MaxHash));
+        bytes = round(bytes);
 
         delete[] hash;
+        size = 0;
         hash = nullptr;
 
-        while (hash == nullptr && elements > 0) {
-            hash = new (std::nothrow) Cluster[elements];
-            elements /= 2;
+        while (hash == nullptr && bytes > 0) {
+            hash = new (std::nothrow) Cluster[bytes/sizeof(Cluster)];
+            bytes >>= 1;
         }
-        size = elements;
-
         clear();
-        return static_cast<decltype(mb)>(elements / PerMb);
+        size = bytes;
+
+        return size;
     }
 
     void clear() {
-        std::memset(hash, 0, size * sizeof(Cluster));
+        std::memset(hash, 0, size);
     }
 
     void prefetch(Zobrist) {

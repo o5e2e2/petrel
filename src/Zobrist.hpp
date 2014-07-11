@@ -4,29 +4,29 @@
 #include <random>
 #include "Index.hpp"
 
-class ZobristTable {
-public:
-    typedef U64 _t;
-    _t z[PieceType::Size][Square::Size];
+class Zobrist {
+    class Key {
+    public:
+        typedef U64 _t;
+        _t key[PieceType::Size][Square::Size];
 
-public:
-    ZobristTable () {
-        std::mt19937_64 random;
-        FOR_INDEX(PieceType, ty) {
-            FOR_INDEX(Square, sq) {
-                z[ty][sq] = random();
+    public:
+        Key () {
+            std::mt19937_64 random;
+            FOR_INDEX(PieceType, ty) {
+                FOR_INDEX(Square, sq) {
+                    key[ty][sq] = random();
+                }
             }
         }
-    }
 
-    const _t& operator() (PieceType ty, Square sq) const { return z[ty][sq]; }
-};
+        const _t& operator() (PieceType ty, Square sq) const { return key[ty][sq]; }
+    };
 
-class Zobrist {
-    static const ZobristTable z;
+    static const Key key;
 
 public:
-    typedef ZobristTable::_t _t;
+    typedef Key::_t _t;
     typedef Zobrist Arg;
 
 private:
@@ -42,7 +42,7 @@ public:
     Zobrist& flip() { _v = ::bswap(_v); return *this; }
     Zobrist operator ~ () const { return Zobrist{*this}.flip(); }
 
-    void drop(PieceType ty, Square to) { _v ^= z(ty, to); }
+    void drop(PieceType ty, Square to) { _v ^= key(ty, to); }
     void clear(PieceType ty, Square from) { drop(ty, from); }
 
     void setEnPassant(Square from) { drop( Pawn, Square(File(from), Rank8) ); }

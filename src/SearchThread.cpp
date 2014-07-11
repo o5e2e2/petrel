@@ -1,6 +1,5 @@
 #include "SearchThread.hpp"
 #include "Node.hpp"
-#include "SearchControl.hpp"
 
 SearchThread::SearchThread () : ThreadControl{}, node{} {}
 

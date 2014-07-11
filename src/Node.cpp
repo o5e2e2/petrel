@@ -1,10 +1,11 @@
 #include "Node.hpp"
+#include "Position.hpp"
 #include "PositionMoves.hpp"
 #include "SearchControl.hpp"
 
 #define CUT(found) { if (found) { return true; } } ((void)0)
 
-Node::Node (Ply depth)
+Node::Node (depth_t depth)
     : draft{depth}
     , nodesRemaining{0}
     {}
@@ -23,6 +24,7 @@ bool Node::checkQuota() {
 
 bool NodePerft::operator() (const Position& parent) {
     PositionMoves p(parent);
+    MatrixPiBb& moves = p.getMoves();
 
     if (draft <= 0) {
         --nodesRemaining;
@@ -36,7 +38,16 @@ bool NodePerft::operator() (const Position& parent) {
     //assert (child.perftNodes == 0);
     child.perftNodes = 0;
 
-    CUT (p.eval(child));
+    for (Pi pi : p.side(My).alive()) {
+        Square from{ p.side(My).squareOf(pi) };
+
+        for (Square to : moves[pi]) {
+            moves.clear(pi, to);
+
+            Position pos{parent, from, to};
+            CUT (child(pos));
+        }
+    }
 
     nodesRemaining = child.nodesRemaining;
     perftNodes += child.perftNodes;
@@ -65,7 +76,7 @@ bool NodePerftDivide::operator() (const Position& parent) {
             CUT (child(pos));
 
             The_game.releaseNodesQuota(child.nodesRemaining);
-            The_game.report_perft(parent.createMove(My, from, to), ++currmovenumber, child.perftNodes);
+            The_game.report_perft(createMove(parent, My, from, to), ++currmovenumber, child.perftNodes);
 
             perftNodes += child.perftNodes;
         }
@@ -82,7 +93,7 @@ bool NodePerftRoot::operator() (const Position& parent) {
         }
     }
     else {
-        for (Ply iteration{1}; !The_game.isStopped(); ++iteration) {
+        for (depth_t iteration{1}; !The_game.isStopped(); ++iteration) {
             perftNodes = 0;
             draft = iteration;
             if (! NodePerft::operator()(parent) ) {
@@ -105,7 +116,7 @@ bool NodePerftDivideRoot::operator() (const Position& parent) {
         }
     }
     else {
-        for (Ply iteration{1}; !The_game.isStopped(); ++iteration) {
+        for (depth_t iteration{1}; !The_game.isStopped(); ++iteration) {
             draft = iteration;
             if (! NodePerftDivide::operator()(parent) ) {
                 The_game.releaseNodesQuota(nodesRemaining);

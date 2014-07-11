@@ -4,12 +4,10 @@
 #include <iostream>
 #include <sstream>
 
+#include "SearchOutput.hpp"
 #include "io.hpp"
-#include "typedefs.hpp"
-#include "Index.hpp"
 #include "Move.hpp"
 #include "Position.hpp"
-#include "SearchOutput.hpp"
 
 class SearchControl;
 
@@ -46,17 +44,17 @@ class Uci : public SearchOutput {
 
 public:
     Uci (SearchControl&, std::ostream& = std::cout, std::ostream& = std::cerr);
-
     bool operator() (const std::string& filename);
     bool operator() (std::istream& = std::cin);
 
     void write_info_current() override;
     void report_bestmove(Move) override;
-    void report_perft_depth(Ply, node_count_t) override;
+    void report_perft_depth(depth_t, node_count_t) override;
     void report_perft(Move, index_t currmovenumber, node_count_t) override;
 };
 
 std::ostream& program_version(std::ostream&);
+std::ostream& write(std::ostream&, Move, Color, ChessVariant);
 
 //debug output
 std::ostream& operator << (std::ostream&, Bb);

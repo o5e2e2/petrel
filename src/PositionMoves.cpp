@@ -2,7 +2,6 @@
 #include "Position.hpp"
 
 #include "CastlingRules.hpp"
-#include "Node.hpp"
 #include "PieceTypeAttack.hpp"
 
 #define MY pos.side[My]
@@ -207,20 +206,6 @@ void PositionMoves::limitMoves(std::istream& in, MatrixPiBb& searchmoves, Color 
         }
     }
 
-}
-
-bool PositionMoves::eval(Node& node) {
-    for (Pi pi : MY.alive()) {
-        Square from{ MY.squareOf(pi) };
-
-        for (Square to : moves[pi]) {
-            moves.clear(pi, to);
-
-            Position child{pos, from, to};
-            if (node(child)) { return true; } //CUT
-        }
-    }
-    return false;
 }
 
 index_t PositionMoves::countLegalMoves() const {

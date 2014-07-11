@@ -107,4 +107,7 @@ typedef Index<3, piece_type_t> SliderType;
 typedef Index<4, piece_type_t> PromoType;
 typedef Index<6, piece_type_t> PieceType;
 
+enum chess_variant_t { Orthodox, Chess960 };
+typedef Index<2, chess_variant_t> ChessVariant;
+
 #endif

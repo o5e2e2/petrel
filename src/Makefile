@@ -24,8 +24,9 @@ WARNINGS += -pedantic -Wall -Wextra -Wuninitialized -Wconversion -Wpointer-arith
 WARNINGS += -Wsign-conversion
 #WARNINGS = -Werror
 
-#CXX=g++
-#RM=rm -f
+ZIP = zip -r -q -o -9 -FS
+#CXX = g++
+#RM = rm -f
 
 CXXFLAGS += $(OPTIONS)
 CXXFLAGS += $(OPTIMIZATIONS)
@@ -38,13 +39,9 @@ OBJECTS := $(patsubst $(srcdir)/%.cpp, $(builddir)/%.o, $(SOURCES))
 DEPS := $(patsubst %.o, %.d, $(OBJECTS))
 PRECOMP := $(builddir)/$(HEADER).gch
 HEADER := $(srcdir)/$(HEADER)
+ZIPFILE := $(TARGET)$(shell date +%Y%m%d).zip
 
-.PHONY: all clean check
-
-all: $(builddir)/$(TARGET)
-
-check: all
-	$(builddir)/$(TARGET) $(checkrc)
+-include $(DEPS)
 
 $(builddir)/$(TARGET): $(PRECOMP) $(OBJECTS)
 	$(CXX) -o $@ $(LDFLAGS) $(OBJECTS)
@@ -58,7 +55,15 @@ $(PRECOMP): $(HEADER) | $(builddir)
 $(builddir):
 	mkdir -p $@
 
+.PHONY: all check clean zip
+
+all: $(builddir)/$(TARGET)
+
+check: all
+	$(builddir)/$(TARGET) $(checkrc)
+
 clean:
 	$(RM) -r *.o *.gch *.d $(debugdir) $(releasedir)
 
--include $(DEPS)
+zip: clean
+	cd ../.. && $(ZIP) $(ZIPFILE) $(TARGET)

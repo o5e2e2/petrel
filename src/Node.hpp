@@ -7,17 +7,14 @@ class Position;
 
 class Node {
 public:
-    typedef signed quota_t;
-
-public:
-    Ply draft; //remaining distance to frontier
-    quota_t nodesRemaining; //number of nodes before checking for terminate
+    depth_t draft; //remaining distance to frontier
+    node_quota_t nodesRemaining; //number of nodes before checking for terminate
     bool checkQuota();
 
 public:
     Node () = default;
     Node (const Node& parent);
-    Node (Ply depth);
+    Node (depth_t depth);
 
     virtual bool operator() (const Position&) = 0;
     virtual ~Node() {}
@@ -27,27 +24,27 @@ class NodePerft : public Node {
 public:
     node_count_t perftNodes;
 public:
-    NodePerft (Ply depth) : Node{depth}, perftNodes(0) {}
+    NodePerft (depth_t depth) : Node{depth}, perftNodes(0) {}
     NodePerft (const Node& parent) : Node{parent}, perftNodes(0) {}
     bool operator() (const Position&) override;
 };
 
 class NodePerftDivide : public NodePerft {
 public:
-    NodePerftDivide (Ply depth) : NodePerft{depth} {}
+    NodePerftDivide (depth_t depth) : NodePerft{depth} {}
     NodePerftDivide (const Node& parent) : NodePerft{parent} {}
     bool operator() (const Position&) override;
 };
 
 class NodePerftRoot : public NodePerft {
 public:
-    NodePerftRoot (Ply depth) : NodePerft{depth} {}
+    NodePerftRoot (depth_t depth) : NodePerft{depth} {}
     bool operator() (const Position&) override;
 };
 
 class NodePerftDivideRoot : public NodePerftDivide {
 public:
-    NodePerftDivideRoot (Ply depth) : NodePerftDivide{depth} {}
+    NodePerftDivideRoot (depth_t depth) : NodePerftDivide{depth} {}
     bool operator() (const Position&) override;
 };
 
