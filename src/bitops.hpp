@@ -45,13 +45,20 @@
 #endif
 
 template <typename T>
-inline constexpr T universe() { return static_cast<T>(~static_cast<T>(0)); }
+constexpr T universe() { return static_cast<T>(~static_cast<T>(0)); }
 
 template <typename T, typename N>
-inline constexpr T small_cast(N n) { return static_cast<T>(n & static_cast<N>(universe<T>())); }
+constexpr T small_cast(N n) { return static_cast<T>(n & static_cast<N>(universe<T>())); }
 
 template <typename T, typename N>
-inline constexpr T singleton(N n) { return static_cast<T>(static_cast<T>(1) << n); }
+constexpr T singleton(N n) { return static_cast<T>(static_cast<T>(1) << n); }
+
+//TRICK: "v & (v-1)" clears the lowest unset bit
+template <typename T>
+constexpr T without_lsb(T n) { return n & static_cast<T>(n-1); }
+
+template <typename T>
+constexpr bool is_singleton(T n) { return (n != 0) && (::without_lsb(n) == 0); }
 
 #if defined __GNUC__
     INLINE index_t bsf(U32 b) {

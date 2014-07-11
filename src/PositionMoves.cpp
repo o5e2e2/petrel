@@ -19,13 +19,13 @@ template <Side::_t My>
 void PositionMoves::generateEnPassantMoves() {
     const Side::_t Op{static_cast<Side::_t>(My ^ Side::Mask)};
 
-    assert (MY.enPassants().any());
+    assert (MY.hasEnPassant());
 
     Square ep{~OP.enPassantSquare()};
     assert (ep.is<Rank5>());
-    assert ((MY.pawns() & MY.attacksTo(ep.rankUp()) & MY.enPassants()) == MY.enPassants());
+    assert ((MY.pawns() & MY.attacksTo(ep.rankUp()) & MY.enPassantPawns()) == MY.enPassantPawns());
 
-    moves[Rank5] |= VectorPiRank{File{ep}} & VectorPiRank{MY.enPassants()};
+    moves[Rank5] |= VectorPiRank{File{ep}} & VectorPiRank{MY.enPassantPawns()};
 }
 
 template <Side::_t My>
@@ -124,7 +124,7 @@ void PositionMoves::generateCheckEvasions() {
         excludePinnedMoves<My>(OP.pinnerCandidates() % checkers);
         generateUnderpromotions<My>();
 
-        if ((OP.enPassants() & checkers).any()) {
+        if ((OP.enPassantPawns() & checkers).any()) {
             generateEnPassantMoves<My>();
         }
 
@@ -167,7 +167,7 @@ void PositionMoves::generateMoves() {
     }
 
     //generate castling moves
-    for (Pi pi : MY.castlings()) {
+    for (Pi pi : MY.castlingRooks()) {
         if ( ::castlingRules.isLegal(MY.castlingSideOf(pi), OCCUPIED, attacked) ) {
             moves.add(pi, MY.kingSquare());
         }
@@ -180,7 +180,7 @@ void PositionMoves::generateMoves() {
     //underpromotions for each already tested legal queen promotion
     generateUnderpromotions<My>();
 
-    if (MY.enPassants().any()) {
+    if (MY.hasEnPassant()) {
         generateEnPassantMoves<My>();
     }
 

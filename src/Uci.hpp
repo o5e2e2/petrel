@@ -55,7 +55,8 @@ public:
     //static void write_info_counters(std::ostream&) const;
 };
 
-//for debugging
+//debug output
 std::ostream& operator << (std::ostream&, Bb);
+std::ostream& operator << (std::ostream&, VectorPiSquare);
 
 #endif

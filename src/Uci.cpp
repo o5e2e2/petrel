@@ -10,7 +10,6 @@
 #include "PositionFen.hpp"
 #include "PositionMoves.hpp"
 
-//for debugging
 std::ostream& operator << (std::ostream& out, Bb bb) {
     FOR_INDEX(Rank, rank) {
         FOR_INDEX(File, file) {
@@ -24,6 +23,22 @@ std::ostream& operator << (std::ostream& out, Bb bb) {
         }
         out << '\n';
     }
+    return out;
+}
+
+std::ostream& operator << (std::ostream& out, VectorPiSquare squares) {
+    auto flags = out.flags();
+    out << std::hex;
+    FOR_INDEX(Pi, pi) {
+        out << ' ' << pi;
+    }
+    out << std::endl;
+
+    FOR_INDEX(Pi, pi) {
+        out << std::setw(2) << static_cast<unsigned>(small_cast<unsigned char>((squares._v[pi])));
+    }
+    out << std::endl;
+    out.flags(flags);
     return out;
 }
 

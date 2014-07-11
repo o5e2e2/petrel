@@ -4,7 +4,7 @@
 #include "Vector.hpp"
 #include "Index.hpp"
 
-class VectorOf : Index<256>::static_array<__m128i> {
+class VectorOf : Index<0x100>::static_array<__m128i> {
     static value_type vectorOfAll(index_type i) { return _mm_shuffle_epi8(_mm_cvtsi32_si128(static_cast<int>(i)), _mm_setzero_si128()); }
 
 public:

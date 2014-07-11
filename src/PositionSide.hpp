@@ -59,12 +59,12 @@ public:
     VectorPiMask sliders() const { return types.sliders(); }
     bool isSlider(Pi pi) const { assertValid(pi); return types.isSlider(pi); }
 
-    bool hasEnPassant() const { return enPassants().any(); }
+    bool hasEnPassant() const { return enPassantPawns().any(); }
     Pi getEnPassant() const { return types.getEnPassant(); }
     Square enPassantSquare() const { return squareOf(getEnPassant()); }
-    VectorPiMask enPassants() const { return types.enPassants(); }
+    VectorPiMask enPassantPawns() const { return types.enPassantPawns(); }
 
-    VectorPiMask castlings() const { return types.castlings(); }
+    VectorPiMask castlingRooks() const { return types.castlingRooks(); }
     bool isCastling(Pi pi) const { assertValid(pi); return types.isCastling(pi); }
 
     VectorPiMask pinnerCandidates() const { return types.pinnerCandidates(); }
@@ -87,7 +87,7 @@ public:
 
     void setEnPassant(Pi, Square);
     void clearEnPassant(Pi);
-    void clearEnPassant() { types.clearEnPassant(); }
+    void clearEnPassants() { types.clearEnPassants(); }
 
     void setCastling(Pi);
     void clearCastling();

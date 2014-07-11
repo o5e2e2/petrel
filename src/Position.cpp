@@ -129,7 +129,7 @@ template <Side::_t My>
 void Position::clearEnPassant() {
     const Side::_t Op{static_cast<Side::_t>(My ^ Side::Mask)};
     if (OP.hasEnPassant()) {
-        OP.clearEnPassant();
+        OP.clearEnPassants();
 
         assert (MY.hasEnPassant());
         Pi pi{MY.getEnPassant()};
@@ -398,7 +398,7 @@ Move readMove(std::istream& in, const Position& pos, Color colorToMove) {
         }
     }
     else if (pi == TheKing && from.is<Rank1>() && to.is<Rank1>()) {
-        if ( (pos.MY.castlings() & pos.MY.on(to)).any() ) {
+        if ( (pos.MY.castlingRooks() & pos.MY.on(to)).any() ) {
             //from Chess960 castling encoding
             return Move{to, from, Move::Special};
         }
@@ -480,7 +480,7 @@ std::ostream& write(std::ostream& out, const Position& pos, Color colorToMove, C
         FOR_INDEX(Side, si) {
             const PositionSide& side = pos.side[si];
 
-            for (Pi pi : side.castlings()) {
+            for (Pi pi : side.castlingRooks()) {
                 char_type castling_symbol =
                     (chessVariant == Chess960)
                     ? File{side.squareOf(pi)}.to_char()

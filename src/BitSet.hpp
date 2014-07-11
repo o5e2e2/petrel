@@ -19,8 +19,7 @@ public:
     constexpr BitSet (Index i) : BitSet(::singleton<_t>(i)) {}
     constexpr BitSet (typename Index::_t i) : BitSet(::singleton<_t>(i)) {}
 
-    //TRICK: "v & (v-1)" clears the lowest (first) unset bit
-    constexpr _t without_lsb() const { return static_cast<_t>(*this) & (static_cast<_t>(*this)-1); }
+    constexpr _t without_lsb() const { return ::without_lsb(static_cast<_t>(*this)); }
 
     constexpr bool operator [] (Index i) const { return (self() & Self{i}).any(); }
     bool isSingleton() const { assert (self().any()); return without_lsb() == 0; }

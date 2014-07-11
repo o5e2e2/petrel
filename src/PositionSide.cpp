@@ -139,7 +139,7 @@ void PositionSide::clearCastling(Pi pi) {
 }
 
 void PositionSide::clearCastling() {
-    for (Pi pi : castlings()) {
+    for (Pi pi : castlingRooks()) {
         clearCastling(pi);
     }
 }

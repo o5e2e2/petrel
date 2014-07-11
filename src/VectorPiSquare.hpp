@@ -63,28 +63,18 @@ public:
         _v.set(p2, s2);
     }
 
-    //for debugging
-    friend std::ostream& operator << (std::ostream& out, VectorPiSquare squares) {
-        auto flags = out.flags();
-        out << std::hex;
-        FOR_INDEX(Pi, pi) {
-            out << ' ' << pi;
-        }
-        out << std::endl;
-
-        FOR_INDEX(Pi, pi) {
-            out << std::setw(2) << static_cast<unsigned>(small_cast<unsigned char>((squares._v[pi])));
-        }
-        out << std::endl;
-        out.flags(flags);
-        return out;
-    }
+    friend std::ostream& operator << (std::ostream&, VectorPiSquare);
 
 };
 
 template <> inline VectorPiMask VectorPiSquare::of<Rank1>() const {
-    //TRICK: squares.rightBackward(A2) is equal to squares.of<Rank1>(), but a bit faster
+    //TRICK: rightBackward(A2) is equal to of<Rank1>(), but a bit faster
     return rightBackward(A2);
+}
+
+template <> inline VectorPiMask VectorPiSquare::of<Rank8>() const {
+    //TRICK: leftForward(H7) is equal of<Rank8>(), but a bit faster
+    return leftForward(H7);
 }
 
 #endif
