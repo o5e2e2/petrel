@@ -27,15 +27,17 @@ class Zobrist {
 
 public:
     typedef ZobristTable::_t _t;
+    typedef Zobrist Arg;
 
 private:
     _t _v;
 
 public:
-    Zobrist () : _v{0} {}
-    Zobrist (const Zobrist& z) : _v(z) {}
-    explicit operator _t () const { return _v; }
-    void clear() { _v = 0; }
+    constexpr Zobrist () : _v{0} {}
+    constexpr explicit Zobrist (_t z) : _v(z) {}
+    constexpr explicit operator _t () const { return _v; }
+
+    void clear() { *this = Zobrist{}; }
 
     Zobrist& flip() { _v = ::bswap(_v); return *this; }
     Zobrist operator ~ () const { return Zobrist{*this}.flip(); }
@@ -43,14 +45,15 @@ public:
     void drop(PieceType ty, Square to) { _v ^= z(ty, to); }
     void clear(PieceType ty, Square from) { drop(ty, from); }
 
-    void setEnPassant(Square from) { drop( Pawn, Square(File(from), Rank1) ); }
+    void setEnPassant(Square from) { drop( Pawn, Square(File(from), Rank8) ); }
     void clearEnPassant(Square from) { setEnPassant(from); }
 
-    void setCastling(Square from) { drop( Pawn, Square(File(from), Rank8) ); }
+    void setCastling(Square from) { drop( Pawn, Square(File(from), Rank1) ); }
     void clearCastling(Square from) { setCastling(from); }
 
-    Zobrist& operator+= (Zobrist other) { _v ^= other._v; return *this; }
-    static Zobrist combine(Zobrist my, Zobrist op) { return Zobrist{my} += ~op; }
+    static Zobrist combine(Arg my, Arg op) { return Zobrist{my._v ^= static_cast<_t>(~op)}; }
+
+    constexpr friend bool operator == (Arg a, Arg b) { return a._v == b._v; }
 };
 
 #endif

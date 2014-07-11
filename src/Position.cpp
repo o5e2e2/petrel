@@ -26,12 +26,14 @@ void Position::swapSides() {
     PositionSide::swap(MY, OP);
     swap(occupied[My], occupied[Op]);
     zobrist.flip();
+    assert ( Zobrist::combine(MY.z(), OP.z()) == ~Zobrist::combine(OP.z(), MY.z()) );
 }
 
 void Position::syncSides() {
     occupied[My] = MY.occ() + ~OP.occ();
     occupied[Op] = ~occupied[My];
     zobrist = Zobrist::combine(MY.z(), OP.z());
+    assert ( Zobrist::combine(MY.z(), OP.z()) == ~Zobrist::combine(OP.z(), MY.z()) );
 }
 
 template <Side::_t My>
