@@ -19,10 +19,11 @@ endif
 HEADER = StdAfx.hpp
 LIBS = -pthread
 OPTIONS = -std=c++0x -mssse3 -march=core2 -mtune=native
-OPTIMIZATIONS = -Ofast -flto -fno-exceptions -fno-rtti -fno-common
-WARNINGS += -pedantic -Wall -Wextra -Wuninitialized -Wconversion -Wpointer-arith -Wcast-qual -Wcast-align -Wshadow -Wwrite-strings
+OPTIMIZATIONS = -Ofast -flto -fno-rtti -fno-common
+#OPTIMIZATIONS += -fno-exceptions
+WARNINGS += -pedantic -Wall -Wextra -Wuninitialized -Wpointer-arith -Wcast-qual -Wcast-align
 WARNINGS += -Wsign-conversion
-#WARNINGS = -Werror
+#WARNINGS += -Wconversion -Wshadow
 
 ZIP = zip -r -q -o -9 -FS
 #CXX = g++

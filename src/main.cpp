@@ -43,6 +43,13 @@ SearchControl The_game;
 
 Timer::TimerPool Timer::timerPool;
 
+#define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
+#if defined CATCH_CONFIG_MAIN
+
+#include "catch.hpp"
+
+#else
+
 int main(int argc, const char* argv[]) {
     std::ios_base::sync_with_stdio(false); //speed trick
     std::cin.tie(nullptr);
@@ -78,3 +85,5 @@ int main(int argc, const char* argv[]) {
 
     return uci(std::cin) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
+
+#endif
