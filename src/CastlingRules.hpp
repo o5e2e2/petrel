@@ -6,7 +6,7 @@
 
 class CastlingRules {
     CastlingSide::static_array<Bb> unimpeded;
-    CastlingSide::array<Bb> unattacked;
+    CastlingSide::static_array<Bb> unattacked;
 
 public:
     CastlingRules (Square king = E1, Square kingSideRook = H1, Square queenSideRook = A1) {

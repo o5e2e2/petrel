@@ -38,6 +38,9 @@ class ThreadControl {
         }
     }
 
+    ThreadControl (const ThreadControl&) = delete;
+    ThreadControl& operator = (const ThreadControl&) = delete;
+
 protected:
     void before_job() { wait(Run); }
     void after_job() { signal(Ready); }

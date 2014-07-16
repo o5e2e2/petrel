@@ -37,6 +37,9 @@ class SearchControl {
     node_count_t totalNodes;
     mutable Clock clock;
 
+    SearchControl (const SearchControl&) = delete;
+    SearchControl& operator = (const SearchControl&) = delete;
+
 public:
     SearchControl ();
    ~SearchControl () { stop(); }

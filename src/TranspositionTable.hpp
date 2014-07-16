@@ -28,6 +28,9 @@ private:
         return (bytes > 0)? ::singleton<decltype(bytes)>(::bsr(bytes)+1):0;
     }
 
+    TranspositionTable (const TranspositionTable&) = delete;
+    TranspositionTable& operator = (const TranspositionTable&) = delete;
+
 public:
     TranspositionTable () : hash{nullptr}, size{0}, mask{0} {}
    ~TranspositionTable () { delete[] hash; }

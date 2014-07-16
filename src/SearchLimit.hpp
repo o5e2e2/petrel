@@ -27,7 +27,7 @@ struct SearchLimit {
     MatrixPiBb searchmoves;
 
 public:
-    void clear();
+    SearchLimit ();
     void read(std::istream& command, const Position& pos, Color color);
     duration_t getThinkingTime() const;
 

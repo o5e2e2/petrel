@@ -9,14 +9,14 @@
  **/
 template <class Element>
 class Pool {
-    typedef std::list<Element> list;
+    typedef std::list<Element> list_t;
 
-    list ready_list; //elements ready for use
-    list used_list; //used elements
+    list_t ready_list; //elements ready for use
+    list_t used_list; //used elements
     std::mutex pool_mutex;
 
 public:
-    typedef typename list::iterator element_type;
+    typedef typename list_t::iterator element_type;
 
     element_type empty() { return std::end(used_list); }
 
