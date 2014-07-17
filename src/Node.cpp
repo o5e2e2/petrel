@@ -28,7 +28,7 @@ bool NodePerft::operator() (const Position& parent) {
 
     if (draft <= 0) {
         --nodesRemaining;
-        perftNodes += p.countLegalMoves();
+        perftNodes += moves.count();
         return false;
     }
 

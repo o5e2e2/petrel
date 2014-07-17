@@ -8,8 +8,6 @@
 #define OP pos.side[Op]
 #define OCCUPIED pos.occupied[My]
 
-PositionMoves::PositionMoves (const Position& p) : pos(p) { generateMoves<My>(); }
-
 const PositionSide& PositionMoves::side(Side si) const {
     return pos.side[si];
 }
@@ -47,6 +45,39 @@ void PositionMoves::generateKingMoves() {
     //TRICK: our attacks do not hide under attacked king shadow
     Bb kingMoves = ::pieceTypeAttack(King, MY.kingSquare()) % (MY.occ() | attacked);
     moves.set(TheKing, kingMoves);
+}
+
+template <Side::_t My>
+void PositionMoves::generateCastlingMoves() {
+    const Side::_t Op{static_cast<Side::_t>(My ^ Side::Mask)};
+
+    for (Pi pi : MY.castlingRooks()) {
+        if ( ::castlingRules.isLegal(MY.castlingSideOf(pi), OCCUPIED, attacked) ) {
+            moves.add(pi, MY.kingSquare());
+        }
+    }
+}
+
+template <Side::_t My>
+void PositionMoves::generatePawnMoves() {
+    const Side::_t Op{static_cast<Side::_t>(My ^ Side::Mask)};
+
+    for (Pi pi : MY.pawns()) {
+        Square from{ MY.squareOf(pi) };
+        BitRank self{File{from}};
+        Rank rank{ up(Rank{from}) };
+
+        BitRank b = moves[rank][pi];
+        b &= OCCUPIED[rank]; //remove "captures" of free squares
+        b += self % OCCUPIED[rank]; //add pawn push
+        moves.set(pi, rank, b);
+
+        if (rank == Rank3) {
+            //pawns double push
+            BitRank r4 = self % OCCUPIED[rank] % OCCUPIED[Rank4];
+            moves.set(pi, Rank4, r4);
+        }
+    }
 }
 
 //exclude illegal moves due pin
@@ -148,33 +179,11 @@ void PositionMoves::generateMoves() {
     //the most general case: captures and non captures for all pieces, except pawns
     moves = MY.allAttacks() % MY.occ();
 
-    //rebuild pawn moves
-    for (Pi pi : MY.pawns()) {
-        Square from{ MY.squareOf(pi) };
-        BitRank self{File{from}};
-        Rank rank{ up(Rank{from}) };
-
-        BitRank b = moves[rank][pi];
-        b &= OCCUPIED[rank]; //remove "captures" of free squares
-        b += self % OCCUPIED[rank]; //add pawn push
-        moves.set(pi, rank, b);
-
-        if (rank == Rank3) {
-            //pawns double push
-            BitRank r4 = self % OCCUPIED[rank] % OCCUPIED[Rank4];
-            moves.set(pi, Rank4, r4);
-        }
-    }
-
-    //generate castling moves
-    for (Pi pi : MY.castlingRooks()) {
-        if ( ::castlingRules.isLegal(MY.castlingSideOf(pi), OCCUPIED, attacked) ) {
-            moves.add(pi, MY.kingSquare());
-        }
-    }
+    generatePawnMoves<My>();
+    generateCastlingMoves<My>();
 
     //TRICK: castling encoded as a rook move
-    //so we cover the case of pinned castling in Chess960
+    //so we implicitly cover the case of pinned castling in Chess960
     excludePinnedMoves<My>(OP.pinnerCandidates());
 
     //underpromotions for each already tested legal queen promotion
@@ -207,10 +216,6 @@ void PositionMoves::limitMoves(std::istream& in, MatrixPiBb& searchmoves, Color 
         }
     }
 
-}
-
-index_t PositionMoves::countLegalMoves() const {
-   return moves.count();
 }
 
 Color PositionMoves::makeMoves(std::istream& in, Color colorToMove) {

@@ -7,11 +7,11 @@ class PositionSide;
 class Position;
 
 class PositionMoves {
-    const Position& pos;
-
     //filled and used during move generation
     MatrixPiBb moves; //generated moves from side[My]
     Bb attacked; //squares attacked by side[Op]
+
+    const Position& pos;
 
     PositionMoves () = delete;
     PositionMoves& operator = (const PositionMoves&) = delete;
@@ -19,23 +19,23 @@ class PositionMoves {
     //legal move generation helpers
     template <Side::_t> void generateEnPassantMoves();
     template <Side::_t> void generateUnderpromotions();
+    template <Side::_t> void generateCastlingMoves();
     template <Side::_t> void generateKingMoves();
+    template <Side::_t> void generatePawnMoves();
     template <Side::_t> void excludePinnedMoves(VectorPiMask);
     template <Side::_t> void generatePawnCheckEvasions(Square, Bb);
     template <Side::_t> void generateCheckEvasions();
+
     template <Side::_t> void generateMoves();
 
-    void swapSides();
-
 public:
-    PositionMoves (const Position& p);
+    PositionMoves (const Position& p) : pos(p) { generateMoves<My>(); }
 
     const PositionSide& side(Side) const;
-    index_t countLegalMoves() const;
-    void limitMoves(std::istream&, MatrixPiBb&, Color) const;
     MatrixPiBb& getMoves() { return moves; }
     const Position& getPos() const { return pos;}
 
+    void limitMoves(std::istream&, MatrixPiBb&, Color) const;
     Color makeMoves(std::istream&, Color);
 };
 
