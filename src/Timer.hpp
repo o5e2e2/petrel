@@ -21,19 +21,16 @@ class Timer {
         void thread_body() {
             std::this_thread::sleep_for(duration);
 
-            //signal timeout only if it was not canceled
             if (!this->isStopped()) {
+                //signal timeout only if the timer is still active
                 searchThread->commandStop();
+
+                //wait for release
+                this->waitStop();
             }
-        }
 
-        void after_job() {
-            //wait for release
-            waitStop();
-
-            //inform the pool about this thread is free now
+            //inform the pool about idle timer
             timerPool.release(std::move(thisTimer));
-            ThreadControl<TimerThread>::after_job();
         }
 
         void start(TimerPool::element_type t, SearchThread& s, duration_t d) {
@@ -41,7 +38,7 @@ class Timer {
             searchThread = &s;
             duration = d;
 
-            commandRun();
+            this->commandRun();
         }
     };
 

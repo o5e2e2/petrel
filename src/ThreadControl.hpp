@@ -38,19 +38,13 @@ class ThreadControl {
         }
     }
 
-protected:
-    void before_job() { wait(Run); }
-    void after_job() { signal(Ready); }
-
-    void waitStop() { wait(Stop); }
-
 public:
     ThreadControl () : status{Ready} {
         auto infinite_loop = [this] {
             for (;;) {
-                static_cast<_Self*>(this)->before_job();
+                wait(Run);
                 static_cast<_Self*>(this)->thread_body();
-                static_cast<_Self*>(this)->after_job();
+                signal(Ready);
             }
         };
         std::thread(infinite_loop).detach();
@@ -63,6 +57,7 @@ public:
     void commandStop() { signal(Run, Stop); }
 
     void waitReady() { wait(Ready); }
+    void waitStop() { wait(Stop); }
 };
 
 #endif
