@@ -10,7 +10,7 @@ class MatrixPiBb {
     Rank::array<VectorPiRank> matrix;
 
 public:
-    MatrixPiBb () {}
+    MatrixPiBb () { clear(); }
     MatrixPiBb (const MatrixPiBb& from) {
         FOR_INDEX(Rank, rank) {
             matrix[rank] = from.matrix[rank];

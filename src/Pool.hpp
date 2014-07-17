@@ -9,36 +9,46 @@
  **/
 template <class Element>
 class Pool {
-    typedef std::list<Element> list;
+public:
+    typedef std::list<Element> list_t;
+    typedef typename list_t::iterator element_type;
 
-    list ready_list; //elements ready for use
-    list used_list; //used elements
+private:
+    list_t list; //used elements
+    element_type ready;
+
     std::mutex pool_mutex;
 
 public:
-    typedef typename list::iterator element_type;
+    Pool () : ready(list.end()) {}
 
-    element_type empty() { return std::end(used_list); }
+    element_type empty() { return list.end(); }
 
     element_type acquire() {
         std::lock_guard<decltype(pool_mutex)> lock{pool_mutex};
 
-        if (ready_list.empty()) {
+        if (ready == empty()) {
             //create a new element
-            used_list.emplace_front();
+            list.emplace_front();
         }
         else {
             //reuse an element from the ready list
-            used_list.splice(used_list.begin(), ready_list, ready_list.begin());
+            list.splice(list.begin(), list, ready);
         }
-        return used_list.begin();
+
+        return list.begin();
     }
 
     //return the used element to the ready list
     void release(element_type&& element) {
         std::lock_guard<decltype(pool_mutex)> lock{pool_mutex};
-        ready_list.splice(ready_list.begin(), used_list, element);
+        list.splice(ready, list, element);
+        ready = element;
     }
+
+    index_t used() { return std::distance(list.begin(), ready); }
+    index_t free() { return std::distance(ready, list.end()); }
+    index_t total() { return std::distance(list.begin(), list.end()); }
 
 };
 

@@ -38,6 +38,9 @@ class ThreadControl {
         }
     }
 
+    ThreadControl (const ThreadControl&) = delete;
+    ThreadControl& operator = (const ThreadControl&) = delete;
+
 public:
     ThreadControl () : status{Ready} {
         auto infinite_loop = [this] {

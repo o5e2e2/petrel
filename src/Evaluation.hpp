@@ -100,7 +100,7 @@ private:
     _t _v;
 
 public:
-    Evaluation () {}
+    Evaluation () : _v{} {}
     Evaluation (const Evaluation& e) : _v{e} {}
     explicit operator _t () const { return _v; }
     void clear() { _v = 0; }
