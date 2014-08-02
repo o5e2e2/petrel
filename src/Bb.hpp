@@ -51,4 +51,6 @@ public:
     constexpr explicit operator __int64 () const { return static_cast<__int64>(static_cast<_t>(*this)); }
 };
 
+std::ostream& operator << (std::ostream&, Bb);
+
 #endif

@@ -77,4 +77,6 @@ template <> inline VectorPiMask VectorPiSquare::of<Rank8>() const {
     return leftForward(H7);
 }
 
+std::ostream& operator << (std::ostream&, VectorPiSquare);
+
 #endif

@@ -53,11 +53,4 @@ public:
     void report_perft(Move, index_t currmovenumber, node_count_t) override;
 };
 
-std::ostream& program_version(std::ostream&);
-std::ostream& write(std::ostream&, Move, Color, ChessVariant);
-
-//debug output
-std::ostream& operator << (std::ostream&, Bb);
-std::ostream& operator << (std::ostream&, VectorPiSquare);
-
 #endif

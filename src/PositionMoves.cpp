@@ -102,6 +102,41 @@ void PositionMoves::excludePinnedMoves(VectorPiMask pinnerCandidates) {
 }
 
 template <Side::_t My>
+void PositionMoves::correctCheckEvasionsByPawns(Bb checkLine, Square checkFrom) {
+    const Side::_t Op{static_cast<Side::_t>(My ^ Side::Mask)};
+
+    //after generic move generation
+    //we need to correct moves of some pawns
+    {
+        Bb possiblePawns{checkLine << 8}; //simple pawn push over check line
+
+        //the general case generates invalid diagonal moves to empty squares
+        possiblePawns |= (checkLine << 9) % Bb{FileA};
+        possiblePawns |= (checkLine << 7) % Bb{FileH};
+
+        for (Square from : MY.occPawns() & possiblePawns) {
+            Pi pi{MY.pieceOn(from)};
+
+            Bb b{Bb{from.rankUp()} % OCCUPIED & checkLine};
+            b += ::pieceTypeAttack(Pawn, from) & checkFrom;
+
+            Rank rank{from.rankUp()};
+            moves.set(pi, rank, b[rank]);
+        }
+    }
+
+    //pawns double push over check line
+    {
+        Bb possiblePawns{Bb{Rank2} % (Bb{OCCUPIED}<<8) & checkLine<<16};
+        for (Square from : MY.occPawns() & possiblePawns) {
+            Pi pi{MY.pieceOn(from)};
+            moves.add(pi, File{from}, Rank4);
+        }
+    }
+
+}
+
+template <Side::_t My>
 void PositionMoves::generateCheckEvasions() {
     const Side::_t Op{static_cast<Side::_t>(My ^ Side::Mask)};
 
@@ -114,53 +149,27 @@ void PositionMoves::generateCheckEvasions() {
         return;
     }
 
-    //simple check case
-    {
-        Pi checker{checkers.index()};
-        Square checkFrom{~OP.squareOf(checker)};
+    //single checker case
+    Pi checker{checkers.index()};
+    Square checkFrom{~OP.squareOf(checker)};
 
-        const Bb& checkLine{::between(MY.kingSquare(), checkFrom)};
+    const Bb& checkLine{::between(MY.kingSquare(), checkFrom)};
 
-        //general case: check evasion moves of all pieces
-        moves = MY.allAttacks() & (checkLine + checkFrom);
+    //general case: check evasion moves of all pieces
+    moves = MY.allAttacks() & (checkLine + checkFrom);
 
-        //we need to correct moves of some pawns
-        {
-            Bb possiblePawns{checkLine << 8}; //simple pawn push over check line
+    //pawns moves are special case
+    correctCheckEvasionsByPawns<My>(checkLine, checkFrom);
 
-            //the general case generates invalid diagonal moves to empty squares
-            possiblePawns |= (checkLine << 9) % Bb{FileA};
-            possiblePawns |= (checkLine << 7) % Bb{FileH};
+    excludePinnedMoves<My>(OP.pinnerCandidates() % checkers);
 
-            for (Square from : MY.occPawns() & possiblePawns) {
-                Pi pi{MY.pieceOn(from)};
+    generateUnderpromotions<My>();
 
-                Bb b{Bb{from.rankUp()} % OCCUPIED & checkLine};
-                b += ::pieceTypeAttack(Pawn, from) & checkFrom;
-
-                Rank rank{from.rankUp()};
-                moves.set(pi, rank, b[rank]);
-            }
-        }
-
-        //pawns double push over check line
-        {
-            Bb possiblePawns{Bb{Rank2} % (Bb{OCCUPIED}<<8) & checkLine<<16};
-            for (Square from : MY.occPawns() & possiblePawns) {
-                Pi pi{MY.pieceOn(from)};
-                moves.add(pi, File{from}, Rank4);
-            }
-        }
-
-        excludePinnedMoves<My>(OP.pinnerCandidates() % checkers);
-        generateUnderpromotions<My>();
-
-        if ((OP.enPassantPawns() & checkers).any()) {
-            generateEnPassantMoves<My>();
-        }
-
-        generateKingMoves<My>();
+    if ((OP.enPassantPawns() & checkers).any()) {
+        generateEnPassantMoves<My>();
     }
+
+    generateKingMoves<My>();
 }
 
 //generate all legal moves from the current position for the current side to move

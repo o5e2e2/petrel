@@ -23,7 +23,7 @@ class PositionMoves {
     template <Side::_t> void generateKingMoves();
     template <Side::_t> void generatePawnMoves();
     template <Side::_t> void excludePinnedMoves(VectorPiMask);
-    template <Side::_t> void generatePawnCheckEvasions(Square, Bb);
+    template <Side::_t> void correctCheckEvasionsByPawns(Bb, Square);
     template <Side::_t> void generateCheckEvasions();
 
     template <Side::_t> void generateMoves();

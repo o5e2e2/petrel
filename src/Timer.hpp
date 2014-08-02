@@ -1,7 +1,6 @@
 #ifndef TIMER_HPP
 #define TIMER_HPP
 
-#include <iostream>
 #include "Clock.hpp"
 #include "Pool.hpp"
 #include "SearchThread.hpp"
@@ -47,10 +46,8 @@ class Timer {
     Timer (const Timer&) = delete;
     Timer& operator = (const Timer&) = delete;
 
-    static TimerPool::element_type empty() { return timerPool.empty(); }
-
 public:
-    Timer () : thisTimer(empty()) {}
+    Timer () {}
    ~Timer () { cancel(); }
 
     void start(SearchThread& searchThread, duration_t duration) {
@@ -59,17 +56,17 @@ public:
         //zero duration means no timer
         if (duration != duration_t::zero()) {
             thisTimer = timerPool.acquire();
-            thisTimer->start(thisTimer, searchThread, duration);
+            timerPool[thisTimer].start(thisTimer, searchThread, duration);
         }
     }
 
     void cancel() {
-        if (thisTimer != empty()) {
+        if (!timerPool.empty(thisTimer)) {
             //inform the timer that it is free now
-            thisTimer->commandStop();
+            timerPool[thisTimer].commandStop();
 
             //now we can forget about this timer
-            thisTimer = empty();
+            timerPool.clear(thisTimer);
         }
     }
 
