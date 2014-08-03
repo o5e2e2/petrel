@@ -15,6 +15,10 @@ void fail_pos(std::istream& in, std::streampos rewind) {
     fail_here(in);
 }
 
+void fail_rewind(std::istream& in) {
+    fail_pos(in, 0);
+}
+
 bool operator == (std::istream& in, const char keyword []) {
     if (keyword == nullptr) { fail_here(in); return false; }
 

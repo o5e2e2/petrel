@@ -35,15 +35,16 @@ ReverseBb::Direction::Direction () {
 }
 
 ReverseBb::BitReverse::BitReverse () {
-    FOR_INDEX (Index<0x10>, n) {
-        reinterpret_cast<char*>(&lo_nibble_mask)[n] = 0x0f;
-        reinterpret_cast<char*>(&byte_reverse)[n] = static_cast<char>(0x0f ^ n);
+    FOR_INDEX (Index<0x10>, i) {
+        reinterpret_cast<char*>(&lo_nibble_mask)[i] = 0x0f;
+        reinterpret_cast<char*>(&byte_reverse)[i] = static_cast<char>(0x0f ^ i);
 
         //http://graphics.stanford.edu/~seander/bithacks.html#ReverseByteWith32Bits
-        index_t reversed_n = ((n*0x0802 & 0x22110)|(n*0x8020 & 0x88440)) * 0x10101000 >> 24;
+        std::uint32_t n{ static_cast<std::uint32_t>(i) };
+        std::uint32_t reverse{ ((n*0x0802 & 0x22110)|(n*0x8020 & 0x88440)) * 0x10101000 >> 24 };
 
-        reinterpret_cast<char*>(&lo_nibble_reverse)[n] = static_cast<char>(reversed_n << 4);
-        reinterpret_cast<char*>(&hi_nibble_reverse)[n] = static_cast<char>(reversed_n);
+        reinterpret_cast<char*>(&lo_nibble_reverse)[i] = static_cast<char>(reverse << 4);
+        reinterpret_cast<char*>(&hi_nibble_reverse)[i] = static_cast<char>(reverse);
     }
 }
 

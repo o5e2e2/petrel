@@ -69,10 +69,8 @@ void Uci::ucinewgame() {
 
 bool Uci::operator() (std::istream& in) {
     for (std::string command_line; std::getline(in, command_line); ) {
-        command.clear(); //clear errors state from the previous command
+        command.clear(); //clear errors from the previous command
         command.str(std::move(command_line));
-
-        command >> std::ws;
 
         if (command == "position")  { position(); }
         else if (command == "go")   { go(); }
@@ -111,7 +109,7 @@ bool Uci::operator() (const std::string& filename) {
 
 void Uci::go() {
     if (!search.isReady()) {
-        ::fail_pos(command, 0);
+        ::fail_rewind(command);
         return;
     }
 
@@ -160,7 +158,7 @@ void Uci::setoption() {
             }
         }
     }
-    ::fail_pos(command, 0);
+    ::fail_rewind(command);
 }
 
 void Uci::echo() {
@@ -171,7 +169,7 @@ void Uci::echo() {
 void Uci::call() {
     std::string filename;
     command >> filename;
-    if (!operator()(filename)) { ::fail_pos(command, 0); }
+    if (!operator()(filename)) { ::fail_rewind(command); }
 }
 
 void Uci::position() {

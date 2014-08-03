@@ -60,6 +60,8 @@ constexpr T without_lsb(T n) { return n & static_cast<T>(n-1); }
 template <typename T>
 constexpr bool is_singleton(T n) { return (n != 0) && (::without_lsb(n) == 0); }
 
+typedef std::uint32_t U32;
+
 #if defined __GNUC__
     INLINE index_t bsf(U32 b) {
         assert (b != 0);

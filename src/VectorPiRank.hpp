@@ -32,9 +32,6 @@ struct VectorPiRank : VectorPiBit<VectorPiRank, File> {
         return _mm_cmpeq_epi8(file_vector, static_cast<_t>(*this) & file_vector);
     }
 
-    static const VectorBitCount popcount;
-    _t partial() const { return popcount.partial(static_cast<_t>(*this)); }
-    index_t count() const { return popcount(static_cast<_t>(*this)); }
 };
 
 #endif

@@ -3,7 +3,6 @@
 
 #include <cstdint>
 
-typedef std::uint32_t U32;
 typedef std::uint64_t U64;
 
 #if !defined _WIN32

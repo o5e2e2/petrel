@@ -139,9 +139,9 @@ public:
     index_t count() const {
         VectorBitCount::_t result = ::vectorOfAll[0];
         FOR_INDEX(Rank, rank) {
-            result = _mm_add_epi8(result, matrix[rank].partial());
+            result = _mm_add_epi8(result, bit_count.per_byte(static_cast<VectorBitCount::_t>(matrix[rank])));
         }
-        return VectorPiRank::popcount.final(result);
+        return bit_count.total(result);
     }
 
     void setSliderAttack(Pi pi, SliderType ty, Square sq, ReverseBb blockers) {

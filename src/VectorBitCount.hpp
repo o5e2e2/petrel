@@ -21,16 +21,15 @@ public:
         }
     }
 
-    _t partial(_t v) const {
+    _t per_byte(_t v) const {
         _t lo = v & lo_nibble_mask;
         _t hi = _mm_srli_epi16(v, 4) & lo_nibble_mask;
         lo = _mm_shuffle_epi8(nibble_count, lo);
         hi = _mm_shuffle_epi8(nibble_count, hi);
-        lo = _mm_add_epi8(lo, hi);
-        return lo;
+        return _mm_add_epi8(lo, hi);
     }
 
-    index_t final(_t v) const {
+    index_t total(_t v) const {
         _t lo = _mm_sad_epu8(v, empty_mask);
         _t hi = _mm_unpackhi_epi64(lo, empty_mask);
         lo = _mm_add_epi64(lo, hi);
@@ -38,8 +37,10 @@ public:
     }
 
     index_t operator() (_t v) const {
-        return final(partial(v));
+        return total(per_byte(v));
     }
 };
+
+extern const VectorBitCount bit_count;
 
 #endif

@@ -56,9 +56,7 @@ public:
     template <PieceType::_t Type> bool is(Pi pi) const { assertValid(pi); return _v.is<Type>(pi); }
     PieceType typeOf(Pi pi) const {
         assertValid(pi);
-        PieceType ty{static_cast<PieceType::_t>( ::bsf(static_cast<U32>(_v[pi])) )};
-        assert (ty.isOk());
-        return ty;
+        return static_cast<PieceType::_t>( ::bsf(static_cast<unsigned>(_v[pi])) );
     }
 
     VectorPiMask sliders() const { return _v.getAnyMask<SliderMask>(); }
@@ -71,9 +69,7 @@ public:
 
     VectorPiMask enPassantPawns() const { return _v.getAllMask<EnPassantMask>(); }
     Pi getEnPassant() const {
-        assert (enPassantPawns().any());
-        assert (enPassantPawns().isSingleton());
-        Pi pi = enPassantPawns().index();
+        Pi pi{ enPassantPawns().index() };
         assert (is<Pawn>(pi));
         return pi;
     }

@@ -24,7 +24,7 @@ class VectorPiMask : public BitArray<VectorPiMask, __m128i> {
         Pi seekVacant() const {
             _t x = static_cast<_t>(*this);
             x = ~x & (x+1); //TRICK: isolate the lowest unset bit
-            return PieceSet(x).index();
+            return PieceSet{x}.index();
         }
 
         //for debugging
