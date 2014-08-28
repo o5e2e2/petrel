@@ -19,14 +19,14 @@ void fail_rewind(std::istream& in) {
     fail_pos(in, 0);
 }
 
-bool operator == (std::istream& in, const char keyword []) {
+bool operator == (std::istream& in, const std::istream::char_type keyword []) {
     if (keyword == nullptr) { fail_here(in); return false; }
 
     if (in >> std::ws) {
         auto pos_before = in.tellg();
         auto state_before = in.rdstate();
 
-        for (char c; *keyword != '\0' && in.get(c) && *keyword == c; ++keyword) {}
+        for (std::istream::char_type c; *keyword != '\0' && in.get(c) && *keyword == c; ++keyword) {}
 
         if (*keyword == '\0') {
             auto peek = in.peek();
