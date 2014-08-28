@@ -30,14 +30,13 @@ const VectorPiOrder::_t VectorPiOrder::sorted = _mm_setr_epi8(0,1,2,3,4,5,6,7,8,
 
 const PieceSquareTable Evaluation::pst;
 
-const char* The_piece_type_string{"qrbnpk"};
-template <> const char* PieceType::The_string{The_piece_type_string};
-template <> const char* PromoType::The_string{The_piece_type_string};
-template <> const char* Color::The_string{"wb"};
-template <> const char* CastlingSide::The_string{"kq"};
-template <> const char* File::The_string{"abcdefgh"};
-template <> const char* Rank::The_string{"87654321"};
-template <> const char* Pi::The_string{"0123456789abcdef"};
+template <> const PieceType::char_type* PieceType::The_string{"qrbnpk"};
+template <> const PromoType::char_type* PromoType::The_string{"qrbn"};
+template <> const Color::char_type* Color::The_string{"wb"};
+template <> const CastlingSide::char_type* CastlingSide::The_string{"kq"};
+template <> const File::char_type* File::The_string{"abcdefgh"};
+template <> const Rank::char_type* Rank::The_string{"87654321"};
+template <> const Pi::char_type* Pi::The_string{"K123456789abcdef"};
 
 CastlingRules castlingRules; //constant during the same Chess960 game (32)
 SearchControl The_game;
