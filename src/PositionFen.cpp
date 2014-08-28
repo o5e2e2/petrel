@@ -5,6 +5,7 @@
 #include "Position.hpp"
 
 namespace {
+typedef std::istream::char_type char_type;
 
 class ColorTypeSquares {
     struct SquareOrder {
@@ -55,10 +56,10 @@ void ColorTypeSquares::readBoard(std::istream& in) {
     colorCount.fill(0);
 
     File file{FileA}; Rank rank{Rank8};
-    for (char c; in.get(c); ) {
+    for (char_type c; in.get(c); ) {
         if (std::isalpha(c) && rank.isOk() && file.isOk()) {
             Color color = std::isupper(c)? White:Black;
-            c = static_cast<char>(std::tolower(c));
+            c = static_cast<char_type>(std::tolower(c));
 
             PieceType ty{PieceType::Begin};
             if (ty.from_char(c) && colorCount[color] < Pi::Size) {
@@ -140,10 +141,10 @@ std::istream& readCastling(std::istream& in, Position& pos, Color colorToMove) {
     in >> std::ws;
     if (in.peek() == '-') { in.ignore(); return in; }
 
-    for (char c; in.get(c) && !std::isblank(c); ) {
+    for (char_type c; in.get(c) && !std::isblank(c); ) {
         if (std::isalpha(c)) {
             Color color(std::isupper(c)? White:Black);
-            c = static_cast<char>(std::tolower(c));
+            c = static_cast<char_type>(std::tolower(c));
 
             CastlingSide side{CastlingSide::Begin};
             if ( side.from_char(c) ) {
@@ -205,13 +206,12 @@ void writeBoard(std::ostream& out, const PositionSide& white, const PositionSide
 }
 
 class CastlingSet {
-    typedef std::ostream::char_type element_type;
-    std::set<element_type> castlingSet;
+    std::set<char_type> castlingSet;
 
     void insert(const PositionSide& side, Color color, ChessVariant chessVariant);
 
 public:
-    void insert(const PositionSide& white, const PositionSide& black, ChessVariant chessVariant) {
+    CastlingSet (const PositionSide& white, const PositionSide& black, ChessVariant chessVariant) {
         insert(white, White, chessVariant);
         insert(black, Black, chessVariant);
     }
@@ -221,14 +221,14 @@ public:
 
 void CastlingSet::insert(const PositionSide& side, Color color, ChessVariant chessVariant) {
     for (Pi pi : side.castlingRooks()) {
-        element_type castling_symbol =
+        char_type castling_symbol =
             (chessVariant == Chess960)
             ? File{side.squareOf(pi)}.to_char()
             : side.castlingSideOf(pi).to_char()
         ;
 
         if (color == White) {
-            castling_symbol = static_cast<char>(std::toupper(castling_symbol));
+            castling_symbol = static_cast<char_type>(std::toupper(castling_symbol));
         }
 
         castlingSet.insert(castling_symbol);
@@ -236,11 +236,11 @@ void CastlingSet::insert(const PositionSide& side, Color color, ChessVariant che
 }
 
 void CastlingSet::write(std::ostream& out) const {
-    if (!castlingSet.empty()) {
-        for (auto castling_symbol : castlingSet) { out << castling_symbol; }
+    if (castlingSet.empty()) {
+        out << '-';
     }
     else {
-        out << '-';
+        for (auto castling_symbol : castlingSet) { out << castling_symbol; }
     }
 }
 
@@ -281,16 +281,15 @@ void read(std::istream& in, Position& pos, Color& colorToMove) {
 
 void write(std::ostream& out, const Position& pos, Color colorToMove, ChessVariant chessVariant) {
     const PositionSide& white = pos.side[(colorToMove == White)? My:Op];
-    const PositionSide& black = pos.side[(colorToMove == White)? Op:My];
+    const PositionSide& black = pos.side[(colorToMove == Black)? My:Op];
 
     writeBoard(out, white, black);
 
-    out << ' ' << colorToMove;
+    out << ' ';
+    out << colorToMove;
 
     out << ' ';
-    CastlingSet castlingSet;
-    castlingSet.insert(white, black, chessVariant);
-    castlingSet.write(out);
+    CastlingSet{white, black, chessVariant}.write(out);
 
     out << ' ';
     writeEnPassant(out, pos.side[Op], colorToMove);
