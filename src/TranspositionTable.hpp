@@ -47,7 +47,7 @@ public:
 
         hash = nullptr;
         while (hash == nullptr && bytes > 0) {
-            hash = reinterpret_cast<char*>(new (std::nothrow) Cluster[bytes/sizeof(Cluster)]);
+            hash = reinterpret_cast<decltype(hash)>(new (std::nothrow) Cluster[bytes/sizeof(Cluster)]);
             bytes >>= 1;
         }
         clear();

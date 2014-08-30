@@ -7,7 +7,7 @@
 class Zobrist {
     class Key {
     public:
-        typedef U64 _t;
+        typedef std::uint64_t _t;
         _t key[PieceType::Size][Square::Size];
 
     public:

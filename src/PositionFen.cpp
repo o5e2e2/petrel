@@ -188,7 +188,7 @@ void writeBoard(std::ostream& out, const PositionSide& white, const PositionSide
 
             if (white[sq]) {
                 if (blank_squares != 0) { out << blank_squares; blank_squares = 0; }
-                out << static_cast<char>(std::toupper( white.typeOf(sq).to_char() ));
+                out << static_cast<char_type>(std::toupper( white.typeOf(sq).to_char() ));
             }
             else if (black[~sq]) {
                 if (blank_squares != 0) { out << blank_squares; blank_squares = 0; }

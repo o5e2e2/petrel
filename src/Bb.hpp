@@ -15,8 +15,8 @@
 /**
  * BitBoard type: a bit for each chessboard square
  */
-class Bb : public BitSet<Bb, Square, U64> {
-    typedef BitSet<Bb, Square, U64> Base;
+class Bb : public BitSet<Bb, Square, std::uint64_t> {
+    typedef BitSet<Bb, Square, std::uint64_t> Base;
 
     Bb (int) = delete; //declared to catch type cast bugs
 

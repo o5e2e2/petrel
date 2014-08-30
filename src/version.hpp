@@ -4,9 +4,11 @@
 #include <ostream>
 
 inline std::ostream& program_version(std::ostream& out) {
-    char year[] {__DATE__[7], __DATE__[8], __DATE__[9], __DATE__[10], '\0'};
+    typedef std::ostream::char_type char_type;
 
-    char month[] {
+    char_type year[] {__DATE__[7], __DATE__[8], __DATE__[9], __DATE__[10], '\0'};
+
+    char_type month[] {
         (__DATE__[0] == 'O' && __DATE__[1] == 'c' && __DATE__[2] == 't')? '1' :
         (__DATE__[0] == 'N' && __DATE__[1] == 'o' && __DATE__[2] == 'v')? '1' :
         (__DATE__[0] == 'D' && __DATE__[1] == 'e' && __DATE__[2] == 'c')? '1' : '0',
@@ -27,7 +29,7 @@ inline std::ostream& program_version(std::ostream& out) {
         '\0'
     };
 
-    char day[] {(__DATE__[4] == ' ')? '0':__DATE__[4], __DATE__[5], '\0'};
+    char_type day[] {(__DATE__[4] == ' ')? '0':__DATE__[4], __DATE__[5], '\0'};
 
     return out << "Petrel chess " << year << '-' << month << '-' << day
 #ifndef NDEBUG

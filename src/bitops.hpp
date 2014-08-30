@@ -11,6 +11,11 @@
 #   define PLATFORM_64
 #endif
 
+#if !defined _WIN32
+    typedef std::int32_t __int32;
+    typedef std::int64_t __int64;
+#endif
+
 #if defined __GNUC__
 #   define INLINE       inline __attribute__((__always_inline__))
 #   define NOINLINE     __attribute__((__noinline__))
@@ -60,59 +65,44 @@ constexpr T without_lsb(T n) { return n & static_cast<T>(n-1); }
 template <typename T>
 constexpr bool is_singleton(T n) { return (n != 0) && (::without_lsb(n) == 0); }
 
-typedef std::uint32_t U32;
-
 #if defined __GNUC__
-    INLINE index_t bsf(U32 b) {
+    INLINE index_t bsf(std::uint32_t b) {
         assert (b != 0);
-        index_t i;
-        __asm__ ( "bsfl %1, %0" : "=Ir" (i) : "rm" (b) : "cc" );
-        return i;
+        return __builtin_ctz(b);
     }
 
-    INLINE index_t bsr(U32 b) {
+    INLINE index_t bsr(std::uint32_t b) {
         assert (b != 0);
         index_t i;
         __asm__ ( "bsrl %1, %0" : "=Ir" (i) : "rm" (b) : "cc" );
         return i;
     }
 
-    INLINE U32 bswap(U32 b) {
-#       if defined __builtin_bswap32
-            return __builtin_bswap32(b);
-#       else
-            __asm__ ( "bswapl %0" : "+r" (b) );
-            return b;
-#       endif
+    INLINE std::uint32_t bswap(std::uint32_t b) {
+        return __builtin_bswap32(b);
     }
 
 #   if defined PLATFORM_64
-        INLINE index_t bsf(U64 b) {
+        INLINE index_t bsf(std::uint64_t b) {
             assert (b != 0);
-            __asm__ ( "bsfq %1, %0" : "=Jr" (b) : "rm" (b) : "cc");
-            return static_cast<index_t>(b);
+            return __builtin_ctzll(b);
         }
 
-        INLINE index_t bsr(U64 b) {
+        INLINE index_t bsr(std::uint64_t b) {
             assert (b != 0);
             __asm__ ( "bsrq %1, %0" : "=Jr" (b) : "rm" (b) : "cc" );
             return static_cast<index_t>(b);
         }
 
-        INLINE U64 bswap(U64 b) {
-#           if defined __builtin_bswap64
-                return __builtin_bswap64(b);
-#           else
-                __asm__ ( "bswapq %0" : "+r" (b) );
-                return b;
-#           endif
+        INLINE std::uint64_t bswap(std::uint64_t b) {
+            return __builtin_bswap64(b);
         }
 
 #   endif
 
 #elif defined _MSC_VER
 #   pragma intrinsic(_BitScanForward)
-    INLINE index_t bsf(U32 b) {
+    INLINE index_t bsf(std::uint32_t b) {
         unsigned long result;
         assert (b != 0);
         _BitScanForward(&result, b);
@@ -120,7 +110,7 @@ typedef std::uint32_t U32;
     }
 
 #   pragma intrinsic(_BitScanReverse)
-    INLINE index_t bsr(U32 b) {
+    INLINE index_t bsr(std::uint32_t b) {
         unsigned long result;
         assert (b != 0);
         _BitScanReverse(&result, b);
@@ -128,13 +118,13 @@ typedef std::uint32_t U32;
     }
 
 #   pragma intrinsic(_byteswap_ulong)
-    INLINE U32 bswap(U32 b) {
+    INLINE std::uint32_t bswap(std::uint32_t b) {
         return _byteswap_ulong(b);
     }
 
 #   if defined PLATFORM_64
 #       pragma intrinsic(_BitScanForward64)
-        INLINE index_t bsf(U64 b) {
+        INLINE index_t bsf(std::uint64_t b) {
             unsigned long result;
             assert (b != 0);
             _BitScanForward64(&result, b);
@@ -142,7 +132,7 @@ typedef std::uint32_t U32;
         }
 
 #       pragma intrinsic(_BitScanReverse64)
-        INLINE index_t bsr(U64 b) {
+        INLINE index_t bsr(std::uint64_t b) {
             unsigned long result;
             assert (b != 0);
             _BitScanReverse64(&result, b);
@@ -150,13 +140,13 @@ typedef std::uint32_t U32;
         }
 
 #       pragma intrinsic(_byteswap_uint64)
-        INLINE U64 bswap(U64 b) {
+        INLINE std::uint64_t bswap(std::uint64_t b) {
             return _byteswap_uint64(b);
         }
 #   endif
 #else
 #   error No bitscan intrinsics defined
-    INLINE U32 bswap(U32 b) {
+    INLINE std::uint32_t bswap(std::uint32_t b) {
         return (b >> 24) | (b << 24)
                | ((b & 0x00ff0000) >>  8)
                | ((b & 0x0000ff00) <<  8)
@@ -165,6 +155,7 @@ typedef std::uint32_t U32;
 #endif
 
 #if !defined PLATFORM_64
+
     inline constexpr unsigned __int32 lo(unsigned __int64 b) {
         return small_cast<unsigned __int32>(b);
     }
@@ -184,19 +175,19 @@ typedef std::uint32_t U32;
         return static_cast<__int64>( ::combine(static_cast<unsigned __int32>(lo), static_cast<unsigned __int32>(hi)) );
     }
 
-    INLINE index_t bsf(U64 b) {
+    INLINE index_t bsf(std::uint64_t b) {
         assert (b != 0);
         auto lo = ::lo(b);
         return ::bsf(lo? lo : (hi(b)+32));
     }
 
-    INLINE index_t bsr(U64 b) {
+    INLINE index_t bsr(std::uint64_t b) {
         assert (b != 0);
         auto hi = ::hi(b);
         return ::bsr(hi? (hi+32) : lo(b));
     }
 
-    INLINE U64 bswap(U64 b) {
+    INLINE std::uint64_t bswap(std::uint64_t b) {
         return ::combine( bswap(::hi(b)), bswap(::lo(b)) );
     }
 #endif
