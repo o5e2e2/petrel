@@ -64,18 +64,15 @@ void PositionMoves::generatePawnMoves() {
 
     for (Pi pi : MY.pawns()) {
         Square from{ MY.squareOf(pi) };
-        BitRank self{File{from}};
-        Rank rank{ up(Rank{from}) };
+        Rank rank_to{ up(Rank{from}) };
 
-        BitRank b = moves[rank][pi];
-        b &= OCCUPIED[rank]; //remove "captures" of free squares
-        b += self % OCCUPIED[rank]; //add pawn push
-        moves.set(pi, rank, b);
+        BitRank pawn_push = BitRank{File{from}} % OCCUPIED[rank_to];
+        BitRank pawn_captures = moves[rank_to][pi] & OCCUPIED[rank_to];
 
-        if (rank == Rank3) {
-            //pawns double push
-            BitRank r4 = self % OCCUPIED[rank] % OCCUPIED[Rank4];
-            moves.set(pi, Rank4, r4);
+        moves.set(pi, rank_to, pawn_captures + pawn_push);
+
+        if (rank_to == Rank3) {
+            moves.set(pi, Rank4, pawn_push % OCCUPIED[Rank4]);
         }
     }
 }
