@@ -20,10 +20,10 @@ HEADER = StdAfx.hpp
 LIBS = -pthread
 OPTIONS = -std=c++0x -mssse3 -march=core2 -mtune=native
 OPTIMIZATIONS = -Ofast -flto -fno-rtti -fno-common
-OPTIMIZATIONS += -fno-exceptions
+#OPTIMIZATIONS += -fno-exceptions
 WARNINGS += -pedantic -Wall -Wextra -Wuninitialized -Wpointer-arith -Wcast-qual -Wcast-align
 WARNINGS += -Wsign-conversion
-WARNINGS += -Wconversion -Wshadow
+#WARNINGS += -Wconversion -Wshadow
 
 ZIP = zip -r -q -o -9 -FS
 #CXX = g++
