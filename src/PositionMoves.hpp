@@ -1,6 +1,7 @@
 #ifndef POSITION_MOVES_HPP
 #define POSITION_MOVES_HPP
 
+#include "io.hpp"
 #include "MatrixPiBb.hpp"
 
 class PositionSide;

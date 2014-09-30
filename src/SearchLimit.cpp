@@ -1,15 +1,5 @@
 #include "SearchLimit.hpp"
 
-namespace {
-    std::istream& operator >> (std::istream& in, duration_t& duration) {
-        long milliseconds;
-        if (in >> milliseconds) {
-            duration = std::chrono::duration_cast<duration_t>(std::chrono::milliseconds{milliseconds});
-        }
-        return in;
-    }
-}
-
 SearchLimit::SearchLimit () :
     time(duration_t::zero()),
     op_time(duration_t::zero()),
@@ -30,32 +20,7 @@ SearchLimit::SearchLimit () :
     searchmoves()
 {}
 
-void SearchLimit::read(std::istream& command, const Position& pos, Color color) {
-    *this = {};
 
-    //TRICK:
-    perft = true;
-
-    PositionMoves p(pos);
-    searchmoves = p.getMoves();
-
-    while (command) {
-        if      (command == "depth")    { command >> depth; }
-        else if (command == "wtime")    { command >> ((color == White)? time:op_time); }
-        else if (command == "btime")    { command >> ((color == Black)? time:op_time); }
-        else if (command == "winc")     { command >> ((color == White)? inc:op_inc); }
-        else if (command == "binc")     { command >> ((color == Black)? inc:op_inc); }
-        else if (command == "movestogo"){ command >> movestogo; }
-        else if (command == "nodes")    { command >> nodes; }
-        else if (command == "movetime") { command >> movetime; }
-        else if (command == "ponder")   { ponder = true; }
-        else if (command == "infinite") { infinite = true; }
-        else if (command == "searchmoves") { p.limitMoves(command, searchmoves, color); }
-        else if (command == "perft")    { perft = true; }
-        else if (command == "divide")   { divide = true; }
-        else { break; }
-    }
-}
 
 duration_t SearchLimit::getThinkingTime() const {
     if (movetime != duration_t::zero()) { return movetime; }

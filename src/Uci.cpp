@@ -13,47 +13,55 @@
 #include "version.hpp"
 
 namespace {
-//convert internal move to long algebraic format
-std::ostream& write(std::ostream& out, Move move, Color colorToMove, ChessVariant chessVariant) {
-    if (move.isNull()) { return out << "0000"; }
+    //convert internal move to long algebraic format
+    std::ostream& write(std::ostream& out, Move move, Color colorToMove, ChessVariant chessVariant) {
+        if (move.isNull()) { return out << "0000"; }
 
-    Square move_from = (colorToMove == White)? move.from():~move.from();
-    Square move_to = (colorToMove == White)? move.to():~move.to();
+        Square move_from = (colorToMove == White)? move.from():~move.from();
+        Square move_to = (colorToMove == White)? move.to():~move.to();
 
-    if (!move.isSpecial()) {
-        out << move_from << move_to;
-    }
-    else {
-        if (move.from().is<Rank7>()) {
-            //the type of a promoted pawn piece encoded in place of to's rank
-            Square promoted_to(File(move_to), (colorToMove == White)? Rank8:Rank1);
-            PromoType promo = Move::decodePromoType(move.to());
-            out << move_from << promoted_to << promo;
-        }
-        else if (move.from().is<Rank1>()) {
-            //castling move internally encoded as the rook captures the king
-            if (chessVariant == Chess960) {
-                out << move_to << move_from;
-            }
-            else {
-                if (move_from.is<FileA>()) {
-                    out << move_to << Square{FileC, Rank{move_from}};
-                }
-                else {
-                    assert (move_from.is<FileH>());
-                    out << move_to << Square{FileG, Rank{move_from}};
-                }
-            }
+        if (!move.isSpecial()) {
+            out << move_from << move_to;
         }
         else {
-            //en passant capture move encoded as pawn captures pawn
-            assert (move.from().is<Rank5>());
-            assert (move.to().is<Rank5>());
-            out << move_from << Square{File{move_to}, (colorToMove == White)? Rank6:Rank3};
+            if (move.from().is<Rank7>()) {
+                //the type of a promoted pawn piece encoded in place of to's rank
+                Square promoted_to(File(move_to), (colorToMove == White)? Rank8:Rank1);
+                PromoType promo = Move::decodePromoType(move.to());
+                out << move_from << promoted_to << promo;
+            }
+            else if (move.from().is<Rank1>()) {
+                //castling move internally encoded as the rook captures the king
+                if (chessVariant == Chess960) {
+                    out << move_to << move_from;
+                }
+                else {
+                    if (move_from.is<FileA>()) {
+                        out << move_to << Square{FileC, Rank{move_from}};
+                    }
+                    else {
+                        assert (move_from.is<FileH>());
+                        out << move_to << Square{FileG, Rank{move_from}};
+                    }
+                }
+            }
+            else {
+                //en passant capture move encoded as pawn captures pawn
+                assert (move.from().is<Rank5>());
+                assert (move.to().is<Rank5>());
+                out << move_from << Square{File{move_to}, (colorToMove == White)? Rank6:Rank3};
+            }
         }
+        return out;
     }
-    return out;
-}
+
+    std::istream& operator >> (std::istream& in, duration_t& duration) {
+        long milliseconds;
+        if (in >> milliseconds) {
+            duration = std::chrono::duration_cast<duration_t>(std::chrono::milliseconds{milliseconds});
+        }
+        return in;
+    }
 }
 
 Uci::Uci (SearchControl& s, std::ostream& out, std::ostream& err)
@@ -67,23 +75,27 @@ void Uci::ucinewgame() {
     set_startpos();
 }
 
+bool Uci::next(io::literal keyword) {
+    return io::next(this->command, keyword);
+}
+
 bool Uci::operator() (std::istream& in) {
     for (std::string command_line; std::getline(in, command_line); ) {
         command.clear(); //clear errors from the previous command
         command.str(std::move(command_line));
 
-        if (command == "position")  { position(); }
-        else if (command == "go")   { go(); }
-        else if (command == "stop") { search.stop(); }
-        else if (command == "isready")    { isready(); }
-        else if (command == "setoption")  { setoption(); }
-        else if (command == "ucinewgame") { ucinewgame(); }
-        else if (command == "uci")  { uci(); }
-        else if (command == "quit") { std::exit(EXIT_SUCCESS); }
-        else if (command == "wait") { search.wait(); }
-        else if (command == "echo") { echo(); }
-        else if (command == "call") { call(); }
-        else if (command == "exit") { break; }
+        if (next("position"))  { position(); }
+        else if (next("go"))   { go(); }
+        else if (next("stop")) { search.stop(); }
+        else if (next("isready"))    { isready(); }
+        else if (next("setoption"))  { setoption(); }
+        else if (next("ucinewgame")) { ucinewgame(); }
+        else if (next("uci"))  { uci(); }
+        else if (next("quit")) { std::exit(EXIT_SUCCESS); }
+        else if (next("wait")) { search.wait(); }
+        else if (next("echo")) { echo(); }
+        else if (next("call")) { call(); }
+        else if (next("exit")) { break; }
         else {
             auto peek = command.peek();
             if (command.eof() || peek == '#' || peek == ';') {
@@ -109,17 +121,17 @@ bool Uci::operator() (const std::string& filename) {
 
 void Uci::go() {
     if (!search.isReady()) {
-        ::fail_rewind(command);
+        io::fail_rewind(command);
         return;
     }
 
-    SearchLimit searchLimit;
-    searchLimit.read(command, start_position, colorToMove);
+    set_search_limit();
+
     if (!command && !command.eof()) {
         return;
     }
 
-    search.go(*this, start_position, searchLimit);
+    search.go(*this, start_position, search_limit);
 }
 
 void Uci::uci() {
@@ -135,21 +147,21 @@ void Uci::uci() {
 }
 
 void Uci::setoption() {
-    if (command == "name") {
-        if (command == "UCI_Chess960") {
-            if (command == "value") {
-                if (command == "true") {
+    if (next("name")) {
+        if (next("UCI_Chess960")) {
+            if (next("value")) {
+                if (next("true")) {
                     chessVariant = Chess960;
                     return;
                 }
-                else if (command == "false") {
+                else if (next("false")) {
                     chessVariant = Orthodox;
                     return;
                 }
             }
         }
-        if (command == "Hash") {
-            if (command == "value") {
+        if (next("Hash")) {
+            if (next("value")) {
                 unsigned megabytes;
                 if (command >> megabytes) {
                     search.ttResize(static_cast<std::size_t>(megabytes)*1024*1024);
@@ -158,7 +170,7 @@ void Uci::setoption() {
             }
         }
     }
-    ::fail_rewind(command);
+    io::fail_rewind(command);
 }
 
 void Uci::echo() {
@@ -169,19 +181,19 @@ void Uci::echo() {
 void Uci::call() {
     std::string filename;
     command >> filename;
-    if (!operator()(filename)) { ::fail_rewind(command); }
+    if (!operator()(filename)) { io::fail_rewind(command); }
 }
 
 void Uci::position() {
-    if (command == "startpos") {
+    if (next("startpos")) {
         set_startpos();
     }
 
-    if (command == "fen") {
+    if (next("fen")) {
         PositionFen::read(command, start_position, colorToMove);
     }
 
-    if (command == "moves") {
+    if (next("moves")) {
         colorToMove = PositionMoves{start_position}.makeMoves(command, colorToMove);
     }
 }
@@ -200,6 +212,35 @@ void Uci::isready() {
     }
 }
 
+void Uci::set_search_limit() {
+    SearchLimit& s = search_limit;
+
+    s = {};
+
+    //TRICK:
+    s.perft = true;
+
+    PositionMoves p(start_position);
+    s.searchmoves = p.getMoves();
+
+    while (command) {
+        if      (next("depth"))    { command >> s.depth; }
+        else if (next("wtime"))    { command >> ((colorToMove == White)? s.time:s.op_time); }
+        else if (next("btime"))    { command >> ((colorToMove == Black)? s.time:s.op_time); }
+        else if (next("winc"))     { command >> ((colorToMove == White)? s.inc:s.op_inc); }
+        else if (next("binc"))     { command >> ((colorToMove == Black)? s.inc:s.op_inc); }
+        else if (next("movestogo")){ command >> s.movestogo; }
+        else if (next("nodes"))    { command >> s.nodes; }
+        else if (next("movetime")) { command >> s.movetime; }
+        else if (next("ponder"))   { s.ponder = true; }
+        else if (next("infinite")) { s.infinite = true; }
+        else if (next("searchmoves")) { p.limitMoves(command, s.searchmoves, colorToMove); }
+        else if (next("perft"))    { s.perft = true; }
+        else if (next("divide"))   { s.divide = true; }
+        else { break; }
+    }
+}
+
 void Uci::write_info_current() {
     if (isready_waiting) {
         isready_waiting = false;
@@ -214,7 +255,7 @@ void Uci::write_info_current() {
 }
 
 void Uci::write(std::ostream& out, Move move) const {
-    ::write(out, move, colorToMove, chessVariant);
+    ::write(out, move, this->colorToMove, this->chessVariant);
 }
 
 void Uci::report_bestmove(Move move) {

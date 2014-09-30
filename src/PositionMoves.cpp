@@ -234,13 +234,13 @@ Color PositionMoves::makeMoves(std::istream& in, Color colorToMove) {
         Move m{ readMove(in, pos, colorToMove) };
 
         if (m.isNull()) {
-            if (!in.eof()) { ::fail_pos(in, before_current_move); }
+            if (!in.eof()) { io::fail_pos(in, before_current_move); }
             break;
         }
 
         if (!moves.is(MY.pieceOn(m.from()), m.to())) {
             //detected an illegal move
-            ::fail_pos(in, before_current_move);
+            io::fail_pos(in, before_current_move);
             break;
         }
 

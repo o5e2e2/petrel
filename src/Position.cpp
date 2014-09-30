@@ -1,6 +1,6 @@
 #include "Position.hpp"
 
-#include <set>
+#include <utility>
 #include "BetweenSquares.hpp"
 
 #define MY side[My]
@@ -369,14 +369,14 @@ Move readMove(std::istream& in, const Position& pos, Color colorToMove) {
     Square from{Square::Begin};
     Square to{Square::Begin};
     in >> from >> to;
-    if (!in) { ::fail_pos(in, before_move); return Move::null(); }
+    if (!in) { io::fail_pos(in, before_move); return Move::null(); }
 
     if (colorToMove == Black) {
         from.flip();
         to.flip();
     }
 
-    if (!pos.MY.isOn(from) || (from == to)) { ::fail_pos(in, before_move); return Move::null(); }
+    if (!pos.MY.isOn(from) || (from == to)) { io::fail_pos(in, before_move); return Move::null(); }
     Pi pi{pos.MY.pieceOn(from)};
 
     //convert special moves (castling, promotion, ep) to the internal move format
@@ -392,7 +392,7 @@ Move readMove(std::istream& in, const Position& pos, Color colorToMove) {
             if (in >> promo) {
                 return Move(from, to, promo);
             }
-            else { ::fail_pos(in, before_move); return Move::null(); }
+            else { io::fail_pos(in, before_move); return Move::null(); }
         }
     }
     else if (pi == TheKing && from.is<Rank1>() && to.is<Rank1>()) {

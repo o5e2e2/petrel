@@ -56,7 +56,7 @@ struct Square : Index<64, square_t> {
             sq = Square{file, rank};
         }
         else {
-            ::fail_pos(in, pos_before);
+            io::fail_pos(in, pos_before);
         }
         return in;
     }
