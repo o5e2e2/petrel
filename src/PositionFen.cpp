@@ -5,8 +5,6 @@
 #include "Position.hpp"
 
 namespace {
-typedef std::istream::char_type char_type;
-
 class ColorTypeSquares {
     struct SquareOrder {
         bool operator () (Square, Square) const;
@@ -56,10 +54,10 @@ void ColorTypeSquares::readBoard(std::istream& in) {
     colorCount.fill(0);
 
     File file{FileA}; Rank rank{Rank8};
-    for (char_type c; in.get(c); ) {
+    for (io::char_type c; in.get(c); ) {
         if (std::isalpha(c) && rank.isOk() && file.isOk()) {
             Color color = std::isupper(c)? White:Black;
-            c = static_cast<char_type>(std::tolower(c));
+            c = static_cast<io::char_type>(std::tolower(c));
 
             PieceType ty{PieceType::Begin};
             if (ty.from_char(c) && colorCount[color] < Pi::Size) {
@@ -69,7 +67,7 @@ void ColorTypeSquares::readBoard(std::istream& in) {
                     continue;
                 }
             }
-            ::fail_char(in);
+            io::fail_char(in);
         }
         else if ('1' <= c && c <= '8' && rank.isOk() && file.isOk()) {
             int b = c - '0'; //convert digit symbol to int
@@ -82,7 +80,7 @@ void ColorTypeSquares::readBoard(std::istream& in) {
                 ++file;
                 continue;
             }
-            ::fail_char(in);
+            io::fail_char(in);
         }
         else if (c == '/' && rank.isOk()) {
             ++rank;
@@ -94,7 +92,7 @@ void ColorTypeSquares::readBoard(std::istream& in) {
         }
 
         //otherwise it is an input error
-        ::fail_char(in);
+        io::fail_char(in);
     }
 }
 
@@ -141,10 +139,10 @@ std::istream& readCastling(std::istream& in, Position& pos, Color colorToMove) {
     in >> std::ws;
     if (in.peek() == '-') { in.ignore(); return in; }
 
-    for (char_type c; in.get(c) && !std::isblank(c); ) {
+    for (io::char_type c; in.get(c) && !std::isblank(c); ) {
         if (std::isalpha(c)) {
             Color color(std::isupper(c)? White:Black);
-            c = static_cast<char_type>(std::tolower(c));
+            c = static_cast<io::char_type>(std::tolower(c));
 
             CastlingSide side{CastlingSide::Begin};
             if ( side.from_char(c) ) {
@@ -161,7 +159,7 @@ std::istream& readCastling(std::istream& in, Position& pos, Color colorToMove) {
                 }
             }
         }
-        ::fail_char(in);
+        io::fail_char(in);
     }
     return in;
 }
@@ -188,7 +186,7 @@ void writeBoard(std::ostream& out, const PositionSide& white, const PositionSide
 
             if (white[sq]) {
                 if (blank_squares != 0) { out << blank_squares; blank_squares = 0; }
-                out << static_cast<char_type>(std::toupper( white.typeOf(sq).to_char() ));
+                out << static_cast<io::char_type>(std::toupper( white.typeOf(sq).to_char() ));
             }
             else if (black[~sq]) {
                 if (blank_squares != 0) { out << blank_squares; blank_squares = 0; }
@@ -206,7 +204,7 @@ void writeBoard(std::ostream& out, const PositionSide& white, const PositionSide
 }
 
 class CastlingSet {
-    std::set<char_type> castlingSet;
+    std::set<io::char_type> castlingSet;
 
     void insert(const PositionSide& side, Color color, ChessVariant chessVariant);
 
@@ -221,14 +219,14 @@ public:
 
 void CastlingSet::insert(const PositionSide& side, Color color, ChessVariant chessVariant) {
     for (Pi pi : side.castlingRooks()) {
-        char_type castling_symbol =
+        io::char_type castling_symbol =
             (chessVariant == Chess960)
             ? File{side.squareOf(pi)}.to_char()
             : side.castlingSideOf(pi).to_char()
         ;
 
         if (color == White) {
-            castling_symbol = static_cast<char_type>(std::toupper(castling_symbol));
+            castling_symbol = static_cast<io::char_type>(std::toupper(castling_symbol));
         }
 
         castlingSet.insert(castling_symbol);
@@ -266,7 +264,7 @@ void read(std::istream& in, Position& pos, Color& colorToMove) {
     in >> std::ws >> colorToMove;
 
     if (in && !colorTypeSquares.setupBoard(pos, colorToMove)) {
-        ::fail_char(in);
+        io::fail_char(in);
     }
 
     readCastling(in, pos, colorToMove);

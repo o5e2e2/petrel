@@ -3,8 +3,7 @@
 
 #include "typedefs.hpp"
 #include "Clock.hpp"
-#include "Position.hpp"
-#include "PositionMoves.hpp"
+#include "MatrixPiBb.hpp"
 
 struct SearchLimit {
     duration_t time;
@@ -28,9 +27,9 @@ struct SearchLimit {
 
 public:
     SearchLimit ();
-    void read(std::istream& command, const Position& pos, Color color);
     duration_t getThinkingTime() const;
 
+    friend class Uci;
 };
 
 #endif

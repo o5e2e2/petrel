@@ -5,14 +5,18 @@
 #include <sstream>
 
 #include "SearchOutput.hpp"
+
 #include "io.hpp"
 #include "Move.hpp"
 #include "Position.hpp"
+#include "SearchLimit.hpp"
 
 class SearchControl;
+class SearchLimit;
 
 class Uci : public SearchOutput {
     Position start_position; //initial chess position to analyze
+    SearchLimit search_limit;
 
     SearchControl& search;
     ChessVariant chessVariant; //format of castling moves output
@@ -32,10 +36,13 @@ class Uci : public SearchOutput {
     void set_startpos();
     void position();
     void setoption();
+    void set_search_limit();
 
     //my own UCI protocol extensions
     void echo();
     void call();
+
+    bool next(io::literal);
 
     void log_error();
     void write(std::ostream&, Move) const;

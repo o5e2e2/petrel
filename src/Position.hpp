@@ -1,6 +1,7 @@
 #ifndef POSITION_HPP
 #define POSITION_HPP
 
+#include "io.hpp"
 #include "PositionSide.hpp"
 #include "Move.hpp"
 #include "PositionFen.hpp"

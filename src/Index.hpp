@@ -12,14 +12,13 @@ template <int _Limit, typename _Value = int>
 class Index {
 public:
     typedef _Value _t;
-    typedef std::istream::char_type char_type;
 
     enum { Mask = _Limit-1, Size = _Limit };
     static const _t Begin = static_cast<_t>(0);
 
 private:
     int _v;
-    static const char_type* The_string;
+    static io::literal The_string;
 
 public:
     constexpr Index () : _v{Size} {}
@@ -42,11 +41,11 @@ public:
     }
 
     constexpr Index operator ~ () const { return Index{*this}.flip(); }
-    constexpr const char_type& to_char() const { return The_string[*this]; }
+    constexpr const io::char_type& to_char() const { return The_string[*this]; }
 
-    bool from_char(char_type c) {
+    bool from_char(io::char_type c) {
         if (const void* p = std::memchr(The_string, c, _Limit)) {
-            _v = static_cast<_t>(static_cast<const char_type*>(p) - The_string);
+            this->_v = static_cast<_t>(static_cast<io::literal>(p) - The_string);
             assert (c == to_char());
             return true;
         }
@@ -54,9 +53,9 @@ public:
     }
 
     friend std::istream& operator >> (std::istream& in, Index& i) {
-        char_type c;
+        io::char_type c;
         if (in.get(c)) {
-            if (!i.from_char(c)) { ::fail_char(in); }
+            if (!i.from_char(c)) { io::fail_char(in); }
         }
         return in;
     }
