@@ -1,7 +1,6 @@
 #ifndef VECTOR_PI_SQUARE_HPP
 #define VECTOR_PI_SQUARE_HPP
 
-#include <iomanip>
 #include "Square.hpp"
 #include "VectorPiEnum.hpp"
 #include "VectorOf.hpp"
@@ -76,7 +75,5 @@ template <> inline VectorPiMask VectorPiSquare::of<Rank8>() const {
     //TRICK: leftForward(H7) is equal of<Rank8>(), but a bit faster
     return leftForward(H7);
 }
-
-std::ostream& operator << (std::ostream&, VectorPiSquare);
 
 #endif

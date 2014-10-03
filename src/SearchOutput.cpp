@@ -1,3 +1,4 @@
+#include <iomanip>
 #include <ostream>
 
 #include "SearchOutput.hpp"
