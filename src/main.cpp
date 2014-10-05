@@ -14,7 +14,6 @@
 #include "VectorOf.hpp"
 #include "VectorPiOrder.hpp"
 #include "VectorPiSingle.hpp"
-#include "version.hpp"
 #include "Zobrist.hpp"
 
 const BetweenSquares between; //32k

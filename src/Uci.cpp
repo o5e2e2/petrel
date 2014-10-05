@@ -10,7 +10,6 @@
 #include "SearchLimit.hpp"
 #include "PositionFen.hpp"
 #include "PositionMoves.hpp"
-#include "version.hpp"
 
 namespace {
     //convert internal move to long algebraic format
@@ -46,7 +45,7 @@ namespace {
                 }
             }
             else {
-                //en passant capture move encoded as pawn captures pawn
+                //en passant capture move internally encoded as pawn captures pawn
                 assert (move.from().is<Rank5>());
                 assert (move.to().is<Rank5>());
                 out << move_from << Square{File{move_to}, (colorToMove == White)? Rank6:Rank3};
@@ -62,6 +61,38 @@ namespace {
         }
         return in;
     }
+
+    std::ostream& operator << (std::ostream& out, duration_t duration) {
+        auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
+        return out << milliseconds;
+    }
+
+    enum nps_write_t { Raw, InfoPrefix };
+    template <nps_write_t Info = Raw>
+    std::ostream& nps(std::ostream& out, node_count_t nodes, duration_t duration) {
+        if (nodes > 0) {
+            if (Info == InfoPrefix) {
+                out << "info";
+            }
+
+            out << " nodes " << nodes;
+
+            if (duration > duration_t::zero()) {
+                out << " time " << duration;
+
+                if (duration >= std::chrono::milliseconds{20}) {
+                    auto _nps = (nodes * duration_t::period::den) / (duration.count() * duration_t::period::num);
+                    out << " nps " << _nps;
+                }
+            }
+
+            if (Info == InfoPrefix) {
+                out << '\n';
+            }
+        }
+        return out;
+    }
+
 }
 
 Uci::Uci (SearchControl& s, std::ostream& out, std::ostream& err)
@@ -278,41 +309,21 @@ void Uci::report_perft(Move move, index_t currmovenumber, node_count_t perftNode
     out << " string perft " << perftNodes << '\n';
 }
 
-namespace {
-    std::ostream& operator << (std::ostream& out, duration_t duration) {
-        auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
-        return out << milliseconds;
-    }
-}
-
 void Uci::nps(std::ostream& out) const {
     SearchInfo info;
     search.getSearchInfo(info);
     node_count_t nodes = info.nodes;
     duration_t duration = info.duration;
 
-    if (nodes > 0) {
-        out << " nodes " << nodes;
+    ::nps<>(out, nodes, duration);
 
-        if (duration > duration_t::zero()) {
-            out << " time " << duration;
-
-            if (duration >= std::chrono::milliseconds{20}) {
-                auto _nps = (nodes * duration_t::period::den) / (duration.count() * duration_t::period::num);
-                out << " nps " << _nps;
-            }
-        }
-    }
 }
 
 void Uci::info_nps(std::ostream& out) const {
     SearchInfo info;
     search.getSearchInfo(info);
     node_count_t nodes = info.nodes;
+    duration_t duration = info.duration;
 
-    if (nodes > 0) {
-        out << "info";
-        nps(out);
-        out << '\n';
-    }
+    ::nps<InfoPrefix>(out, nodes, duration);
 }
