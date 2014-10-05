@@ -67,7 +67,7 @@ int main(int argc, const char* argv[]) {
     else {
         std::string option{argv[1]};
         if (argc > 2 || option == "--version" || option == "--help" || !uci(option)) {
-            std::cout << program_version << '\n'
+            std::cout << io::app_version << '\n'
                 << "UCI chess engine.\n"
                 << "Copyright (C) 2014 Aleks Peshkov, aleks.peshkov@gmail.com\n"
                 << "For terms of use contact author.\n"

@@ -14,7 +14,7 @@ SearchLimit::SearchLimit () :
 
     ponder(false),
     infinite(false),
-    perft(false),
+    perft(true), //TRICK
     divide(false),
 
     searchmoves()

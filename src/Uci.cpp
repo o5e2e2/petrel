@@ -125,7 +125,7 @@ void Uci::go() {
         return;
     }
 
-    set_search_limit();
+    read_go_limits();
 
     if (!command && !command.eof()) {
         return;
@@ -138,7 +138,7 @@ void Uci::uci() {
     auto max_mb = search.ttMaxSize() / (1024*1024);
     auto current_mb = search.ttSize() / (1024*1024);
 
-    OutputBuffer{uci_out} << "id name " << program_version << '\n'
+    OutputBuffer{uci_out} << "id name " << io::app_version << '\n'
         << "id author Aleks Peshkov\n"
         << "option name UCI_Chess960 type check default " << (chessVariant == Chess960? "true":"false") << '\n'
         << "option name Hash type spin min 0 max " << max_mb << " default " << current_mb << '\n'
@@ -212,13 +212,10 @@ void Uci::isready() {
     }
 }
 
-void Uci::set_search_limit() {
+void Uci::read_go_limits() {
     SearchLimit& s = search_limit;
 
     s = {};
-
-    //TRICK:
-    s.perft = true;
 
     PositionMoves p(start_position);
     s.searchmoves = p.getMoves();

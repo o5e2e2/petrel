@@ -14,6 +14,8 @@ namespace io {
     void fail_rewind(std::istream&);
 
     bool next(std::istream&, io::literal);
+
+    std::ostream& app_version(std::ostream&);
 }
 
 #endif

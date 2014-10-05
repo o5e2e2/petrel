@@ -31,12 +31,14 @@ class Uci : public SearchOutput {
     //UCI command handlers
     void uci();
     void ucinewgame();
-    void isready();
-    void go();
-    void set_startpos();
-    void position();
     void setoption();
-    void set_search_limit();
+    void isready();
+
+    void position();
+    void set_startpos();
+
+    void go();
+    void read_go_limits();
 
     //my own UCI protocol extensions
     void echo();
