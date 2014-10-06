@@ -18,7 +18,9 @@ endif
 
 HEADER = StdAfx.hpp
 LIBS = -pthread
-OPTIONS = -std=c++0x -mssse3 -march=core2 -mtune=native
+OPTIONS  = -std=c++0x -mssse3 -march=native -mtune=native
+OPTIONS += -finline-functions -funroll-all-loops
+
 OPTIMIZATIONS = -Ofast -flto -fno-rtti -fno-common
 #OPTIMIZATIONS += -fno-exceptions
 WARNINGS += -pedantic -Wall -Wextra -Wuninitialized -Wpointer-arith -Wcast-qual -Wcast-align
