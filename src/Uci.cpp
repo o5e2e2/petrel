@@ -101,13 +101,19 @@ Uci::Uci (SearchControl& s, std::ostream& out, std::ostream& err)
     ucinewgame();
 }
 
-void Uci::ucinewgame() {
-    search.clear();
-    set_startpos();
-}
-
 bool Uci::next(io::literal keyword) {
     return io::next(this->command, keyword);
+}
+
+bool Uci::operator() (const std::string& filename) {
+    std::ifstream file{filename};
+    return operator()(file);
+}
+
+void Uci::call() {
+    std::string filename;
+    command >> filename;
+    if (!operator()(filename)) { io::fail_rewind(command); }
 }
 
 bool Uci::operator() (std::istream& in) {
@@ -145,29 +151,14 @@ void Uci::log_error() {
     OutputBuffer{uci_err} << "parsing error: " << command.rdbuf() << '\n';
 }
 
-bool Uci::operator() (const std::string& filename) {
-    std::ifstream file{filename};
-    return operator()(file);
-}
-
-void Uci::go() {
-    if (!search.isReady()) {
-        io::fail_rewind(command);
-        return;
-    }
-
-    read_go_limits();
-
-    if (!command && !command.eof()) {
-        return;
-    }
-
-    search.go(*this, start_position, search_limit);
+void Uci::ucinewgame() {
+    search.clear();
+    set_startpos();
 }
 
 void Uci::uci() {
-    auto max_mb = search.ttMaxSize() / (1024*1024);
-    auto current_mb = search.ttSize() / (1024*1024);
+    auto max_mb = search.tt().getMaxSizeMb();
+    auto current_mb = search.tt().getSizeMb();
 
     OutputBuffer{uci_out} << "id name " << io::app_version << '\n'
         << "id author Aleks Peshkov\n"
@@ -191,11 +182,11 @@ void Uci::setoption() {
                 }
             }
         }
-        if (next("Hash")) {
+        else if (next("Hash")) {
             if (next("value")) {
                 unsigned megabytes;
                 if (command >> megabytes) {
-                    search.ttResize(static_cast<std::size_t>(megabytes)*1024*1024);
+                    search.tt().resizeMb(megabytes);
                     return;
                 }
             }
@@ -209,13 +200,17 @@ void Uci::echo() {
     OutputBuffer{uci_out} << command.rdbuf() << '\n';
 }
 
-void Uci::call() {
-    std::string filename;
-    command >> filename;
-    if (!operator()(filename)) { io::fail_rewind(command); }
-}
-
 void Uci::position() {
+    command >> std::ws;
+
+    if (command.eof()) {
+        OutputBuffer out{uci_out};
+        out << "info fen ";
+        PositionFen::write(out, start_position, colorToMove, chessVariant);
+        out << '\n';
+        return;
+    }
+
     if (next("startpos")) {
         set_startpos();
     }
@@ -234,13 +229,19 @@ void Uci::set_startpos() {
     PositionFen::read(startpos, start_position, colorToMove);
 }
 
-void Uci::isready() {
-    if (search.isReady()) {
-        OutputBuffer{uci_out} << "readyok\n";
+void Uci::go() {
+    if (!search.isReady()) {
+        io::fail_rewind(command);
+        return;
     }
-    else {
-        isready_waiting = true;
+
+    read_go_limits();
+
+    if (!command && !command.eof()) {
+        return;
     }
+
+    search.go(*this, start_position, search_limit);
 }
 
 void Uci::read_go_limits() {
@@ -269,14 +270,20 @@ void Uci::read_go_limits() {
     }
 }
 
+void Uci::isready() {
+    if (search.isReady()) {
+        OutputBuffer{uci_out} << "readyok\n";
+    }
+    else {
+        isready_waiting = true;
+    }
+}
+
 void Uci::write_info_current() {
     if (isready_waiting) {
         isready_waiting = false;
 
         OutputBuffer out{uci_out};
-        out << "info fen ";
-        PositionFen::write(out, start_position, colorToMove, chessVariant);
-        out << '\n';
         info_nps(out);
         out << "readyok\n";
     }
@@ -294,17 +301,17 @@ void Uci::report_bestmove(Move move) {
     out << '\n';
 }
 
-void Uci::report_perft_depth(depth_t depth, node_count_t perftNodes) {
-    OutputBuffer out{uci_out};
-    out << "info depth " << depth;
-    nps(out);
-    out << " string perft " << perftNodes << '\n';
-}
-
 void Uci::report_perft(Move move, index_t currmovenumber, node_count_t perftNodes) {
     OutputBuffer out{uci_out};
     out << "info currmovenumber " << currmovenumber << " currmove ";
     write(out, move);
+    nps(out);
+    out << " string perft " << perftNodes << '\n';
+}
+
+void Uci::report_perft_depth(depth_t depth, node_count_t perftNodes) {
+    OutputBuffer out{uci_out};
+    out << "info depth " << depth;
     nps(out);
     out << " string perft " << perftNodes << '\n';
 }

@@ -18,7 +18,8 @@ public:
     typedef std::size_t size_type;
 
 private:
-    static const size_type MaxHash = static_cast<size_type>(4096) * 1024 * 1024; //4Gb
+    enum { Mega = 1024 * 1024 };
+    static const size_type MaxHash = static_cast<size_type>(4096) * Mega; //4Gb
 
     char* hash;
     size_type size;
@@ -36,7 +37,10 @@ public:
    ~TranspositionTable () { delete[] hash; }
 
     size_type getMaxSize() const { return MaxHash; }
+    unsigned  getMaxSizeMb() const { return getMaxSize() / Mega; }
+
     size_type getSize() const { return size; }
+    unsigned  getSizeMb() const { return getSize() / Mega; }
 
     size_type resize(size_type bytes) {
         bytes = std::min(bytes, getMaxSize());
@@ -56,6 +60,11 @@ public:
         mask = (bytes-1) ^ (sizeof(Cluster)-1);
 
         return size;
+    }
+
+    unsigned resizeMb(unsigned megabytes) {
+        resize(megabytes * Mega);
+        return getSizeMb();
     }
 
     void clear() {

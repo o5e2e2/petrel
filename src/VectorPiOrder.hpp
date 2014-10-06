@@ -20,7 +20,7 @@ class VectorPiOrder {
 
 public:
     VectorPiOrder () : _v(sorted) {}
-    //VectorPiOrder (_t v) : _v(v) { assert (isOk()); }
+    VectorPiOrder (_t v) : _v(v) { assert (isOk()); }
 
     VectorPiMask order(VectorPiMask a) const {
         return _mm_shuffle_epi8(static_cast<VectorPiMask::_t>(a), static_cast<_t>(_v));
@@ -29,19 +29,18 @@ public:
 
 };
 
-/*
 class PiOrderedIterator {
-    PieceSet mask;
     VectorPiOrder order;
+    PieceSet mask;
 
 public:
-    PiOrderedIterator (VectorPiMask m, VectorPiOrder o)
-        : mask(o.order(m)), order(o) {}
+    PiOrderedIterator (VectorPiOrder o, VectorPiMask m)
+        : order(o), mask(o.order(m)) {}
 
     Pi operator * () const { return order[*mask]; }
     PiOrderedIterator& operator ++ () { ++mask; return *this; }
     PiOrderedIterator begin() const { return *this; }
-    //PiOrderedIterator end() const { return PiOrderedIterator {0, order}; }
+    //PiOrderedIterator end() const { return PiOrderedIterator(order, 0); }
 };
-*/
+
 #endif

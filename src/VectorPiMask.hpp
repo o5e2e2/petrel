@@ -6,6 +6,7 @@
 
 #include "Index.hpp"
 #include "BitSet.hpp"
+#include "PieceSet.hpp"
 #include "VectorPiSingle.hpp"
 #include "VectorOf.hpp"
 
@@ -14,52 +15,20 @@
  */
 class VectorPiMask : public BitArray<VectorPiMask, __m128i> {
     typedef BitArray<VectorPiMask, __m128i> Base;
-    /**
-     * class used for enumeration of piece vectors
-     */
-    class PieceSet : public BitSet<PieceSet, Pi, unsigned> {
-    public:
-        using BitSet::BitSet;
 
-        Pi seekVacant() const {
-            _t x = static_cast<_t>(*this);
-            x = ~x & (x+1); //TRICK: isolate the lowest unset bit
-            return PieceSet{x}.index();
-        }
-
-        //for debugging
-        friend std::ostream& operator << (std::ostream& out, PieceSet v) {
-            auto flags(out.flags());
-
-            out << std::hex;
-            FOR_INDEX(Pi, pi) {
-                if (v[pi]) {
-                    out << pi;
-                }
-                else {
-                    out << ".";
-                }
-            }
-
-            out.flags(flags);
-            return out;
-        }
-
-    };
-
-    operator PieceSet() const {
-        assert (isOk());
-        return PieceSet( static_cast<PieceSet::_t>(_mm_movemask_epi8(static_cast<_t>(*this))) );
-    }
-
-public:
     bool isOk() const {
         _t v = _mm_cmpgt_epi8(::vectorOfAll[0], static_cast<_t>(*this));
         return _mm_movemask_epi8(_mm_cmpeq_epi8(static_cast<_t>(*this), v)) == 0xffffu;
     }
 
+public:
     VectorPiMask (_t v) : Base(v) { assert (isOk()); }
     VectorPiMask (Pi pi) : Base(::vectorPiSingle[pi]) {}
+
+    operator PieceSet() const {
+        assert (isOk());
+        return PieceSet( static_cast<PieceSet::_t>(_mm_movemask_epi8(static_cast<_t>(*this))) );
+    }
 
     bool operator[] (Pi pi) const { return PieceSet{*this}[pi]; }
 

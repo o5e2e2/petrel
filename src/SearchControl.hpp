@@ -61,9 +61,7 @@ public:
 
     void getSearchInfo(SearchInfo&) const;
 
-    std::size_t ttSize() { return transpositionTable.getSize(); }
-    std::size_t ttMaxSize() { return transpositionTable.getMaxSize(); }
-    std::size_t ttResize(std::size_t s) { return transpositionTable.resize(s); }
+    TranspositionTable& tt() { return transpositionTable; }
 
     void go(SearchOutput&, const Position&, const SearchLimit&);
 };
