@@ -16,11 +16,11 @@ class SearchLimit;
 
 class Uci : public SearchOutput {
     Position start_position; //initial chess position to analyze
-    SearchLimit search_limit;
-
-    SearchControl& search;
-    ChessVariant chessVariant; //format of castling moves output
     Color colorToMove; //initial position color for moves long algebraic format output
+    ChessVariant chessVariant; //format of castling moves output
+
+    SearchLimit search_limit;
+    SearchControl& search;
 
     std::istringstream command; //current input command line
     std::ostream& uci_out; //output stream
