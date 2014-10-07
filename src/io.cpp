@@ -27,32 +27,49 @@ namespace io {
      * false -- failed to read or to match next token with the given keyword, stream state is not changed
      **/
     bool next(std::istream& in, io::literal keyword) {
-        if (keyword == nullptr || *keyword == '\0' || !(in >> std::ws)) {
+        if (keyword == nullptr) {
             return false;
         }
 
         auto pos_before = in.tellg();
         auto state_before = in.rdstate();
 
-        //compare each keyword char with each token char
-        for (; *keyword != '\0'; ++keyword) {
-            if (in.get() == *keyword) { continue; }
-
-            goto mismatch;
-        }
-
-        //test that token size is equal to keyword size
         {
-            auto peek = in.peek();
-            if (in.eof() || std::isspace(peek)) {
-                return true;
+            using std::isspace;
+            using std::tolower;
+
+            in >> std::ws;
+            while (isspace(*keyword)) { ++keyword; }
+
+            //compare each keyword char with each token char
+            while (*keyword != '\0') {
+                if (isspace(*keyword)) {
+                    if (!isspace(in.peek())) {
+                        goto mismatch;
+                    }
+
+                    in >> std::ws;
+                    while (isspace(*keyword)) { ++keyword; }
+                }
+
+                if ( tolower(*keyword++) != tolower(in.get()) ) {
+                    goto mismatch;
+                }
+            }
+
+            //test that token size is equal to keyword size
+            {
+                auto peek = in.peek();
+                if (in.eof() || isspace(peek)) {
+                    return true;
+                }
             }
         }
 
-        mismatch:
-            in.clear(state_before);
-            in.seekg(pos_before);
-            return false;
+    mismatch:
+        in.clear(state_before);
+        in.seekg(pos_before);
+        return false;
     }
 
     std::ostream& app_version(std::ostream& out) {
