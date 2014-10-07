@@ -42,7 +42,6 @@ class SearchControl {
 
 public:
     SearchControl ();
-   ~SearchControl () { stop(); }
 
     void clear();
 
