@@ -62,12 +62,12 @@ bool Uci::operator() (std::istream& in) {
         else {
             auto peek = command.peek();
             if (command.eof() || peek == '#' || peek == ';') {
-                continue; //ignore comment
+                continue; //ignore comment line
             }
         }
 
-        command >> std::ws;
-        if (!command.eof()) { log_error(); }
+        //syntax error if something unparsed left
+        if (!next("")) { log_error(); }
     }
 
     return !in.bad();
@@ -95,30 +95,31 @@ void Uci::uci() {
 }
 
 void Uci::setoption() {
-    if (next("name")) {
-        if (next("UCI_Chess960")) {
-            if (next("value")) {
-                if (next("true")) {
-                    output.chessVariant = Chess960;
-                    return;
-                }
-                else if (next("false")) {
-                    output.chessVariant = Orthodox;
-                    return;
-                }
-            }
+    next("name");
+
+    if (next("UCI_Chess960")) {
+        next("value");
+
+        if (next("true")) {
+            output.chessVariant = Chess960;
         }
-        else if (next("Hash")) {
-            if (next("value")) {
-                unsigned megabytes;
-                if (command >> megabytes) {
-                    output.search.tt().resizeMb(megabytes);
-                    return;
-                }
-            }
+        else if (next("false")) {
+            output.chessVariant = Orthodox;
         }
+
+        return;
     }
-    io::fail_rewind(command);
+
+    if (next("Hash")) {
+        next("value");
+
+        unsigned megabytes;
+        if (command >> megabytes) {
+            output.search.tt().resizeMb(megabytes);
+        }
+
+        return;
+    }
 }
 
 void Uci::echo() {
@@ -127,9 +128,7 @@ void Uci::echo() {
 }
 
 void Uci::position() {
-    command >> std::ws;
-
-    if (command.eof()) {
+    if (next("")) {
         OutputBuffer out{output.uci_out};
         out << "info fen ";
         PositionFen::write(out, start_position, output.colorToMove, output.chessVariant);
@@ -145,9 +144,9 @@ void Uci::position() {
         PositionFen::read(command, start_position, output.colorToMove);
     }
 
-    if (next("moves")) {
-        output.colorToMove = PositionMoves{start_position}.makeMoves(command, output.colorToMove);
-    }
+    next("moves");
+
+    output.colorToMove = PositionMoves{start_position}.makeMoves(command, output.colorToMove);
 }
 
 void Uci::set_startpos() {
@@ -162,10 +161,6 @@ void Uci::go() {
     }
 
     read_go_limits(output.colorToMove);
-
-    if (!command && !command.eof()) {
-        return;
-    }
 
     output.search.go(output, start_position, search_limit);
 }
