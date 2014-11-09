@@ -1,10 +1,10 @@
-#ifndef SEARCH_OUTPUT_HPP
-#define SEARCH_OUTPUT_HPP
+#ifndef OUTPUT_SEARCH_HPP
+#define OUTPUT_SEARCH_HPP
 
 #include "typedefs.hpp"
 #include "Move.hpp"
 
-class SearchOutput {
+class OutputSearch {
 public:
     virtual void write_info_current() =0;
     virtual void report_bestmove(Move) =0;

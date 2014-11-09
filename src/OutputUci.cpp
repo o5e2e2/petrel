@@ -1,0 +1,140 @@
+#include "OutputUci.hpp"
+#include "OutputBuffer.hpp"
+#include "SearchControl.hpp"
+
+namespace {
+    //convert internal move to long algebraic format
+    std::ostream& write(std::ostream& out, Move move, Color colorToMove, ChessVariant chessVariant) {
+        if (move.isNull()) { return out << "0000"; }
+
+        Square move_from = (colorToMove == White)? move.from():~move.from();
+        Square move_to = (colorToMove == White)? move.to():~move.to();
+
+        if (!move.isSpecial()) {
+            out << move_from << move_to;
+        }
+        else {
+            if (move.from().is<Rank7>()) {
+                //the type of a promoted pawn piece encoded in place of to's rank
+                Square promoted_to(File(move_to), (colorToMove == White)? Rank8:Rank1);
+                PromoType promo = Move::decodePromoType(move.to());
+                out << move_from << promoted_to << promo;
+            }
+            else if (move.from().is<Rank1>()) {
+                //castling move internally encoded as the rook captures the king
+                if (chessVariant == Chess960) {
+                    out << move_to << move_from;
+                }
+                else {
+                    if (move_from.is<FileA>()) {
+                        out << move_to << Square{FileC, Rank{move_from}};
+                    }
+                    else {
+                        assert (move_from.is<FileH>());
+                        out << move_to << Square{FileG, Rank{move_from}};
+                    }
+                }
+            }
+            else {
+                //en passant capture move internally encoded as pawn captures pawn
+                assert (move.from().is<Rank5>());
+                assert (move.to().is<Rank5>());
+                out << move_from << Square{File{move_to}, (colorToMove == White)? Rank6:Rank3};
+            }
+        }
+        return out;
+    }
+
+    std::ostream& operator << (std::ostream& out, duration_t duration) {
+        auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
+        return out << milliseconds;
+    }
+
+    enum nps_write_t { Raw, InfoPrefix };
+    template <nps_write_t Info = Raw>
+    std::ostream& nps(std::ostream& out, node_count_t nodes, duration_t duration) {
+        if (nodes > 0) {
+            if (Info == InfoPrefix) {
+                out << "info";
+            }
+
+            out << " nodes " << nodes;
+
+            if (duration > duration_t::zero()) {
+                out << " time " << duration;
+
+                if (duration >= std::chrono::milliseconds{20}) {
+                    auto _nps = (nodes * duration_t::period::den) / (duration.count() * duration_t::period::num);
+                    out << " nps " << _nps;
+                }
+            }
+
+            if (Info == InfoPrefix) {
+                out << '\n';
+            }
+        }
+        return out;
+    }
+
+}
+
+OutputUci::OutputUci (SearchControl& s, std::ostream& out)
+    : search(s), uci_out(out), chessVariant(Orthodox), colorToMove(White), isready_waiting(false) {}
+
+void OutputUci::isready() {
+    if (search.isReady()) {
+        OutputBuffer{uci_out} << "readyok\n";
+    }
+    else {
+        isready_waiting = true;
+    }
+}
+
+void OutputUci::write_info_current() {
+    if (isready_waiting) {
+        isready_waiting = false;
+
+        OutputBuffer out{uci_out};
+        info_nps(out);
+        out << "readyok\n";
+    }
+}
+
+void OutputUci::write(std::ostream& out, Move move) const {
+    ::write(out, move, colorToMove, chessVariant);
+}
+
+void OutputUci::report_bestmove(Move move) {
+    OutputBuffer out{uci_out};
+    info_nps(out);
+    out << "bestmove ";
+    write(out, move);
+    out << '\n';
+}
+
+void OutputUci::report_perft(Move move, index_t currmovenumber, node_count_t perftNodes) {
+    OutputBuffer out{uci_out};
+    out << "info currmovenumber " << currmovenumber << " currmove ";
+    write(out, move);
+    nps(out);
+    out << " string perft " << perftNodes << '\n';
+}
+
+void OutputUci::report_perft_depth(depth_t depth, node_count_t perftNodes) {
+    OutputBuffer out{uci_out};
+    out << "info depth " << depth;
+    nps(out);
+    out << " string perft " << perftNodes << '\n';
+}
+
+void OutputUci::nps(std::ostream& out) const {
+    SearchInfo info;
+    search.getSearchInfo(info);
+    ::nps<>(out, info.nodes, info.duration);
+}
+
+void OutputUci::info_nps(std::ostream& out) const {
+    SearchInfo info;
+    search.getSearchInfo(info);
+    ::nps<InfoPrefix>(out, info.nodes, info.duration);
+}

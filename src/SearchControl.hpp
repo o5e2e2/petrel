@@ -8,7 +8,7 @@
 #include "TranspositionTable.hpp"
 
 class Node;
-class SearchOutput;
+class OutputSearch;
 class SearchLimit;
 class Position;
 
@@ -24,7 +24,7 @@ class SearchControl {
     TranspositionTable transpositionTable;
     SearchThread searchThread;
     Node* root;
-    SearchOutput* out;
+    OutputSearch* out;
 
     enum { TickLimit = 1000 };
     node_count_t nodeLimit;
@@ -63,7 +63,7 @@ public:
 
     TranspositionTable& tt() { return transpositionTable; }
 
-    void go(SearchOutput&, const Position&, const SearchLimit&);
+    void go(OutputSearch&, const Position&, const SearchLimit&);
 };
 
 extern SearchControl The_game;

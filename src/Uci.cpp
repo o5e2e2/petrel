@@ -12,48 +12,6 @@
 #include "PositionMoves.hpp"
 
 namespace {
-    //convert internal move to long algebraic format
-    std::ostream& write(std::ostream& out, Move move, Color colorToMove, ChessVariant chessVariant) {
-        if (move.isNull()) { return out << "0000"; }
-
-        Square move_from = (colorToMove == White)? move.from():~move.from();
-        Square move_to = (colorToMove == White)? move.to():~move.to();
-
-        if (!move.isSpecial()) {
-            out << move_from << move_to;
-        }
-        else {
-            if (move.from().is<Rank7>()) {
-                //the type of a promoted pawn piece encoded in place of to's rank
-                Square promoted_to(File(move_to), (colorToMove == White)? Rank8:Rank1);
-                PromoType promo = Move::decodePromoType(move.to());
-                out << move_from << promoted_to << promo;
-            }
-            else if (move.from().is<Rank1>()) {
-                //castling move internally encoded as the rook captures the king
-                if (chessVariant == Chess960) {
-                    out << move_to << move_from;
-                }
-                else {
-                    if (move_from.is<FileA>()) {
-                        out << move_to << Square{FileC, Rank{move_from}};
-                    }
-                    else {
-                        assert (move_from.is<FileH>());
-                        out << move_to << Square{FileG, Rank{move_from}};
-                    }
-                }
-            }
-            else {
-                //en passant capture move internally encoded as pawn captures pawn
-                assert (move.from().is<Rank5>());
-                assert (move.to().is<Rank5>());
-                out << move_from << Square{File{move_to}, (colorToMove == White)? Rank6:Rank3};
-            }
-        }
-        return out;
-    }
-
     std::istream& operator >> (std::istream& in, duration_t& duration) {
         long milliseconds;
         if (in >> milliseconds) {
@@ -61,42 +19,10 @@ namespace {
         }
         return in;
     }
-
-    std::ostream& operator << (std::ostream& out, duration_t duration) {
-        auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
-        return out << milliseconds;
-    }
-
-    enum nps_write_t { Raw, InfoPrefix };
-    template <nps_write_t Info = Raw>
-    std::ostream& nps(std::ostream& out, node_count_t nodes, duration_t duration) {
-        if (nodes > 0) {
-            if (Info == InfoPrefix) {
-                out << "info";
-            }
-
-            out << " nodes " << nodes;
-
-            if (duration > duration_t::zero()) {
-                out << " time " << duration;
-
-                if (duration >= std::chrono::milliseconds{20}) {
-                    auto _nps = (nodes * duration_t::period::den) / (duration.count() * duration_t::period::num);
-                    out << " nps " << _nps;
-                }
-            }
-
-            if (Info == InfoPrefix) {
-                out << '\n';
-            }
-        }
-        return out;
-    }
-
 }
 
 Uci::Uci (SearchControl& s, std::ostream& out, std::ostream& err)
-    : start_position{}, search(s), uci_out(out), uci_err(err), isready_waiting{false}
+    : start_position(), output(s, out), uci_err(err)
 {
     ucinewgame();
 }
@@ -106,7 +32,7 @@ bool Uci::next(io::literal keyword) {
 }
 
 bool Uci::operator() (const std::string& filename) {
-    std::ifstream file{filename};
+    std::ifstream file(filename);
     return operator()(file);
 }
 
@@ -123,13 +49,13 @@ bool Uci::operator() (std::istream& in) {
 
         if (next("position"))  { position(); }
         else if (next("go"))   { go(); }
-        else if (next("stop")) { search.stop(); }
-        else if (next("isready"))    { isready(); }
+        else if (next("stop")) { output.search.stop(); }
+        else if (next("isready"))    { output.isready(); }
         else if (next("setoption"))  { setoption(); }
         else if (next("ucinewgame")) { ucinewgame(); }
         else if (next("uci"))  { uci(); }
         else if (next("quit")) { std::exit(EXIT_SUCCESS); }
-        else if (next("wait")) { search.wait(); }
+        else if (next("wait")) { output.search.wait(); }
         else if (next("echo")) { echo(); }
         else if (next("call")) { call(); }
         else if (next("exit")) { break; }
@@ -152,17 +78,17 @@ void Uci::log_error() {
 }
 
 void Uci::ucinewgame() {
-    search.clear();
+    output.search.clear();
     set_startpos();
 }
 
 void Uci::uci() {
-    auto max_mb = search.tt().getMaxSizeMb();
-    auto current_mb = search.tt().getSizeMb();
+    auto max_mb = output.search.tt().getMaxSizeMb();
+    auto current_mb = output.search.tt().getSizeMb();
 
-    OutputBuffer{uci_out} << "id name " << io::app_version << '\n'
+    OutputBuffer{output.uci_out} << "id name " << io::app_version << '\n'
         << "id author Aleks Peshkov\n"
-        << "option name UCI_Chess960 type check default " << (chessVariant == Chess960? "true":"false") << '\n'
+        << "option name UCI_Chess960 type check default " << (output.chessVariant == Chess960? "true":"false") << '\n'
         << "option name Hash type spin min 0 max " << max_mb << " default " << current_mb << '\n'
         << "uciok\n"
     ;
@@ -173,11 +99,11 @@ void Uci::setoption() {
         if (next("UCI_Chess960")) {
             if (next("value")) {
                 if (next("true")) {
-                    chessVariant = Chess960;
+                    output.chessVariant = Chess960;
                     return;
                 }
                 else if (next("false")) {
-                    chessVariant = Orthodox;
+                    output.chessVariant = Orthodox;
                     return;
                 }
             }
@@ -186,7 +112,7 @@ void Uci::setoption() {
             if (next("value")) {
                 unsigned megabytes;
                 if (command >> megabytes) {
-                    search.tt().resizeMb(megabytes);
+                    output.search.tt().resizeMb(megabytes);
                     return;
                 }
             }
@@ -197,16 +123,16 @@ void Uci::setoption() {
 
 void Uci::echo() {
     command >> std::ws;
-    OutputBuffer{uci_out} << command.rdbuf() << '\n';
+    OutputBuffer{output.uci_out} << command.rdbuf() << '\n';
 }
 
 void Uci::position() {
     command >> std::ws;
 
     if (command.eof()) {
-        OutputBuffer out{uci_out};
+        OutputBuffer out{output.uci_out};
         out << "info fen ";
-        PositionFen::write(out, start_position, colorToMove, chessVariant);
+        PositionFen::write(out, start_position, output.colorToMove, output.chessVariant);
         out << '\n';
         return;
     }
@@ -216,35 +142,35 @@ void Uci::position() {
     }
 
     if (next("fen")) {
-        PositionFen::read(command, start_position, colorToMove);
+        PositionFen::read(command, start_position, output.colorToMove);
     }
 
     if (next("moves")) {
-        colorToMove = PositionMoves{start_position}.makeMoves(command, colorToMove);
+        output.colorToMove = PositionMoves{start_position}.makeMoves(command, output.colorToMove);
     }
 }
 
 void Uci::set_startpos() {
     std::istringstream startpos{"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"};
-    PositionFen::read(startpos, start_position, colorToMove);
+    PositionFen::read(startpos, start_position, output.colorToMove);
 }
 
 void Uci::go() {
-    if (!search.isReady()) {
+    if (!output.search.isReady()) {
         io::fail_rewind(command);
         return;
     }
 
-    read_go_limits();
+    read_go_limits(output.colorToMove);
 
     if (!command && !command.eof()) {
         return;
     }
 
-    search.go(*this, start_position, search_limit);
+    output.search.go(output, start_position, search_limit);
 }
 
-void Uci::read_go_limits() {
+void Uci::read_go_limits(Color colorToMove) {
     SearchLimit& s = search_limit;
 
     s = {};
@@ -268,69 +194,4 @@ void Uci::read_go_limits() {
         else if (next("divide"))   { s.divide = true; }
         else { break; }
     }
-}
-
-void Uci::isready() {
-    if (search.isReady()) {
-        OutputBuffer{uci_out} << "readyok\n";
-    }
-    else {
-        isready_waiting = true;
-    }
-}
-
-void Uci::write_info_current() {
-    if (isready_waiting) {
-        isready_waiting = false;
-
-        OutputBuffer out{uci_out};
-        info_nps(out);
-        out << "readyok\n";
-    }
-}
-
-void Uci::write(std::ostream& out, Move move) const {
-    ::write(out, move, this->colorToMove, this->chessVariant);
-}
-
-void Uci::report_bestmove(Move move) {
-    OutputBuffer out{uci_out};
-    info_nps(out);
-    out << "bestmove ";
-    write(out, move);
-    out << '\n';
-}
-
-void Uci::report_perft(Move move, index_t currmovenumber, node_count_t perftNodes) {
-    OutputBuffer out{uci_out};
-    out << "info currmovenumber " << currmovenumber << " currmove ";
-    write(out, move);
-    nps(out);
-    out << " string perft " << perftNodes << '\n';
-}
-
-void Uci::report_perft_depth(depth_t depth, node_count_t perftNodes) {
-    OutputBuffer out{uci_out};
-    out << "info depth " << depth;
-    nps(out);
-    out << " string perft " << perftNodes << '\n';
-}
-
-void Uci::nps(std::ostream& out) const {
-    SearchInfo info;
-    search.getSearchInfo(info);
-    node_count_t nodes = info.nodes;
-    duration_t duration = info.duration;
-
-    ::nps<>(out, nodes, duration);
-
-}
-
-void Uci::info_nps(std::ostream& out) const {
-    SearchInfo info;
-    search.getSearchInfo(info);
-    node_count_t nodes = info.nodes;
-    duration_t duration = info.duration;
-
-    ::nps<InfoPrefix>(out, nodes, duration);
 }

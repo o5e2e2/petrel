@@ -3,7 +3,7 @@
 #include "Node.hpp"
 #include "PositionFen.hpp"
 #include "SearchLimit.hpp"
-#include "SearchOutput.hpp"
+#include "OutputSearch.hpp"
 
 SearchControl::SearchControl ()
     : out{nullptr}, moveTimer{}
@@ -69,8 +69,8 @@ void SearchControl::report_bestmove(Move move) {
     delete root;
 }
 
-void SearchControl::go(SearchOutput& searchOutput, const Position& start_position, const SearchLimit& searchLimit) {
-    out = &searchOutput;
+void SearchControl::go(OutputSearch& output, const Position& start_position, const SearchLimit& searchLimit) {
+    out = &output;
 
     clear();
 

@@ -1,7 +1,7 @@
 #include <iomanip>
 #include <ostream>
 
-#include "SearchOutput.hpp"
+#include "OutputSearch.hpp"
 #include "Bb.hpp"
 #include "VectorPiSquare.hpp"
 
