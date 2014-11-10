@@ -102,6 +102,11 @@ void Uci::position() {
         return;
     }
 
+    if (!search.isReady()) {
+        io::fail_rewind(command);
+        return;
+    }
+
     if (next("startpos")) {
         set_startpos();
     }
@@ -126,12 +131,12 @@ void Uci::go() {
         return;
     }
 
-    read_go_limits(colorToMove);
+    read_go_limits();
 
     search.go(output, start_position, search_limit);
 }
 
-void Uci::read_go_limits(Color colorToMove) {
+void Uci::read_go_limits() {
     SearchLimit& s = search_limit;
 
     s = {};

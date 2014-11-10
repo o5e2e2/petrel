@@ -30,7 +30,7 @@ class Uci {
     void set_startpos();
 
     void go();
-    void read_go_limits(Color);
+    void read_go_limits();
 
     //my own UCI protocol extensions
     void echo();
