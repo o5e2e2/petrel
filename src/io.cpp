@@ -28,7 +28,7 @@ namespace io {
      **/
     bool next(std::istream& in, io::literal keyword) {
         if (keyword == nullptr) {
-            return false;
+            keyword = "";
         }
 
         auto pos_before = in.tellg();
