@@ -1,6 +1,7 @@
 #include "OutputUci.hpp"
 #include "OutputBuffer.hpp"
 #include "SearchControl.hpp"
+#include "PositionFen.hpp"
 
 namespace {
     //convert internal move to long algebraic format
@@ -78,8 +79,20 @@ namespace {
 
 }
 
-OutputUci::OutputUci (SearchControl& s, std::ostream& out)
-    : search(s), uci_out(out), chessVariant(Orthodox), colorToMove(White), isready_waiting(false) {}
+OutputUci::OutputUci (std::ostream& out, const SearchControl& s, const ChessVariant& v, const Color& c)
+    : uci_out(out), isready_waiting(false), search(s), chessVariant(v), colorToMove(c) {}
+
+void OutputUci::uci() {
+    auto max_mb = search.tt().getMaxSizeMb();
+    auto current_mb = search.tt().getSizeMb();
+
+    OutputBuffer{uci_out} << "id name " << io::app_version << '\n'
+        << "id author Aleks Peshkov\n"
+        << "option name UCI_Chess960 type check default " << (chessVariant == Chess960? "true":"false") << '\n'
+        << "option name Hash type spin min 0 max " << max_mb << " default " << current_mb << '\n'
+        << "uciok\n"
+    ;
+}
 
 void OutputUci::isready() {
     if (search.isReady()) {
@@ -137,4 +150,15 @@ void OutputUci::info_nps(std::ostream& out) const {
     SearchInfo info;
     search.getSearchInfo(info);
     ::nps<InfoPrefix>(out, info.nodes, info.duration);
+}
+
+void OutputUci::info_fen(const Position& pos) {
+    OutputBuffer out{uci_out};
+    out << "info fen ";
+    PositionFen::write(out, pos, colorToMove, chessVariant);
+    out << '\n';
+}
+
+void OutputUci::echo(std::istream& in) {
+    OutputBuffer{uci_out} << in.rdbuf() << '\n';
 }

@@ -61,6 +61,7 @@ public:
     void getSearchInfo(SearchInfo&) const;
 
     TranspositionTable& tt() { return transpositionTable; }
+    const TranspositionTable& tt() const { return transpositionTable; }
 
     void go(OutputSearch&, const Position&, const SearchLimit&);
 };

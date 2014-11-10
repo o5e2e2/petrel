@@ -14,13 +14,16 @@ class SearchControl;
 class Uci {
     Position start_position; //initial chess position to analyze
     SearchLimit search_limit;
+    SearchControl& search;
     OutputUci output;
+
+    ChessVariant chessVariant; //format of castling moves output
+    Color colorToMove; //initial position color for long algebraic format moves output
 
     std::istringstream command; //current input command line
     std::ostream& uci_err; //error output stream
 
     //UCI command handlers
-    void uci();
     void ucinewgame();
     void setoption();
 

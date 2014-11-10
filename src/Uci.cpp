@@ -8,7 +8,6 @@
 #include "OutputBuffer.hpp"
 #include "SearchControl.hpp"
 #include "SearchLimit.hpp"
-#include "PositionFen.hpp"
 #include "PositionMoves.hpp"
 
 namespace {
@@ -22,24 +21,14 @@ namespace {
 }
 
 Uci::Uci (SearchControl& s, std::ostream& out, std::ostream& err)
-    : start_position(), output(s, out), uci_err(err)
+    : search(s), output(out, s, chessVariant, colorToMove), uci_err(err)
 {
     ucinewgame();
 }
 
-bool Uci::next(io::literal keyword) {
-    return io::next(this->command, keyword);
-}
-
-bool Uci::operator() (const std::string& filename) {
-    std::ifstream file(filename);
-    return operator()(file);
-}
-
-void Uci::call() {
-    std::string filename;
-    command >> filename;
-    if (!operator()(filename)) { io::fail_rewind(command); }
+void Uci::ucinewgame() {
+    search.clear();
+    set_startpos();
 }
 
 bool Uci::operator() (std::istream& in) {
@@ -49,13 +38,13 @@ bool Uci::operator() (std::istream& in) {
 
         if (next("position"))  { position(); }
         else if (next("go"))   { go(); }
-        else if (next("stop")) { output.search.stop(); }
+        else if (next("stop")) { search.stop(); }
         else if (next("isready"))    { output.isready(); }
         else if (next("setoption"))  { setoption(); }
         else if (next("ucinewgame")) { ucinewgame(); }
-        else if (next("uci"))  { uci(); }
+        else if (next("uci"))  { output.uci(); }
         else if (next("quit")) { std::exit(EXIT_SUCCESS); }
-        else if (next("wait")) { output.search.wait(); }
+        else if (next("wait")) { search.wait(); }
         else if (next("echo")) { echo(); }
         else if (next("call")) { call(); }
         else if (next("exit")) { break; }
@@ -73,25 +62,13 @@ bool Uci::operator() (std::istream& in) {
     return !in.bad();
 }
 
-void Uci::log_error() {
-    OutputBuffer{uci_err} << "parsing error: " << command.rdbuf() << '\n';
+bool Uci::operator() (const std::string& filename) {
+    std::ifstream file(filename);
+    return operator()(file);
 }
 
-void Uci::ucinewgame() {
-    output.search.clear();
-    set_startpos();
-}
-
-void Uci::uci() {
-    auto max_mb = output.search.tt().getMaxSizeMb();
-    auto current_mb = output.search.tt().getSizeMb();
-
-    OutputBuffer{output.uci_out} << "id name " << io::app_version << '\n'
-        << "id author Aleks Peshkov\n"
-        << "option name UCI_Chess960 type check default " << (output.chessVariant == Chess960? "true":"false") << '\n'
-        << "option name Hash type spin min 0 max " << max_mb << " default " << current_mb << '\n'
-        << "uciok\n"
-    ;
+bool Uci::next(io::literal keyword) {
+    return io::next(this->command, keyword);
 }
 
 void Uci::setoption() {
@@ -101,10 +78,10 @@ void Uci::setoption() {
         next("value");
 
         if (next("true")) {
-            output.chessVariant = Chess960;
+            chessVariant = Chess960;
         }
         else if (next("false")) {
-            output.chessVariant = Orthodox;
+            chessVariant = Orthodox;
         }
 
         return;
@@ -115,24 +92,16 @@ void Uci::setoption() {
 
         unsigned megabytes;
         if (command >> megabytes) {
-            output.search.tt().resizeMb(megabytes);
+            search.tt().resizeMb(megabytes);
         }
 
         return;
     }
 }
 
-void Uci::echo() {
-    command >> std::ws;
-    OutputBuffer{output.uci_out} << command.rdbuf() << '\n';
-}
-
 void Uci::position() {
     if (next("")) {
-        OutputBuffer out{output.uci_out};
-        out << "info fen ";
-        PositionFen::write(out, start_position, output.colorToMove, output.chessVariant);
-        out << '\n';
+        output.info_fen(start_position);
         return;
     }
 
@@ -141,28 +110,28 @@ void Uci::position() {
     }
 
     if (next("fen")) {
-        PositionFen::read(command, start_position, output.colorToMove);
+        PositionFen::read(command, start_position, colorToMove);
     }
 
     next("moves");
 
-    output.colorToMove = PositionMoves{start_position}.makeMoves(command, output.colorToMove);
+    colorToMove = PositionMoves{start_position}.makeMoves(command, colorToMove);
 }
 
 void Uci::set_startpos() {
     std::istringstream startpos{"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"};
-    PositionFen::read(startpos, start_position, output.colorToMove);
+    PositionFen::read(startpos, start_position, colorToMove);
 }
 
 void Uci::go() {
-    if (!output.search.isReady()) {
+    if (!search.isReady()) {
         io::fail_rewind(command);
         return;
     }
 
-    read_go_limits(output.colorToMove);
+    read_go_limits(colorToMove);
 
-    output.search.go(output, start_position, search_limit);
+    search.go(output, start_position, search_limit);
 }
 
 void Uci::read_go_limits(Color colorToMove) {
@@ -189,4 +158,19 @@ void Uci::read_go_limits(Color colorToMove) {
         else if (next("divide"))   { s.divide = true; }
         else { break; }
     }
+}
+
+void Uci::echo() {
+    command >> std::ws;
+    output.echo(command);
+}
+
+void Uci::call() {
+    std::string filename;
+    command >> filename;
+    if (!operator()(filename)) { io::fail_rewind(command); }
+}
+
+void Uci::log_error() {
+    OutputBuffer{uci_err} << "parsing error: " << command.rdbuf() << '\n';
 }
