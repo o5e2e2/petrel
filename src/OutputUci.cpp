@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "OutputUci.hpp"
 #include "OutputBuffer.hpp"
 #include "SearchControl.hpp"
@@ -161,4 +163,8 @@ void OutputUci::info_fen(const Position& pos) {
 
 void OutputUci::echo(std::istream& in) {
     OutputBuffer{uci_out} << in.rdbuf() << '\n';
+}
+
+void OutputUci::error(std::istream& in) {
+    OutputBuffer{std::cerr} << "parsing error: " << in.rdbuf() << '\n';
 }

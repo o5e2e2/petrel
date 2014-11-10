@@ -21,7 +21,6 @@ class Uci {
     Color colorToMove; //initial position color for long algebraic format moves output
 
     std::istringstream command; //current input command line
-    std::ostream& uci_err; //error output stream
 
     //UCI command handlers
     void ucinewgame();
@@ -39,10 +38,8 @@ class Uci {
 
     bool next(io::literal);
 
-    void log_error();
-
 public:
-    Uci (SearchControl&, std::ostream& = std::cout, std::ostream& = std::cerr);
+    Uci (SearchControl&, std::ostream& = std::cout);
     bool operator() (const std::string& filename);
     bool operator() (std::istream& = std::cin);
 

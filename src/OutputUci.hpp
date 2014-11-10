@@ -33,6 +33,7 @@ public:
     void isready();
     void info_fen(const Position&);
     void echo(std::istream&);
+    void error(std::istream&);
 };
 
 #endif

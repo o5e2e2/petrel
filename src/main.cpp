@@ -46,7 +46,7 @@ int main(int argc, const char* argv[]) {
     std::ios_base::sync_with_stdio(false); //speed trick
     std::cin.tie(nullptr);
 
-    Uci uci{The_game, std::cout, std::cerr};
+    Uci uci{The_game, std::cout};
 
     if (argc == 1) {
         //construct startup configuration filename from program's own name

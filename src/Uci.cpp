@@ -1,9 +1,6 @@
-#include "Uci.hpp"
-
-#include <cstdlib>
 #include <fstream>
-#include <string>
 
+#include "Uci.hpp"
 #include "Clock.hpp"
 #include "OutputBuffer.hpp"
 #include "SearchControl.hpp"
@@ -20,8 +17,8 @@ namespace {
     }
 }
 
-Uci::Uci (SearchControl& s, std::ostream& out, std::ostream& err)
-    : search(s), output(out, s, chessVariant, colorToMove), uci_err(err)
+Uci::Uci (SearchControl& s, std::ostream& out)
+    : search(s), output(out, s, chessVariant, colorToMove)
 {
     ucinewgame();
 }
@@ -56,7 +53,7 @@ bool Uci::operator() (std::istream& in) {
         }
 
         //syntax error if something unparsed left
-        if (!next("")) { log_error(); }
+        if (!next("")) { output.error(command); }
     }
 
     return !in.bad();
@@ -169,8 +166,4 @@ void Uci::call() {
     std::string filename;
     command >> filename;
     if (!operator()(filename)) { io::fail_rewind(command); }
-}
-
-void Uci::log_error() {
-    OutputBuffer{uci_err} << "parsing error: " << command.rdbuf() << '\n';
 }
