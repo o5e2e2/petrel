@@ -6,6 +6,10 @@
 #include "MatrixPiBb.hpp"
 
 struct SearchLimit {
+    friend class Uci;
+
+    enum { MaxDepth = 1000 };
+
     duration_t time;
     duration_t op_time;
     duration_t inc;
@@ -28,8 +32,6 @@ struct SearchLimit {
 public:
     SearchLimit ();
     duration_t getThinkingTime() const;
-
-    friend class Uci;
 };
 
 #endif

@@ -1,6 +1,9 @@
 #ifndef VECTOR_PI_SQUARE_HPP
 #define VECTOR_PI_SQUARE_HPP
 
+#include <iomanip>
+#include <ostream>
+
 #include "Square.hpp"
 #include "VectorPiEnum.hpp"
 #include "VectorOf.hpp"
@@ -62,8 +65,6 @@ public:
         _v.set(p2, s2);
     }
 
-    friend std::ostream& operator << (std::ostream&, VectorPiSquare);
-
 };
 
 template <> inline VectorPiMask VectorPiSquare::of<Rank1>() const {
@@ -74,6 +75,24 @@ template <> inline VectorPiMask VectorPiSquare::of<Rank1>() const {
 template <> inline VectorPiMask VectorPiSquare::of<Rank8>() const {
     //TRICK: leftForward(H7) is equal of<Rank8>(), but a bit faster
     return leftForward(H7);
+}
+
+inline std::ostream& operator << (std::ostream& out, VectorPiSquare squares) {
+    auto flags = out.flags();
+
+    out << std::hex;
+    FOR_INDEX(Pi, pi) {
+        out << ' ' << pi;
+    }
+    out << '\n';
+
+    FOR_INDEX(Pi, pi) {
+        out << std::setw(2) << static_cast<unsigned>(small_cast<unsigned char>((squares._v[pi])));
+    }
+    out << '\n';
+
+    out.flags(flags);
+    return out;
 }
 
 #endif

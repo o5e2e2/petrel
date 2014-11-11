@@ -1,6 +1,8 @@
 #ifndef BB_HPP
 #define BB_HPP
 
+#include <ostream>
+
 #include "bitops.hpp"
 #include "BitSet.hpp"
 #include "BitRank.hpp"
@@ -51,6 +53,14 @@ public:
     constexpr explicit operator __int64 () const { return static_cast<__int64>(static_cast<_t>(*this)); }
 };
 
-std::ostream& operator << (std::ostream&, Bb);
+inline std::ostream& operator << (std::ostream& out, Bb bb) {
+    FOR_INDEX(Rank, rank) {
+        FOR_INDEX(File, file) {
+            out << (bb[Square(file, rank)]? file:'.');
+        }
+        out << '\n';
+    }
+    return out;
+}
 
 #endif

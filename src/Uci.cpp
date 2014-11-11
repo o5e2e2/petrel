@@ -18,7 +18,7 @@ namespace {
 }
 
 Uci::Uci (SearchControl& s, std::ostream& out)
-    : search(s), output(out, s, chessVariant, colorToMove)
+    : search(s), output(out, chessVariant, colorToMove)
 {
     ucinewgame();
 }
@@ -36,10 +36,10 @@ bool Uci::operator() (std::istream& in) {
         if (next("position"))  { position(); }
         else if (next("go"))   { go(); }
         else if (next("stop")) { search.stop(); }
-        else if (next("isready"))    { output.isready(); }
+        else if (next("isready"))    { isready(); }
         else if (next("setoption"))  { setoption(); }
         else if (next("ucinewgame")) { ucinewgame(); }
-        else if (next("uci"))  { output.uci(); }
+        else if (next("uci"))  { output.uci(search); }
         else if (next("quit")) { std::exit(EXIT_SUCCESS); }
         else if (next("wait")) { search.wait(); }
         else if (next("echo")) { echo(); }
@@ -137,29 +137,36 @@ void Uci::go() {
 }
 
 void Uci::read_go_limits() {
-    SearchLimit& s = search_limit;
+    SearchLimit& limit = this->search_limit;
 
-    s = {};
+    limit = {};
 
     PositionMoves p(start_position);
-    s.searchmoves = p.getMoves();
+    limit.searchmoves = p.getMoves();
 
     while (command) {
-        if      (next("depth"))    { command >> s.depth; }
-        else if (next("wtime"))    { command >> ((colorToMove == White)? s.time:s.op_time); }
-        else if (next("btime"))    { command >> ((colorToMove == Black)? s.time:s.op_time); }
-        else if (next("winc"))     { command >> ((colorToMove == White)? s.inc:s.op_inc); }
-        else if (next("binc"))     { command >> ((colorToMove == Black)? s.inc:s.op_inc); }
-        else if (next("movestogo")){ command >> s.movestogo; }
-        else if (next("nodes"))    { command >> s.nodes; }
-        else if (next("movetime")) { command >> s.movetime; }
-        else if (next("ponder"))   { s.ponder = true; }
-        else if (next("infinite")) { s.infinite = true; }
-        else if (next("searchmoves")) { p.limitMoves(command, s.searchmoves, colorToMove); }
-        else if (next("perft"))    { s.perft = true; }
-        else if (next("divide"))   { s.divide = true; }
+        if      (next("depth"))    { command >> limit.depth; }
+        else if (next("wtime"))    { command >> ((colorToMove == White)? limit.time:limit.op_time); }
+        else if (next("btime"))    { command >> ((colorToMove == Black)? limit.time:limit.op_time); }
+        else if (next("winc"))     { command >> ((colorToMove == White)? limit.inc:limit.op_inc); }
+        else if (next("binc"))     { command >> ((colorToMove == Black)? limit.inc:limit.op_inc); }
+        else if (next("movestogo")){ command >> limit.movestogo; }
+        else if (next("nodes"))    { command >> limit.nodes; }
+        else if (next("movetime")) { command >> limit.movetime; }
+        else if (next("ponder"))   { limit.ponder = true; }
+        else if (next("infinite")) { limit.infinite = true; }
+        else if (next("searchmoves")) { p.limitMoves(command, limit.searchmoves, colorToMove); }
+        else if (next("perft"))    { limit.perft = true; }
+        else if (next("divide"))   { limit.divide = true; }
         else { break; }
     }
+
+    limit.depth = std::min(limit.depth, static_cast<decltype(limit.depth)>(SearchLimit::MaxDepth));
+    limit.nodes = (limit.nodes > 0)? limit.nodes : std::numeric_limits<node_count_t>::max();
+}
+
+void Uci::isready() {
+    output.isready( search.isReady() );
 }
 
 void Uci::echo() {

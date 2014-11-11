@@ -13,7 +13,7 @@ public:
     Clock () { restart(); }
     void restart() { start = clock_t::now(); }
 
-    duration_t read() {
+    duration_t read() const {
         return std::chrono::duration_cast<duration_t>(clock_t::now() - start);
     }
 };

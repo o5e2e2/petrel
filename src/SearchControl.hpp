@@ -4,18 +4,14 @@
 #include "Clock.hpp"
 #include "Move.hpp"
 #include "SearchThread.hpp"
+#include "SearchInfo.hpp"
 #include "Timer.hpp"
 #include "TranspositionTable.hpp"
 
 class Node;
-class OutputSearch;
+class SearchOutput;
 class SearchLimit;
 class Position;
-
-struct SearchInfo {
-    node_count_t nodes;
-    duration_t duration;
-};
 
 /**
  * Shared data to all search threads (currently the only one)
@@ -23,19 +19,17 @@ struct SearchInfo {
 class SearchControl {
     TranspositionTable transpositionTable;
     SearchThread searchThread;
+    SearchInfo info;
+
     Node* root;
-    OutputSearch* out;
+    SearchOutput* out;
 
     enum { TickLimit = 1000 };
     node_count_t nodeLimit;
 
-    static const depth_t MaxDepth = 1000;
     depth_t depthLimit;
 
     Timer moveTimer;
-
-    node_count_t totalNodes;
-    mutable Clock clock;
 
     SearchControl (const SearchControl&) = delete;
     SearchControl& operator = (const SearchControl&) = delete;
@@ -50,7 +44,7 @@ public:
     void releaseNodesQuota(node_quota_t&);
 
     void report_bestmove(Move);
-    void report_perft(Move, index_t, node_count_t) const;
+    void report_perft(Move, index_t, node_count_t);
     void report_perft_depth(depth_t depth, node_count_t);
 
     bool isReady() const { return searchThread.isReady(); }
@@ -58,12 +52,10 @@ public:
     void wait() { searchThread.waitReady(); }
     void stop() { searchThread.commandStop(); wait(); }
 
-    void getSearchInfo(SearchInfo&) const;
-
     TranspositionTable& tt() { return transpositionTable; }
     const TranspositionTable& tt() const { return transpositionTable; }
 
-    void go(OutputSearch&, const Position&, const SearchLimit&);
+    void go(SearchOutput&, const Position&, const SearchLimit&);
 };
 
 extern SearchControl The_game;

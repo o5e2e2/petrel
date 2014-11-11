@@ -14,12 +14,12 @@ class Move {
     typedef index_t _t;
     _t _v;
 
-    constexpr Move () : _v(0) {} //null move
     constexpr Move (Square f, Square t, Type is_special)
         : _v(static_cast<_t>(f<<FromShift | t<<ToShift | is_special<<SpecialShift))
         {}
 
 public:
+    constexpr Move () : _v(0) {} //null move
     constexpr Move (Square f, Square t)
         : _v(static_cast<_t>(f<<FromShift | t<<ToShift))
         {}

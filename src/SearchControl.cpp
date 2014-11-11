@@ -3,7 +3,8 @@
 #include "Node.hpp"
 #include "PositionFen.hpp"
 #include "SearchLimit.hpp"
-#include "OutputSearch.hpp"
+#include "SearchInfo.hpp"
+#include "SearchOutput.hpp"
 
 SearchControl::SearchControl ()
     : out{nullptr}, moveTimer{}
@@ -13,24 +14,24 @@ SearchControl::SearchControl ()
 
 void SearchControl::clear() {
     transpositionTable.clear();
-    totalNodes = 0;
-    clock.restart();
+    info.nodes = 0;
+    info.clock.restart();
 }
 
 void SearchControl::releaseNodesQuota(node_quota_t& quota) {
-    totalNodes -= quota;
+    info.nodes -= quota;
     quota = 0;
 }
 
 void SearchControl::acquireNodesQuota(node_quota_t& quota) {
-    totalNodes -= quota;
+    info.nodes -= quota;
 
     if (searchThread.isStopped()) {
         quota = 0;
         return;
     }
 
-    auto remaining = nodeLimit - totalNodes;
+    auto remaining = nodeLimit - info.nodes;
     auto q = std::max(remaining, decltype(remaining){0});
     quota = static_cast<node_quota_t>( std::min(q, decltype(q){TickLimit}) );
 
@@ -38,22 +39,22 @@ void SearchControl::acquireNodesQuota(node_quota_t& quota) {
         searchThread.commandStop();
     }
 
-    out->write_info_current();
+    out->write_info_current(info);
 
-    totalNodes += quota;
+    info.nodes += quota;
 }
 
-void SearchControl::getSearchInfo(SearchInfo& info) const {
-    info.nodes = this->totalNodes;
-    info.duration = this->clock.read();
-}
-
-void SearchControl::report_perft(Move move, index_t currmovenumber, node_count_t perftNodes) const {
-    out->report_perft(move, currmovenumber, perftNodes);
+void SearchControl::report_perft(Move move, index_t currmovenumber, node_count_t perftNodes) {
+    info.perft = perftNodes;
+    info.currmove = move;
+    info.currmovenumber = currmovenumber;
+    out->report_perft(info);
 }
 
 void SearchControl::report_perft_depth(depth_t depth, node_count_t perftNodes) {
-    out->report_perft_depth(depth, perftNodes);
+    info.perft = perftNodes;
+    info.depth = depth;
+    out->report_perft_depth(info);
 
     clear();
 
@@ -63,26 +64,26 @@ void SearchControl::report_perft_depth(depth_t depth, node_count_t perftNodes) {
 }
 
 void SearchControl::report_bestmove(Move move) {
-    out->report_bestmove(move);
+    info.bestmove = move;
+    out->report_bestmove(info);
 
     clear();
     delete root;
 }
 
-void SearchControl::go(OutputSearch& output, const Position& start_position, const SearchLimit& searchLimit) {
+void SearchControl::go(SearchOutput& output, const Position& start_position, const SearchLimit& searchLimit) {
     out = &output;
 
     clear();
 
-    depthLimit = std::min(searchLimit.depth, MaxDepth);
-    nodeLimit = (searchLimit.nodes > 0)? searchLimit.nodes : std::numeric_limits<node_count_t>::max();
+    depthLimit = searchLimit.depth;
+    nodeLimit = searchLimit.nodes;
 
     root = (searchLimit.divide)
         ? static_cast<Node*>(new NodePerftDivideRoot(depthLimit))
         : static_cast<Node*>(new NodePerftRoot(depthLimit))
     ;
 
-    moveTimer.cancel(); //cancel the timer from previous go if any
     searchThread.start(*root, start_position);
     moveTimer.start(searchThread, searchLimit.getThinkingTime() );
 }

@@ -1,8 +1,9 @@
 #include <iostream>
 
-#include "OutputUci.hpp"
+#include "UciOutput.hpp"
 #include "OutputBuffer.hpp"
 #include "SearchControl.hpp"
+#include "SearchInfo.hpp"
 #include "PositionFen.hpp"
 
 namespace {
@@ -55,19 +56,21 @@ namespace {
 
     enum nps_write_t { Raw, InfoPrefix };
     template <nps_write_t Info = Raw>
-    std::ostream& nps(std::ostream& out, node_count_t nodes, duration_t duration) {
-        if (nodes > 0) {
+    std::ostream& nps(std::ostream& out, const SearchInfo& info) {
+        if (info.nodes > 0) {
             if (Info == InfoPrefix) {
                 out << "info";
             }
 
-            out << " nodes " << nodes;
+            out << " nodes " << info.nodes;
+
+            duration_t duration = info.clock.read();
 
             if (duration > duration_t::zero()) {
                 out << " time " << duration;
 
                 if (duration >= std::chrono::milliseconds{20}) {
-                    auto _nps = (nodes * duration_t::period::den) / (duration.count() * duration_t::period::num);
+                    auto _nps = (info.nodes * duration_t::period::den) / (duration.count() * duration_t::period::num);
                     out << " nps " << _nps;
                 }
             }
@@ -81,10 +84,10 @@ namespace {
 
 }
 
-OutputUci::OutputUci (std::ostream& out, const SearchControl& s, const ChessVariant& v, const Color& c)
-    : uci_out(out), isready_waiting(false), search(s), chessVariant(v), colorToMove(c) {}
+UciOutput::UciOutput (std::ostream& out, const ChessVariant& v, const Color& c)
+    : uci_out(out), isready_waiting(false), chessVariant(v), colorToMove(c) {}
 
-void OutputUci::uci() {
+void UciOutput::uci(const SearchControl& search) {
     auto max_mb = search.tt().getMaxSizeMb();
     auto current_mb = search.tt().getSizeMb();
 
@@ -96,8 +99,8 @@ void OutputUci::uci() {
     ;
 }
 
-void OutputUci::isready() {
-    if (search.isReady()) {
+void UciOutput::isready(bool ready) {
+    if (ready) {
         OutputBuffer{uci_out} << "readyok\n";
     }
     else {
@@ -105,66 +108,62 @@ void OutputUci::isready() {
     }
 }
 
-void OutputUci::write_info_current() {
+void UciOutput::write_info_current(const SearchInfo& info) {
     if (isready_waiting) {
         isready_waiting = false;
 
         OutputBuffer out{uci_out};
-        info_nps(out);
+        info_nps(out, info);
         out << "readyok\n";
     }
 }
 
-void OutputUci::write(std::ostream& out, Move move) const {
+void UciOutput::write(std::ostream& out, Move move) const {
     ::write(out, move, colorToMove, chessVariant);
 }
 
-void OutputUci::report_bestmove(Move move) {
+void UciOutput::report_bestmove(const SearchInfo& info) {
     OutputBuffer out{uci_out};
-    info_nps(out);
+    info_nps(out, info);
     out << "bestmove ";
-    write(out, move);
+    write(out, info.bestmove);
     out << '\n';
 }
 
-void OutputUci::report_perft(Move move, index_t currmovenumber, node_count_t perftNodes) {
+void UciOutput::report_perft(const SearchInfo& info) {
     OutputBuffer out{uci_out};
-    out << "info currmovenumber " << currmovenumber << " currmove ";
-    write(out, move);
-    nps(out);
-    out << " string perft " << perftNodes << '\n';
+    out << "info currmovenumber " << info.currmovenumber << " currmove ";
+    write(out, info.currmove);
+    nps(out, info);
+    out << " string perft " << info.perft << '\n';
 }
 
-void OutputUci::report_perft_depth(depth_t depth, node_count_t perftNodes) {
+void UciOutput::report_perft_depth(const SearchInfo& info) {
     OutputBuffer out{uci_out};
-    out << "info depth " << depth;
-    nps(out);
-    out << " string perft " << perftNodes << '\n';
+    out << "info depth " << info.depth;
+    nps(out, info);
+    out << " string perft " << info.perft << '\n';
 }
 
-void OutputUci::nps(std::ostream& out) const {
-    SearchInfo info;
-    search.getSearchInfo(info);
-    ::nps<>(out, info.nodes, info.duration);
+void UciOutput::nps(std::ostream& out, const SearchInfo& info) const {
+    ::nps<>(out, info);
 }
 
-void OutputUci::info_nps(std::ostream& out) const {
-    SearchInfo info;
-    search.getSearchInfo(info);
-    ::nps<InfoPrefix>(out, info.nodes, info.duration);
+void UciOutput::info_nps(std::ostream& out, const SearchInfo& info) const {
+    ::nps<InfoPrefix>(out, info);
 }
 
-void OutputUci::info_fen(const Position& pos) {
+void UciOutput::info_fen(const Position& pos) {
     OutputBuffer out{uci_out};
     out << "info fen ";
     PositionFen::write(out, pos, colorToMove, chessVariant);
     out << '\n';
 }
 
-void OutputUci::echo(std::istream& in) {
+void UciOutput::echo(std::istream& in) {
     OutputBuffer{uci_out} << in.rdbuf() << '\n';
 }
 
-void OutputUci::error(std::istream& in) {
+void UciOutput::error(std::istream& in) {
     OutputBuffer{std::cerr} << "parsing error: " << in.rdbuf() << '\n';
 }

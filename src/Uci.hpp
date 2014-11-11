@@ -7,7 +7,7 @@
 #include "io.hpp"
 #include "Position.hpp"
 #include "SearchLimit.hpp"
-#include "OutputUci.hpp"
+#include "UciOutput.hpp"
 
 class SearchControl;
 
@@ -15,7 +15,7 @@ class Uci {
     Position start_position; //initial chess position to analyze
     SearchLimit search_limit;
     SearchControl& search;
-    OutputUci output;
+    UciOutput output;
 
     ChessVariant chessVariant; //format of castling moves output
     Color colorToMove; //initial position color for long algebraic format moves output
@@ -25,6 +25,7 @@ class Uci {
     //UCI command handlers
     void ucinewgame();
     void setoption();
+    void isready();
 
     void position();
     void set_startpos();
