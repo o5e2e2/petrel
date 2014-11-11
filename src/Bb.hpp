@@ -51,16 +51,17 @@ public:
     constexpr static Bb antidiag(Square sq) { return Bb{BB(0x8040201008040201), 8*(Rank(sq) - File(sq))} - sq; }
 
     constexpr explicit operator __int64 () const { return static_cast<__int64>(static_cast<_t>(*this)); }
-};
 
-inline std::ostream& operator << (std::ostream& out, Bb bb) {
-    FOR_INDEX(Rank, rank) {
-        FOR_INDEX(File, file) {
-            out << (bb[Square(file, rank)]? file:'.');
+    friend std::ostream& operator << (std::ostream& out, Bb bb) {
+        FOR_INDEX(Rank, rank) {
+            FOR_INDEX(File, file) {
+                out << (bb[Square(file, rank)]? file:'.');
+            }
+            out << '\n';
         }
-        out << '\n';
+        return out;
     }
-    return out;
-}
+
+};
 
 #endif
