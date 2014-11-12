@@ -13,10 +13,10 @@ class SearchControl;
 
 class Uci {
     Position start_position; //initial chess position to analyze
-    SearchLimit search_limit;
-    SearchControl& search;
+    SearchLimit limit;
     UciOutput output;
 
+    SearchControl& search;
     ChessVariant chessVariant; //format of castling moves output
     Color colorToMove; //initial position color for long algebraic format moves output
 
@@ -31,7 +31,7 @@ class Uci {
     void set_startpos();
 
     void go();
-    void read_go_limits();
+    void read_go_limits(); //defined in SearchLimits.cpp
 
     //my own UCI protocol extensions
     void echo();
