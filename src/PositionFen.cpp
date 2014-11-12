@@ -99,7 +99,7 @@ void ColorTypeSquares::readBoard(std::istream& in) {
 bool ColorTypeSquares::setupBoard(Position& pos, Color colorToMove) {
     pos = {};
 
-    //kings should be placed before any opponent's non king piece
+    //kings should be placed before any opponent's non king pieces
     FOR_INDEX(Color, color) {
         if (colorTypeSquares[color][King].empty()) {
             return false;

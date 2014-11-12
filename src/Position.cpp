@@ -80,9 +80,9 @@ bool Position::drop(Side My, PieceType ty, Square to) {
         assert (ty == MY.typeOf(pi));
     }
     else {
+        //TRICK: king should be dropped before any opponents non-king pieces
         MY.drop(TheKing, King, to);
-        setKing(My, to);
-
+        MY.setLeaperAttack(TheKing, King, to);
         MY.assertValid(TheKing);
     }
     return true;
@@ -194,14 +194,6 @@ void Position::setLegalEnPassant(Pi victim) {
     }
 }
 
-void Position::setKing(Side My, Square to) {
-    const Side::_t Op{static_cast<Side::_t>(My ^ Side::Mask)};
-
-    MY.setLeaperAttack(TheKing, King, to);
-    MY.clearCastlings();
-    OP.updatePinRays(~to);
-}
-
 void Position::set(Side My, Pi pi, PieceType ty, Square to) {
     const Side::_t Op{static_cast<Side::_t>(My ^ Side::Mask)};
 
@@ -228,16 +220,40 @@ void Position::move(Pi pi, Square from, Square to) {
     assert (from == MY.squareOf(pi));
 
     PieceType ty{MY.typeOf(pi)};
+    assert (ty != King);
 
     MY.move(pi, ty, from, to);
 
-    if (ty != King) {
-        set(My, pi, ty, to);
+    set(My, pi, ty, to);
+
+    MY.assertValid(pi);
+}
+
+template <Side::_t My>
+void Position::makeKingMove(Square from, Square to) {
+    const Side::_t Op{static_cast<Side::_t>(My ^ Side::Mask)};
+
+    Pi pi = TheKing;
+
+    MY.assertValid(pi);
+    assert (from == MY.squareOf(pi));
+    assert ( MY.typeOf(pi) == King );
+
+    MY.moveKing(from, to);
+    OP.updatePinRays(~to);
+
+    MY.assertValid(pi);
+
+    if (OP[~to]) {
+        //capture
+        OP.capture(~to);
+        updateSliderAttacksKing<My>(MY.attacksTo(from));
     }
     else {
-        setKing(My, to);
+        //non-capture
+        updateSliderAttacksKing<My>(MY.attacksTo(from, to));
     }
-    MY.assertValid(pi);
+
 }
 
 template <Side::_t My>
@@ -260,7 +276,7 @@ void Position::makeCastling(Pi rook, Square rookFrom, Square kingFrom) {
     MY.castle(rook, rookFrom, rookTo, kingFrom, kingTo);
 
     MY.updatePinRays(~OP.kingSquare(), rook);
-    setKing(My, kingTo);
+    OP.updatePinRays(~kingTo);
 
     //TRICK: castling should not affect opponent's sliders, otherwise it is check or pin
     //TRICK: castling rook should attack 'kingFrom' square
@@ -308,7 +324,7 @@ void Position::makePawnMove(Pi pi, Square from, Square to) {
         else {
             //simple pawn capture
             move<My>(pi, from, to);
-            updateSliderAttacksKing<My>(MY.attacksTo(from) | pi);
+            updateSliderAttacksKing<My>(MY.attacksTo(from));
             updateSliderAttacks<Op>(OP.attacksTo(~from));
         }
     }
@@ -342,6 +358,9 @@ void Position::makeMove(Square from, Square to) {
     if (MY.is<Pawn>(pi)) {
         makePawnMove<My>(pi, from, to);
     }
+    else if (from == MY.kingSquare()) {
+        makeKingMove<My>(from, to);
+    }
     else if (OP[~to]) {
         //simple non-pawn capture
         OP.capture(~to);
@@ -349,14 +368,16 @@ void Position::makeMove(Square from, Square to) {
         updateSliderAttacksKing<My>(MY.attacksTo(from) | pi);
         updateSliderAttacks<Op>(OP.attacksTo(~from));
     }
-    else if (to == MY.kingSquare()) {
-        makeCastling<My>(pi, from, to);
-    }
     else {
-        //simple non-pawn move
-        move<My>(pi, from, to);
-        updateSliderAttacksKing<My>(MY.attacksTo(from, to));
-        updateSliderAttacks<Op>(OP.attacksTo(~from, ~to));
+        if (to == MY.kingSquare()) {
+            makeCastling<My>(pi, from, to);
+        }
+        else {
+            //simple non-pawn move
+            move<My>(pi, from, to);
+            updateSliderAttacksKing<My>(MY.attacksTo(from, to));
+            updateSliderAttacks<Op>(OP.attacksTo(~from, ~to));
+        }
     }
 }
 

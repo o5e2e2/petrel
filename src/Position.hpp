@@ -17,13 +17,13 @@ private:
     Position& operator = (const Position&) = delete;
     Position (const Position&) = delete;
 
-    void setKing(Side, Square);
     void set(Side, Pi, PieceType, Square);
 
     template <Side::_t> void move(Pi, Square, Square);
     template <Side::_t> void updateSliderAttacks(VectorPiMask);
     template <Side::_t> void updateSliderAttacksKing(VectorPiMask); //remove king to avoid hiding it under its own shadow when in check
 
+    template <Side::_t> void makeKingMove(Square, Square);
     template <Side::_t> void makePawnMove(Pi, Square, Square);
     template <Side::_t> void makeCastling(Pi, Square, Square);
 

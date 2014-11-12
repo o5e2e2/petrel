@@ -82,6 +82,7 @@ public:
     void capture(Square);
     void clear(Pi, PieceType, Square);
     void move(Pi, PieceType, Square, Square);
+    void moveKing(Square, Square);
     void promote(Pi, PromoType, Square, Square);
     void castle(Pi rook, Square rookFrom, Square rookTo, Square kingFrom, Square kingTo);
 

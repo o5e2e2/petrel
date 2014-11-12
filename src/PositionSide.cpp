@@ -109,6 +109,12 @@ void PositionSide::move(Pi pi, PieceType ty, Square from, Square to) {
     assertValid(pi);
 }
 
+void PositionSide::moveKing(Square from, Square to) {
+    move(TheKing, King, from, to);
+    setLeaperAttack(TheKing, King, to);
+    clearCastlings();
+}
+
 void PositionSide::castle(Pi rook, Square rookFrom, Square rookTo, Square kingFrom, Square kingTo) {
     squares.castle(rook, rookTo, TheKing, kingTo);
 
@@ -116,6 +122,9 @@ void PositionSide::castle(Pi rook, Square rookFrom, Square rookTo, Square kingFr
     clear(Rook, rookFrom);
     drop(Rook, rookTo);
     drop(King, kingTo);
+
+    setLeaperAttack(TheKing, King, kingTo);
+    clearCastlings();
 }
 
 void PositionSide::setLeaperAttack(Pi pi, PieceType ty, Square to) {

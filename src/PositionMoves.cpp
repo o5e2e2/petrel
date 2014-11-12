@@ -29,7 +29,7 @@ template <Side::_t My>
 void PositionMoves::generateUnderpromotions() {
     const Side::_t Op{static_cast<Side::_t>(My ^ Side::Mask)};
 
-    //TRICK: promoted piece type encoded inside pawn destination square
+    //TRICK: promoted piece type encoded inside pawn destination square rank
     VectorPiRank promotions = moves[Rank8] & VectorPiRank{MY.pawns()};
 
     static_assert (static_cast<Rank::_t>(Queen) == Rank8, "invalid promotion piece encoding");
@@ -53,6 +53,7 @@ void PositionMoves::generateCastlingMoves() {
 
     for (Pi pi : MY.castlingRooks()) {
         if ( ::castlingRules.isLegal(MY.castlingSideOf(pi), OCCUPIED, attacked) ) {
+            //castling encoded as the rook moves over the own king square
             moves.add(pi, MY.kingSquare());
         }
     }
@@ -185,24 +186,24 @@ void PositionMoves::generateMoves() {
         return;
     }
 
-    //the most general case: captures and non captures for all pieces, except pawns
+    //the most general case: captures and non captures for all pieces
     moves = MY.allAttacks() % MY.occ();
 
+    //pawns moves treated separately
     generatePawnMoves<My>();
+
     generateCastlingMoves<My>();
 
-    //TRICK: castling encoded as a rook move
-    //so we implicitly cover the case of pinned castling in Chess960
+    //TRICK: castling encoded as a rook move, so we implicitly cover the case of pinned castling in Chess960
     excludePinnedMoves<My>(OP.pinnerCandidates());
 
-    //underpromotions for each already tested legal queen promotion
+    //add underpromotions for each already generated legal queen promotion
     generateUnderpromotions<My>();
 
     if (MY.hasEnPassant()) {
         generateEnPassantMoves<My>();
     }
 
-    //king moves generated separately
     generateKingMoves<My>();
 }
 
