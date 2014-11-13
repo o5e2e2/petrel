@@ -87,7 +87,7 @@ wait
 
 echo 124381396:
 position fen rbbknnqr/pppppppp/8/8/8/8/PPPPPPPP/RBBKNNQR w KQkq - 0 1
-go depth 6
+go depth 5
 wait
 
 echo 493407574:
