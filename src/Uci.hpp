@@ -31,7 +31,7 @@ class Uci {
     void set_startpos();
 
     void go();
-    void read_go_limits(); //defined in SearchLimits.cpp
+    void read_go_limits(); //defined in SearchLimit.cpp
 
     //my own UCI protocol extensions
     void echo();
