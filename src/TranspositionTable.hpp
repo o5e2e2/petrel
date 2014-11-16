@@ -37,10 +37,10 @@ public:
    ~TranspositionTable () { delete[] hash; }
 
     size_type getMaxSize() const { return MaxHash; }
-    unsigned  getMaxSizeMb() const { return getMaxSize() / Mega; }
+	unsigned  getMaxSizeMb() const { return small_cast<unsigned>(getMaxSize() / Mega); }
 
     size_type getSize() const { return size; }
-    unsigned  getSizeMb() const { return getSize() / Mega; }
+	unsigned  getSizeMb() const { return small_cast<unsigned>(getSize() / Mega); }
 
     size_type resize(size_type bytes) {
         bytes = std::min(bytes, getMaxSize());

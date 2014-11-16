@@ -1,4 +1,5 @@
 #include "io.hpp"
+#include <cctype>
 
 namespace io {
     void fail_here(std::istream& in) {
