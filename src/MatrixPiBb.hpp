@@ -37,6 +37,10 @@ public:
         }
     }
 
+    void clear(Pi pi, Square sq) {
+        matrix[Rank(sq)] -= VectorPiRank{File(sq)} & VectorPiMask{pi};
+    }
+
     void clear(Pi pi) {
         FOR_INDEX(Rank, rank) {
             matrix[rank] %= VectorPiMask{pi};
@@ -54,6 +58,14 @@ public:
         }
     }
 
+    void add(Pi pi, Rank rank, File file) {
+        matrix[rank] += VectorPiRank{file} & VectorPiMask{pi};
+    }
+
+    void add(Pi pi, Square sq) {
+        add(pi, Rank{sq}, File{sq});
+    }
+
     void add(Pi pi, Bb b) {
         FOR_INDEX(Rank, rank) {
             matrix[rank] += VectorPiRank{b[rank]} & VectorPiMask{pi};
@@ -61,19 +73,7 @@ public:
     }
 
     bool is(Pi pi, Square sq) const {
-        return (matrix[Rank{sq}] & VectorPiMask{pi} & VectorPiRank{File{sq}}).any();
-    }
-
-    void add(Pi pi, Square sq) {
-        add(pi, File{sq}, Rank{sq});
-    }
-
-    void add(Pi pi, File file, Rank rank) {
-        matrix[rank] += VectorPiRank{file} & VectorPiMask{pi};
-    }
-
-    void clear(Pi pi, Square sq) {
-        matrix[Rank(sq)] -= VectorPiRank{File(sq)} & VectorPiMask{pi};
+        return (matrix[Rank{sq}] & VectorPiRank{File{sq}} & VectorPiMask{pi}).any();
     }
 
     const VectorPiRank& operator[] (Rank rank) const {

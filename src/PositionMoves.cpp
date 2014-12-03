@@ -65,20 +65,58 @@ void PositionMoves::generatePawnMoves() {
 
     for (Pi pi : MY.pawns()) {
         Square from{ MY.squareOf(pi) };
-        BitRank self{File{from}};
-        Rank rank{ up(Rank{from}) };
+        Rank rankTo{ up(Rank{from}) };
+        BitRank fileTo{File{from}};
 
-        BitRank b = moves[rank][pi];
-        b &= OCCUPIED[rank]; //remove "captures" of free squares
-        b += self % OCCUPIED[rank]; //add pawn push
-        moves.set(pi, rank, b);
+        //push to free square
+        fileTo %= OCCUPIED[rankTo];
 
-        if (rank == Rank3) {
-            //pawns double push
-            BitRank r4 = self % OCCUPIED[rank] % OCCUPIED[Rank4];
-            moves.set(pi, Rank4, r4);
+        //double push
+        if ((rankTo == Rank3) && (fileTo % OCCUPIED[Rank4]).any()) {
+            moves.set(pi, Rank4, fileTo);
+        }
+
+        //remove "captures" of free squares from default generated moves
+        fileTo += moves[rankTo][pi] & OCCUPIED[rankTo];
+
+        moves.set(pi, rankTo, fileTo);
+    }
+}
+
+template <Side::_t My>
+void PositionMoves::correctCheckEvasionsByPawns(Bb checkLine, Square checkFrom) {
+    const Side::_t Op{static_cast<Side::_t>(My ^ Side::Mask)};
+
+    //after generic move generation
+    //we need to correct moves of some pawns
+    {
+        //potential locations of the pawns which default generated moves should be corrected
+        Bb badPawnsPlaces{checkLine << 8}; //simple pawn push over check line
+
+        //the general case generates invalid diagonal moves to empty squares
+        badPawnsPlaces |= (checkLine << 9) % Bb{FileA};
+        badPawnsPlaces |= (checkLine << 7) % Bb{FileH};
+
+        for (Square from : MY.occPawns() & badPawnsPlaces) {
+            Pi pi{MY.pieceOn(from)};
+
+            Bb b{Bb{from.rankUp()} % OCCUPIED & checkLine};
+            b += ::pieceTypeAttack(Pawn, from) & checkFrom;
+
+            Rank rank{from.rankUp()};
+            moves.set(pi, rank, b[rank]);
         }
     }
+
+    //pawns double push over check line
+    {
+        Bb badPawnsPlaces{ (checkLine<<16) % (Bb{OCCUPIED}<<8) & Bb{Rank2} };
+        for (Square from : MY.occPawns() & badPawnsPlaces) {
+            Pi pi{MY.pieceOn(from)};
+            moves.add(pi, Rank4, File{from});
+        }
+    }
+
 }
 
 //exclude illegal moves due pin
@@ -100,41 +138,6 @@ void PositionMoves::excludePinnedMoves(VectorPiMask pinnerCandidates) {
             moves.filter(pinned, pinLine + pinFrom);
         }
     }
-}
-
-template <Side::_t My>
-void PositionMoves::correctCheckEvasionsByPawns(Bb checkLine, Square checkFrom) {
-    const Side::_t Op{static_cast<Side::_t>(My ^ Side::Mask)};
-
-    //after generic move generation
-    //we need to correct moves of some pawns
-    {
-        Bb possiblePawns{checkLine << 8}; //simple pawn push over check line
-
-        //the general case generates invalid diagonal moves to empty squares
-        possiblePawns |= (checkLine << 9) % Bb{FileA};
-        possiblePawns |= (checkLine << 7) % Bb{FileH};
-
-        for (Square from : MY.occPawns() & possiblePawns) {
-            Pi pi{MY.pieceOn(from)};
-
-            Bb b{Bb{from.rankUp()} % OCCUPIED & checkLine};
-            b += ::pieceTypeAttack(Pawn, from) & checkFrom;
-
-            Rank rank{from.rankUp()};
-            moves.set(pi, rank, b[rank]);
-        }
-    }
-
-    //pawns double push over check line
-    {
-        Bb possiblePawns{Bb{Rank2} % (Bb{OCCUPIED}<<8) & checkLine<<16};
-        for (Square from : MY.occPawns() & possiblePawns) {
-            Pi pi{MY.pieceOn(from)};
-            moves.add(pi, File{from}, Rank4);
-        }
-    }
-
 }
 
 template <Side::_t My>
