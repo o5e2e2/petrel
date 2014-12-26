@@ -36,7 +36,7 @@ class Uci {
     void echo();
     void call();
 
-    bool next(io::literal);
+    bool next(io::literal keyword) { return io::next(command, keyword); }
 
 public:
     Uci (SearchControl&, std::ostream& = std::cout);

@@ -6,14 +6,14 @@
 class Node;
 class Position;
 
-class SearchThread : public ThreadControl<SearchThread> {
+class SearchThread : public ThreadControl {
     Node* node;
     const Position* pos;
 
 public:
     SearchThread ();
     void start(Node&, const Position&);
-    void thread_body();
+    void thread_body() override;
 };
 
 #endif

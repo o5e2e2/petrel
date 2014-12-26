@@ -51,10 +51,6 @@ bool Uci::operator() (const std::string& filename) {
     return operator()(file);
 }
 
-bool Uci::next(io::literal keyword) {
-    return io::next(this->command, keyword);
-}
-
 void Uci::setoption() {
     next("name");
 

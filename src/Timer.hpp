@@ -3,7 +3,6 @@
 
 #include "Clock.hpp"
 #include "Pool.hpp"
-#include "SearchThread.hpp"
 #include "ThreadControl.hpp"
 
 class Timer {
@@ -11,18 +10,18 @@ class Timer {
     typedef Pool<TimerThread> TimerPool;
     static TimerPool timerPool;
 
-    class TimerThread : public ThreadControl<TimerThread> {
+    class TimerThread : public ThreadControl {
         TimerPool::element_type thisTimer;
-        SearchThread* searchThread;
+        ThreadControl* slaveThread;
         duration_t duration;
 
     public:
-        void thread_body() {
+        void thread_body() override {
             std::this_thread::sleep_for(duration);
 
             if (!this->isStopped()) {
                 //signal timeout only if the timer is still active
-                searchThread->commandStop();
+                slaveThread->commandStop();
 
                 //wait for release
                 this->waitStop();
@@ -32,9 +31,9 @@ class Timer {
             timerPool.release(std::move(thisTimer));
         }
 
-        void start(TimerPool::element_type t, SearchThread& s, duration_t d) {
+        void start(TimerPool::element_type t, ThreadControl& s, duration_t d) {
             thisTimer = t;
-            searchThread = &s;
+            slaveThread = &s;
             duration = d;
 
             this->commandRun();
@@ -50,13 +49,13 @@ public:
     Timer () {}
    ~Timer () { cancel(); }
 
-    void start(SearchThread& searchThread, duration_t duration) {
+    void start(ThreadControl& slaveThread, duration_t duration) {
         cancel();
 
         //zero duration means no timer
         if (duration != duration_t::zero()) {
             thisTimer = timerPool.acquire();
-            timerPool[thisTimer].start(thisTimer, searchThread, duration);
+            timerPool[thisTimer].start(thisTimer, slaveThread, duration);
         }
     }
 

@@ -5,7 +5,6 @@
 #include <mutex>
 #include <thread>
 
-template <class _Self>
 class ThreadControl {
     std::mutex status_mutex;
     std::condition_variable status_wait;
@@ -46,12 +45,14 @@ public:
         auto infinite_loop = [this] {
             for (;;) {
                 wait(Run);
-                static_cast<_Self*>(this)->thread_body();
+                this->thread_body();
                 signal(Ready);
             }
         };
         std::thread(infinite_loop).detach();
     }
+
+    virtual void thread_body() = 0;
 
     bool isReady() const { return status == Ready; }
     bool isStopped() const { return status == Stop; }
