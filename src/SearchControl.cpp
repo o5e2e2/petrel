@@ -74,19 +74,19 @@ void SearchControl::report_bestmove(node_quota_t& quota, Move bestmove) {
     delete root;
 }
 
-void SearchControl::go(SearchOutput& output, const Position& startPosition, const SearchLimit& searchLimit) {
+void SearchControl::go(SearchOutput& output, const Position& startPosition, const SearchLimit& goLimit) {
     out = &output;
 
     clear();
 
-    depthLimit = searchLimit.depth;
-    nodeLimit = searchLimit.nodes;
+    depthLimit = goLimit.getDepth();
+    nodeLimit = goLimit.getNodes();
 
-    root = (searchLimit.divide)
+    root = (goLimit.getDivide())
         ? static_cast<Node*>(new NodePerftDivideRoot(depthLimit))
         : static_cast<Node*>(new NodePerftRoot(depthLimit))
     ;
 
     searchThread.start(*root, startPosition);
-    moveTimer.start(searchThread, searchLimit.getThinkingTime() );
+    moveTimer.start(searchThread, goLimit.getThinkingTime() );
 }

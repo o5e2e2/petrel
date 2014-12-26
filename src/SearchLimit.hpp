@@ -8,9 +8,7 @@
 
 class Position;
 
-struct SearchLimit {
-    friend class Uci;
-
+class SearchLimit {
     static const depth_t MaxDepth = 1000;
 
     duration_t time;
@@ -32,10 +30,15 @@ struct SearchLimit {
 
     MatrixPiBb searchmoves;
 
+    void clear() { *this = {}; }
+
 public:
     SearchLimit ();
-    void clear() { *this = {}; }
     void read(std::istream&, const Position&, color_t);
+
+    depth_t      getDepth()  const { return depth; }
+    node_count_t getNodes()  const { return nodes;}
+    bool         getDivide() const { return divide; }
 
     duration_t getThinkingTime() const;
 };
