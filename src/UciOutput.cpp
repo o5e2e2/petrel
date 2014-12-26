@@ -91,7 +91,8 @@ void UciOutput::uci(const SearchControl& search) {
     auto max_mb = search.tt().getMaxSizeMb();
     auto current_mb = search.tt().getSizeMb();
 
-    OutputBuffer{uci_out} << "id name " << io::app_version << '\n'
+    OutputBuffer{uci_out}
+        << "id name " << io::app_version << '\n'
         << "id author Aleks Peshkov\n"
         << "option name UCI_Chess960 type check default " << (chessVariant == Chess960? "true":"false") << '\n'
         << "option name Hash type spin min 0 max " << max_mb << " default " << current_mb << '\n'
