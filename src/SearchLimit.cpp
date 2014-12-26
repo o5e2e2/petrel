@@ -20,7 +20,7 @@ SearchLimit::SearchLimit () :
 
     nodes(std::numeric_limits<node_count_t>::max()),
     movestogo(0),
-    depth(MaxDepth),
+    depth(0),
     mate(0),
 
     ponder(false),
