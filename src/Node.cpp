@@ -75,8 +75,7 @@ bool NodePerftDivide::operator() (const Position& parent) {
             child.perftNodes = 0;
             CUT (child(pos));
 
-            The_game.releaseNodesQuota(child.nodesRemaining);
-            The_game.report_perft(parent.createMove(My, from, to), ++currmovenumber, child.perftNodes);
+            The_game.report_perft(child.nodesRemaining, parent.createMove(My, from, to), ++currmovenumber, child.perftNodes);
 
             perftNodes += child.perftNodes;
         }
@@ -88,8 +87,7 @@ bool NodePerftDivide::operator() (const Position& parent) {
 bool NodePerftRoot::operator() (const Position& parent) {
     if (draft > 0) {
         if (! NodePerft::operator()(parent) ) {
-            The_game.releaseNodesQuota(nodesRemaining);
-            The_game.report_perft_depth(draft, perftNodes);
+            The_game.report_perft_depth(nodesRemaining, draft, perftNodes);
         }
     }
     else {
@@ -97,35 +95,30 @@ bool NodePerftRoot::operator() (const Position& parent) {
             perftNodes = 0;
             draft = iteration;
             if (! NodePerft::operator()(parent) ) {
-                The_game.releaseNodesQuota(nodesRemaining);
-                The_game.report_perft_depth(iteration, perftNodes);
+                The_game.report_perft_depth(nodesRemaining, iteration, perftNodes);
             }
         }
     }
 
-    The_game.releaseNodesQuota(nodesRemaining);
-    The_game.report_bestmove(Move::null());
+    The_game.report_bestmove(nodesRemaining, Move::null());
     return true;
 }
 
 bool NodePerftDivideRoot::operator() (const Position& parent) {
     if (draft > 0) {
         if (! NodePerftDivide::operator()(parent) ) {
-            The_game.releaseNodesQuota(nodesRemaining);
-            The_game.report_perft_depth(draft, perftNodes);
+            The_game.report_perft_depth(nodesRemaining, draft, perftNodes);
         }
     }
     else {
         for (depth_t iteration{1}; !The_game.isStopped(); ++iteration) {
             draft = iteration;
             if (! NodePerftDivide::operator()(parent) ) {
-                The_game.releaseNodesQuota(nodesRemaining);
-                The_game.report_perft_depth(iteration, perftNodes);
+                The_game.report_perft_depth(nodesRemaining, iteration, perftNodes);
             }
         }
     }
 
-    The_game.releaseNodesQuota(nodesRemaining);
-    The_game.report_bestmove(Move::null());
+    The_game.report_bestmove(nodesRemaining, Move::null());
     return true;
 }

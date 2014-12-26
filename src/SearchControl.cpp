@@ -14,8 +14,7 @@ SearchControl::SearchControl ()
 
 void SearchControl::clear() {
     transpositionTable.clear();
-    info.nodes = 0;
-    info.clock.restart();
+    info.clear();
 }
 
 void SearchControl::releaseNodesQuota(node_quota_t& quota) {
@@ -24,36 +23,38 @@ void SearchControl::releaseNodesQuota(node_quota_t& quota) {
 }
 
 void SearchControl::acquireNodesQuota(node_quota_t& quota) {
-    info.nodes -= quota;
+    releaseNodesQuota(quota);
 
     if (searchThread.isStopped()) {
-        quota = 0;
         return;
     }
 
-    auto remaining = nodeLimit - info.nodes;
-    auto q = std::max(remaining, decltype(remaining){0});
-    quota = static_cast<node_quota_t>( std::min(q, decltype(q){TickLimit}) );
-
-    if (quota == 0) {
+    if (info.nodes >= nodeLimit) {
         searchThread.commandStop();
+    }
+    else {
+        auto remaining = nodeLimit - info.nodes;
+        quota = static_cast<node_quota_t>( std::min(remaining, decltype(remaining){TickLimit}) );
+        info.nodes += quota;
     }
 
     out->write_info_current(info);
-
-    info.nodes += quota;
 }
 
-void SearchControl::report_perft(Move move, index_t currmovenumber, node_count_t perftNodes) {
-    info.perft = perftNodes;
-    info.currmove = move;
+void SearchControl::report_perft(node_quota_t& quota, Move currmove, index_t currmovenumber, node_count_t perft) {
+    releaseNodesQuota(quota);
+
+    info.currmove = currmove;
     info.currmovenumber = currmovenumber;
+    info.perft = perft;
     out->report_perft(info);
 }
 
-void SearchControl::report_perft_depth(depth_t depth, node_count_t perftNodes) {
-    info.perft = perftNodes;
+void SearchControl::report_perft_depth(node_quota_t& quota, depth_t depth, node_count_t perft) {
+    releaseNodesQuota(quota);
+
     info.depth = depth;
+    info.perft = perft;
     out->report_perft_depth(info);
 
     clear();
@@ -63,8 +64,10 @@ void SearchControl::report_perft_depth(depth_t depth, node_count_t perftNodes) {
     }
 }
 
-void SearchControl::report_bestmove(Move move) {
-    info.bestmove = move;
+void SearchControl::report_bestmove(node_quota_t& quota, Move bestmove) {
+    releaseNodesQuota(quota);
+
+    info.bestmove = bestmove;
     out->report_bestmove(info);
 
     clear();

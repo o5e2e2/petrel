@@ -13,6 +13,12 @@ struct SearchInfo {
     Move currmove;
     index_t currmovenumber;
     depth_t depth;
+
+    void clear() {
+        nodes = 0;
+        clock.restart();
+    }
+
 };
 
 #endif
