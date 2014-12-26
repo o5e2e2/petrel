@@ -15,7 +15,6 @@ class Timer {
         ThreadControl* slaveThread;
         duration_t duration;
 
-    public:
         void thread_body() override {
             std::this_thread::sleep_for(duration);
 
@@ -31,6 +30,7 @@ class Timer {
             timerPool.release(std::move(thisTimer));
         }
 
+    public:
         void start(TimerPool::element_type t, ThreadControl& s, duration_t d) {
             thisTimer = t;
             slaveThread = &s;

@@ -9,6 +9,8 @@ public:
     virtual void report_bestmove(const SearchInfo&) =0;
     virtual void report_perft_depth(const SearchInfo&) =0;
     virtual void report_perft_divide(const SearchInfo&) =0;
+
+    virtual ~SearchOutput() {}
 };
 
 #endif

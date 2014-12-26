@@ -10,10 +10,11 @@ class SearchThread : public ThreadControl {
     Node* node;
     const Position* pos;
 
+    void thread_body() override;
+
 public:
     SearchThread ();
     void start(Node&, const Position&);
-    void thread_body() override;
 };
 
 #endif

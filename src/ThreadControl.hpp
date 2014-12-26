@@ -40,6 +40,8 @@ class ThreadControl {
     ThreadControl (const ThreadControl&) = delete;
     ThreadControl& operator = (const ThreadControl&) = delete;
 
+    virtual void thread_body() = 0;
+
 public:
     ThreadControl () : status{Ready} {
         auto infinite_loop = [this] {
@@ -52,7 +54,7 @@ public:
         std::thread(infinite_loop).detach();
     }
 
-    virtual void thread_body() = 0;
+    virtual ~ThreadControl() {}
 
     bool isReady() const { return status == Ready; }
     bool isStopped() const { return status == Stop; }
