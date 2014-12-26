@@ -9,7 +9,8 @@
  **/
 template <class Element>
 class Pool {
-    std::mutex pool_mutex;
+    std::mutex list_mutex;
+    typedef std::lock_guard<decltype(list_mutex)> lock_guard;
 
     typedef std::forward_list<Element> list_t;
     list_t used;
@@ -23,7 +24,7 @@ public:
     void clear(element_type& that) { that = used.end(); }
 
     element_type acquire() {
-        std::lock_guard<decltype(pool_mutex)> lock{pool_mutex};
+        lock_guard lock{list_mutex};
 
         if (ready.empty()) {
             used.emplace_front();
@@ -38,7 +39,7 @@ public:
     //return the used element to the ready list
     void release(element_type&& element) {
         if (!empty(element)) {
-            std::lock_guard<decltype(pool_mutex)> lock{pool_mutex};
+            lock_guard lock{list_mutex};
 
             ready.splice_after(ready.before_begin(), used, element);
             clear(element);
