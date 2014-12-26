@@ -45,7 +45,7 @@ public:
     void acquireNodesQuota(node_quota_t&);
 
     void report_bestmove(node_quota_t&, Move);
-    void report_perft(node_quota_t&, Move, index_t, node_count_t);
+    void report_perft_divide(node_quota_t&, Move, index_t, node_count_t);
     void report_perft_depth(node_quota_t&, depth_t depth, node_count_t);
 
     bool isReady() const { return searchThread.isReady(); }

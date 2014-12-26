@@ -27,7 +27,7 @@ public:
     void write_info_current(const SearchInfo&) override;
     void report_bestmove(const SearchInfo&) override;
     void report_perft_depth(const SearchInfo&) override;
-    void report_perft(const SearchInfo&) override;
+    void report_perft_divide(const SearchInfo&) override;
 
     //called from Uci
     void uci(const SearchControl&);

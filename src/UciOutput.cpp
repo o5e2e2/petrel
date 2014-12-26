@@ -130,7 +130,7 @@ void UciOutput::report_bestmove(const SearchInfo& info) {
     out << '\n';
 }
 
-void UciOutput::report_perft(const SearchInfo& info) {
+void UciOutput::report_perft_divide(const SearchInfo& info) {
     OutputBuffer out{uci_out};
     out << "info currmovenumber " << info.currmovenumber << " currmove ";
     write(out, info.currmove);
