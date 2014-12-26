@@ -12,8 +12,8 @@
 class SearchControl;
 
 class Uci {
-    Position start_position; //initial chess position to analyze
-    SearchLimit limit;
+    Position startPosition; //initial chess position to analyze
+    SearchLimit goLimit;
     UciOutput output;
 
     SearchControl& search;
@@ -31,7 +31,6 @@ class Uci {
     void set_startpos();
 
     void go();
-    void read_go_limits(); //defined in SearchLimit.cpp
 
     //my own UCI protocol extensions
     void echo();

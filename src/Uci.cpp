@@ -85,7 +85,7 @@ void Uci::setoption() {
 
 void Uci::position() {
     if (next("")) {
-        output.info_fen(start_position);
+        output.info_fen(startPosition);
         return;
     }
 
@@ -99,17 +99,17 @@ void Uci::position() {
     }
 
     if (next("fen")) {
-        PositionFen::read(command, start_position, colorToMove);
+        PositionFen::read(command, startPosition, colorToMove);
     }
 
     next("moves");
 
-    colorToMove = PositionMoves{start_position}.makeMoves(command, colorToMove);
+    colorToMove = PositionMoves{startPosition}.makeMoves(command, colorToMove);
 }
 
 void Uci::set_startpos() {
     std::istringstream startpos{"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"};
-    PositionFen::read(startpos, start_position, colorToMove);
+    PositionFen::read(startpos, startPosition, colorToMove);
 }
 
 void Uci::go() {
@@ -118,9 +118,8 @@ void Uci::go() {
         return;
     }
 
-    read_go_limits();
-
-    search.go(output, start_position, limit);
+    goLimit.read(command, startPosition, colorToMove);
+    search.go(output, startPosition, goLimit);
 }
 
 void Uci::isready() {

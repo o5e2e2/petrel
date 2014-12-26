@@ -2,13 +2,16 @@
 #define SEARCH_LIMIT_HPP
 
 #include "typedefs.hpp"
+#include "io.hpp"
 #include "Clock.hpp"
 #include "MatrixPiBb.hpp"
+
+class Position;
 
 struct SearchLimit {
     friend class Uci;
 
-    enum { MaxDepth = 1000 };
+    static const depth_t MaxDepth = 1000;
 
     duration_t time;
     duration_t op_time;
@@ -31,6 +34,9 @@ struct SearchLimit {
 
 public:
     SearchLimit ();
+    void clear() { *this = {}; }
+    void read(std::istream&, const Position&, color_t);
+
     duration_t getThinkingTime() const;
 };
 

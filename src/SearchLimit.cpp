@@ -1,5 +1,4 @@
 #include "SearchLimit.hpp"
-#include "Uci.hpp"
 #include "PositionMoves.hpp"
 
 namespace {
@@ -21,41 +20,40 @@ SearchLimit::SearchLimit () :
 
     nodes(std::numeric_limits<node_count_t>::max()),
     movestogo(0),
-    depth(0),
+    depth(MaxDepth),
     mate(0),
 
     ponder(false),
     infinite(false),
-    perft(true), //TRICK
+    perft(false),
     divide(false),
 
     searchmoves()
 {}
 
-void Uci::read_go_limits() {
-    limit = {};
+void SearchLimit::read(std::istream& command, const Position& startPosition, color_t colorToMove) {
+    clear();
+    perft = true; //DEBUG
 
-    PositionMoves p(start_position);
-    limit.searchmoves = p.getMoves();
+    PositionMoves p(startPosition);
+    searchmoves = p.getMoves();
 
     while (command) {
-        if      (next("depth"))    { command >> limit.depth; }
-        else if (next("wtime"))    { command >> ((colorToMove == White)? limit.time:limit.op_time); }
-        else if (next("btime"))    { command >> ((colorToMove == Black)? limit.time:limit.op_time); }
-        else if (next("winc"))     { command >> ((colorToMove == White)? limit.inc:limit.op_inc); }
-        else if (next("binc"))     { command >> ((colorToMove == Black)? limit.inc:limit.op_inc); }
-        else if (next("movestogo")){ command >> limit.movestogo; }
-        else if (next("nodes"))    { command >> limit.nodes; }
-        else if (next("movetime")) { command >> limit.movetime; }
-        else if (next("ponder"))   { limit.ponder = true; }
-        else if (next("infinite")) { limit.infinite = true; }
-        else if (next("searchmoves")) { p.limitMoves(command, limit.searchmoves, colorToMove); }
-        else if (next("perft"))    { limit.perft = true; }
-        else if (next("divide"))   { limit.divide = true; }
+        if      (io::next(command, "depth"))    { command >> depth; depth = std::min(depth, MaxDepth); }
+        else if (io::next(command, "wtime"))    { command >> ((colorToMove == White)? time:op_time); }
+        else if (io::next(command, "btime"))    { command >> ((colorToMove == Black)? time:op_time); }
+        else if (io::next(command, "winc"))     { command >> ((colorToMove == White)? inc:op_inc); }
+        else if (io::next(command, "binc"))     { command >> ((colorToMove == Black)? inc:op_inc); }
+        else if (io::next(command, "movestogo")){ command >> movestogo; }
+        else if (io::next(command, "nodes"))    { command >> nodes; }
+        else if (io::next(command, "movetime")) { command >> movetime; }
+        else if (io::next(command, "ponder"))   { ponder = true; }
+        else if (io::next(command, "infinite")) { infinite = true; }
+        else if (io::next(command, "searchmoves")) { p.limitMoves(command, searchmoves, colorToMove); }
+        else if (io::next(command, "perft"))    { perft = true; }
+        else if (io::next(command, "divide"))   { divide = true; }
         else { break; }
     }
-
-    limit.depth = (limit.depth > 0)? std::min(limit.depth, static_cast<decltype(limit.depth)>(SearchLimit::MaxDepth)) : 0;
 }
 
 duration_t SearchLimit::getThinkingTime() const {

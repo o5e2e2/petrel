@@ -74,7 +74,7 @@ void SearchControl::report_bestmove(node_quota_t& quota, Move bestmove) {
     delete root;
 }
 
-void SearchControl::go(SearchOutput& output, const Position& start_position, const SearchLimit& searchLimit) {
+void SearchControl::go(SearchOutput& output, const Position& startPosition, const SearchLimit& searchLimit) {
     out = &output;
 
     clear();
@@ -87,6 +87,6 @@ void SearchControl::go(SearchOutput& output, const Position& start_position, con
         : static_cast<Node*>(new NodePerftRoot(depthLimit))
     ;
 
-    searchThread.start(*root, start_position);
+    searchThread.start(*root, startPosition);
     moveTimer.start(searchThread, searchLimit.getThinkingTime() );
 }
