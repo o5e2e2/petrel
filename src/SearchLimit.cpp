@@ -12,10 +12,6 @@ namespace {
 }
 
 SearchLimit::SearchLimit () :
-    time(duration_t::zero()),
-    op_time(duration_t::zero()),
-    inc(duration_t::zero()),
-    op_inc(duration_t::zero()),
     movetime(duration_t::zero()),
 
     nodes(std::numeric_limits<node_count_t>::max()),
@@ -29,21 +25,25 @@ SearchLimit::SearchLimit () :
     divide(false),
 
     searchmoves()
-{}
+{
+    time[My] = time[Op] = inc[My] = inc[Op] = duration_t::zero();
+}
 
 void SearchLimit::read(std::istream& command, const Position& startPosition, color_t colorToMove) {
+    Side white{(colorToMove == White)? My:Op};
+    Side black{(colorToMove == Black)? My:Op};
+
     clear();
-    perft = true; //DEBUG
 
     PositionMoves p(startPosition);
     searchmoves = p.getMoves();
 
     while (command) {
         if      (io::next(command, "depth"))    { command >> depth; depth = std::min(depth, MaxDepth); }
-        else if (io::next(command, "wtime"))    { command >> ((colorToMove == White)? time:op_time); }
-        else if (io::next(command, "btime"))    { command >> ((colorToMove == Black)? time:op_time); }
-        else if (io::next(command, "winc"))     { command >> ((colorToMove == White)? inc:op_inc); }
-        else if (io::next(command, "binc"))     { command >> ((colorToMove == Black)? inc:op_inc); }
+        else if (io::next(command, "wtime"))    { command >> time[white]; }
+        else if (io::next(command, "btime"))    { command >> time[black]; }
+        else if (io::next(command, "winc"))     { command >> inc[white]; }
+        else if (io::next(command, "binc"))     { command >> inc[black]; }
         else if (io::next(command, "movestogo")){ command >> movestogo; }
         else if (io::next(command, "nodes"))    { command >> nodes; }
         else if (io::next(command, "movetime")) { command >> movetime; }
@@ -54,13 +54,15 @@ void SearchLimit::read(std::istream& command, const Position& startPosition, col
         else if (io::next(command, "divide"))   { divide = true; }
         else { break; }
     }
+
+    perft = true; //DEBUG
 }
 
 duration_t SearchLimit::getThinkingTime() const {
     if (movetime != duration_t::zero()) { return movetime; }
 
     auto moves_to_go = movestogo? movestogo:60;
-    auto average = (time + moves_to_go*inc) / moves_to_go;
+    auto average = (time[My] + moves_to_go*inc[My]) / moves_to_go;
 
-    return std::min(time, average);
+    return std::min(time[My], average);
 }

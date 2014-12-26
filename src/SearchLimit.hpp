@@ -1,8 +1,8 @@
 #ifndef SEARCH_LIMIT_HPP
 #define SEARCH_LIMIT_HPP
 
-#include "typedefs.hpp"
 #include "io.hpp"
+#include "Index.hpp"
 #include "Clock.hpp"
 #include "MatrixPiBb.hpp"
 
@@ -11,10 +11,9 @@ class Position;
 class SearchLimit {
     static const depth_t MaxDepth = 1000;
 
-    duration_t time;
-    duration_t op_time;
-    duration_t inc;
-    duration_t op_inc;
+    Side::array<duration_t> time;
+    Side::array<duration_t> inc;
+
     duration_t movetime;
 
     node_count_t nodes;
