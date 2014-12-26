@@ -38,7 +38,7 @@ void SearchControl::acquireNodesQuota(node_quota_t& quota) {
         info.nodes += quota;
     }
 
-    out->write_info_current(info);
+    out->report_current(info);
 }
 
 void SearchControl::report_perft_divide(node_quota_t& quota, Move currmove, index_t currmovenumber, node_count_t perft) {

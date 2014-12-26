@@ -24,7 +24,7 @@ public:
     UciOutput (std::ostream&, const ChessVariant&, const Color&);
 
     //called from Search
-    void write_info_current(const SearchInfo&) override;
+    void report_current(const SearchInfo&) override;
     void report_bestmove(const SearchInfo&) override;
     void report_perft_depth(const SearchInfo&) override;
     void report_perft_divide(const SearchInfo&) override;

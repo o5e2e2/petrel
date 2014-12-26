@@ -109,7 +109,7 @@ void UciOutput::isready(bool ready) {
     }
 }
 
-void UciOutput::write_info_current(const SearchInfo& info) {
+void UciOutput::report_current(const SearchInfo& info) {
     if (isready_waiting) {
         isready_waiting = false;
 
