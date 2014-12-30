@@ -1,9 +1,7 @@
 #include "SearchControl.hpp"
 
 #include "Node.hpp"
-#include "PositionFen.hpp"
 #include "SearchLimit.hpp"
-#include "SearchInfo.hpp"
 #include "SearchOutput.hpp"
 
 SearchControl::SearchControl ()
@@ -83,8 +81,8 @@ void SearchControl::go(SearchOutput& output, const Position& startPosition, cons
     nodeLimit = goLimit.getNodes();
 
     root = (goLimit.getDivide())
-        ? static_cast<Node*>(new NodePerftDivideRoot(depthLimit))
-        : static_cast<Node*>(new NodePerftRoot(depthLimit))
+        ? static_cast<Node*>(new NodePerftDivideRoot(*this, depthLimit))
+        : static_cast<Node*>(new NodePerftRoot(*this, depthLimit))
     ;
 
     searchThread.start(*root, startPosition);

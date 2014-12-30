@@ -5,19 +5,21 @@
 
 #define CUT(found) { if (found) { return true; } } ((void)0)
 
-Node::Node (depth_t depth)
-    : draft{depth}
+Node::Node (SearchControl& c, depth_t depth)
+    : control(c)
+    , draft{depth}
     , nodesRemaining{0}
     {}
 
 Node::Node (const Node& parent)
-    : draft{parent.draft-1}
+    : control(parent.control)
+    , draft{parent.draft-1}
     , nodesRemaining{parent.nodesRemaining-1}
     {}
 
 bool Node::checkQuota() {
     if (nodesRemaining <= 0) {
-        The_game.acquireNodesQuota(nodesRemaining);
+        control.acquireNodesQuota(nodesRemaining);
     }
     return nodesRemaining <= 0;
 }
@@ -75,7 +77,7 @@ bool NodePerftDivide::operator() (const Position& parent) {
             child.perftNodes = 0;
             CUT (child(pos));
 
-            The_game.report_perft_divide(child.nodesRemaining, parent.createMove(My, from, to), ++currmovenumber, child.perftNodes);
+            control.report_perft_divide(child.nodesRemaining, parent.createMove(My, from, to), ++currmovenumber, child.perftNodes);
 
             perftNodes += child.perftNodes;
         }
@@ -87,38 +89,38 @@ bool NodePerftDivide::operator() (const Position& parent) {
 bool NodePerftRoot::operator() (const Position& parent) {
     if (draft > 0) {
         if (! NodePerft::operator()(parent) ) {
-            The_game.report_perft_depth(nodesRemaining, draft, perftNodes);
+            control.report_perft_depth(nodesRemaining, draft, perftNodes);
         }
     }
     else {
-        for (depth_t iteration{1}; !The_game.isStopped(); ++iteration) {
+        for (depth_t iteration{1}; !control.isStopped(); ++iteration) {
             perftNodes = 0;
             draft = iteration;
             if (! NodePerft::operator()(parent) ) {
-                The_game.report_perft_depth(nodesRemaining, iteration, perftNodes);
+                control.report_perft_depth(nodesRemaining, iteration, perftNodes);
             }
         }
     }
 
-    The_game.report_bestmove(nodesRemaining, Move::null());
+    control.report_bestmove(nodesRemaining, Move::null());
     return true;
 }
 
 bool NodePerftDivideRoot::operator() (const Position& parent) {
     if (draft > 0) {
         if (! NodePerftDivide::operator()(parent) ) {
-            The_game.report_perft_depth(nodesRemaining, draft, perftNodes);
+            control.report_perft_depth(nodesRemaining, draft, perftNodes);
         }
     }
     else {
-        for (depth_t iteration{1}; !The_game.isStopped(); ++iteration) {
+        for (depth_t iteration{1}; !control.isStopped(); ++iteration) {
             draft = iteration;
             if (! NodePerftDivide::operator()(parent) ) {
-                The_game.report_perft_depth(nodesRemaining, iteration, perftNodes);
+                control.report_perft_depth(nodesRemaining, iteration, perftNodes);
             }
         }
     }
 
-    The_game.report_bestmove(nodesRemaining, Move::null());
+    control.report_bestmove(nodesRemaining, Move::null());
     return true;
 }

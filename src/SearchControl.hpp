@@ -1,7 +1,6 @@
 #ifndef SEARCH_CONTROL_HPP
 #define SEARCH_CONTROL_HPP
 
-#include "Clock.hpp"
 #include "Move.hpp"
 #include "SearchThread.hpp"
 #include "SearchInfo.hpp"
@@ -58,7 +57,5 @@ public:
 
     void go(SearchOutput&, const Position&, const SearchLimit&);
 };
-
-extern SearchControl The_game;
 
 #endif
