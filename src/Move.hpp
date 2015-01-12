@@ -47,6 +47,7 @@ public:
     bool isNull() const { return _v == 0; }
     bool isSpecial() const { return (_v & 1<<SpecialShift) != 0; }
 
+    static std::ostream& write(std::ostream&, Move, Color, ChessVariant);
 };
 
 #endif

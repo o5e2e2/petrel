@@ -5,21 +5,42 @@
 #include "Position.hpp"
 
 namespace {
-class ColorTypeSquares {
+
+class Board {
     struct SquareOrder {
         bool operator () (Square, Square) const;
     };
     typedef std::set<Square, SquareOrder> Squares;
 
-    Color::array< PieceType::array<Squares> > colorTypeSquares;
+    Color::array< PieceType::array<Squares> > pieces;
+
+    bool drop(Color color, PieceType ty, Square sq) {
+        if (ty == King) {
+            //the king should be only one per each color
+            if (!pieces[color][King].empty()) {
+                return false;
+            }
+        }
+        else if (ty == Pawn) {
+            //pawns should not occupy first and last ranks
+            if (sq.is<Rank1>() || sq.is<Rank8>()) {
+                return false;
+            }
+        }
+
+        pieces[color][ty].insert((color == White)? sq:~sq);
+        return true;
+    }
+
+    friend std::istream& operator >> (std::istream&, Board&);
+    static bool setPosition(Position&, Board&&, Color);
 
 public:
-    bool drop(Color, PieceType, Square);
-    void readBoard(std::istream&);
-    bool setupBoard(Position&, Color);
+    static std::istream& read(std::istream&, Position&, Color&);
+    static std::ostream& write(std::ostream&, const PositionSide& white, const PositionSide& black);
 };
 
-bool ColorTypeSquares::SquareOrder::operator () (Square sq1, Square sq2) const {
+bool Board::SquareOrder::operator () (Square sq1, Square sq2) const {
     if (Rank(sq1) != Rank(sq2)) {
         return Rank(sq1) < Rank(sq2); //Rank8 < Rank1
     }
@@ -29,25 +50,7 @@ bool ColorTypeSquares::SquareOrder::operator () (Square sq1, Square sq2) const {
     }
 }
 
-bool ColorTypeSquares::drop(Color color, PieceType ty, Square sq) {
-    if (ty == King) {
-        //the king should be only one per each color
-        if (!colorTypeSquares[color][King].empty()) {
-            return false;
-        }
-    }
-    else if (ty == Pawn) {
-        //pawns should not occupy first and last ranks
-        if (sq.is<Rank1>() || sq.is<Rank8>()) {
-            return false;
-        }
-    }
-
-    colorTypeSquares[color][ty].insert((color == White)? sq:~sq);
-    return true;
-}
-
-void ColorTypeSquares::readBoard(std::istream& in) {
+std::istream& operator >> (std::istream& in, Board& board) {
     in >> std::ws;
 
     Color::array<index_t> colorCount;
@@ -61,7 +64,7 @@ void ColorTypeSquares::readBoard(std::istream& in) {
 
             PieceType ty{PieceType::Begin};
             if (ty.from_char(c) && colorCount[color] < Pi::Size) {
-                if (drop(color, ty, Square(file, rank))) {
+                if (board.drop(color, ty, Square(file, rank))) {
                     ++colorCount[color];
                     ++file;
                     continue;
@@ -94,35 +97,37 @@ void ColorTypeSquares::readBoard(std::istream& in) {
         //otherwise it is an input error
         io::fail_char(in);
     }
+    return in;
 }
 
-bool ColorTypeSquares::setupBoard(Position& pos, Color colorToMove) {
+bool Board::setPosition(Position& pos, Board&& board, Color colorToMove) {
+    auto&& pieces = board.pieces;
     pos = {};
 
     //kings should be placed before any opponent's non king pieces
     FOR_INDEX(Color, color) {
-        if (colorTypeSquares[color][King].empty()) {
+        if (pieces[color][King].empty()) {
             return false;
         }
 
-        auto king = colorTypeSquares[color][King].begin();
+        auto king = pieces[color][King].begin();
         if ( pos.drop( (color == colorToMove)? My:Op, King, *king) ) {
-            colorTypeSquares[color][King].erase(king);
+            pieces[color][King].erase(king);
         }
         else {
             return false;
         }
 
-        assert (colorTypeSquares[color][King].empty());
+        assert (pieces[color][King].empty());
     }
 
     FOR_INDEX(Color, color) {
         FOR_INDEX(PieceType, ty) {
-            while ( !colorTypeSquares[color][ty].empty() ) {
-                auto piece = colorTypeSquares[color][ty].begin();
+            while ( !pieces[color][ty].empty() ) {
+                auto piece = pieces[color][ty].begin();
 
                 if ( pos.drop( (color == colorToMove)? My:Op, ty, *piece) ) {
-                    colorTypeSquares[color][ty].erase(piece);
+                    pieces[color][ty].erase(piece);
                 }
                 else {
                     return false;
@@ -135,49 +140,18 @@ bool ColorTypeSquares::setupBoard(Position& pos, Color colorToMove) {
     return pos.setup();
 }
 
-std::istream& readCastling(std::istream& in, Position& pos, Color colorToMove) {
-    in >> std::ws;
-    if (in.peek() == '-') { in.ignore(); return in; }
+std::istream& Board::read(std::istream& in, Position& pos, Color& colorToMove) {
+    Board board;
 
-    for (io::char_type c; in.get(c) && !std::isblank(c); ) {
-        if (std::isalpha(c)) {
-            Color color(std::isupper(c)? White:Black);
-            c = static_cast<io::char_type>(std::tolower(c));
+    in >> board >> std::ws >> colorToMove;
 
-            CastlingSide side{CastlingSide::Begin};
-            if ( side.from_char(c) ) {
-                if (pos.setCastling((color == colorToMove)? My:Op, side)) {
-                    continue;
-                }
-            }
-            else {
-                File file{File::Begin};
-                if ( file.from_char(c) ) {
-                    if (pos.setCastling((color == colorToMove)? My:Op, file)) {
-                        continue;
-                    }
-                }
-            }
-        }
+    if (in && !Board::setPosition(pos, std::move(board), colorToMove)) {
         io::fail_char(in);
     }
     return in;
 }
 
-std::istream& readEnPassant(std::istream& in, Position& pos, Color colorToMove) {
-    in >> std::ws;
-    if (in.peek() == '-') { in.ignore(); return in; }
-
-    Square ep{Square::Begin};
-    if (in >> ep) {
-        if (colorToMove == White) { ep.flip(); }
-        assert (ep.is<Rank3>());
-        pos.setEnPassant(ep);
-    }
-    return in;
-}
-
-void writeBoard(std::ostream& out, const PositionSide& white, const PositionSide& black) {
+std::ostream& Board::write(std::ostream& out, const PositionSide& white, const PositionSide& black) {
     FOR_INDEX(Rank, rank) {
         index_t blank_squares = 0;
 
@@ -201,96 +175,126 @@ void writeBoard(std::ostream& out, const PositionSide& white, const PositionSide
         if (blank_squares != 0) { out << blank_squares; }
         if (rank != Rank1) { out << '/'; }
     }
+    return out;
 }
 
-class CastlingSet {
+class Castling {
     std::set<io::char_type> castlingSet;
 
-    void insert(const PositionSide& side, Color color, ChessVariant chessVariant);
+    void insert(const PositionSide& side, Color color, ChessVariant chessVariant) {
+        for (Pi pi : side.castlingRooks()) {
+            io::char_type castling_symbol =
+                (chessVariant == Chess960)
+                ? File{side.squareOf(pi)}.to_char()
+                : side.castlingSideOf(pi).to_char()
+            ;
+
+            if (color == White) {
+                castling_symbol = static_cast<io::char_type>(std::toupper(castling_symbol));
+            }
+
+            castlingSet.insert(castling_symbol);
+        }
+    }
 
 public:
-    CastlingSet (const PositionSide& white, const PositionSide& black, ChessVariant chessVariant) {
+    Castling (const PositionSide& white, const PositionSide& black, ChessVariant chessVariant) {
         insert(white, White, chessVariant);
         insert(black, Black, chessVariant);
     }
 
-    void write(std::ostream&) const;
+    static std::istream& read(std::istream& in, Position& pos, Color colorToMove) {
+        in >> std::ws;
+        if (in.peek() == '-') { in.ignore(); return in; }
+
+        for (io::char_type c; in.get(c) && !std::isblank(c); ) {
+            if (std::isalpha(c)) {
+                Color color(std::isupper(c)? White:Black);
+                c = static_cast<io::char_type>(std::tolower(c));
+
+                CastlingSide side{CastlingSide::Begin};
+                if ( side.from_char(c) ) {
+                    if (pos.setCastling((color == colorToMove)? My:Op, side)) {
+                        continue;
+                    }
+                }
+                else {
+                    File file{File::Begin};
+                    if ( file.from_char(c) ) {
+                        if (pos.setCastling((color == colorToMove)? My:Op, file)) {
+                            continue;
+                        }
+                    }
+                }
+            }
+            io::fail_char(in);
+        }
+        return in;
+    }
+
+    friend std::ostream& operator << (std::ostream& out, const Castling& castling) {
+        if (castling.castlingSet.empty()) {
+            out << '-';
+        }
+        else {
+            for (auto castling_symbol : castling.castlingSet) { out << castling_symbol; }
+        }
+        return out;
+    }
+
 };
 
-void CastlingSet::insert(const PositionSide& side, Color color, ChessVariant chessVariant) {
-    for (Pi pi : side.castlingRooks()) {
-        io::char_type castling_symbol =
-            (chessVariant == Chess960)
-            ? File{side.squareOf(pi)}.to_char()
-            : side.castlingSideOf(pi).to_char()
-        ;
+namespace EnPassant {
+    std::istream& read(std::istream& in, Position& pos, Color colorToMove) {
+        in >> std::ws;
+        if (in.peek() == '-') { in.ignore(); return in; }
 
-        if (color == White) {
-            castling_symbol = static_cast<io::char_type>(std::toupper(castling_symbol));
+        Square ep{Square::Begin};
+        if (in >> ep) {
+            if (colorToMove == White) { ep.flip(); }
+            assert (ep.is<Rank3>());
+            pos.setEnPassant(ep);
         }
+        return in;
+    }
 
-        castlingSet.insert(castling_symbol);
-    }
-}
-
-void CastlingSet::write(std::ostream& out) const {
-    if (castlingSet.empty()) {
-        out << '-';
-    }
-    else {
-        for (auto castling_symbol : castlingSet) { out << castling_symbol; }
-    }
-}
-
-void writeEnPassant(std::ostream& out, const PositionSide& side, Color colorToMove) {
-    if (side.hasEnPassant()) {
-        Square ep = side.enPassantSquare().rankDown();
-        if (colorToMove == White) { ep.flip(); }
-        out << ep;
-    }
-    else {
-        out << '-';
+    std::ostream& write(std::ostream& out, const PositionSide& side, Color colorToMove) {
+        if (side.hasEnPassant()) {
+            Square ep = side.enPassantSquare().rankDown();
+            if (colorToMove == White) { ep.flip(); }
+            out << ep;
+        }
+        else {
+            out << '-';
+        }
+        return out;
     }
 }
 
 } //end of anonymous namespace
 
 namespace PositionFen {
+    void read(std::istream& in, Position& pos, Color& colorToMove) {
+        Board::read(in, pos, colorToMove);
+        Castling::read(in, pos, colorToMove);
+        EnPassant::read(in, pos, colorToMove);
 
-void read(std::istream& in, Position& pos, Color& colorToMove) {
-    ColorTypeSquares colorTypeSquares;
-
-    colorTypeSquares.readBoard(in);
-    in >> std::ws >> colorToMove;
-
-    if (in && !colorTypeSquares.setupBoard(pos, colorToMove)) {
-        io::fail_char(in);
+        if (in) {
+            unsigned fifty, moves;
+            in >> fifty >> moves;
+            in.clear(); //ignore missing optional 'fifty' and 'moves' fen fields
+        }
     }
 
-    readCastling(in, pos, colorToMove);
-    readEnPassant(in, pos, colorToMove);
+    void write(std::ostream& out, const Position& pos, Color colorToMove, ChessVariant chessVariant) {
+        const PositionSide& white = pos.side[(colorToMove == White)? My:Op];
+        const PositionSide& black = pos.side[(colorToMove == Black)? My:Op];
 
-    if (in) {
-        unsigned fifty, moves;
-        in >> fifty >> moves;
-        in.clear(); //ignore missing optional 'fifty' and 'moves' fen fields
+        Board::write(out, white, black);
+        out << ' ' << colorToMove;
+        out << ' ' << Castling{white, black, chessVariant};
+        out << ' ';
+        EnPassant::write(out, pos.side[Op], colorToMove);
     }
-}
-
-void write(std::ostream& out, const Position& pos, Color colorToMove, ChessVariant chessVariant) {
-    const PositionSide& white = pos.side[(colorToMove == White)? My:Op];
-    const PositionSide& black = pos.side[(colorToMove == Black)? My:Op];
-
-    writeBoard(out, white, black);
-
-    out << ' ';
-    out << colorToMove;
-
-    out << ' ';
-    CastlingSet{white, black, chessVariant}.write(out);
-
-    out << ' ';
-    writeEnPassant(out, pos.side[Op], colorToMove);
-}
 
 } //end of PositionFen namespace

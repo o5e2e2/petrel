@@ -3,11 +3,12 @@
 
 #include <iosfwd>
 #include "SearchOutput.hpp"
-#include "Move.hpp"
+#include "Index.hpp"
 
 class SearchControl;
 class SearchInfo;
 class Position;
+class Move;
 
 class UciOutput : public SearchOutput {
     std::ostream& uci_out; //output stream
@@ -16,7 +17,7 @@ class UciOutput : public SearchOutput {
 
     volatile bool isready_waiting; //set when got 'isready' command while thinking
 
-    void write(std::ostream&, Move) const;
+    void write(std::ostream&, const Move&) const;
     void nps(std::ostream&, const SearchInfo&) const;
     void info_nps(std::ostream&, const SearchInfo&) const;
 
