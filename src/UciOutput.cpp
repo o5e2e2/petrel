@@ -85,7 +85,7 @@ namespace {
 }
 
 UciOutput::UciOutput (std::ostream& out, const ChessVariant& v, const Color& c)
-    : uci_out(out), isready_waiting(false), chessVariant(v), colorToMove(c) {}
+    : uci_out(out), chessVariant(v), colorToMove(c), isready_waiting(false) {}
 
 void UciOutput::uci(const SearchControl& search) {
     auto max_mb = search.tt().getMaxSizeMb();
@@ -137,14 +137,14 @@ void UciOutput::report_perft_divide(const SearchInfo& info) {
     out << "info currmovenumber " << info.currmovenumber << " currmove ";
     write(out, info.currmove);
     nps(out, info);
-    out << " string perft " << info.perft << '\n';
+    out << " string perft " << info.perftNodes << '\n';
 }
 
 void UciOutput::report_perft_depth(const SearchInfo& info) {
     OutputBuffer out{uci_out};
     out << "info depth " << info.depth;
     nps(out, info);
-    out << " string perft " << info.perft << '\n';
+    out << " string perft " << info.perftNodes << '\n';
 }
 
 void UciOutput::nps(std::ostream& out, const SearchInfo& info) const {

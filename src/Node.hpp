@@ -25,11 +25,8 @@ public:
 
 class NodePerft : public Node {
 public:
-    node_count_t perftNodes;
-
-public:
-    NodePerft (SearchControl& c, depth_t depth) : Node{c, depth}, perftNodes(0) {}
-    NodePerft (const Node& parent) : Node{parent}, perftNodes(0) {}
+    NodePerft (SearchControl& c, depth_t depth) : Node{c, depth} {}
+    NodePerft (const Node& parent) : Node{parent} {}
     bool operator() (const Position&) override;
 };
 

@@ -39,20 +39,18 @@ void SearchControl::acquireNodesQuota(node_quota_t& quota) {
     out->report_current(info);
 }
 
-void SearchControl::report_perft_divide(node_quota_t& quota, Move currmove, index_t currmovenumber, node_count_t perft) {
+void SearchControl::report_perft_divide(node_quota_t& quota, Move currmove, index_t currmovenumber) {
     releaseNodesQuota(quota);
 
     info.currmove = currmove;
     info.currmovenumber = currmovenumber;
-    info.perft = perft;
     out->report_perft_divide(info);
 }
 
-void SearchControl::report_perft_depth(node_quota_t& quota, depth_t depth, node_count_t perft) {
+void SearchControl::report_perft_depth(node_quota_t& quota, depth_t depth) {
     releaseNodesQuota(quota);
 
     info.depth = depth;
-    info.perft = perft;
     out->report_perft_depth(info);
 
     clear();
@@ -62,10 +60,9 @@ void SearchControl::report_perft_depth(node_quota_t& quota, depth_t depth, node_
     }
 }
 
-void SearchControl::report_bestmove(node_quota_t& quota, Move bestmove) {
+void SearchControl::report_bestmove(node_quota_t& quota) {
     releaseNodesQuota(quota);
 
-    info.bestmove = bestmove;
     out->report_bestmove(info);
 
     clear();

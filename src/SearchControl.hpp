@@ -18,8 +18,11 @@ class Position;
 class SearchControl {
     TranspositionTable transpositionTable;
     SearchThread searchThread;
+
+public:
     SearchInfo info;
 
+private:
     Node* root;
     SearchOutput* out;
 
@@ -43,9 +46,9 @@ public:
     //callbacks from search thread
     void acquireNodesQuota(node_quota_t&);
 
-    void report_bestmove(node_quota_t&, Move);
-    void report_perft_divide(node_quota_t&, Move, index_t, node_count_t);
-    void report_perft_depth(node_quota_t&, depth_t depth, node_count_t);
+    void report_bestmove(node_quota_t&);
+    void report_perft_divide(node_quota_t&, Move, index_t);
+    void report_perft_depth(node_quota_t&, depth_t depth);
 
     bool isReady() const { return searchThread.isReady(); }
     bool isStopped() { return searchThread.isStopped(); }

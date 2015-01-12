@@ -7,7 +7,7 @@
 
 struct SearchInfo {
     node_count_t nodes;
-    node_count_t perft;
+    node_count_t perftNodes;
     Clock clock;
     Move bestmove;
     Move currmove;
@@ -16,6 +16,8 @@ struct SearchInfo {
 
     void clear() {
         nodes = 0;
+        perftNodes = 0;
+        bestmove = Move::null();
         clock.restart();
     }
 
