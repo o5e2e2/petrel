@@ -102,6 +102,7 @@ bool NodePerftDivideRoot::operator() (const Position& parent) {
     }
     else {
         for (depth_t iteration{1}; !control.isStopped(); ++iteration) {
+            control.info.perftNodes = 0;
             draft = iteration;
             if (! NodePerftDivide::operator()(parent) ) {
                 control.report_perft_depth(iteration);

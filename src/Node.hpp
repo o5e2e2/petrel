@@ -9,8 +9,6 @@ class Position;
 class Node {
 protected:
     SearchControl& control;
-
-public:
     depth_t draft; //remaining distance to frontier
 
 public:
