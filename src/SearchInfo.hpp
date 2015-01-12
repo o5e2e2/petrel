@@ -23,6 +23,11 @@ struct SearchInfo {
         clock.restart();
     }
 
+    void releaseNodesQuota() {
+        nodes -= nodesRemaining;
+        nodesRemaining = 0;
+    }
+
 };
 
 #endif

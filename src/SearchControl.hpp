@@ -36,7 +36,6 @@ private:
     SearchControl (const SearchControl&) = delete;
     SearchControl& operator = (const SearchControl&) = delete;
 
-    void releaseNodesQuota();
     void acquireNodesQuota();
 
 public:
@@ -53,7 +52,7 @@ public:
     }
 
     void report_bestmove();
-    void report_perft_divide(Move, index_t);
+    void report_perft_divide();
     void report_perft_depth(depth_t depth);
 
     bool isReady() const { return searchThread.isReady(); }

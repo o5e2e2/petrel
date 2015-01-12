@@ -47,7 +47,7 @@ bool NodePerftDivide::operator() (const Position& parent) {
     PositionMoves p(parent);
     MatrixPiBb& moves = p.getMoves();
 
-    index_t currmovenumber = 0;
+    control.info.currmovenumber = 0;
 
     NodePerft child{*this};
 
@@ -64,7 +64,10 @@ bool NodePerftDivide::operator() (const Position& parent) {
 
             CUT (child(pos));
 
-            control.report_perft_divide(parent.createMove(My, from, to), ++currmovenumber);
+            control.info.currmove = parent.createMove(My, from, to);
+            ++control.info.currmovenumber;
+            control.report_perft_divide();
+
             control.info.perftNodes += perftTotal;
         }
     }

@@ -15,13 +15,8 @@ void SearchControl::clear() {
     info.clear();
 }
 
-void SearchControl::releaseNodesQuota() {
-    info.nodes -= info.nodesRemaining;
-    info.nodesRemaining = 0;
-}
-
 void SearchControl::acquireNodesQuota() {
-    releaseNodesQuota();
+    info.releaseNodesQuota();
 
     if (searchThread.isStopped()) {
         return;
@@ -39,16 +34,13 @@ void SearchControl::acquireNodesQuota() {
     out->report_current(info);
 }
 
-void SearchControl::report_perft_divide(Move currmove, index_t currmovenumber) {
-    releaseNodesQuota();
-
-    info.currmove = currmove;
-    info.currmovenumber = currmovenumber;
+void SearchControl::report_perft_divide() {
+    info.releaseNodesQuota();
     out->report_perft_divide(info);
 }
 
 void SearchControl::report_perft_depth(depth_t depth) {
-    releaseNodesQuota();
+    info.releaseNodesQuota();
 
     info.depth = depth;
     out->report_perft_depth(info);
@@ -61,8 +53,7 @@ void SearchControl::report_perft_depth(depth_t depth) {
 }
 
 void SearchControl::report_bestmove() {
-    releaseNodesQuota();
-
+    info.releaseNodesQuota();
     out->report_bestmove(info);
 
     clear();
