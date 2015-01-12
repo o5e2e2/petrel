@@ -15,13 +15,13 @@ void SearchControl::clear() {
     info.clear();
 }
 
-void SearchControl::releaseNodesQuota(node_quota_t& quota) {
-    info.nodes -= quota;
-    quota = 0;
+void SearchControl::releaseNodesQuota() {
+    info.nodes -= info.nodesRemaining;
+    info.nodesRemaining = 0;
 }
 
-void SearchControl::acquireNodesQuota(node_quota_t& quota) {
-    releaseNodesQuota(quota);
+void SearchControl::acquireNodesQuota() {
+    releaseNodesQuota();
 
     if (searchThread.isStopped()) {
         return;
@@ -32,23 +32,23 @@ void SearchControl::acquireNodesQuota(node_quota_t& quota) {
     }
     else {
         auto remaining = nodeLimit - info.nodes;
-        quota = static_cast<node_quota_t>( std::min(remaining, decltype(remaining){TickLimit}) );
-        info.nodes += quota;
+        info.nodesRemaining = static_cast<node_quota_t>( std::min(remaining, decltype(remaining){TickLimit}) );
+        info.nodes += info.nodesRemaining;
     }
 
     out->report_current(info);
 }
 
-void SearchControl::report_perft_divide(node_quota_t& quota, Move currmove, index_t currmovenumber) {
-    releaseNodesQuota(quota);
+void SearchControl::report_perft_divide(Move currmove, index_t currmovenumber) {
+    releaseNodesQuota();
 
     info.currmove = currmove;
     info.currmovenumber = currmovenumber;
     out->report_perft_divide(info);
 }
 
-void SearchControl::report_perft_depth(node_quota_t& quota, depth_t depth) {
-    releaseNodesQuota(quota);
+void SearchControl::report_perft_depth(depth_t depth) {
+    releaseNodesQuota();
 
     info.depth = depth;
     out->report_perft_depth(info);
@@ -60,8 +60,8 @@ void SearchControl::report_perft_depth(node_quota_t& quota, depth_t depth) {
     }
 }
 
-void SearchControl::report_bestmove(node_quota_t& quota) {
-    releaseNodesQuota(quota);
+void SearchControl::report_bestmove() {
+    releaseNodesQuota();
 
     out->report_bestmove(info);
 

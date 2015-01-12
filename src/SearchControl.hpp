@@ -36,7 +36,8 @@ private:
     SearchControl (const SearchControl&) = delete;
     SearchControl& operator = (const SearchControl&) = delete;
 
-    void releaseNodesQuota(node_quota_t&);
+    void releaseNodesQuota();
+    void acquireNodesQuota();
 
 public:
     SearchControl ();
@@ -44,11 +45,16 @@ public:
     void clear();
 
     //callbacks from search thread
-    void acquireNodesQuota(node_quota_t&);
+    bool checkQuota() {
+        if (info.nodesRemaining <= 0) {
+            acquireNodesQuota();
+        }
+        return info.nodesRemaining <= 0;
+    }
 
-    void report_bestmove(node_quota_t&);
-    void report_perft_divide(node_quota_t&, Move, index_t);
-    void report_perft_depth(node_quota_t&, depth_t depth);
+    void report_bestmove();
+    void report_perft_divide(Move, index_t);
+    void report_perft_depth(depth_t depth);
 
     bool isReady() const { return searchThread.isReady(); }
     bool isStopped() { return searchThread.isStopped(); }

@@ -8,6 +8,7 @@
 struct SearchInfo {
     node_count_t nodes;
     node_count_t perftNodes;
+    node_quota_t nodesRemaining; //number of remaining nodes before checking for terminate
     Clock clock;
     Move bestmove;
     Move currmove;
@@ -17,6 +18,7 @@ struct SearchInfo {
     void clear() {
         nodes = 0;
         perftNodes = 0;
+        nodesRemaining = 0;
         bestmove = Move::null();
         clock.restart();
     }

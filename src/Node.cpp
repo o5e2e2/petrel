@@ -8,33 +8,24 @@
 Node::Node (SearchControl& c, depth_t depth)
     : control(c)
     , draft{depth}
-    , nodesRemaining{0}
     {}
 
 Node::Node (const Node& parent)
     : control(parent.control)
     , draft{parent.draft-1}
-    , nodesRemaining{parent.nodesRemaining-1}
-    {}
-
-bool Node::checkQuota() {
-    if (nodesRemaining <= 0) {
-        control.acquireNodesQuota(nodesRemaining);
-    }
-    return nodesRemaining <= 0;
-}
+    { --control.info.nodesRemaining; }
 
 bool NodePerft::operator() (const Position& parent) {
     PositionMoves p(parent);
     MatrixPiBb& moves = p.getMoves();
 
     if (draft <= 0) {
-        --nodesRemaining;
+        --control.info.nodesRemaining;
         control.info.perftNodes += moves.count();
         return false;
     }
 
-    CUT ( checkQuota() );
+    CUT ( control.checkQuota() );
 
     NodePerft child{*this};
 
@@ -49,7 +40,6 @@ bool NodePerft::operator() (const Position& parent) {
         }
     }
 
-    nodesRemaining = child.nodesRemaining;
     return false;
 }
 
@@ -74,18 +64,17 @@ bool NodePerftDivide::operator() (const Position& parent) {
 
             CUT (child(pos));
 
-            control.report_perft_divide(child.nodesRemaining, parent.createMove(My, from, to), ++currmovenumber);
+            control.report_perft_divide(parent.createMove(My, from, to), ++currmovenumber);
             control.info.perftNodes += perftTotal;
         }
     }
-    nodesRemaining = child.nodesRemaining;
     return false;
 }
 
 bool NodePerftRoot::operator() (const Position& parent) {
     if (draft > 0) {
         if (! NodePerft::operator()(parent) ) {
-            control.report_perft_depth(nodesRemaining, draft);
+            control.report_perft_depth(draft);
         }
     }
     else {
@@ -93,30 +82,30 @@ bool NodePerftRoot::operator() (const Position& parent) {
             control.info.perftNodes = 0;
             draft = iteration;
             if (! NodePerft::operator()(parent) ) {
-                control.report_perft_depth(nodesRemaining, iteration);
+                control.report_perft_depth(iteration);
             }
         }
     }
 
-    control.report_bestmove(nodesRemaining);
+    control.report_bestmove();
     return true;
 }
 
 bool NodePerftDivideRoot::operator() (const Position& parent) {
     if (draft > 0) {
         if (! NodePerftDivide::operator()(parent) ) {
-            control.report_perft_depth(nodesRemaining, draft);
+            control.report_perft_depth(draft);
         }
     }
     else {
         for (depth_t iteration{1}; !control.isStopped(); ++iteration) {
             draft = iteration;
             if (! NodePerftDivide::operator()(parent) ) {
-                control.report_perft_depth(nodesRemaining, iteration);
+                control.report_perft_depth(iteration);
             }
         }
     }
 
-    control.report_bestmove(nodesRemaining);
+    control.report_bestmove();
     return true;
 }

@@ -12,8 +12,6 @@ protected:
 
 public:
     depth_t draft; //remaining distance to frontier
-    node_quota_t nodesRemaining; //number of nodes before checking for terminate
-    bool checkQuota();
 
 public:
     Node (const Node& parent);
