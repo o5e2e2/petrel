@@ -7,7 +7,6 @@
 #include "CastlingRules.hpp"
 #include "Evaluation.hpp"
 #include "PieceTypeAttack.hpp"
-#include "SearchControl.hpp"
 #include "Timer.hpp"
 #include "TranspositionTable.hpp"
 #include "Uci.hpp"
@@ -38,7 +37,6 @@ template <> io::literal Rank::The_string{"87654321"};
 template <> io::literal Pi::The_string{"K123456789abcdef"};
 
 CastlingRules castlingRules; //constant during the same Chess960 game (32)
-SearchControl The_game;
 
 Timer::TimerPool Timer::timerPool;
 
@@ -46,7 +44,7 @@ int main(int argc, const char* argv[]) {
     std::ios_base::sync_with_stdio(false); //speed trick
     std::cin.tie(nullptr);
 
-    Uci uci{The_game, std::cout};
+    Uci uci{std::cout};
 
     if (argc == 1) {
         //construct startup configuration filename from program's own name

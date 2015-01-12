@@ -103,6 +103,7 @@ void UciOutput::uci(const SearchControl& search) {
 void UciOutput::isready(bool ready) {
     if (ready) {
         OutputBuffer{uci_out} << "readyok\n";
+        isready_waiting = false;
     }
     else {
         isready_waiting = true;

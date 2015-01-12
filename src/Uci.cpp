@@ -4,14 +4,14 @@
 #include "SearchControl.hpp"
 #include "PositionMoves.hpp"
 
-Uci::Uci (SearchControl& s, std::ostream& out)
-    : output(out, chessVariant, colorToMove), search(s)
+Uci::Uci (std::ostream& out)
+    : output(out, chessVariant, colorToMove), searchControl{}
 {
     ucinewgame();
 }
 
 void Uci::ucinewgame() {
-    search.clear();
+    searchControl.clear();
     set_startpos();
 }
 
@@ -22,13 +22,13 @@ bool Uci::operator() (std::istream& in) {
 
         if (next("position"))  { position(); }
         else if (next("go"))   { go(); }
-        else if (next("stop")) { search.stop(); }
+        else if (next("stop")) { searchControl.stop(); }
         else if (next("isready"))    { isready(); }
         else if (next("setoption"))  { setoption(); }
         else if (next("ucinewgame")) { ucinewgame(); }
-        else if (next("uci"))  { output.uci(search); }
+        else if (next("uci"))  { output.uci(searchControl); }
         else if (next("quit")) { std::exit(EXIT_SUCCESS); }
-        else if (next("wait")) { search.wait(); }
+        else if (next("wait")) { searchControl.wait(); }
         else if (next("echo")) { echo(); }
         else if (next("call")) { call(); }
         else if (next("exit")) { break; }
@@ -72,7 +72,7 @@ void Uci::setoption() {
 
         unsigned megabytes;
         if (command >> megabytes) {
-            search.tt().resizeMb(megabytes);
+            searchControl.tt().resizeMb(megabytes);
         }
 
         return;
@@ -85,7 +85,7 @@ void Uci::position() {
         return;
     }
 
-    if (!search.isReady()) {
+    if (!searchControl.isReady()) {
         io::fail_rewind(command);
         return;
     }
@@ -109,17 +109,17 @@ void Uci::set_startpos() {
 }
 
 void Uci::go() {
-    if (!search.isReady()) {
+    if (!searchControl.isReady()) {
         io::fail_rewind(command);
         return;
     }
 
     goLimit.read(command, startPosition, colorToMove);
-    search.go(output, startPosition, goLimit);
+    searchControl.go(output, startPosition, goLimit);
 }
 
 void Uci::isready() {
-    output.isready( search.isReady() );
+    output.isready( searchControl.isReady() );
 }
 
 void Uci::echo() {
