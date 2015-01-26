@@ -77,15 +77,17 @@ bool NodePerftDivide::operator() (const Position& parent) {
 bool NodePerftRoot::operator() (const Position& parent) {
     if (draft > 0) {
         if (! NodePerft::operator()(parent) ) {
-            control.report_perft_depth(draft);
+            control.info.depth = draft;
+            control.report_perft_depth();
         }
     }
     else {
         for (depth_t iteration{1}; !control.isStopped(); ++iteration) {
             control.info.perftNodes = 0;
             draft = iteration;
+            control.info.depth = draft;
             if (! NodePerft::operator()(parent) ) {
-                control.report_perft_depth(iteration);
+                control.report_perft_depth();
             }
         }
     }
@@ -97,15 +99,17 @@ bool NodePerftRoot::operator() (const Position& parent) {
 bool NodePerftDivideRoot::operator() (const Position& parent) {
     if (draft > 0) {
         if (! NodePerftDivide::operator()(parent) ) {
-            control.report_perft_depth(draft);
+            control.info.depth = draft;
+            control.report_perft_depth();
         }
     }
     else {
         for (depth_t iteration{1}; !control.isStopped(); ++iteration) {
             control.info.perftNodes = 0;
             draft = iteration;
+            control.info.depth = draft;
             if (! NodePerftDivide::operator()(parent) ) {
-                control.report_perft_depth(iteration);
+                control.report_perft_depth();
             }
         }
     }

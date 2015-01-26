@@ -53,7 +53,7 @@ public:
 
     void report_bestmove();
     void report_perft_divide();
-    void report_perft_depth(depth_t depth);
+    void report_perft_depth();
 
     bool isReady() const { return searchThread.isReady(); }
     bool isStopped() { return searchThread.isStopped(); }

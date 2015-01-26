@@ -39,15 +39,14 @@ void SearchControl::report_perft_divide() {
     out->report_perft_divide(info);
 }
 
-void SearchControl::report_perft_depth(depth_t depth) {
+void SearchControl::report_perft_depth() {
     info.releaseNodesQuota();
 
-    info.depth = depth;
     out->report_perft_depth(info);
 
     clear();
 
-    if (depthLimit > 0 && depth >= depthLimit) {
+    if (depthLimit > 0 && info.depth >= depthLimit) {
         searchThread.commandStop();
     }
 }
