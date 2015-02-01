@@ -34,6 +34,8 @@ public:
 };
 
 class NodePerftRoot : public NodePerft {
+    bool perft(const Position&);
+
 public:
     NodePerftRoot (SearchControl& c, depth_t depth) : NodePerft{c, depth} {}
     bool operator() (const Position&) override;
