@@ -94,9 +94,7 @@ bool NodePerftRoot::operator() (const Position& parent) {
         perft(parent);
     }
     else {
-        for (draft = 1; !control.isStopped(); ++draft) {
-            perft(parent);
-        }
+        for (draft = 1; !perft(parent); ++draft) {}
     }
 
     control.report_bestmove();
@@ -109,10 +107,9 @@ bool NodePerftDivideRoot::operator() (const Position& parent) {
         NodePerftDivide::operator()(parent);
     }
     else {
-        for (draft = 1; !control.isStopped(); ++draft) {
+        for (draft = 1; !NodePerftDivide::operator()(parent); ++draft) {
             control.info.perftNodes = 0;
             control.info.depth = draft;
-            NodePerftDivide::operator()(parent);
         }
     }
 
