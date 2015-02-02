@@ -8,7 +8,7 @@
 #include "Move.hpp"
 
 namespace {
-    std::ostream& operator << (std::ostream& out, duration_t duration) {
+    std::ostream& operator << (std::ostream& out, Clock::_t duration) {
         auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
         return out << milliseconds;
     }
@@ -23,13 +23,13 @@ namespace {
 
             out << " nodes " << info.nodes;
 
-            duration_t duration = info.clock.read();
+            Clock::_t duration = info.clock.read();
 
-            if (duration > duration_t::zero()) {
+            if (duration > Clock::_t::zero()) {
                 out << " time " << duration;
 
                 if (duration >= std::chrono::milliseconds{20}) {
-                    auto _nps = (info.nodes * duration_t::period::den) / (duration.count() * duration_t::period::num);
+                    auto _nps = (info.nodes * Clock::_t::period::den) / (duration.count() * Clock::_t::period::num);
                     out << " nps " << _nps;
                 }
             }

@@ -11,10 +11,10 @@ class Position;
 class SearchLimit {
     static const depth_t MaxDepth = 1000;
 
-    Side::array<duration_t> time;
-    Side::array<duration_t> inc;
+    Side::array<Clock::_t> time;
+    Side::array<Clock::_t> inc;
 
-    duration_t movetime;
+    Clock::_t movetime;
 
     node_count_t nodes;
     index_t movestogo;
@@ -39,7 +39,7 @@ public:
     node_count_t getNodes()  const { return nodes;}
     bool         getDivide() const { return divide; }
 
-    duration_t getThinkingTime() const;
+    Clock::_t getThinkingTime() const;
 };
 
 #endif

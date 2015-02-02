@@ -5,7 +5,7 @@
 #include "PositionMoves.hpp"
 
 Uci::Uci (std::ostream& out)
-    : searchControl{}, output(out, chessVariant, colorToMove)
+    : searchControl{}, uciOutput(out, chessVariant, colorToMove)
 {
     ucinewgame();
 }
@@ -16,9 +16,10 @@ void Uci::ucinewgame() {
 }
 
 bool Uci::operator() (std::istream& in) {
-    for (std::string command_line; std::getline(in, command_line); ) {
+    for (std::string commandLine; std::getline(in, commandLine); ) {
         command.clear(); //clear errors from the previous command
-        command.str(std::move(command_line));
+        command.str(std::move(commandLine));
+        command >> std::ws;
 
         if (next("position"))  { position(); }
         else if (next("go"))   { go(); }
@@ -26,21 +27,22 @@ bool Uci::operator() (std::istream& in) {
         else if (next("isready"))    { isready(); }
         else if (next("setoption"))  { setoption(); }
         else if (next("ucinewgame")) { ucinewgame(); }
-        else if (next("uci"))  { output.uci(searchControl); }
+        else if (next("uci"))  { uciOutput.uci(searchControl); }
         else if (next("quit")) { std::exit(EXIT_SUCCESS); }
+        //UCI extensions
+        else if (next("exit")) { break; }
         else if (next("wait")) { searchControl.wait(); }
         else if (next("echo")) { echo(); }
         else if (next("call")) { call(); }
-        else if (next("exit")) { break; }
         else {
             auto peek = command.peek();
             if (command.eof() || peek == '#' || peek == ';') {
-                continue; //ignore comment line
+                continue; //ignore empty or comment line
             }
         }
 
         //syntax error if something unparsed left
-        if (!next("")) { output.error(command); }
+        if (!next("")) { uciOutput.error(command); }
     }
 
     return !in.bad();
@@ -81,7 +83,7 @@ void Uci::setoption() {
 
 void Uci::position() {
     if (next("")) {
-        output.info_fen(startPosition);
+        uciOutput.info_fen(startPosition);
         return;
     }
 
@@ -115,16 +117,16 @@ void Uci::go() {
     }
 
     goLimit.read(command, startPosition, colorToMove);
-    searchControl.go(output, startPosition, goLimit);
+    searchControl.go(uciOutput, startPosition, goLimit);
 }
 
 void Uci::isready() {
-    output.isready( searchControl.isReady() );
+    uciOutput.isready( searchControl.isReady() );
 }
 
 void Uci::echo() {
     command >> std::ws;
-    output.echo(command);
+    uciOutput.echo(command);
 }
 
 void Uci::call() {

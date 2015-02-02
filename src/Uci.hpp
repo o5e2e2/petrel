@@ -16,7 +16,7 @@ class Uci {
     SearchControl searchControl;
     Position startPosition; //initial chess position to analyze
     SearchLimit goLimit;
-    UciOutput output;
+    UciOutput uciOutput;
 
     ChessVariant chessVariant; //format of castling moves output
     Color colorToMove; //initial position color for long algebraic format moves output

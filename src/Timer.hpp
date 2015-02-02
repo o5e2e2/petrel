@@ -13,7 +13,7 @@ class Timer {
     class TimerThread : public ThreadControl {
         TimerPool::element_type thisTimer;
         ThreadControl* slaveThread;
-        duration_t duration;
+        Clock::_t duration;
 
         void thread_body() override {
             std::this_thread::sleep_for(duration);
@@ -31,7 +31,7 @@ class Timer {
         }
 
     public:
-        void start(TimerPool::element_type t, ThreadControl& s, duration_t d) {
+        void start(TimerPool::element_type t, ThreadControl& s, Clock::_t d) {
             thisTimer = t;
             slaveThread = &s;
             duration = d;
@@ -49,11 +49,11 @@ public:
     Timer () {}
    ~Timer () { cancel(); }
 
-    void start(ThreadControl& slaveThread, duration_t duration) {
+    void start(ThreadControl& slaveThread, Clock::_t duration) {
         cancel();
 
         //zero duration means no timer
-        if (duration != duration_t::zero()) {
+        if (duration != Clock::_t::zero()) {
             thisTimer = timerPool.acquire();
             timerPool[thisTimer].start(thisTimer, slaveThread, duration);
         }

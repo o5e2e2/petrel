@@ -2,17 +2,17 @@
 #include "PositionMoves.hpp"
 
 namespace {
-    std::istream& operator >> (std::istream& in, duration_t& duration) {
+    std::istream& operator >> (std::istream& in, Clock::_t& duration) {
         long milliseconds;
         if (in >> milliseconds) {
-            duration = std::chrono::duration_cast<duration_t>(std::chrono::milliseconds{milliseconds});
+            duration = std::chrono::duration_cast<Clock::_t>(std::chrono::milliseconds{milliseconds});
         }
         return in;
     }
 }
 
 SearchLimit::SearchLimit () :
-    movetime(duration_t::zero()),
+    movetime(Clock::_t::zero()),
 
     nodes(std::numeric_limits<node_count_t>::max()),
     movestogo(0),
@@ -26,7 +26,7 @@ SearchLimit::SearchLimit () :
 
     searchmoves()
 {
-    time[My] = time[Op] = inc[My] = inc[Op] = duration_t::zero();
+    time[My] = time[Op] = inc[My] = inc[Op] = Clock::_t::zero();
 }
 
 void SearchLimit::read(std::istream& command, const Position& startPosition, color_t colorToMove) {
@@ -58,8 +58,8 @@ void SearchLimit::read(std::istream& command, const Position& startPosition, col
     perft = true; //DEBUG
 }
 
-duration_t SearchLimit::getThinkingTime() const {
-    if (movetime != duration_t::zero()) { return movetime; }
+Clock::_t SearchLimit::getThinkingTime() const {
+    if (movetime != Clock::_t::zero()) { return movetime; }
 
     auto moves_to_go = movestogo? movestogo:60;
     auto average = (time[My] + moves_to_go*inc[My]) / moves_to_go;
