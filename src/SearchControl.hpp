@@ -8,7 +8,6 @@
 #include "TranspositionTable.hpp"
 
 class Node;
-class SearchOutput;
 class SearchLimit;
 class Position;
 
@@ -24,12 +23,8 @@ public:
 
 private:
     Node* root;
-    SearchOutput* out;
-
-    enum { TickLimit = 10000 }; //~ 2 msecs
+    enum { TickLimit = 1000 }; // ~0.2 msecs
     node_count_t nodeLimit;
-
-    depth_t depthLimit;
 
     Timer moveTimer;
 

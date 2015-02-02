@@ -5,7 +5,11 @@
 #include "Clock.hpp"
 #include "Move.hpp"
 
+class SearchOutput;
+
 struct SearchInfo {
+    SearchOutput* out;
+
     Clock clock;
 
     node_count_t nodes;

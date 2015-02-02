@@ -1,14 +1,14 @@
 #include "SearchThread.hpp"
 #include "Node.hpp"
 
-SearchThread::SearchThread () : ThreadControl{}, node{} {}
-
-void SearchThread::start(Node& n, const Position& p) {
-    node = &n;
-    pos = &p;
+void SearchThread::start(SearchFn s, SearchControl* c, const Position* p, depth_t d) {
+    searchFn = s;
+    control = c;
+    parent = p;
+    draft = d;
     commandRun();
 }
 
 void SearchThread::thread_body() {
-    (*node)(*pos);
+    searchFn(*control, *parent, draft);
 }

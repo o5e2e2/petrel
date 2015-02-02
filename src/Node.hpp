@@ -6,45 +6,22 @@
 class SearchControl;
 class Position;
 
-class Node {
-protected:
-    SearchControl& control;
-    depth_t draft; //remaining distance to frontier
+typedef bool SearchFn(SearchControl&, const Position&, depth_t);
 
-public:
-    Node (const Node& parent);
-    Node (SearchControl&, depth_t depth);
+namespace Perft {
+    SearchFn perft;
+}
 
-    virtual bool operator() (const Position&) = 0;
-    virtual ~Node() {}
-};
+namespace PerftDivide {
+    SearchFn perft;
+}
 
-class NodePerft : public Node {
-public:
-    NodePerft (SearchControl& c, depth_t depth) : Node{c, depth} {}
-    NodePerft (const Node& parent) : Node{parent} {}
-    bool operator() (const Position&) override;
-};
+namespace PerftRoot {
+    SearchFn perft;
+}
 
-class NodePerftDivide : public NodePerft {
-public:
-    NodePerftDivide (SearchControl& c, depth_t depth) : NodePerft{c, depth} {}
-    NodePerftDivide (const Node& parent) : NodePerft{parent} {}
-    bool operator() (const Position&) override;
-};
-
-class NodePerftRoot : public NodePerft {
-    bool perft(const Position&);
-
-public:
-    NodePerftRoot (SearchControl& c, depth_t depth) : NodePerft{c, depth} {}
-    bool operator() (const Position&) override;
-};
-
-class NodePerftDivideRoot : public NodePerftDivide {
-public:
-    NodePerftDivideRoot (SearchControl& c, depth_t depth) : NodePerftDivide{c, depth} {}
-    bool operator() (const Position&) override;
-};
+namespace PerftDivideRoot {
+    SearchFn perft;
+}
 
 #endif

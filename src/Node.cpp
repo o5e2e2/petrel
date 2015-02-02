@@ -5,114 +5,126 @@
 
 #define CUT(found) { if (found) { return true; } } ((void)0)
 
-Node::Node (SearchControl& c, depth_t depth)
-    : control(c)
-    , draft{depth}
-    {}
+namespace Perft {
+    bool perftX(SearchControl& control, const Position& pos, depth_t draft) {
+        control.info.nodesRemaining--;
+        return perft(control, pos, draft);
+    }
 
-Node::Node (const Node& parent)
-    : control(parent.control)
-    , draft{parent.draft-1}
-    { --control.info.nodesRemaining; }
+    bool perft(SearchControl& control, const Position& parent, depth_t draft) {
+        PositionMoves pm(parent);
+        MatrixPiBb& moves = pm.getMoves();
 
-bool NodePerft::operator() (const Position& parent) {
-    PositionMoves p(parent);
-    MatrixPiBb& moves = p.getMoves();
+        if (draft <= 0) {
+            control.info.perftNodes += moves.count();
+            return false;
+        }
 
-    if (draft <= 0) {
-        --control.info.nodesRemaining;
-        control.info.perftNodes += moves.count();
+        CUT ( control.checkQuota() );
+
+        for (Pi pi : pm.side(My).alive()) {
+            Square from{ pm.side(My).squareOf(pi) };
+
+            for (Square to : moves[pi]) {
+                moves.clear(pi, to);
+
+                Position pos(parent, from, to);
+
+                CUT (perftX(control, pos, draft-1));
+            }
+        }
+
+        return false;
+    }
+}
+
+namespace PerftDivide {
+    bool perftX(SearchControl& control, const Position& pos, depth_t draft) {
+        auto perftTotal = control.info.perftNodes;
+        control.info.perftNodes = 0;
+
+        control.info.nodesRemaining--;
+        CUT (Perft::perft(control, pos, draft));
+
+        control.info.currmovenumber++;
+        control.report_perft_divide();
+
+        control.info.perftNodes += perftTotal;
         return false;
     }
 
-    CUT ( control.checkQuota() );
+    bool perft(SearchControl& control, const Position& parent, depth_t draft) {
+        PositionMoves pm(parent);
+        MatrixPiBb& moves = pm.getMoves();
 
-    NodePerft child{*this};
+        for (Pi pi : pm.side(My).alive()) {
+            Square from = pm.side(My).squareOf(pi);
 
-    for (Pi pi : p.side(My).alive()) {
-        Square from{ p.side(My).squareOf(pi) };
+            for (Square to : moves[pi]) {
+                moves.clear(pi, to);
 
-        for (Square to : moves[pi]) {
-            moves.clear(pi, to);
+                control.info.currmove = parent.createMove(My, from, to);
+                Position pos{parent, from, to};
 
-            Position pos{parent, from, to};
-            CUT (child(pos));
+                CUT (perftX(control, pos, draft-1));
+            }
         }
-    }
 
-    return false;
+        return false;
+    }
 }
 
-bool NodePerftDivide::operator() (const Position& parent) {
-    PositionMoves p(parent);
-    MatrixPiBb& moves = p.getMoves();
+namespace PerftRoot {
+    bool perftX(SearchControl& control, const Position& parent, depth_t depth) {
+        control.info.perftNodes = 0;
+        control.info.depth = depth;
 
-    control.info.currmovenumber = 0;
+        bool isAborted = Perft::perft(control, parent, depth);
 
-    NodePerft child{*this};
-
-    for (Pi pi : p.side(My).alive()) {
-        Square from = p.side(My).squareOf(pi);
-
-        for (Square to : moves[pi]) {
-            moves.clear(pi, to);
-
-            Position pos{parent, from, to};
-
-            auto perftTotal = control.info.perftNodes;
-            control.info.perftNodes = 0;
-
-            CUT (child(pos));
-
-            control.info.currmovenumber++;
-            control.info.currmove = parent.createMove(My, from, to);
-            control.report_perft_divide();
-
-            control.info.perftNodes += perftTotal;
+        if (!isAborted) {
+            control.report_perft_depth();
         }
+
+        return isAborted;
     }
 
-    control.report_perft_depth();
-    return false;
-}
-
-bool NodePerftRoot::perft(const Position& parent) {
-    control.info.perftNodes = 0;
-    control.info.depth = draft;
-
-    bool isAborted = NodePerft::operator()(parent);
-
-    if (!isAborted) {
-        control.report_perft_depth();
-    }
-
-    return isAborted;
-}
-
-bool NodePerftRoot::operator() (const Position& parent) {
-    if (draft > 0) {
-        perft(parent);
-    }
-    else {
-        for (draft = 1; !perft(parent); ++draft) {}
-    }
-
-    control.report_bestmove();
-    return true;
-}
-
-bool NodePerftDivideRoot::operator() (const Position& parent) {
-    if (draft > 0) {
-        control.info.depth = draft;
-        NodePerftDivide::operator()(parent);
-    }
-    else {
-        for (draft = 1; !NodePerftDivide::operator()(parent); ++draft) {
-            control.info.perftNodes = 0;
-            control.info.depth = draft;
+    bool perft(SearchControl& control, const Position& parent, depth_t depth) {
+        if (depth > 0) {
+            perftX(control, parent, depth);
         }
+        else {
+            for (depth = 1; !perftX(control, parent, depth); ++depth) {}
+        }
+
+        control.report_bestmove();
+        return true;
+    }
+}
+
+namespace PerftDivideRoot {
+    bool perftX(SearchControl& control, const Position& parent, depth_t depth) {
+        control.info.perftNodes = 0;
+        control.info.currmovenumber = 0;
+        control.info.depth = depth;
+
+        bool isAborted = PerftDivide::perft(control, parent, depth);
+
+        if (!isAborted) {
+            control.report_perft_depth();
+        }
+
+        return isAborted;
     }
 
-    control.report_bestmove();
-    return true;
+    bool perft(SearchControl& control, const Position& parent, depth_t depth) {
+        if (depth > 0) {
+            perftX(control, parent, depth);
+        }
+        else {
+            for (depth = 1; !perftX(control, parent, depth); ++depth) {}
+        }
+
+        control.report_bestmove();
+        return true;
+    }
 }

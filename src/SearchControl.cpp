@@ -5,7 +5,7 @@
 #include "SearchOutput.hpp"
 
 SearchControl::SearchControl ()
-    : out{nullptr}, moveTimer{}
+    : moveTimer{}
 {
     clear();
 }
@@ -31,47 +31,38 @@ void SearchControl::acquireNodesQuota() {
         info.nodes += info.nodesRemaining;
     }
 
-    out->report_current(info);
+    info.out->report_current(info);
 }
 
 void SearchControl::report_perft_divide() {
     info.releaseNodesQuota();
-    out->report_perft_divide(info);
+    info.out->report_perft_divide(info);
 }
 
 void SearchControl::report_perft_depth() {
     info.releaseNodesQuota();
 
-    out->report_perft_depth(info);
+    info.out->report_perft_depth(info);
 
     clear();
-
-    if (depthLimit > 0 && info.depth >= depthLimit) {
-        searchThread.commandStop();
-    }
 }
 
 void SearchControl::report_bestmove() {
     info.releaseNodesQuota();
-    out->report_bestmove(info);
+    info.out->report_bestmove(info);
 
     clear();
-    delete root;
 }
 
 void SearchControl::go(SearchOutput& output, const Position& startPosition, const SearchLimit& goLimit) {
-    out = &output;
+    info.out = &output;
 
     clear();
 
-    depthLimit = goLimit.getDepth();
     nodeLimit = goLimit.getNodes();
 
-    root = (goLimit.getDivide())
-        ? static_cast<Node*>(new NodePerftDivideRoot(*this, depthLimit))
-        : static_cast<Node*>(new NodePerftRoot(*this, depthLimit))
-    ;
+    auto searchFn = goLimit.getDivide()? PerftDivideRoot::perft : PerftRoot::perft;
 
-    searchThread.start(*root, startPosition);
+    searchThread.start(searchFn, this, &startPosition, goLimit.getDepth());
     moveTimer.start(searchThread, goLimit.getThinkingTime() );
 }
