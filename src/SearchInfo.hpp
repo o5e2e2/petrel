@@ -11,20 +11,19 @@ class SearchThread;
 struct SearchInfo {
     enum { TickLimit = 1000 }; // ~0.2 msecs
     node_quota_t nodesQuota; //number of remaining nodes before checking for terminate
-
     node_count_t nodes;
-    node_count_t perftNodes;
-    node_count_t nodeLimit; //search limit
-
-    Move    bestmove;
-
-    node_count_t perftDivide;
-    Move    currmove;
-    index_t currmovenumber;
+    node_count_t nodesLimit; //search limit
 
     SearchOutput* out;
     Clock clock;
     depth_t depth; //current search depth
+
+    Move bestmove;
+    Move    currmove;
+    index_t currmovenumber;
+
+    node_count_t perftNodes;
+    node_count_t perftDivide;
 
     void clear();
     void releaseNodesQuota();

@@ -14,7 +14,7 @@ void SearchControl::clear() {
 void SearchControl::go(SearchOutput& output, const Position& startPosition, const SearchLimit& goLimit) {
     info.clear();
     info.out = &output;
-    info.nodeLimit = goLimit.getNodes();
+    info.nodesLimit = goLimit.getNodes();
 
     auto searchFn = goLimit.getDivide()? PerftDivideRoot::perft : PerftRoot::perft;
     searchThread.start(searchFn, this, &startPosition, goLimit.getDepth());

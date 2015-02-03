@@ -33,7 +33,7 @@ void SearchInfo::acquireNodesQuota(SearchThread& searchThread) {
         return;
     }
 
-    auto remaining = nodeLimit - nodes;
+    auto remaining = nodesLimit - nodes;
     if (remaining > 0) {
         nodesQuota = static_cast<decltype(nodesQuota)>( std::min(decltype(remaining){TickLimit}, remaining) );
         nodes += nodesQuota;
