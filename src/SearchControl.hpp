@@ -15,43 +15,29 @@ class Position;
  * Shared data to all search threads (currently the only one)
  */
 class SearchControl {
-    TranspositionTable transpositionTable;
-    SearchThread searchThread;
-
 public:
     SearchInfo info;
 
 private:
-    Node* root;
-    enum { TickLimit = 1000 }; // ~0.2 msecs
-    node_count_t nodeLimit;
-
+    TranspositionTable transpositionTable;
+    SearchThread searchThread;
     Timer moveTimer;
 
     SearchControl (const SearchControl&) = delete;
     SearchControl& operator = (const SearchControl&) = delete;
 
-    void acquireNodesQuota();
-
 public:
     SearchControl ();
-
     void clear();
 
     //callbacks from search thread
-    bool checkQuota() {
-        if (info.nodesRemaining <= 0) {
-            acquireNodesQuota();
-        }
-        return info.nodesRemaining <= 0;
-    }
-
-    void report_bestmove();
-    void report_perft_divide();
-    void report_perft_depth();
+    bool checkQuota() { return info.checkQuota(searchThread); }
+    void report_bestmove() { info.report_bestmove(); }
+    void report_perft_divide() { info.report_perft_divide(); }
+    void report_perft_depth() { info.report_perft_depth(); }
 
     bool isReady() const { return searchThread.isReady(); }
-    bool isStopped() { return searchThread.isStopped(); }
+    bool isStopped() const { return searchThread.isStopped(); }
     void wait() { searchThread.waitReady(); }
     void stop() { searchThread.commandStop(); wait(); }
 

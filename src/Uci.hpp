@@ -10,11 +10,9 @@
 #include "SearchControl.hpp"
 #include "UciOutput.hpp"
 
-class SearchControl;
-
 class Uci {
     SearchControl searchControl;
-    Position startPosition; //initial chess position to analyze
+    Position rootPosition; //initial chess position to analyze
     SearchLimit goLimit;
     UciOutput uciOutput;
 
@@ -29,7 +27,7 @@ class Uci {
     void isready();
 
     void position();
-    void set_startpos();
+    void setStartpos();
 
     void go();
 
@@ -43,7 +41,6 @@ public:
     Uci (std::ostream& = std::cout);
     bool operator() (const std::string& filename);
     bool operator() (std::istream& = std::cin);
-
 };
 
 #endif

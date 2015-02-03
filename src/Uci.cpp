@@ -12,7 +12,7 @@ Uci::Uci (std::ostream& out)
 
 void Uci::ucinewgame() {
     searchControl.clear();
-    set_startpos();
+    setStartpos();
 }
 
 bool Uci::operator() (std::istream& in) {
@@ -83,7 +83,7 @@ void Uci::setoption() {
 
 void Uci::position() {
     if (next("")) {
-        uciOutput.info_fen(startPosition);
+        uciOutput.info_fen(rootPosition);
         return;
     }
 
@@ -93,21 +93,21 @@ void Uci::position() {
     }
 
     if (next("startpos")) {
-        set_startpos();
+        setStartpos();
     }
 
     if (next("fen")) {
-        PositionFen::read(command, startPosition, colorToMove);
+        PositionFen::read(command, rootPosition, colorToMove);
     }
 
     next("moves");
 
-    colorToMove = PositionMoves{startPosition}.makeMoves(command, colorToMove);
+    colorToMove = PositionMoves{rootPosition}.makeMoves(command, colorToMove);
 }
 
-void Uci::set_startpos() {
+void Uci::setStartpos() {
     std::istringstream startpos{"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"};
-    PositionFen::read(startpos, startPosition, colorToMove);
+    PositionFen::read(startpos, rootPosition, colorToMove);
 }
 
 void Uci::go() {
@@ -116,8 +116,8 @@ void Uci::go() {
         return;
     }
 
-    goLimit.read(command, startPosition, colorToMove);
-    searchControl.go(uciOutput, startPosition, goLimit);
+    goLimit.read(command, rootPosition, colorToMove);
+    searchControl.go(uciOutput, rootPosition, goLimit);
 }
 
 void Uci::isready() {

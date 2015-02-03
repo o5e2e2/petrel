@@ -6,35 +6,34 @@
 #include "Move.hpp"
 
 class SearchOutput;
+class SearchThread;
 
 struct SearchInfo {
-    SearchOutput* out;
-
-    Clock clock;
+    enum { TickLimit = 1000 }; // ~0.2 msecs
+    node_quota_t nodesRemaining; //number of remaining nodes before checking for terminate
 
     node_count_t nodes;
     node_count_t perftNodes;
-    node_quota_t nodesRemaining; //number of remaining nodes before checking for terminate
-    Move    bestmove;
+    node_count_t nodeLimit; //search limit
 
+    Move    bestmove;
     Move    currmove;
     index_t currmovenumber;
-    depth_t depth;
 
-    void clear() {
-        clock.restart();
+    depth_t depth; //current search depth
 
-        nodes = 0;
-        perftNodes = 0;
-        nodesRemaining = 0;
-        bestmove = Move::null();
-    }
+    SearchOutput* out;
+    Clock clock;
 
-    void releaseNodesQuota() {
-        nodes -= nodesRemaining;
-        nodesRemaining = 0;
-    }
+    void clear();
+    void releaseNodesQuota();
 
+    bool checkQuota(SearchThread&);
+    void acquireNodesQuota(SearchThread&);
+
+    void report_perft_divide();
+    void report_perft_depth();
+    void report_bestmove();
 };
 
 #endif
