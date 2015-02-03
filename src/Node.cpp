@@ -7,7 +7,7 @@
 
 namespace Perft {
     bool perftX(SearchControl& control, const Position& pos, depth_t draft) {
-        control.info.nodesRemaining--;
+        control.info.nodesQuota--;
         return perft(control, pos, draft);
     }
 
@@ -40,7 +40,7 @@ namespace Perft {
 
 namespace PerftDivide {
     bool perftX(SearchControl& control, const Position& pos, depth_t draft) {
-        control.info.nodesRemaining--;
+        control.info.nodesQuota--;
         CUT (Perft::perft(control, pos, draft));
         control.report_perft_divide();
         return false;

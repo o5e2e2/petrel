@@ -8,22 +8,22 @@ void SearchInfo::clear() {
     nodes = 0;
     perftNodes = 0;
     perftDivide = 0;
-    nodesRemaining = 0;
+    nodesQuota = 0;
     currmovenumber = 0;
     bestmove = Move::null();
 }
 
 void SearchInfo::releaseNodesQuota() {
-    nodes -= nodesRemaining;
-    nodesRemaining = 0;
+    nodes -= nodesQuota;
+    nodesQuota = 0;
 }
 
 //callbacks from search thread
 bool SearchInfo::checkQuota(SearchThread& searchThread) {
-    if (nodesRemaining <= 0) {
+    if (nodesQuota <= 0) {
         acquireNodesQuota(searchThread);
     }
-    return nodesRemaining <= 0;
+    return nodesQuota <= 0;
 }
 
 void SearchInfo::acquireNodesQuota(SearchThread& searchThread) {
@@ -33,15 +33,13 @@ void SearchInfo::acquireNodesQuota(SearchThread& searchThread) {
         return;
     }
 
-    if (nodeLimit > nodes) {
-        auto remaining = small_cast<decltype(nodesRemaining)>(nodeLimit - nodes);
-        nodesRemaining = std::min(remaining, decltype(remaining){TickLimit});
-        nodes += nodesRemaining;
+    auto remaining = nodeLimit - nodes;
+    if (remaining > 0) {
+        nodesQuota = static_cast<decltype(nodesQuota)>( std::min(decltype(remaining){TickLimit}, remaining) );
+        nodes += nodesQuota;
     }
     else {
-        //stop itself if node quota ended
-        searchThread.commandStop();
-        return;
+        searchThread.commandStop(); //stop itself
     }
 
     out->report_current(*this);

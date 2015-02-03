@@ -10,7 +10,7 @@ class SearchThread;
 
 struct SearchInfo {
     enum { TickLimit = 1000 }; // ~0.2 msecs
-    node_quota_t nodesRemaining; //number of remaining nodes before checking for terminate
+    node_quota_t nodesQuota; //number of remaining nodes before checking for terminate
 
     node_count_t nodes;
     node_count_t perftNodes;
