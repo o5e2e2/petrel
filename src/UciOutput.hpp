@@ -15,7 +15,7 @@ class UciOutput : public SearchOutput {
     const ChessVariant& chessVariant; //format of castling moves output
     const Color& colorToMove; //initial position color for moves long algebraic format output
 
-    volatile bool isready_waiting; //set when got 'isready' command while thinking
+    mutable volatile bool isreadyWaiting; //set when got 'isready' command while thinking
 
     void write(std::ostream&, const Move&) const;
     void nps(std::ostream&, const SearchInfo&) const;
@@ -24,17 +24,17 @@ class UciOutput : public SearchOutput {
 public:
     //called from Uci
     UciOutput (std::ostream&, const ChessVariant&, const Color&);
-    void uci(const SearchControl&);
-    void isready(bool);
-    void info_fen(const Position&);
-    void echo(std::istream&);
-    void error(std::istream&);
+    void isready(const SearchControl&) const;
+    void uci(const SearchControl&) const;
+    void info_fen(const Position&) const;
+    void echo(std::istream&) const;
+    void error(std::istream&) const;
 
     //called from Search
-    void report_current(const SearchInfo&) override;
-    void report_bestmove(const SearchInfo&) override;
-    void report_perft_depth(const SearchInfo&) override;
-    void report_perft_divide(const SearchInfo&) override;
+    void report_current(const SearchInfo&) const override;
+    void report_bestmove(const SearchInfo&) const override;
+    void report_perft_depth(const SearchInfo&) const override;
+    void report_perft_divide(const SearchInfo&) const override;
 };
 
 #endif

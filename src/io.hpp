@@ -1,8 +1,7 @@
 #ifndef IO_HPP
 #define IO_HPP
 
-#include <istream>
-#include <ostream>
+#include <iostream>
 
 namespace io {
     typedef std::istream::char_type char_type;

@@ -6,34 +6,42 @@
 #include <thread>
 
 class ThreadControl {
-    std::mutex status_mutex;
-    std::condition_variable status_wait;
-
     enum Status { Ready, Run, Stop };
     volatile Status status;
 
+    std::mutex statusChanging;
+    std::condition_variable statusChanged;
+
+    typedef std::unique_lock<decltype(statusChanging)> StatusLock;
+
+    bool isStatus(Status To) const {
+        return status == To;
+    }
+
     void signal(Status To) {
-        std::unique_lock<decltype(status_mutex)> lock{status_mutex};
-        status = To;
-        lock.unlock();
-        status_wait.notify_all();
+        if (!isStatus(To)) {
+            StatusLock statusLock(statusChanging);
+            status = To;
+            statusLock.unlock();
+            statusChanged.notify_all();
+        }
     }
 
     void signal(Status From, Status To) {
-        if (status == From) {
-            std::unique_lock<decltype(status_mutex)> lock{status_mutex};
-            if (status == From) {
+        if (isStatus(From)) {
+            StatusLock statusLock(statusChanging);
+            if (isStatus(From)) {
                 status = To;
-                lock.unlock();
-                status_wait.notify_all();
             }
+            statusLock.unlock();
+            statusChanged.notify_all();
         }
     }
 
     void wait(Status To) {
-        if (status != To) {
-            std::unique_lock<decltype(status_mutex)> lock{status_mutex};
-            status_wait.wait(lock, [this, To] { return status == To; });
+        if (!isStatus(To)) {
+            StatusLock statusLock(statusChanging);
+            statusChanged.wait(statusLock, [this, To] { return isStatus(To); });
         }
     }
 
@@ -56,14 +64,14 @@ public:
 
     virtual ~ThreadControl() {}
 
-    bool isReady() const { return status == Ready; }
-    bool isStopped() const { return status == Stop; }
+    bool isReady()   const { return isStatus(Ready); }
+    bool isStopped() const { return isStatus(Stop); }
 
-    void commandRun() { signal(Ready, Run); }
+    void commandRun()  { signal(Ready, Run); }
     void commandStop() { signal(Run, Stop); }
 
     void waitReady() { wait(Ready); }
-    void waitStop() { wait(Stop); }
+    void waitStop()  { wait(Stop); }
 };
 
 #endif

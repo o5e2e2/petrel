@@ -1,7 +1,6 @@
 #ifndef UCI_HPP
 #define UCI_HPP
 
-#include <iostream>
 #include <sstream>
 
 #include "io.hpp"
@@ -19,12 +18,13 @@ class Uci {
     ChessVariant chessVariant; //format of castling moves output
     Color colorToMove; //initial position color for long algebraic format moves output
 
-    std::istringstream command; //current input command line
+    mutable std::istringstream command; //current input command line
 
     //UCI command handlers
+    void uci() const;
     void ucinewgame();
     void setoption();
-    void isready();
+    void isready() const;
 
     void position();
     void setStartpos();
@@ -32,7 +32,7 @@ class Uci {
     void go();
 
     //my own UCI protocol extensions
-    void echo();
+    void echo() const;
     void call();
 
     bool next(io::literal keyword) { return io::next(command, keyword); }

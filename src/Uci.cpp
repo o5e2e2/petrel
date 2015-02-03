@@ -10,11 +10,6 @@ Uci::Uci (std::ostream& out)
     ucinewgame();
 }
 
-void Uci::ucinewgame() {
-    searchControl.clear();
-    setStartpos();
-}
-
 bool Uci::operator() (std::istream& in) {
     for (std::string commandLine; std::getline(in, commandLine); ) {
         command.clear(); //clear errors from the previous command
@@ -27,7 +22,7 @@ bool Uci::operator() (std::istream& in) {
         else if (next("isready"))    { isready(); }
         else if (next("setoption"))  { setoption(); }
         else if (next("ucinewgame")) { ucinewgame(); }
-        else if (next("uci"))  { uciOutput.uci(searchControl); }
+        else if (next("uci"))  { uci(); }
         else if (next("quit")) { std::exit(EXIT_SUCCESS); }
         //UCI extensions
         else if (next("exit")) { break; }
@@ -48,9 +43,9 @@ bool Uci::operator() (std::istream& in) {
     return !in.bad();
 }
 
-bool Uci::operator() (const std::string& filename) {
-    std::ifstream file(filename);
-    return operator()(file);
+void Uci::ucinewgame() {
+    searchControl.clear();
+    setStartpos();
 }
 
 void Uci::setoption() {
@@ -120,13 +115,22 @@ void Uci::go() {
     searchControl.go(uciOutput, rootPosition, goLimit);
 }
 
-void Uci::isready() {
-    uciOutput.isready( searchControl.isReady() );
+void Uci::uci() const {
+    uciOutput.uci(searchControl);
 }
 
-void Uci::echo() {
+void Uci::isready() const {
+    uciOutput.isready(searchControl);
+}
+
+void Uci::echo() const {
     command >> std::ws;
     uciOutput.echo(command);
+}
+
+bool Uci::operator() (const std::string& filename) {
+    std::ifstream file(filename);
+    return operator()(file);
 }
 
 void Uci::call() {
