@@ -40,16 +40,9 @@ namespace Perft {
 
 namespace PerftDivide {
     bool perftX(SearchControl& control, const Position& pos, depth_t draft) {
-        auto perftTotal = control.info.perftNodes;
-        control.info.perftNodes = 0;
-
         control.info.nodesRemaining--;
         CUT (Perft::perft(control, pos, draft));
-
-        control.info.currmovenumber++;
         control.report_perft_divide();
-
-        control.info.perftNodes += perftTotal;
         return false;
     }
 
@@ -76,7 +69,6 @@ namespace PerftDivide {
 
 namespace PerftRoot {
     bool perftX(SearchControl& control, const Position& parent, depth_t depth) {
-        control.info.perftNodes = 0;
         control.info.depth = depth;
 
         bool isAborted = Perft::perft(control, parent, depth);
@@ -103,8 +95,6 @@ namespace PerftRoot {
 
 namespace PerftDivideRoot {
     bool perftX(SearchControl& control, const Position& parent, depth_t depth) {
-        control.info.perftNodes = 0;
-        control.info.currmovenumber = 0;
         control.info.depth = depth;
 
         bool isAborted = PerftDivide::perft(control, parent, depth);

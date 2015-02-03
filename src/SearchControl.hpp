@@ -37,7 +37,6 @@ public:
     void report_perft_depth() { info.report_perft_depth(); }
 
     bool isReady() const { return searchThread.isReady(); }
-    bool isStopped() const { return searchThread.isStopped(); }
     void wait() { searchThread.waitReady(); }
     void stop() { searchThread.commandStop(); wait(); }
 

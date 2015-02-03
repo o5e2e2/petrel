@@ -96,7 +96,7 @@ void UciOutput::report_perft_divide(const SearchInfo& info) {
     out << "info currmovenumber " << info.currmovenumber << " currmove ";
     write(out, info.currmove);
     nps(out, info);
-    out << " string perft " << info.perftNodes << '\n';
+    out << " string perft " << (info.perftNodes - info.perftDivide) << '\n';
 }
 
 void UciOutput::report_perft_depth(const SearchInfo& info) {

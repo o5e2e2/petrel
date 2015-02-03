@@ -7,7 +7,9 @@ void SearchInfo::clear() {
 
     nodes = 0;
     perftNodes = 0;
+    perftDivide = 0;
     nodesRemaining = 0;
+    currmovenumber = 0;
     bestmove = Move::null();
 }
 
@@ -31,13 +33,15 @@ void SearchInfo::acquireNodesQuota(SearchThread& searchThread) {
         return;
     }
 
-    if (nodes >= nodeLimit) {
-        searchThread.commandStop();
+    if (nodeLimit > nodes) {
+        auto remaining = small_cast<decltype(nodesRemaining)>(nodeLimit - nodes);
+        nodesRemaining = std::min(remaining, decltype(remaining){TickLimit});
+        nodes += nodesRemaining;
     }
     else {
-        auto remaining = nodeLimit - nodes;
-        nodesRemaining = static_cast<node_quota_t>( std::min(remaining, decltype(remaining){TickLimit}) );
-        nodes += nodesRemaining;
+        //stop itself if node quota ended
+        searchThread.commandStop();
+        return;
     }
 
     out->report_current(*this);
@@ -45,7 +49,10 @@ void SearchInfo::acquireNodesQuota(SearchThread& searchThread) {
 
 void SearchInfo::report_perft_divide() {
     releaseNodesQuota();
+
+    currmovenumber++;
     out->report_perft_divide(*this);
+    perftDivide = perftNodes;
 }
 
 void SearchInfo::report_perft_depth() {

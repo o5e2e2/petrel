@@ -17,13 +17,14 @@ struct SearchInfo {
     node_count_t nodeLimit; //search limit
 
     Move    bestmove;
+
+    node_count_t perftDivide;
     Move    currmove;
     index_t currmovenumber;
 
-    depth_t depth; //current search depth
-
     SearchOutput* out;
     Clock clock;
+    depth_t depth; //current search depth
 
     void clear();
     void releaseNodesQuota();

@@ -25,7 +25,7 @@ OPTIMIZATIONS = -Ofast -flto -fno-rtti -fno-common
 #OPTIMIZATIONS += -fno-exceptions
 WARNINGS += -pedantic -Wall -Wextra -Wuninitialized -Wpointer-arith -Wcast-qual -Wcast-align
 WARNINGS += -Wsign-conversion
-#WARNINGS += -Wconversion -Wshadow
+WARNINGS += -Wconversion -Wshadow
 
 ZIP = zip -r -q -o -9 -FS
 #CXX = g++
