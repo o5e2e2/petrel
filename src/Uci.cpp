@@ -1,7 +1,7 @@
 #include <fstream>
 
 #include "Uci.hpp"
-#include "SearchControl.hpp"
+#include "PositionFen.hpp"
 #include "PositionMoves.hpp"
 
 Uci::Uci (std::ostream& out)
