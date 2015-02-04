@@ -23,9 +23,6 @@ private:
     SearchThread searchThread;
     Timer moveTimer;
 
-    SearchControl (const SearchControl&) = delete;
-    SearchControl& operator = (const SearchControl&) = delete;
-
 public:
     SearchControl ();
     void clear();
