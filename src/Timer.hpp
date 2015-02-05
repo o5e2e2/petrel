@@ -13,6 +13,7 @@ class Timer {
     class TimerThread : public ThreadControl {
         TimerPool::element_type thisTimer;
         ThreadControl* slaveThread;
+        sequence_t slaveSequence;
         Clock::_t duration;
 
         void thread_body() override {
@@ -20,7 +21,7 @@ class Timer {
 
             if (!this->isStopped()) {
                 //signal timeout only if the timer is still active
-                slaveThread->commandStop();
+                slaveThread->commandStop(slaveSequence);
 
                 //wait for release
                 this->waitStop();
@@ -31,9 +32,10 @@ class Timer {
         }
 
     public:
-        void start(TimerPool::element_type t, ThreadControl& s, Clock::_t d) {
+        void start(TimerPool::element_type t, ThreadControl& s, sequence_t seq, Clock::_t d) {
             thisTimer = t;
             slaveThread = &s;
+            slaveSequence = seq;
             duration = d;
 
             this->commandRun();
@@ -49,13 +51,13 @@ public:
     Timer () {}
    ~Timer () { cancel(); }
 
-    void start(ThreadControl& slaveThread, Clock::_t duration) {
+    void start(ThreadControl& slaveThread, ThreadControl::sequence_t seq, Clock::_t duration) {
         cancel();
 
         //zero duration means no timer
         if (duration != Clock::_t::zero()) {
             thisTimer = timerPool.acquire();
-            timerPool[thisTimer].start(thisTimer, slaveThread, duration);
+            timerPool[thisTimer].start(thisTimer, slaveThread, seq, duration);
         }
     }
 

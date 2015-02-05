@@ -6,44 +6,29 @@
 #include <thread>
 
 class ThreadControl {
+public:
+    typedef int sequence_t;
+
+private:
     enum Status { Ready, Run, Stop };
     volatile Status status;
+
+    sequence_t sequence;
 
     std::mutex statusChanging;
     std::condition_variable statusChanged;
 
     typedef std::unique_lock<decltype(statusChanging)> StatusLock;
 
-    bool isStatus(Status To) const {
-        return status == To;
-    }
+    bool isStatus(Status to) const { return status == to; }
 
-    void signal(Status To) {
-        if (!isStatus(To)) {
-            StatusLock statusLock(statusChanging);
-            status = To;
-            statusLock.unlock();
-            statusChanged.notify_all();
-        }
-    }
+    void signal(Status to);
+    void signal(Status from, Status to);
 
-    void signal(Status From, Status To) {
-        if (isStatus(From)) {
-            StatusLock statusLock(statusChanging);
-            if (isStatus(From)) {
-                status = To;
-            }
-            statusLock.unlock();
-            statusChanged.notify_all();
-        }
-    }
+    sequence_t signalSequence(Status from, Status to);
+    void signal(sequence_t seq, Status from, Status to);
 
-    void wait(Status To) {
-        if (!isStatus(To)) {
-            StatusLock statusLock(statusChanging);
-            statusChanged.wait(statusLock, [this, To] { return isStatus(To); });
-        }
-    }
+    void wait(Status to);
 
     ThreadControl (const ThreadControl&) = delete;
     ThreadControl& operator = (const ThreadControl&) = delete;
@@ -51,7 +36,7 @@ class ThreadControl {
     virtual void thread_body() = 0;
 
 public:
-    ThreadControl () : status{Ready} {
+    ThreadControl () : status{Ready}, sequence{0} {
         auto infinite_loop = [this] {
             for (;;) {
                 wait(Run);
@@ -69,6 +54,10 @@ public:
 
     void commandRun()  { signal(Ready, Run); }
     void commandStop() { signal(Run, Stop); }
+
+    //make sure that we stop only what had been run
+    sequence_t commandRunSequence()  { return signalSequence(Ready, Run); }
+    void commandStop(sequence_t seq) { signal(seq, Run, Stop); }
 
     void waitReady() { wait(Ready); }
     void waitStop()  { wait(Stop); }
