@@ -9,7 +9,7 @@ class Timer : public ThreadControl {
     typedef Pool<Timer> TimerPool;
     static TimerPool timerPool;
 
-    TimerPool::element_type thisTimer;
+    TimerPool::_t thisTimer;
     ThreadControl* slaveThread;
     sequence_t slaveSequence;
 
@@ -25,7 +25,7 @@ class Timer : public ThreadControl {
         timerPool.release(std::move(thisTimer));
     }
 
-    void start(TimerPool::element_type t, ThreadControl& s, sequence_t seq, Clock::_t d) {
+    void start(TimerPool::_t t, ThreadControl& s, sequence_t seq, Clock::_t d) {
         thisTimer = t;
         slaveThread = &s;
         slaveSequence = seq;
@@ -38,8 +38,8 @@ public:
     static void start(ThreadControl& slaveThread, ThreadControl::sequence_t seq, Clock::_t duration) {
         if (duration == Clock::_t::zero()) { return; } //zero duration means no timer
 
-        auto thisTimer = timerPool.acquire();
-        timerPool[thisTimer].start(thisTimer, slaveThread, seq, duration);
+        TimerPool::_t thisTimer = timerPool.acquire();
+        TimerPool::fetch(thisTimer).start(thisTimer, slaveThread, seq, duration);
     }
 
 };
