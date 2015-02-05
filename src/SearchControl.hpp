@@ -19,9 +19,10 @@ public:
     SearchInfo info;
 
 private:
-    TranspositionTable transpositionTable;
     SearchThread searchThread;
     SearchThread::sequence_t sequence;
+
+    TranspositionTable transpositionTable;
 
     SearchControl (const SearchControl&) = delete;
     SearchControl& operator = (const SearchControl&) = delete;

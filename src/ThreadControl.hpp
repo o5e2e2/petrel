@@ -1,16 +1,16 @@
 #ifndef THREAD_CONTROL_HPP
 #define THREAD_CONTROL_HPP
 
-#include <condition_variable>
-#include <mutex>
 #include <thread>
+#include <mutex>
+#include <condition_variable>
 
 class ThreadControl {
 public:
     typedef int sequence_t;
 
 private:
-    enum Status { Ready, Run, Pause, Abort };
+    enum Status { Ready, Run, Abort };
     volatile Status status;
 
     sequence_t sequence;
@@ -18,9 +18,10 @@ private:
     std::mutex statusChanging;
     std::condition_variable statusChanged;
 
-    typedef std::unique_lock<decltype(statusChanging)> StatusLock;
+    typedef std::lock_guard<decltype(statusChanging)> StatusLock;
 
     bool isStatus(Status to) const { return status == to; }
+    void wait(Status to);
 
     void signal(Status to);
     void signal(Status from, Status to);
@@ -28,25 +29,10 @@ private:
     sequence_t signalSequence(Status from, Status to);
     void signal(sequence_t seq, Status from, Status to);
 
-    void wait(Status to);
-
-    ThreadControl (const ThreadControl&) = delete;
-    ThreadControl& operator = (const ThreadControl&) = delete;
-
     virtual void thread_body() = 0;
 
 public:
-    ThreadControl () : status{Ready}, sequence{0} {
-        auto infinite_loop = [this] {
-            for (;;) {
-                wait(Run);
-                this->thread_body();
-                signal(Ready);
-            }
-        };
-        std::thread(infinite_loop).detach();
-    }
-
+    ThreadControl ();
     virtual ~ThreadControl() {}
 
     bool isReady()   const { return isStatus(Ready); }

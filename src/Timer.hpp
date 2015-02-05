@@ -17,29 +17,28 @@ class Timer : public ThreadControl {
 
     void thread_body() override {
         std::this_thread::sleep_for(duration);
-
-        //signal timeout only if the timer is still active
         slaveThread->commandStop(slaveSequence);
-
-        //inform the pool about idle timer
         timerPool.release(std::move(thisTimer));
     }
 
-    void start(TimerPool::_t t, ThreadControl& s, sequence_t seq, Clock::_t d) {
-        thisTimer = t;
-        slaveThread = &s;
-        slaveSequence = seq;
+    void start(TimerPool::_t timer, Clock::_t d, ThreadControl& thread, sequence_t seq) {
+        assert(&TimerPool::fetch(timer) == this);
+
+        thisTimer = timer;
         duration = d;
+
+        slaveThread = &thread;
+        slaveSequence = seq;
 
         this->commandRun();
     }
 
 public:
-    static void start(ThreadControl& slaveThread, ThreadControl::sequence_t seq, Clock::_t duration) {
+    static void start(Clock::_t duration, ThreadControl& slaveThread, ThreadControl::sequence_t seq) {
         if (duration == Clock::_t::zero()) { return; } //zero duration means no timer
 
-        TimerPool::_t thisTimer = timerPool.acquire();
-        TimerPool::fetch(thisTimer).start(thisTimer, slaveThread, seq, duration);
+        TimerPool::_t timer = timerPool.acquire();
+        TimerPool::fetch(timer).start(timer, duration, slaveThread, seq);
     }
 
 };

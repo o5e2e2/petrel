@@ -18,5 +18,5 @@ void SearchControl::go(SearchOutput& output, const Position& startPosition, cons
 
     auto searchFn = goLimit.getDivide()? PerftDivideRoot::perft : PerftRoot::perft;
     sequence = searchThread.start(searchFn, this, &startPosition, goLimit.getDepth());
-    Timer::start(searchThread, sequence, goLimit.getThinkingTime() );
+    Timer::start(goLimit.getThinkingTime(), searchThread, sequence);
 }
