@@ -6,7 +6,7 @@ SearchThread::sequence_t SearchThread::start(SearchFn s, SearchControl* c, const
     control = c;
     parent = p;
     draft = d;
-    return commandRunSequence();
+    return commandRun();
 }
 
 void SearchThread::thread_body() {

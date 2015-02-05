@@ -21,6 +21,7 @@ public:
 private:
     TranspositionTable transpositionTable;
     SearchThread searchThread;
+    SearchThread::sequence_t sequence;
 
     SearchControl (const SearchControl&) = delete;
     SearchControl& operator = (const SearchControl&) = delete;
@@ -37,7 +38,7 @@ public:
 
     bool isReady() const { return searchThread.isReady(); }
     void wait() { searchThread.waitReady(); }
-    void stop() { searchThread.commandStop(); wait(); }
+    void stop() { searchThread.commandStop(sequence); wait(); }
 
     TranspositionTable& tt() { return transpositionTable; }
     const TranspositionTable& tt() const { return transpositionTable; }

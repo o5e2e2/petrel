@@ -52,14 +52,9 @@ public:
     bool isReady()   const { return isStatus(Ready); }
     bool isStopped() const { return isStatus(Abort); }
 
-    void commandRun()  { signal(Ready, Run); }
-    void commandStop() { signal(Abort); }
-
-    sequence_t commandRunSequence()  { return signalSequence(Ready, Run); }
+    sequence_t commandRun()  { return signalSequence(Ready, Run); }
     void commandStop(sequence_t seq) { signal(seq, Run, Abort); }
-
-    void commandPause(sequence_t seq) { signal(seq, Run, Pause); }
-    void commandContinue(sequence_t seq) { signal(seq, Pause, Run); }
+    void commandStop() { signal(Run, Abort); }
 
     void waitReady() { wait(Ready); }
 };
