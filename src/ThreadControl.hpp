@@ -20,14 +20,20 @@ class ThreadControl {
 
     void signal(Status To) {
         if (!isStatus(To)) {
+            StatusLock statusLock(statusChanging);
             status = To;
+            statusLock.unlock();
             statusChanged.notify_all();
         }
     }
 
     void signal(Status From, Status To) {
         if (isStatus(From)) {
-            status = To;
+            StatusLock statusLock(statusChanging);
+            if (isStatus(From)) {
+                status = To;
+            }
+            statusLock.unlock();
             statusChanged.notify_all();
         }
     }
@@ -38,6 +44,9 @@ class ThreadControl {
             statusChanged.wait(statusLock, [this, To] { return isStatus(To); });
         }
     }
+
+    ThreadControl (const ThreadControl&) = delete;
+    ThreadControl& operator = (const ThreadControl&) = delete;
 
     virtual void thread_body() = 0;
 

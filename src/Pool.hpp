@@ -10,25 +10,21 @@
 template <class Element>
 class Pool {
     std::mutex list_mutex;
+    typedef std::lock_guard<decltype(list_mutex)> lock_guard;
 
-    typedef std::lock_guard<decltype(list_mutex)> Lock;
-    typedef std::forward_list<Element> List;
-
-    List used;
-    List ready;
+    typedef std::forward_list<Element> list_t;
+    list_t used;
+    list_t ready;
 
 public:
-    typedef typename List::iterator _t;
+    typedef typename list_t::iterator element_type;
 
-    friend Element& operator* (const _t& that) {
-        return *std::next(that);
-    }
+    Element& operator[] (const element_type& that) { return *std::next(that); }
+    bool empty(const element_type& that) { return that == used.end(); }
+    void clear(element_type& that) { that = used.end(); }
 
-    bool empty(const _t& that) const { return that == used.end(); }
-    void clear(_t&& that) { that = used.end(); }
-
-    _t acquire() {
-        Lock lock{list_mutex};
+    element_type acquire() {
+        lock_guard lock{list_mutex};
 
         if (ready.empty()) {
             used.emplace_front();
@@ -41,12 +37,12 @@ public:
     }
 
     //return the used element to the ready list
-    void release(_t&& element) {
+    void release(element_type&& element) {
         if (!empty(element)) {
-            Lock lock{list_mutex};
+            lock_guard lock{list_mutex};
 
             ready.splice_after(ready.before_begin(), used, element);
-            clear(std::move(element));
+            clear(element);
         }
     }
 

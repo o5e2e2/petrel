@@ -14,6 +14,9 @@ class PositionMoves {
 
     const Position& pos;
 
+    PositionMoves () = delete;
+    PositionMoves& operator = (const PositionMoves&) = delete;
+
     //legal move generation helpers
     template <Side::_t> void generateEnPassantMoves();
     template <Side::_t> void generateUnderpromotions();

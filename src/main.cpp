@@ -7,7 +7,7 @@
 #include "CastlingRules.hpp"
 #include "Evaluation.hpp"
 #include "PieceTypeAttack.hpp"
-#include "TimerThread.hpp"
+#include "Timer.hpp"
 #include "TranspositionTable.hpp"
 #include "Uci.hpp"
 #include "VectorOf.hpp"
@@ -38,7 +38,7 @@ template <> io::literal Pi::The_string{"K123456789abcdef"};
 
 CastlingRules castlingRules; //constant during the same Chess960 game (32)
 
-TimerPool timerPool;
+Timer::TimerPool Timer::timerPool;
 
 int main(int argc, const char* argv[]) {
     std::ios_base::sync_with_stdio(false); //speed trick
