@@ -5,70 +5,41 @@
 #include "Pool.hpp"
 #include "ThreadControl.hpp"
 
-class Timer {
-    class TimerThread;
-    typedef Pool<TimerThread> TimerPool;
+class Timer : public ThreadControl {
+    typedef Pool<Timer> TimerPool;
     static TimerPool timerPool;
 
-    class TimerThread : public ThreadControl {
-        TimerPool::element_type thisTimer;
-        ThreadControl* slaveThread;
-        sequence_t slaveSequence;
-        Clock::_t duration;
-
-        void thread_body() override {
-            std::this_thread::sleep_for(duration);
-
-            if (!this->isStopped()) {
-                //signal timeout only if the timer is still active
-                slaveThread->commandStop(slaveSequence);
-
-                //wait for release
-                this->waitStop();
-            }
-
-            //inform the pool about idle timer
-            timerPool.release(std::move(thisTimer));
-        }
-
-    public:
-        void start(TimerPool::element_type t, ThreadControl& s, sequence_t seq, Clock::_t d) {
-            thisTimer = t;
-            slaveThread = &s;
-            slaveSequence = seq;
-            duration = d;
-
-            this->commandRun();
-        }
-    };
-
     TimerPool::element_type thisTimer;
+    ThreadControl* slaveThread;
+    sequence_t slaveSequence;
 
-    Timer (const Timer&) = delete;
-    Timer& operator = (const Timer&) = delete;
+    Clock::_t duration;
 
-public:
-    Timer () {}
-   ~Timer () { cancel(); }
+    void thread_body() override {
+        std::this_thread::sleep_for(duration);
 
-    void start(ThreadControl& slaveThread, ThreadControl::sequence_t seq, Clock::_t duration) {
-        cancel();
+        //signal timeout only if the timer is still active
+        slaveThread->commandStop(slaveSequence);
 
-        //zero duration means no timer
-        if (duration != Clock::_t::zero()) {
-            thisTimer = timerPool.acquire();
-            timerPool[thisTimer].start(thisTimer, slaveThread, seq, duration);
-        }
+        //inform the pool about idle timer
+        timerPool.release(std::move(thisTimer));
     }
 
-    void cancel() {
-        if (!timerPool.empty(thisTimer)) {
-            //inform the timer that it is free now
-            timerPool[thisTimer].commandStop();
+    void start(TimerPool::element_type t, ThreadControl& s, sequence_t seq, Clock::_t d) {
+        thisTimer = t;
+        slaveThread = &s;
+        slaveSequence = seq;
+        duration = d;
 
-            //now we can forget about this timer
-            timerPool.clear(thisTimer);
-        }
+        this->commandRun();
+    }
+
+public:
+    static void start(ThreadControl& slaveThread, ThreadControl::sequence_t seq, Clock::_t duration) {
+        if (duration == Clock::_t::zero()) { return; } //zero duration means no timer
+
+        auto thisTimer = timerPool.acquire();
+        timerPool[thisTimer].start(thisTimer, slaveThread, seq, duration);
     }
 
 };

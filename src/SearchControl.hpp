@@ -21,7 +21,6 @@ public:
 private:
     TranspositionTable transpositionTable;
     SearchThread searchThread;
-    Timer moveTimer;
 
     SearchControl (const SearchControl&) = delete;
     SearchControl& operator = (const SearchControl&) = delete;

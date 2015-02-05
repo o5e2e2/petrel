@@ -4,7 +4,7 @@
 #include "SearchLimit.hpp"
 #include "SearchOutput.hpp"
 
-SearchControl::SearchControl () : moveTimer{} { clear(); }
+SearchControl::SearchControl () { clear(); }
 
 void SearchControl::clear() {
     transpositionTable.clear();
@@ -18,5 +18,5 @@ void SearchControl::go(SearchOutput& output, const Position& startPosition, cons
 
     auto searchFn = goLimit.getDivide()? PerftDivideRoot::perft : PerftRoot::perft;
     auto seq = searchThread.start(searchFn, this, &startPosition, goLimit.getDepth());
-    moveTimer.start(searchThread, seq, goLimit.getThinkingTime() );
+    Timer::start(searchThread, seq, goLimit.getThinkingTime() );
 }

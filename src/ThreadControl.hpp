@@ -10,7 +10,7 @@ public:
     typedef int sequence_t;
 
 private:
-    enum Status { Ready, Run, Stop };
+    enum Status { Ready, Run, Pause, Abort };
     volatile Status status;
 
     sequence_t sequence;
@@ -50,17 +50,18 @@ public:
     virtual ~ThreadControl() {}
 
     bool isReady()   const { return isStatus(Ready); }
-    bool isStopped() const { return isStatus(Stop); }
+    bool isStopped() const { return isStatus(Abort); }
 
     void commandRun()  { signal(Ready, Run); }
-    void commandStop() { signal(Run, Stop); }
+    void commandStop() { signal(Abort); }
 
-    //make sure that we stop only what had been run
     sequence_t commandRunSequence()  { return signalSequence(Ready, Run); }
-    void commandStop(sequence_t seq) { signal(seq, Run, Stop); }
+    void commandStop(sequence_t seq) { signal(seq, Run, Abort); }
+
+    void commandPause(sequence_t seq) { signal(seq, Run, Pause); }
+    void commandContinue(sequence_t seq) { signal(seq, Pause, Run); }
 
     void waitReady() { wait(Ready); }
-    void waitStop()  { wait(Stop); }
 };
 
 #endif
