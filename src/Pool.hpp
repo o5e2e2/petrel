@@ -3,6 +3,7 @@
 
 #include <forward_list>
 #include <mutex>
+#include "SpinLock.hpp"
 
 /**
  * Generic object pool pattern
@@ -13,8 +14,8 @@ class Pool {
     List used;
     List ready;
 
-    std::mutex mutex;
-    typedef std::lock_guard<decltype(mutex)> ListLock;
+    SpinLock lock;
+    typedef std::lock_guard<decltype(lock)> ListLock;
 
 public:
     typedef typename List::iterator _t;
@@ -22,7 +23,7 @@ public:
     static Element& fetch(const _t& that) { return *std::next(that); }
 
     _t acquire() {
-        ListLock lock(mutex);
+        ListLock listLock(lock);
 
         if (ready.empty()) {
             used.emplace_front();
@@ -37,7 +38,7 @@ public:
     //return the used element to the ready list
     void release(_t&& element) {
         if (element != ready.end()) {
-            ListLock lock(mutex);
+            ListLock listLock(lock);
 
             ready.splice_after(ready.before_begin(), used, element);
             element = ready.end();

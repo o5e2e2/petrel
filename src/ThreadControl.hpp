@@ -5,6 +5,8 @@
 #include <mutex>
 #include <condition_variable>
 
+#include "SpinLock.hpp"
+
 class ThreadControl {
 public:
     typedef int sequence_t;
@@ -15,8 +17,8 @@ private:
 
     sequence_t sequence;
 
-    std::mutex statusChanging;
-    std::condition_variable statusChanged;
+    SpinLock statusChanging;
+    std::condition_variable_any statusChanged;
 
     typedef std::lock_guard<decltype(statusChanging)> StatusLock;
 
