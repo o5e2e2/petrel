@@ -4,8 +4,7 @@
 #include <atomic>
 #include <immintrin.h>
 
-class SpinLock
-{
+class SpinLock {
     std::atomic_flag atomic = ATOMIC_FLAG_INIT;
 
 public:
