@@ -1,5 +1,5 @@
-#ifndef NODE_HPP
-#define NODE_HPP
+#ifndef SEARCH_HPP
+#define SEARCH_HPP
 
 #include "typedefs.hpp"
 

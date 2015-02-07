@@ -1,4 +1,4 @@
-#include "Node.hpp"
+#include "Search.hpp"
 #include "Position.hpp"
 #include "PositionMoves.hpp"
 #include "SearchControl.hpp"

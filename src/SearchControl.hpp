@@ -7,7 +7,6 @@
 #include "Timer.hpp"
 #include "TranspositionTable.hpp"
 
-class Node;
 class SearchLimit;
 class Position;
 

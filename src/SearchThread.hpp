@@ -2,7 +2,7 @@
 #define SEARCH_THREAD_HPP
 
 #include "ThreadControl.hpp"
-#include "Node.hpp"
+#include "Search.hpp"
 
 class SearchThread : public ThreadControl {
     SearchFn* searchFn;
@@ -13,7 +13,7 @@ class SearchThread : public ThreadControl {
     void thread_body() override;
 
 public:
-    sequence_t start(SearchFn, SearchControl*, const Position*, depth_t);
+    sequence_t start(SearchFn*, SearchControl*, const Position*, depth_t);
 };
 
 #endif

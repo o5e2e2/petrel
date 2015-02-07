@@ -1,6 +1,6 @@
 #include "SearchControl.hpp"
 
-#include "Node.hpp"
+#include "Search.hpp"
 #include "SearchLimit.hpp"
 #include "SearchOutput.hpp"
 
