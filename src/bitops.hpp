@@ -1,7 +1,7 @@
 #ifndef BIT_OPS_HPP
 #define BIT_OPS_HPP
 
-#include "typedefs.hpp"
+#include <cstdint>
 
 #if defined _MSC_VER
 #   include <intrin.h>
@@ -64,6 +64,8 @@ constexpr T without_lsb(T n) { return n & static_cast<T>(n-1); }
 
 template <typename T>
 constexpr bool is_singleton(T n) { return (n != 0) && (::without_lsb(n) == 0); }
+
+typedef int index_t; //small numbers [0..N) with a known upper bound
 
 #if defined __GNUC__
     INLINE index_t bsf(std::uint32_t b) {

@@ -2,13 +2,12 @@
 #define VECTOR_PI_MASK_HPP
 
 #include "io.hpp"
-#include "Vector.hpp"
+#include "typedefs.hpp"
 
-#include "Index.hpp"
-#include "BitSet.hpp"
+#include "BitArray.hpp"
 #include "PieceSet.hpp"
-#include "VectorPiSingle.hpp"
 #include "VectorOf.hpp"
+#include "VectorPiSingle.hpp"
 
 /**
  * piece vector of boolean values: false (0) or true (0xff)

@@ -1,7 +1,7 @@
 #ifndef VECTOR_PI_TYPE_H
 #define VECTOR_PI_TYPE_H
 
-#include "Index.hpp"
+#include "typedefs.hpp"
 #include "VectorPiBit.hpp"
 
 class VectorPiType {

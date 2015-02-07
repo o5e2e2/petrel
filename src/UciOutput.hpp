@@ -2,8 +2,8 @@
 #define UCI_OUTPUT_HPP
 
 #include "io.hpp"
+#include "typedefs.hpp"
 #include "SearchOutput.hpp"
-#include "Index.hpp"
 
 class SearchControl;
 class SearchInfo;

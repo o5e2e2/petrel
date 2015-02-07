@@ -1,8 +1,8 @@
 #ifndef VECTOR_PI_SINGLE_HPP
 #define VECTOR_PI_SINGLE_HPP
 
+#include "typedefs.hpp"
 #include "Vector.hpp"
-#include "Index.hpp"
 
 class VectorPiSingle {
     typedef __m128i _t;

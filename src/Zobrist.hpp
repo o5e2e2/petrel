@@ -2,7 +2,8 @@
 #define ZOBRIST_HPP
 
 #include <random>
-#include "Index.hpp"
+#include "typedefs.hpp"
+#include "Square.hpp"
 
 class Zobrist {
     class Key {

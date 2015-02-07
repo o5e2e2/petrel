@@ -1,15 +1,7 @@
 #ifndef SQUARE_HPP
 #define SQUARE_HPP
 
-#include "Index.hpp"
-
-enum file_t { FileA, FileB, FileC, FileD, FileE, FileF, FileG, FileH };
-typedef Index<8, file_t> File;
-
-enum rank_t { Rank8, Rank7, Rank6, Rank5, Rank4, Rank3, Rank2, Rank1 };
-typedef Index<8, rank_t> Rank;
-
-inline constexpr Rank up(Rank r) { return static_cast<Rank::_t>(r-1); }
+#include "typedefs.hpp"
 
 enum square_t {
     A8, B8, C8, D8, E8, F8, G8, H8,

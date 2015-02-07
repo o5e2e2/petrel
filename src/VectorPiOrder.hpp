@@ -1,9 +1,7 @@
 #ifndef VECTOR_PI_ORDER_HPP
 #define VECTOR_PI_ORDER_HPP
 
-#include "Vector.hpp"
-#include "Index.hpp"
-#include "BitSet.hpp"
+#include "typedefs.hpp"
 #include "VectorPiEnum.hpp"
 #include "VectorPiSingle.hpp"
 

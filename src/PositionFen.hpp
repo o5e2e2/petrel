@@ -2,7 +2,7 @@
 #define POSITION_FEN_HPP
 
 #include "io.hpp"
-#include "Index.hpp"
+#include "typedefs.hpp"
 
 class Position;
 

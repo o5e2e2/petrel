@@ -6,6 +6,8 @@
 #include "bitops.hpp"
 #include "io.hpp"
 
+typedef int index_t; //small numbers [0..N) with a known upper bound
+
 #define FOR_INDEX(Index, i) for (Index i{Index::Begin}; i.isOk(); ++i)
 
 template <int _Limit, typename _Value = int>
@@ -89,25 +91,5 @@ public:
     };
 
 };
-
-enum color_t { White, Black };
-typedef Index<2, color_t> Color;
-
-enum side_t { My, Op };
-typedef Index<2, side_t> Side;
-
-enum castling_side_t { KingSide, QueenSide };
-typedef Index<2, castling_side_t> CastlingSide;
-
-enum piece_index_t { TheKing };
-typedef Index<16, piece_index_t> Pi; //piece index
-
-enum piece_type_t { Queen, Rook, Bishop, Knight, Pawn, King };
-typedef Index<3, piece_type_t> SliderType;
-typedef Index<4, piece_type_t> PromoType;
-typedef Index<6, piece_type_t> PieceType;
-
-enum chess_variant_t { Orthodox, Chess960 };
-typedef Index<2, chess_variant_t> ChessVariant;
 
 #endif

@@ -1,6 +1,7 @@
 #ifndef VECTOR_PI_RANK_HPP
 #define VECTOR_PI_RANK_HPP
 
+#include "typedefs.hpp"
 #include "Bb.hpp"
 #include "Square.hpp"
 #include "VectorBitCount.hpp"

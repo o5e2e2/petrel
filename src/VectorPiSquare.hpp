@@ -2,6 +2,7 @@
 #define VECTOR_PI_SQUARE_HPP
 
 #include "io.hpp"
+#include "typedefs.hpp"
 #include "Square.hpp"
 #include "VectorPiEnum.hpp"
 #include "VectorOf.hpp"

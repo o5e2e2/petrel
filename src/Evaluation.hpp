@@ -1,7 +1,7 @@
 #ifndef EVALUATION_HPP
 #define EVALUATION_HPP
 
-#include "Index.hpp"
+#include "typedefs.hpp"
 #include "Square.hpp"
 
 #define E(x, y) (((x)+(y))/5)
