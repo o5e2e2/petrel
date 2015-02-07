@@ -1,8 +1,6 @@
 #ifndef UCI_HPP
 #define UCI_HPP
 
-#include <sstream>
-
 #include "io.hpp"
 #include "Position.hpp"
 #include "SearchControl.hpp"
@@ -31,13 +29,14 @@ class Uci {
     void go();
 
     //UCI protocol extensions
-    void echo() const;
     void call();
+    void echo() const;
+    int exit() const;
 
 public:
-    Uci (std::ostream& = std::cout);
-    bool operator() (const std::string& filename);
-    bool operator() (std::istream& = std::cin);
+    Uci (std::ostream&);
+    int operator() (std::istream&);
+    int operator() (const std::string& filename);
 };
 
 #endif

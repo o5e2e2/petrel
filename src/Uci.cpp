@@ -10,7 +10,7 @@ Uci::Uci (std::ostream& out)
     ucinewgame();
 }
 
-bool Uci::operator() (std::istream& in) {
+int Uci::operator() (std::istream& in) {
     for (std::string commandLine; std::getline(in, commandLine); ) {
         command.clear(); //clear errors from the previous command
         command.str(std::move(commandLine));
@@ -23,9 +23,9 @@ bool Uci::operator() (std::istream& in) {
         else if (next("setoption"))  { setoption(); }
         else if (next("ucinewgame")) { ucinewgame(); }
         else if (next("uci"))  { uci(); }
-        else if (next("quit")) { std::exit(EXIT_SUCCESS); }
+        else if (next("quit")) { break; }
         //UCI extensions
-        else if (next("exit")) { break; }
+        else if (next("exit")) { return exit(); }
         else if (next("wait")) { searchControl.wait(); }
         else if (next("echo")) { echo(); }
         else if (next("call")) { call(); }
@@ -40,7 +40,7 @@ bool Uci::operator() (std::istream& in) {
         if (!next("")) { uciOutput.error(command); }
     }
 
-    return !in.bad();
+    return in.bad();
 }
 
 void Uci::ucinewgame() {
@@ -101,8 +101,7 @@ void Uci::position() {
 }
 
 void Uci::setStartpos() {
-    std::istringstream startpos{"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"};
-    PositionFen::read(startpos, rootPosition, colorToMove);
+    PositionFen::setStartpos(rootPosition, colorToMove);
 }
 
 void Uci::go() {
@@ -128,7 +127,13 @@ void Uci::echo() const {
     uciOutput.echo(command);
 }
 
-bool Uci::operator() (const std::string& filename) {
+int Uci::exit() const {
+    int exit_code = 0;
+    command >> exit_code;
+    return exit_code;
+}
+
+int Uci::operator() (const std::string& filename) {
     std::ifstream file(filename);
     return operator()(file);
 }
@@ -136,5 +141,9 @@ bool Uci::operator() (const std::string& filename) {
 void Uci::call() {
     std::string filename;
     command >> filename;
-    if (!operator()(filename)) { io::fail_rewind(command); }
+    bool result = operator()(filename);
+
+    if (result != 0) {
+        io::fail_rewind(command);
+    }
 }

@@ -1,5 +1,4 @@
 #include "io.hpp"
-#include <cctype>
 
 namespace io {
     void fail_here(std::istream& in) {
@@ -28,29 +27,26 @@ namespace io {
      * false -- failed to read or to match next token with the given keyword, stream state is not changed
      **/
     bool next(std::istream& in, io::literal keyword) {
-        if (keyword == nullptr) {
-            keyword = "";
-        }
+        using std::isspace;
+        using std::tolower;
 
         auto pos_before = in.tellg();
         auto state_before = in.rdstate();
-
         {
-            using std::isspace;
-            using std::tolower;
+            if (keyword == nullptr) { keyword = ""; }
 
-            in >> std::ws;
             while (isspace(*keyword)) { ++keyword; }
+            in >> std::ws;
 
-            //compare each keyword char with each token char
+            //compare each keyword non space char with each token char
             while (*keyword != '\0') {
                 if (isspace(*keyword)) {
                     if (!isspace(in.peek())) {
                         goto mismatch;
                     }
 
-                    in >> std::ws;
                     while (isspace(*keyword)) { ++keyword; }
+                    in >> std::ws;
                 }
 
                 if ( tolower(*keyword++) != tolower(in.get()) ) {
@@ -58,12 +54,10 @@ namespace io {
                 }
             }
 
-            //test that token size is equal to keyword size
-            {
-                auto peek = in.peek();
-                if (in.eof() || isspace(peek)) {
-                    return true;
-                }
+            //test if the token size is equal to the keyword size
+            auto peek = in.peek();
+            if (in.eof() || isspace(peek)) {
+                return true;
             }
         }
 

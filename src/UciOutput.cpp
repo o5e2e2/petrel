@@ -10,45 +10,16 @@ namespace {
         auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
         return out << milliseconds;
     }
-
-    enum nps_write_t { Raw, InfoPrefix };
-    template <nps_write_t Info = Raw>
-    std::ostream& nps(std::ostream& out, const SearchInfo& info) {
-        if (info.nodes > 0) {
-            if (Info == InfoPrefix) {
-                out << "info";
-            }
-
-            out << " nodes " << info.nodes;
-
-            Clock::_t duration = info.clock.read();
-
-            if (duration > Clock::_t::zero()) {
-                out << " time " << duration;
-
-                if (duration >= std::chrono::milliseconds{20}) {
-                    auto _nps = (info.nodes * Clock::_t::period::den) / (duration.count() * Clock::_t::period::num);
-                    out << " nps " << _nps;
-                }
-            }
-
-            if (Info == InfoPrefix) {
-                out << '\n';
-            }
-        }
-        return out;
-    }
-
 }
 
-UciOutput::UciOutput (std::ostream& out, const ChessVariant& v, const Color& c)
-    : uci_out(out), chessVariant(v), colorToMove(c), isreadyWaiting(false) {}
+UciOutput::UciOutput (std::ostream& o, const ChessVariant& v, const Color& c)
+    : out(o), chessVariant(v), colorToMove(c), isreadyWaiting(false) {}
 
 void UciOutput::uci(const SearchControl& search) const {
     auto max_mb = search.tt().getMaxSizeMb();
     auto current_mb = search.tt().getSizeMb();
 
-    OutputBuffer{uci_out}
+    OutputBuffer{out}
         << "id name " << io::app_version << '\n'
         << "id author Aleks Peshkov\n"
         << "option name UCI_Chess960 type check default " << (chessVariant == Chess960? "true":"false") << '\n'
@@ -59,7 +30,7 @@ void UciOutput::uci(const SearchControl& search) const {
 
 void UciOutput::isready(const SearchControl& search) const {
     if (search.isReady()) {
-        OutputBuffer{uci_out} << "readyok\n";
+        OutputBuffer{out} << "readyok\n";
         isreadyWaiting = false;
     }
     else {
@@ -71,56 +42,74 @@ void UciOutput::report_current(const SearchInfo& info) const {
     if (isreadyWaiting) {
         isreadyWaiting = false;
 
-        OutputBuffer out{uci_out};
-        info_nps(out, info);
-        out << "readyok\n";
+        OutputBuffer ob{out};
+        info_nps(ob, info);
+        ob << "readyok\n";
     }
 }
 
 void UciOutput::report_bestmove(const SearchInfo& info) const {
-    OutputBuffer out{uci_out};
-    info_nps(out, info);
-    out << "bestmove ";
-    write(out, info.bestmove);
-    out << '\n';
+    OutputBuffer ob{out};
+    info_nps(ob, info);
+    ob << "bestmove ";
+    write(ob, info.bestmove);
+    ob << '\n';
 }
 
 void UciOutput::report_perft_divide(const SearchInfo& info) const {
-    OutputBuffer out{uci_out};
-    out << "info currmovenumber " << info.currmovenumber << " currmove ";
-    write(out, info.currmove);
-    nps(out, info);
-    out << " string perft " << (info.perftNodes - info.perftDivide) << '\n';
+    OutputBuffer ob{out};
+    ob << "info currmovenumber " << info.currmovenumber << " currmove ";
+    write(ob, info.currmove);
+    nps(ob, info);
+    ob << " string perft " << (info.perftNodes - info.perftDivide) << '\n';
 }
 
 void UciOutput::report_perft_depth(const SearchInfo& info) const {
-    OutputBuffer out{uci_out};
-    out << "info depth " << info.depth;
-    nps(out, info);
-    out << " string perft " << info.perftNodes << '\n';
+    OutputBuffer ob{out};
+    ob << "info depth " << info.depth;
+    nps(ob, info);
+    ob << " string perft " << info.perftNodes << '\n';
 }
 
-void UciOutput::write(std::ostream& out, const Move& move) const {
-    Move::write(out, move, colorToMove, chessVariant);
+void UciOutput::write(std::ostream& ob, const Move& move) const {
+    Move::write(ob, move, colorToMove, chessVariant);
 }
 
-void UciOutput::nps(std::ostream& out, const SearchInfo& info) const {
-    ::nps<>(out, info);
+void UciOutput::nps(std::ostream& ob, const SearchInfo& info) const {
+    if (info.nodes > 0) {
+        ob << " nodes " << info.nodes;
+
+        Clock::_t duration = info.clock.read();
+
+        if (duration > Clock::_t::zero()) {
+            ob << " time " << duration;
+
+            if (duration >= std::chrono::milliseconds{20}) {
+                auto _nps = (info.nodes * Clock::_t::period::den) / (duration.count() * Clock::_t::period::num);
+                ob << " nps " << _nps;
+            }
+        }
+    }
 }
 
-void UciOutput::info_nps(std::ostream& out, const SearchInfo& info) const {
-    ::nps<InfoPrefix>(out, info);
+void UciOutput::info_nps(std::ostream& ob, const SearchInfo& info) const {
+    std::ostringstream buffer;
+    nps(buffer, info);
+
+    if (!buffer.str().empty()) {
+        ob << "info" << buffer << '\n';
+    }
 }
 
 void UciOutput::info_fen(const Position& pos) const {
-    OutputBuffer out{uci_out};
-    out << "info fen ";
-    PositionFen::write(out, pos, colorToMove, chessVariant);
-    out << '\n';
+    OutputBuffer ob{out};
+    ob << "info fen ";
+    PositionFen::write(ob, pos, colorToMove, chessVariant);
+    ob << '\n';
 }
 
 void UciOutput::echo(std::istream& in) const {
-    OutputBuffer{uci_out} << in.rdbuf() << '\n';
+    OutputBuffer{out} << in.rdbuf() << '\n';
 }
 
 void UciOutput::error(std::istream& in) const {

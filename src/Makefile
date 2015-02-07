@@ -5,18 +5,18 @@ TARGET = petrel
 srcdir ?= .
 debugdir = ../debug
 releasedir = ../release
+configdir = ..
 
 ifeq ($(debug),yes)
 	builddir ?= $(debugdir)
 	CXXFLAGS += -DDEBUG -g
-	checkrc := $(srcdir)/$(notdir $(TARGET))2.rc
+	checkrc := $(configdir)/$(notdir $(TARGET))2.rc
 else
 	builddir ?= $(releasedir)
 	CXXFLAGS += -DNDEBUG
-	checkrc := $(srcdir)/$(notdir $(TARGET)).rc
+	checkrc := $(configdir)/$(notdir $(TARGET)).rc
 endif
 
-HEADER = StdAfx.hpp
 LIBS = -pthread
 OPTIONS  = -std=c++0x -mssse3 -march=native -mtune=native
 OPTIONS += -finline-functions -funroll-all-loops
@@ -27,22 +27,19 @@ WARNINGS += -pedantic -Wall -Wextra -Wuninitialized -Wpointer-arith -Wcast-qual 
 WARNINGS += -Wsign-conversion
 WARNINGS += -Wconversion -Wshadow
 
-ZIP = zip -r -q -o -9 -FS
-#CXX = g++
-#RM = rm -f
-
 CXXFLAGS += $(OPTIONS)
 CXXFLAGS += $(OPTIMIZATIONS)
 CXXFLAGS += $(WARNINGS)
 LDFLAGS += $(LIBS)
 LDFLAGS += $(OPTIMIZATIONS)
 
+HEADER = StdAfx.hpp
+PRECOMP := $(builddir)/$(HEADER).gch
+HEADER := $(srcdir)/$(HEADER)
+
 SOURCES := $(wildcard $(srcdir)/*.cpp)
 OBJECTS := $(patsubst $(srcdir)/%.cpp, $(builddir)/%.o, $(SOURCES))
 DEPS := $(patsubst %.o, %.d, $(OBJECTS))
-PRECOMP := $(builddir)/$(HEADER).gch
-HEADER := $(srcdir)/$(HEADER)
-ZIPFILE := $(TARGET)$(shell date +%Y%m%d).zip
 
 -include $(DEPS)
 
@@ -58,7 +55,7 @@ $(PRECOMP): $(HEADER) | $(builddir)
 $(builddir):
 	mkdir -p $@
 
-.PHONY: all check clean zip
+.PHONY: all check clean
 
 all: $(builddir)/$(TARGET)
 
@@ -67,6 +64,3 @@ check: all
 
 clean:
 	$(RM) -r *.o *.gch *.d $(debugdir) $(releasedir)
-
-zip: clean
-	cd ../.. && $(ZIP) $(ZIPFILE) $(TARGET)

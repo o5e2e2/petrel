@@ -1,7 +1,7 @@
 #ifndef UCI_OUTPUT_HPP
 #define UCI_OUTPUT_HPP
 
-#include <iosfwd>
+#include "io.hpp"
 #include "SearchOutput.hpp"
 #include "Index.hpp"
 
@@ -11,7 +11,7 @@ class Position;
 class Move;
 
 class UciOutput : public SearchOutput {
-    std::ostream& uci_out; //output stream
+    std::ostream& out; //output stream
     const ChessVariant& chessVariant; //format of castling moves output
     const Color& colorToMove; //initial position color for moves long algebraic format output
 

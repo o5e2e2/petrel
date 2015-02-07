@@ -1,7 +1,6 @@
-#include "PositionFen.hpp"
-
-#include <cctype>
 #include <set>
+
+#include "PositionFen.hpp"
 #include "Position.hpp"
 
 namespace {
@@ -284,13 +283,18 @@ namespace PositionFen {
         }
     }
 
+    void setStartpos(Position& pos, Color& colorToMove) {
+        std::istringstream startpos{"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"};
+        read(startpos, pos, colorToMove);
+    }
+
     void write(std::ostream& out, const Position& pos, Color colorToMove, ChessVariant chessVariant) {
         const PositionSide& white = pos.side[(colorToMove == White)? My:Op];
         const PositionSide& black = pos.side[(colorToMove == Black)? My:Op];
 
         Board::write(out, white, black);
         out << ' ' << colorToMove;
-        out << ' ' << Castling{white, black, chessVariant};
+        out << ' ' << Castling(white, black, chessVariant);
         out << ' ';
         EnPassant::write(out, pos.side[Op], colorToMove);
     }

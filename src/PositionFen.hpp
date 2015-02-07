@@ -11,6 +11,8 @@ class Position;
  **/
 namespace PositionFen {
     void read(std::istream&, Position&, Color&);
+    void setStartpos(Position&, Color&);
+
     void write(std::ostream&, const Position&, Color, ChessVariant);
 }
 

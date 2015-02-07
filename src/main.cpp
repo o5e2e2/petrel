@@ -1,8 +1,6 @@
 /**
 * Startup constant initialization
 */
-#include <cstdlib>
-
 #include "BetweenSquares.hpp"
 #include "CastlingRules.hpp"
 #include "Evaluation.hpp"
@@ -41,37 +39,27 @@ CastlingRules castlingRules; //constant during the same Chess960 game (32)
 Timer::TimerPool Timer::timerPool;
 
 int main(int argc, const char* argv[]) {
-    std::ios_base::sync_with_stdio(false); //speed trick
+    //speed tricks
+    std::ios_base::sync_with_stdio(false);
     std::cin.tie(nullptr);
 
-    Uci uci{std::cout};
+    Uci uci(std::cout);
 
-    if (argc == 1) {
-        //construct startup configuration filename from program's own name
-        std::string filename{argv[0]};
-        {
-            auto pos = filename.find_last_of('/');
-            if (pos != std::string::npos) { filename.erase(0, pos+1); }
-
-            pos = filename.find_first_of('.', 1);
-            if (pos != std::string::npos) { filename.erase(pos); }
-
-            filename.append(".rc");
-        }
-
-        uci(filename);
-    }
-    else {
+    if (argc > 1) {
         std::string option{argv[1]};
-        if (argc > 2 || option == "--version" || option == "--help" || !uci(option)) {
+
+        if (argc > 2 || option == "--version" || option == "--help") {
             std::cout << io::app_version << '\n'
-                << "UCI chess engine.\n"
-                << "Copyright (C) 2014 Aleks Peshkov, aleks.peshkov@gmail.com\n"
+                << "UCI chess engine\n"
+                << "Copyright (C) 2015 Aleks Peshkov, aleks.peshkov@gmail.com\n"
                 << "For terms of use contact author.\n"
             ;
-            return EXIT_SUCCESS;
+            return 0;
         }
+
+        //try to run the script from the given filename
+        uci(option);
     }
 
-    return uci(std::cin) ? EXIT_SUCCESS : EXIT_FAILURE;
+    return uci(std::cin);
 }

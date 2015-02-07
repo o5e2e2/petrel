@@ -1,9 +1,7 @@
 #ifndef VECTOR_PI_SQUARE_HPP
 #define VECTOR_PI_SQUARE_HPP
 
-#include <iomanip>
-#include <ostream>
-
+#include "io.hpp"
 #include "Square.hpp"
 #include "VectorPiEnum.hpp"
 #include "VectorOf.hpp"

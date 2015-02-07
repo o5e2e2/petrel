@@ -2,7 +2,6 @@
 #define OUTPUT_BUFFER_HPP
 
 #include "io.hpp"
-#include <sstream>
 
 class OutputBuffer : public std::ostringstream {
     std::ostream& out;
