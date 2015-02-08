@@ -13,7 +13,7 @@ class SearchThread : public ThreadControl {
     void thread_body() override;
 
 public:
-    sequence_t start(SearchFn*, SearchControl*, const Position*, depth_t);
+    sequence_t start(SearchFn*, SearchControl&, const Position&, depth_t);
 };
 
 #endif
