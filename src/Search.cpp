@@ -42,7 +42,7 @@ namespace PerftDivide {
     bool perftX(SearchControl& control, const Position& pos, depth_t draft) {
         control.info.nodesQuota--;
         CUT (Perft::perft(control, pos, draft));
-        control.report_perft_divide();
+        control.info.report_perft_divide();
         return false;
     }
 
@@ -74,7 +74,7 @@ namespace PerftRoot {
         bool isAborted = Perft::perft(control, parent, depth);
 
         if (!isAborted) {
-            control.report_perft_depth();
+            control.info.report_perft_depth();
         }
 
         return isAborted;
@@ -88,7 +88,7 @@ namespace PerftRoot {
             for (depth = 1; !perftX(control, parent, depth); ++depth) {}
         }
 
-        control.report_bestmove();
+        control.info.report_bestmove();
         return true;
     }
 }
@@ -100,7 +100,7 @@ namespace PerftDivideRoot {
         bool isAborted = PerftDivide::perft(control, parent, depth);
 
         if (!isAborted) {
-            control.report_perft_depth();
+            control.info.report_perft_depth();
         }
 
         return isAborted;
@@ -114,7 +114,7 @@ namespace PerftDivideRoot {
             for (depth = 1; !perftX(control, parent, depth); ++depth) {}
         }
 
-        control.report_bestmove();
+        control.info.report_bestmove();
         return true;
     }
 }

@@ -32,9 +32,6 @@ public:
 
     //callbacks from search thread
     bool checkQuota() { return info.checkQuota(searchThread); }
-    void report_bestmove() { info.report_bestmove(); }
-    void report_perft_divide() { info.report_perft_divide(); }
-    void report_perft_depth() { info.report_perft_depth(); }
 
     bool isReady() const { return searchThread.isReady(); }
     void wait() { searchThread.waitReady(); }
