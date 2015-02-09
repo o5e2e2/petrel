@@ -1,16 +1,17 @@
 #include "SearchThread.hpp"
 #include "Search.hpp"
+#include "SearchWindow.hpp"
 
-SearchThread::sequence_t SearchThread::start(SearchFn* s, SearchControl& c, const Position& p, depth_t d) {
+SearchThread::sequence_t SearchThread::start(SearchFn* s, const Position& p, const SearchControl& c, SearchWindow& w) {
     searchFn = s;
-    control = &c;
     parent = &p;
-    draft = d;
+    control = &c;
+    window = &w;
     return commandRun();
 }
 
 void SearchThread::thread_body() {
     if (searchFn != nullptr) {
-        (*searchFn)(*control, *parent, draft);
+        (*searchFn)(*parent, *control, *window);
     }
 }

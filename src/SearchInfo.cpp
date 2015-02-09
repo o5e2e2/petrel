@@ -27,7 +27,7 @@ void SearchInfo::acquireNodesQuota() {
 }
 
 //callbacks from search thread
-bool SearchInfo::checkQuota(SearchThread& searchThread) {
+bool SearchInfo::checkQuota(const SearchThread& searchThread) {
     if (nodesQuota <= 0) {
         if (!searchThread.isStopped()) {
             resetNodesQuota();

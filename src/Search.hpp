@@ -5,8 +5,9 @@
 
 class SearchControl;
 class Position;
+class SearchWindow;
 
-typedef bool SearchFn(SearchControl&, const Position&, depth_t);
+typedef bool SearchFn(const Position&, const SearchControl&, SearchWindow&);
 
 namespace Perft {
     SearchFn perft;
@@ -17,10 +18,6 @@ namespace PerftDivide {
 }
 
 namespace PerftRoot {
-    SearchFn perft;
-}
-
-namespace PerftDivideRoot {
     SearchFn perft;
 }
 

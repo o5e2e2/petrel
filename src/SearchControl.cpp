@@ -3,6 +3,7 @@
 #include "Search.hpp"
 #include "SearchLimit.hpp"
 #include "SearchOutput.hpp"
+#include "SearchWindow.hpp"
 
 SearchControl::SearchControl () { clear(); }
 
@@ -16,7 +17,9 @@ void SearchControl::go(SearchOutput& output, const Position& startPosition, cons
     info.out = &output;
     info.nodesLimit = goLimit.getNodes();
 
-    auto searchFn = goLimit.getDivide()? PerftDivideRoot::perft : PerftRoot::perft;
-    sequence = searchThread.start(searchFn, *this, startPosition, goLimit.getDepth());
+    window.draft = goLimit.getDepth();
+    window.searchFn = goLimit.getDivide()? PerftDivide::perft : Perft::perft;
+
+    sequence = searchThread.start(PerftRoot::perft, startPosition, *this, window);
     Timer::start(goLimit.getThinkingTime(), searchThread, sequence);
 }

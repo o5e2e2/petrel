@@ -32,7 +32,7 @@ private:
     void acquireNodesQuota();
 
 public:
-    bool checkQuota(SearchThread&);
+    bool checkQuota(const SearchThread&);
 
     void clear();
     void report_perft_divide();

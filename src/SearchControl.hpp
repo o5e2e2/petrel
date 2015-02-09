@@ -2,8 +2,9 @@
 #define SEARCH_CONTROL_HPP
 
 #include "Move.hpp"
-#include "SearchThread.hpp"
 #include "SearchInfo.hpp"
+#include "SearchThread.hpp"
+#include "SearchWindow.hpp"
 #include "Timer.hpp"
 #include "TranspositionTable.hpp"
 
@@ -15,11 +16,12 @@ class Position;
  */
 class SearchControl {
 public:
-    SearchInfo info;
+    mutable SearchInfo info;
 
 private:
     SearchThread searchThread;
     SearchThread::sequence_t sequence;
+    SearchWindow window;
 
     TranspositionTable transpositionTable;
 
@@ -31,7 +33,7 @@ public:
     void clear();
 
     //callbacks from search thread
-    bool checkQuota() { return info.checkQuota(searchThread); }
+    bool checkQuota() const { return info.checkQuota(searchThread); }
 
     bool isReady() const { return searchThread.isReady(); }
     void wait() { searchThread.waitReady(); }
