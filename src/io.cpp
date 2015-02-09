@@ -27,41 +27,27 @@ namespace io {
      * false -- failed to read or to match next token with the given keyword, stream state is not changed
      **/
     bool next(std::istream& in, io::literal keyword) {
+        if (keyword == nullptr) { keyword = ""; }
+
         using std::isspace;
         using std::tolower;
 
         auto pos_before = in.tellg();
         auto state_before = in.rdstate();
-        {
-            if (keyword == nullptr) { keyword = ""; }
 
-            while (isspace(*keyword)) { ++keyword; }
+        do {
+            while ( isspace(*keyword) ) { ++keyword; }
             in >> std::ws;
 
-            //compare each keyword non space char with each token char
-            while (*keyword != '\0') {
-                if (isspace(*keyword)) {
-                    if (!isspace(in.peek())) {
-                        goto mismatch;
-                    }
-
-                    while (isspace(*keyword)) { ++keyword; }
-                    in >> std::ws;
-                }
-
-                if ( tolower(*keyword++) != tolower(in.get()) ) {
-                    goto mismatch;
-                }
+            while ( !isspace(*keyword) && tolower(*keyword) == tolower(in.peek()) ) {
+                ++keyword; in.ignore();
             }
+        } while ( isspace(*keyword) && isspace(in.peek()) );
 
-            //test if the token size is equal to the keyword size
-            auto peek = in.peek();
-            if (in.eof() || isspace(peek)) {
-                return true;
-            }
+        if ( *keyword == '\0' && (isspace(in.peek()) || in.eof()) ) {
+            return true;
         }
 
-    mismatch:
         in.clear(state_before);
         in.seekg(pos_before);
         return false;

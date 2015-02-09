@@ -31,7 +31,7 @@ class Uci {
     //UCI protocol extensions
     void call();
     void echo() const;
-    int exit() const;
+    int  exit() const;
 
 public:
     Uci (std::ostream&);
