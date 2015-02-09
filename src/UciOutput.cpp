@@ -97,7 +97,7 @@ void UciOutput::info_nps(std::ostream& ob, const SearchInfo& info) const {
     nps(buffer, info);
 
     if (!buffer.str().empty()) {
-        ob << "info" << buffer << '\n';
+        ob << "info" << buffer.str() << '\n';
     }
 }
 
