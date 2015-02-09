@@ -5,10 +5,10 @@ class SearchInfo;
 
 class SearchOutput {
 public:
-    virtual void report_current(const SearchInfo&) const =0;
-    virtual void report_bestmove(const SearchInfo&) const =0;
-    virtual void report_perft_depth(const SearchInfo&) const =0;
-    virtual void report_perft_divide(const SearchInfo&) const =0;
+    virtual void readyok(const SearchInfo&) const =0;
+    virtual void bestmove(const SearchInfo&) const =0;
+    virtual void perft_depth(const SearchInfo&) const =0;
+    virtual void perft_move(const SearchInfo&) const =0;
 
     virtual ~SearchOutput() {}
 };

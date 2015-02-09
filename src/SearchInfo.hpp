@@ -28,8 +28,8 @@ public:
     node_count_t perftDivide;
 
 private:
-    void releaseNodesQuota();
-    void acquireNodesQuota(SearchThread&);
+    void resetNodesQuota();
+    void acquireNodesQuota();
 
 public:
     bool checkQuota(SearchThread&);

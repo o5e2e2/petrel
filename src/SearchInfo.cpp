@@ -13,54 +13,49 @@ void SearchInfo::clear() {
     bestmove = Move::null();
 }
 
-void SearchInfo::releaseNodesQuota() {
+void SearchInfo::resetNodesQuota() {
     nodes -= nodesQuota;
     nodesQuota = 0;
 }
 
-//callbacks from search thread
-bool SearchInfo::checkQuota(SearchThread& searchThread) {
-    if (nodesQuota <= 0) {
-        acquireNodesQuota(searchThread);
-    }
-    return nodesQuota <= 0;
-}
-
-void SearchInfo::acquireNodesQuota(SearchThread& searchThread) {
-    releaseNodesQuota();
-
-    if (searchThread.isStopped()) {
-        return;
-    }
-
+void SearchInfo::acquireNodesQuota() {
     auto remaining = nodesLimit - nodes;
     if (remaining > 0) {
         nodesQuota = static_cast<decltype(nodesQuota)>( std::min(decltype(remaining){TickLimit}, remaining) );
         nodes += nodesQuota;
     }
-    else {
-        searchThread.commandStop(); //stop itself
+}
+
+//callbacks from search thread
+bool SearchInfo::checkQuota(SearchThread& searchThread) {
+    if (nodesQuota <= 0) {
+        if (!searchThread.isStopped()) {
+            resetNodesQuota();
+            acquireNodesQuota();
+            out->readyok(*this);
+        }
     }
-
-    out->report_current(*this);
-}
-
-void SearchInfo::report_perft_divide() {
-    releaseNodesQuota();
-
-    currmovenumber++;
-    out->report_perft_divide(*this);
-    perftDivide = perftNodes;
-}
-
-void SearchInfo::report_perft_depth() {
-    releaseNodesQuota();
-    out->report_perft_depth(*this);
-    clear();
+    return nodesQuota <= 0;
 }
 
 void SearchInfo::report_bestmove() {
-    releaseNodesQuota();
-    out->report_bestmove(*this);
+    resetNodesQuota();
+
+    out->bestmove(*this);
     clear();
+}
+
+void SearchInfo::report_perft_depth() {
+    resetNodesQuota();
+
+    out->perft_depth(*this);
+    clear();
+}
+
+void SearchInfo::report_perft_divide() {
+    resetNodesQuota();
+
+    currmovenumber++;
+    out->perft_move(*this);
+    perftDivide = perftNodes;
 }

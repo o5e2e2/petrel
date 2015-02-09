@@ -32,10 +32,10 @@ public:
     void error(const std::string&) const;
 
     //called from Search
-    void report_current(const SearchInfo&) const override;
-    void report_bestmove(const SearchInfo&) const override;
-    void report_perft_depth(const SearchInfo&) const override;
-    void report_perft_divide(const SearchInfo&) const override;
+    void readyok(const SearchInfo&) const override;
+    void bestmove(const SearchInfo&) const override;
+    void perft_depth(const SearchInfo&) const override;
+    void perft_move(const SearchInfo&) const override;
 };
 
 #endif

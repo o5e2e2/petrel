@@ -38,7 +38,7 @@ void UciOutput::isready(const SearchControl& search) const {
     }
 }
 
-void UciOutput::report_current(const SearchInfo& info) const {
+void UciOutput::readyok(const SearchInfo& info) const {
     if (isreadyWaiting) {
         isreadyWaiting = false;
 
@@ -48,27 +48,26 @@ void UciOutput::report_current(const SearchInfo& info) const {
     }
 }
 
-void UciOutput::report_bestmove(const SearchInfo& info) const {
+void UciOutput::bestmove(const SearchInfo& info) const {
     OutputBuffer ob{out};
     info_nps(ob, info);
-    ob << "bestmove ";
-    write(ob, info.bestmove);
-    ob << '\n';
+    ob << "bestmove "; write(ob, info.bestmove); ob << '\n';
 }
 
-void UciOutput::report_perft_divide(const SearchInfo& info) const {
-    OutputBuffer ob{out};
-    ob << "info currmovenumber " << info.currmovenumber << " currmove ";
-    write(ob, info.currmove);
-    nps(ob, info);
-    ob << " string perft " << (info.perftNodes - info.perftDivide) << '\n';
-}
-
-void UciOutput::report_perft_depth(const SearchInfo& info) const {
+void UciOutput::perft_depth(const SearchInfo& info) const {
     OutputBuffer ob{out};
     ob << "info depth " << info.depth;
     nps(ob, info);
     ob << " string perft " << info.perftNodes << '\n';
+}
+
+void UciOutput::perft_move(const SearchInfo& info) const {
+    OutputBuffer ob{out};
+    ob << "info currmovenumber " << info.currmovenumber;
+    ob << " currmove "; write(ob, info.currmove);
+
+    nps(ob, info);
+    ob << " string perft " << (info.perftNodes - info.perftDivide) << '\n';
 }
 
 void UciOutput::write(std::ostream& ob, const Move& move) const {
