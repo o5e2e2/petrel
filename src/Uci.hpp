@@ -36,7 +36,7 @@ class Uci {
 public:
     Uci (std::ostream&);
     int operator() (std::istream&);
-    int operator() (const std::string& filename);
+    int call(const std::string& filename);
 };
 
 #endif

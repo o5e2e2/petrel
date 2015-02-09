@@ -29,6 +29,7 @@ public:
     void info_fen(const Position&) const;
     void echo(std::istream&) const;
     void error(std::istream&) const;
+    void error(const std::string&) const;
 
     //called from Search
     void report_current(const SearchInfo&) const override;

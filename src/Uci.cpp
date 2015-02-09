@@ -37,7 +37,9 @@ int Uci::operator() (std::istream& in) {
         }
 
         //syntax error if something unparsed left
-        if (!next("")) { uciOutput.error(command); }
+        if (!next("")) {
+            uciOutput.error(command);
+        }
     }
 
     return in.bad();
@@ -134,17 +136,27 @@ int Uci::exit() const {
     return exit_code;
 }
 
-int Uci::operator() (const std::string& filename) {
+int Uci::call(const std::string& filename) {
     std::ifstream file(filename);
+
+    if (!file) {
+        std::ostringstream message;
+        message << "error opening file " << filename;
+        uciOutput.error(message.str());
+        return 2;
+    }
+
     return operator()(file);
 }
 
 void Uci::call() {
     std::string filename;
     command >> filename;
-    bool result = operator()(filename);
 
-    if (result != 0) {
-        io::fail_rewind(command);
+    if (filename.empty() || !next("")) {
+        uciOutput.error(command);
+        return;
     }
+
+    call(filename);
 }

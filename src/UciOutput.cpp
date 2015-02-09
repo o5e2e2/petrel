@@ -115,3 +115,7 @@ void UciOutput::echo(std::istream& in) const {
 void UciOutput::error(std::istream& in) const {
     OutputBuffer{std::cerr} << "parsing error: " << in.rdbuf() << '\n';
 }
+
+void UciOutput::error(const std::string& str) const {
+    OutputBuffer{std::cerr} << str << '\n';
+}

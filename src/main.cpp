@@ -58,7 +58,7 @@ int main(int argc, const char* argv[]) {
         }
 
         //try to run the script from the given filename
-        uci(option);
+        uci.call(option);
     }
 
     return uci(std::cin);
