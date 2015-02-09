@@ -56,12 +56,12 @@ void Uci::setoption() {
 
         if (next("true")) {
             chessVariant = Chess960;
+            return;
         }
         else if (next("false")) {
             chessVariant = Orthodox;
+            return;
         }
-
-        return;
     }
 
     if (next("Hash")) {
@@ -70,10 +70,11 @@ void Uci::setoption() {
         unsigned megabytes;
         if (command >> megabytes) {
             searchControl.tt().resizeMb(megabytes);
+            return;
         }
-
-        return;
     }
+
+    io::fail_rewind(command);
 }
 
 void Uci::position() {
