@@ -7,7 +7,7 @@ class SearchControl;
 class Position;
 class SearchWindow;
 
-typedef bool SearchFn(const Position&, const SearchControl&, SearchWindow&);
+typedef bool SearchFn(const Position&, SearchWindow&);
 
 namespace Perft {
     SearchFn perft;

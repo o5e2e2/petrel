@@ -29,13 +29,13 @@ SearchLimit::SearchLimit () :
     time[My] = time[Op] = inc[My] = inc[Op] = Clock::_t::zero();
 }
 
-void SearchLimit::read(std::istream& command, const Position& startPosition, color_t colorToMove) {
+void SearchLimit::read(std::istream& command, const Position& rootPosition, color_t colorToMove) {
     Side white{(colorToMove == White)? My:Op};
     Side black{(colorToMove == Black)? My:Op};
 
     clear();
 
-    PositionMoves p(startPosition);
+    PositionMoves p(rootPosition);
     searchmoves = p.getMoves();
 
     while (command) {

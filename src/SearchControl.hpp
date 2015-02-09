@@ -21,7 +21,7 @@ public:
 private:
     SearchThread searchThread;
     SearchThread::sequence_t sequence;
-    SearchWindow window;
+    SearchWindow rootWindow;
 
     TranspositionTable transpositionTable;
 

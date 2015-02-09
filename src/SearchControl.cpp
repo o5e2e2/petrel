@@ -5,21 +5,21 @@
 #include "SearchOutput.hpp"
 #include "SearchWindow.hpp"
 
-SearchControl::SearchControl () { clear(); }
+SearchControl::SearchControl () : rootWindow(*this) { clear(); }
 
 void SearchControl::clear() {
     transpositionTable.clear();
     info.clear();
 }
 
-void SearchControl::go(SearchOutput& output, const Position& startPosition, const SearchLimit& goLimit) {
+void SearchControl::go(SearchOutput& output, const Position& rootPosition, const SearchLimit& goLimit) {
     info.clear();
     info.out = &output;
     info.nodesLimit = goLimit.getNodes();
 
-    window.draft = goLimit.getDepth();
-    window.searchFn = goLimit.getDivide()? PerftDivide::perft : Perft::perft;
+    rootWindow.draft = goLimit.getDepth();
+    rootWindow.searchFn = goLimit.getDivide()? PerftDivide::perft : Perft::perft;
 
-    sequence = searchThread.start(PerftRoot::perft, startPosition, *this, window);
+    sequence = searchThread.start(PerftRoot::perft, rootPosition, rootWindow);
     Timer::start(goLimit.getThinkingTime(), searchThread, sequence);
 }

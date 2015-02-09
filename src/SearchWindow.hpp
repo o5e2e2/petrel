@@ -5,11 +5,12 @@
 #include "Search.hpp"
 
 struct SearchWindow {
+    const SearchControl& control;
     SearchFn* searchFn;
     depth_t draft;
 
-    SearchWindow () : searchFn{nullptr}, draft{0} {}
-    SearchWindow (const SearchWindow& w) : searchFn{w.searchFn}, draft{w.draft-1} {}
+    SearchWindow (const SearchControl& c) : control(c), searchFn{nullptr}, draft{0} {}
+    SearchWindow (const SearchWindow& w) : control(w.control), searchFn{w.searchFn}, draft{w.draft-1} {}
 };
 
 #endif
