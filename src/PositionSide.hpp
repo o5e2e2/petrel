@@ -25,6 +25,11 @@ class PositionSide {
     void set(PieceType, Square);
     void clear(PieceType, Square);
 
+    void setCastling(Pi);
+    void clearCastling(Pi, Square);
+    void clearCastlings();
+    bool isCastling(Pi pi) const { assertValid(pi); return types.isCastling(pi); }
+
 public:
     PositionSide ();
     PositionSide (const PositionSide&) = delete;
@@ -40,7 +45,6 @@ public:
 
     const Bb& occ() const { return piecesBb; }
     const Bb& occPawns() const { return pawnsBb; }
-    const Bb& pinRayFrom(Square) const;
     const MatrixPiBb& allAttacks() const { return attacks; }
 
     static Zobrist zobrist_combine(const PositionSide& my, const PositionSide& op) { return Zobrist::combine(my.zobrist, op.zobrist); }
@@ -51,7 +55,6 @@ public:
     Square squareOf(Pi pi) const { assertValid(pi); return squares.squareOf(pi); }
     Square kingSquare() const { return squareOf(TheKing); }
     Pi pieceOn(Square sq) const { assert (isOn(sq)); Pi pi = squares.pieceOn(sq); assertValid(pi); return pi; }
-    CastlingSide castlingSideOf(Pi pi) const { assert (isCastling(pi)); return squareOf(pi) < kingSquare()? QueenSide:KingSide; }
     VectorPiMask on(Square sq) const { return squares.on(sq); }
     template <Rank::_t Rank> VectorPiMask of() const { return squares.of<Rank>(); }
 
@@ -65,40 +68,34 @@ public:
     VectorPiMask sliders() const { return types.sliders(); }
     bool isSlider(Pi pi) const { assertValid(pi); return types.isSlider(pi); }
 
-    bool hasEnPassant() const { return enPassantPawns().any(); }
-    Pi getEnPassant() const { return types.getEnPassant(); }
-    Square enPassantSquare() const { return squareOf(getEnPassant()); }
-    VectorPiMask enPassantPawns() const { return types.enPassantPawns(); }
-
-    VectorPiMask castlingRooks() const { return types.castlingRooks(); }
-    bool isCastling(Pi pi) const { assertValid(pi); return types.isCastling(pi); }
-
-    VectorPiMask pinnerCandidates() const { return types.pinnerCandidates(); }
-
-    VectorPiMask attacksTo(Square a) const { return attacks[a]; }
-    VectorPiMask attacksTo(Square a, Square b) const { return attacks[a] | attacks[b]; }
-    VectorPiMask attacksTo(Square a, Square b, Square c) const { return attacks[a] | attacks[b] | attacks[c]; }
-
     void capture(Square);
     void move(Pi, PieceType, Square, Square);
     void moveKing(Square, Square);
     void promote(Pi, PromoType, Square, Square);
+
+    CastlingSide castlingSideOf(Pi pi) const { assert (isCastling(pi)); return squareOf(pi) < kingSquare()? QueenSide:KingSide; }
+    VectorPiMask castlingRooks() const { return types.castlingRooks(); }
     void castle(Pi rook, Square rookFrom, Square rookTo, Square kingFrom, Square kingTo);
 
-    void setLeaperAttack(Pi, PieceType, Square);
-    void updateSliderAttacks(VectorPiMask, Bb occupied);
-
+    bool hasEnPassant() const { return enPassantPawns().any(); }
+    Pi getEnPassant() const { return types.getEnPassant(); }
+    Square enPassantSquare() const { return squareOf(getEnPassant()); }
+    VectorPiMask enPassantPawns() const { return types.enPassantPawns(); }
     void markEnPassant(Pi);
     void setEnPassant(Pi, Square);
     void clearEnPassant();
     void clearEnPassants();
 
-    void setCastling(Pi);
-    void clearCastling(Pi, Square);
-    void clearCastlings();
-
+    const Bb& pinRayFrom(Square) const;
+    VectorPiMask pinnerCandidates() const { return types.pinnerCandidates(); }
     void updatePinRays(Square);
     void updatePinRays(Square, Pi);
+
+    void setLeaperAttack(Pi, PieceType, Square);
+    void updateSliderAttacks(VectorPiMask, Bb occupied);
+    VectorPiMask attacksTo(Square a) const { return attacks[a]; }
+    VectorPiMask attacksTo(Square a, Square b) const { return attacks[a] | attacks[b]; }
+    VectorPiMask attacksTo(Square a, Square b, Square c) const { return attacks[a] | attacks[b] | attacks[c]; }
 
     //used only during initial position setup
     void drop(Pi, PieceType, Square);

@@ -19,6 +19,11 @@ private:
 
     void set(Side, Pi, PieceType, Square);
 
+    template <Side::_t> const Bb& pinRayFrom(Pi) const;
+    template <Side::_t> bool isLegalEnPassant(Pi, Square) const;
+    template <Side::_t> void setLegalEnPassant(Pi);
+    template <Side::_t> void clearEnPassant();
+
     template <Side::_t> void move(Pi, Square, Square);
     template <Side::_t> void updateSliderAttacks(VectorPiMask);
     template <Side::_t> void updateSliderAttacksKing(VectorPiMask); //remove king to avoid hiding it under its own shadow when in check
@@ -26,11 +31,6 @@ private:
     template <Side::_t> void makeKingMove(Square, Square);
     template <Side::_t> void makePawnMove(Pi, Square, Square);
     template <Side::_t> void makeCastling(Pi, Square, Square);
-
-    template <Side::_t> const Bb& pinRayFrom(Pi) const;
-    template <Side::_t> bool isLegalEnPassant(Pi, Square) const;
-    template <Side::_t> void setLegalEnPassant(Pi);
-    template <Side::_t> void clearEnPassant();
 
     void swapSides();
     void syncSides();
