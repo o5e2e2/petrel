@@ -27,6 +27,7 @@ private:
     template <Side::_t> void makePawnMove(Pi, Square, Square);
     template <Side::_t> void makeCastling(Pi, Square, Square);
 
+    template <Side::_t> const Bb& pinLineFrom(Pi) const;
     template <Side::_t> bool isLegalEnPassant(Pi, Square) const;
     template <Side::_t> void setLegalEnPassant(Pi);
     template <Side::_t> void clearEnPassant();

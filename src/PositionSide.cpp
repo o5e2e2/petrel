@@ -210,11 +210,20 @@ void PositionSide::setEnPassant(Pi pi, Square from) {
     zobrist.setEnPassant(from);
 }
 
-void PositionSide::clearEnPassant(Pi pi) {
+void PositionSide::clearEnPassant() {
+    assert (hasEnPassant());
+    Pi pi{getEnPassant()};
+
     assert (is<Pawn>(pi));
     assert (squareOf(pi).is<Rank4>());
     types.clearEnPassant(pi);
     zobrist.clearEnPassant(squareOf(pi));
+}
+
+void PositionSide::clearEnPassants() {
+    assert (hasEnPassant());
+    assert ((types.enPassantPawns() % squares.of<Rank5>()).none());
+    types.clearEnPassants();
 }
 
 void PositionSide::updatePinRays(Square opKingSquare, Pi pi) {

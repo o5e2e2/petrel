@@ -87,12 +87,12 @@ public:
     void castle(Pi rook, Square rookFrom, Square rookTo, Square kingFrom, Square kingTo);
 
     void setLeaperAttack(Pi, PieceType, Square);
-    void updateSliderAttacks(VectorPiMask, Bb);
+    void updateSliderAttacks(VectorPiMask, Bb occupied);
 
     void markEnPassant(Pi);
     void setEnPassant(Pi, Square);
-    void clearEnPassant(Pi);
-    void clearEnPassants() { types.clearEnPassants(); }
+    void clearEnPassant();
+    void clearEnPassants();
 
     void setCastling(Pi);
     void clearCastlings();

@@ -126,10 +126,11 @@ void PositionMoves::excludePinnedMoves(VectorPiMask pinnerCandidates) {
 
     for (Pi pi : pinnerCandidates) {
         Square pinFrom{~OP.squareOf(pi)};
-        const Bb& pinLine{::between(MY.kingSquare(), pinFrom)};
+        auto pinLine = pos.pinLineFrom<My>(pi);
 
         Bb betweenPieces{pinLine & OCCUPIED};
         assert (betweenPieces.any());
+
         if (betweenPieces.isSingleton() && (betweenPieces & MY.occ()).any()) {
             //we discovered a true pinned piece
             Pi pinned{MY.pieceOn(betweenPieces.index())};

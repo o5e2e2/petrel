@@ -5,6 +5,7 @@
 
 #define MY side[My]
 #define OP side[Op]
+#define OCCUPIED occupied[My]
 
 Position::Position (const Position& parent, int) {
     assert (this != &parent);
@@ -42,7 +43,7 @@ void Position::updateSliderAttacksKing(VectorPiMask affected) {
 
     affected &= MY.sliders();
     if (affected.any()) {
-        MY.updateSliderAttacks(affected, occupied[My] - ~OP.kingSquare());
+        MY.updateSliderAttacks(affected, OCCUPIED - ~OP.kingSquare());
     }
 }
 
@@ -52,7 +53,7 @@ void Position::updateSliderAttacks(VectorPiMask affected) {
 
     affected &= MY.sliders();
     if (affected.any()) {
-        MY.updateSliderAttacks(affected, occupied[My]);
+        MY.updateSliderAttacks(affected, OCCUPIED);
     }
     assert (MY.attacksTo(~OP.kingSquare()).none());
 }
@@ -66,7 +67,7 @@ bool Position::setup() {
 bool Position::drop(Side My, PieceType ty, Square to) {
     const Side::_t Op{static_cast<Side::_t>(My ^ Side::Mask)};
 
-    if (occupied[My][to]) { return false; }
+    if (OCCUPIED[to]) { return false; }
     if ( ty == Pawn && (to.is<Rank1>() || to.is<Rank8>()) ) { return false; }
 
     if (ty != King) {
@@ -96,10 +97,31 @@ bool Position::setCastling(Side My, CastlingSide castlingSide) {
     return MY.setCastling(castlingSide);
 }
 
+template <Side::_t My>
+void Position::clearEnPassant() {
+    const Side::_t Op{static_cast<Side::_t>(My ^ Side::Mask)};
+
+    if (MY.hasEnPassant()) {
+        MY.clearEnPassant();
+        OP.clearEnPassants();
+    }
+    assert (!MY.hasEnPassant());
+    assert (!OP.hasEnPassant());
+}
+
+template <Side::_t My>
+const Bb& Position::pinLineFrom(Pi pi) const {
+    const Side::_t Op{static_cast<Side::_t>(My ^ Side::Mask)};
+    assert (OP.isSlider(pi));
+    assert (OP.pinnerCandidates()[pi]);
+
+    return ::between(MY.kingSquare(), ~OP.squareOf(pi));
+}
+
 bool Position::setEnPassant(Square ep) {
     if (!ep.is<Rank3>()) { return false; }
-    if (occupied[Op][ep]) { return false; }
-    if (occupied[Op][ep.rankDown()]) { return false; }
+    if (OCCUPIED[~ep]) { return false; }
+    if (OCCUPIED[~(ep.rankDown())]) { return false; }
 
     Square victimSquare{ep.rankUp()};
 
@@ -108,14 +130,12 @@ bool Position::setEnPassant(Square ep) {
 
     if (!OP.is<Pawn>(victim)) { return false; }
 
-    //check against illegal en passant field like "8/5bk1/8/2Pp4/8/1K6/8/8 w - d6"
+    //check against illegal en passant set field like "8/5bk1/8/2Pp4/8/1K6/8/8 w - d6"
     for (Pi pi : OP.pinnerCandidates() & OP.attacksTo(victimSquare)) {
-        const Bb& pinLine{::between(~MY.kingSquare(), OP.squareOf(pi))};
-        if (pinLine[victimSquare]) {
-            Bb betweenPieces{(pinLine & occupied[Op]) - victimSquare};
-            if (betweenPieces.none()) {
-                return false;
-            }
+        auto pinLine = pinLineFrom<My>(pi);
+        if (pinLine[~victimSquare]) {
+            Bb betweenPieces{(pinLine & OCCUPIED) - ~victimSquare};
+            if (betweenPieces.none()) { return false; }
         }
     }
 
@@ -124,46 +144,34 @@ bool Position::setEnPassant(Square ep) {
 }
 
 template <Side::_t My>
-void Position::clearEnPassant() {
-    const Side::_t Op{static_cast<Side::_t>(My ^ Side::Mask)};
-    if (OP.hasEnPassant()) {
-        OP.clearEnPassants();
-
-        assert (MY.hasEnPassant());
-        Pi pi{MY.getEnPassant()};
-        MY.clearEnPassant(pi);
-    }
-    assert (!MY.hasEnPassant());
-    assert (!OP.hasEnPassant());
-}
-
-template <Side::_t My>
 bool Position::isLegalEnPassant(Pi killer, Square to) const {
     const Side::_t Op{static_cast<Side::_t>(My ^ Side::Mask)};
 
     MY.assertValid(killer);
     assert (MY.is<Pawn>(killer));
+    assert (MY.allAttacks()[killer][to]);
+    assert (to.is<Rank6>());
 
     Square from{ MY.squareOf(killer) };
-
     assert (from.is<Rank5>());
-    assert (to.is<Rank6>());
+
     if (!MY.kingSquare().is<Rank5>()) {
+        //diagonal pin
         for (Pi pi : OP.pinnerCandidates() & OP.attacksTo(~from)) {
-            const Bb& pinLine{::between(MY.kingSquare(), ~OP.squareOf(pi))};
+            auto pinLine = pinLineFrom<My>(pi);
             if (pinLine[from] && !pinLine[to]) {
-                Bb betweenPieces{(pinLine & occupied[My]) - from};
+                Bb betweenPieces{(pinLine & OCCUPIED) - from};
                 if (betweenPieces.none()) { return false; } //the true pin discovered
             }
         }
     }
     else {
-        //special case of the vertical pin
+        //vertical pin
         for (Pi pi : OP.pinnerCandidates() & OP.of<Rank4>()) {
-            const Bb& pinLine{::between(MY.kingSquare(), ~OP.squareOf(pi))};
+            auto pinLine = pinLineFrom<My>(pi);
             if (pinLine[from]) {
                 Square victim{to.rankDown()};
-                Bb betweenPieces{(pinLine & occupied[My]) - from - victim};
+                Bb betweenPieces{(pinLine & OCCUPIED) - from - victim};
                 if (betweenPieces.none()) { return false; } //the true pin discovered
             }
         }
@@ -447,3 +455,4 @@ Move Position::createMove(Side My, Square from, Square to) const {
 
 #undef MY
 #undef OP
+#undef OCCUPIED
