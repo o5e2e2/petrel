@@ -25,18 +25,13 @@ position fen rnbqkb1r/pp1p1ppp/2p5/4P3/2B5/8/PPP1NnPP/RNBQK2R w KQkq - 0 6
 go depth 2
 wait
 
-echo 706045033:
-position fen r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1
-go depth 5
-wait
-
 echo 178633661:
 position fen 8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1
 go depth 6
 wait
 
 echo 11139762:
-position fen rnbqkb1r/ppppp1pp/7n/4Pp2/8/8/PPPP1PPP/RNBQKBNR w KQkq f6 0 3
+position fen rnbqkb1r/ppppp1pp/7n/4Pp2/8/8/PPPP1PPP/RNBQKBNR w QKqk f6 0 3
 go depth 4
 wait
 
@@ -90,6 +85,31 @@ position fen rbbknnqr/pppppppp/8/8/8/8/PPPPPPPP/RBBKNNQR w KQkq - 0 1
 go depth 5
 wait
 
+echo 172843489:
+position fen r1k1r2q/p1ppp1pp/8/8/8/8/P1PPP1PP/R1K1R2Q w KQkq -
+go depth 5
+wait
+
+echo 418430598:
+position fen r1k2r1q/p1ppp1pp/8/8/8/8/P1PPP1PP/R1K2R1Q w KQkq - 0 1
+go depth 5
+wait
+
+echo 44554839:
+position fen 8/8/8/4B2b/6nN/8/5P2/2R1K2k w Q - 0 1
+go depth 5
+wait
+
+echo 259604208:
+position fen 2r5/8/8/8/8/8/6PP/k2KR3 w K - 0 1
+go depth 6
+wait
+
+echo 281330710:
+position fen 4r3/3k4/8/8/8/8/6PP/qR1K1R2 w KQ - 0 1
+go depth 5
+wait
+
 echo 493407574:
 position fen 8/3K4/2p5/p2b2r1/5k2/8/8/1q6 b - - 1 67
 go depth 6
@@ -108,6 +128,11 @@ wait
 echo 64451405:
 position fen 8/5p2/8/2k3P1/p3K3/8/1P6/8 b - -
 go depth 7
+wait
+
+echo 706045033:
+position fen r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1
+go depth 5
 wait
 
 echo 193690690:
