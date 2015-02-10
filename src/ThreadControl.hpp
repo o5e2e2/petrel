@@ -14,12 +14,11 @@ public:
 private:
     enum Status { Ready, Run, Abort };
     volatile Status status;
-
     sequence_t sequence;
 
-    SpinLock statusChanging;
     std::condition_variable_any statusChanged;
 
+    SpinLock statusChanging;
     typedef std::lock_guard<decltype(statusChanging)> StatusLock;
 
     bool isStatus(Status to) const { return status == to; }
