@@ -126,7 +126,7 @@ void PositionMoves::excludePinnedMoves(VectorPiMask pinnerCandidates) {
 
     for (Pi pi : pinnerCandidates) {
         Square pinFrom{~OP.squareOf(pi)};
-        auto pinLine = pos.pinLineFrom<My>(pi);
+        auto pinLine = MY.pinLineFrom(pinFrom);
 
         Bb betweenPieces{pinLine & OCCUPIED};
         assert (betweenPieces.any());
@@ -158,7 +158,7 @@ void PositionMoves::generateCheckEvasions() {
     Pi checker{checkers.index()};
     Square checkFrom{~OP.squareOf(checker)};
 
-    const Bb& checkLine{::between(MY.kingSquare(), checkFrom)};
+    auto checkLine = MY.pinLineFrom(checkFrom);
 
     //general case: check evasion moves of all pieces
     moves = MY.allAttacks() & (checkLine + checkFrom);

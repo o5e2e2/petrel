@@ -1,7 +1,6 @@
 #include "Position.hpp"
 
 #include <utility>
-#include "BetweenSquares.hpp"
 
 #define MY side[My]
 #define OP side[Op]
@@ -115,7 +114,7 @@ const Bb& Position::pinLineFrom(Pi pi) const {
     assert (OP.isSlider(pi));
     assert (OP.pinnerCandidates()[pi]);
 
-    return ::between(MY.kingSquare(), ~OP.squareOf(pi));
+    return MY.pinLineFrom(~OP.squareOf(pi));
 }
 
 bool Position::setEnPassant(Square ep) {

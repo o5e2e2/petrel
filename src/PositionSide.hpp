@@ -40,6 +40,7 @@ public:
 
     const Bb& occ() const { return piecesBb; }
     const Bb& occPawns() const { return pawnsBb; }
+    const Bb& pinLineFrom(Square) const;
     const MatrixPiBb& allAttacks() const { return attacks; }
 
     static Zobrist zobrist_combine(const PositionSide& my, const PositionSide& op) { return Zobrist::combine(my.zobrist, op.zobrist); }

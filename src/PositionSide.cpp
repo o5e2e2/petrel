@@ -1,5 +1,6 @@
 #include "PositionSide.hpp"
 
+#include "BetweenSquares.hpp"
 #include "PieceTypeAttack.hpp"
 #include "CastlingRules.hpp"
 #include "ReverseBb.hpp"
@@ -224,6 +225,10 @@ void PositionSide::clearEnPassants() {
     assert (hasEnPassant());
     assert ((types.enPassantPawns() % squares.of<Rank5>()).none());
     types.clearEnPassants();
+}
+
+const Bb& PositionSide::pinLineFrom(Square from) const {
+    return ::between(kingSquare(), from);
 }
 
 void PositionSide::updatePinRays(Square opKingSquare, Pi pi) {
