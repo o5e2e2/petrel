@@ -126,9 +126,9 @@ void PositionMoves::excludePinnedMoves(VectorPiMask pinnerCandidates) {
 
     for (Pi pi : pinnerCandidates) {
         Square pinFrom{~OP.squareOf(pi)};
-        auto pinLine = MY.pinLineFrom(pinFrom);
+        auto pinRay = MY.pinRayFrom(pinFrom);
 
-        Bb betweenPieces{pinLine & OCCUPIED};
+        Bb betweenPieces{pinRay & OCCUPIED};
         assert (betweenPieces.any());
 
         if (betweenPieces.isSingleton() && (betweenPieces & MY.occ()).any()) {
@@ -136,7 +136,7 @@ void PositionMoves::excludePinnedMoves(VectorPiMask pinnerCandidates) {
             Pi pinned{MY.pieceOn(betweenPieces.index())};
 
             //exclude moves except moves over the pin line
-            moves.filter(pinned, pinLine + pinFrom);
+            moves.filter(pinned, pinRay + pinFrom);
         }
     }
 }
@@ -158,7 +158,7 @@ void PositionMoves::generateCheckEvasions() {
     Pi checker{checkers.index()};
     Square checkFrom{~OP.squareOf(checker)};
 
-    auto checkLine = MY.pinLineFrom(checkFrom);
+    auto checkLine = MY.pinRayFrom(checkFrom);
 
     //general case: check evasion moves of all pieces
     moves = MY.allAttacks() & (checkLine + checkFrom);

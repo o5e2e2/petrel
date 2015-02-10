@@ -22,7 +22,7 @@ class PositionSide {
     Zobrist zobrist; //Zobrist hash key of pieces of the current side
     Evaluation evaluation;
 
-    void drop(PieceType, Square);
+    void set(PieceType, Square);
     void clear(PieceType, Square);
 
 public:
@@ -40,7 +40,7 @@ public:
 
     const Bb& occ() const { return piecesBb; }
     const Bb& occPawns() const { return pawnsBb; }
-    const Bb& pinLineFrom(Square) const;
+    const Bb& pinRayFrom(Square) const;
     const MatrixPiBb& allAttacks() const { return attacks; }
 
     static Zobrist zobrist_combine(const PositionSide& my, const PositionSide& op) { return Zobrist::combine(my.zobrist, op.zobrist); }
@@ -79,9 +79,7 @@ public:
     VectorPiMask attacksTo(Square a, Square b) const { return attacks[a] | attacks[b]; }
     VectorPiMask attacksTo(Square a, Square b, Square c) const { return attacks[a] | attacks[b] | attacks[c]; }
 
-    void drop(Pi, PieceType, Square);
     void capture(Square);
-    void clear(Pi, PieceType, Square);
     void move(Pi, PieceType, Square, Square);
     void moveKing(Square, Square);
     void promote(Pi, PromoType, Square, Square);
@@ -96,13 +94,14 @@ public:
     void clearEnPassants();
 
     void setCastling(Pi);
+    void clearCastling(Pi, Square);
     void clearCastlings();
-    void clearCastling(Pi);
 
     void updatePinRays(Square);
     void updatePinRays(Square, Pi);
 
     //used only during initial position setup
+    void drop(Pi, PieceType, Square);
     bool setCastling(File);
     bool setCastling(CastlingSide);
 

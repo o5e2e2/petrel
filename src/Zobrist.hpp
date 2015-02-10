@@ -48,10 +48,10 @@ public:
     void drop(PieceType ty, Square to) { _v ^= key(ty, to); }
     void clear(PieceType ty, Square from) { drop(ty, from); }
 
-    void setEnPassant(Square from) { drop( Pawn, Square(File(from), Rank8) ); }
+    void setEnPassant(Square from) { assert (from.is<Rank4>()); drop( Pawn, Square(File(from), Rank8) ); }
     void clearEnPassant(Square from) { setEnPassant(from); }
 
-    void setCastling(Square from) { drop( Pawn, Square(File(from), Rank1) ); }
+    void setCastling(Square from) { assert (from.is<Rank1>()); drop(Pawn, from); }
     void clearCastling(Square from) { setCastling(from); }
 
     static Zobrist combine(Arg my, Arg op) { return Zobrist{my._v ^= static_cast<_t>(~op)}; }

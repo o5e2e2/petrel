@@ -109,12 +109,12 @@ void Position::clearEnPassant() {
 }
 
 template <Side::_t My>
-const Bb& Position::pinLineFrom(Pi pi) const {
+const Bb& Position::pinRayFrom(Pi pi) const {
     const Side::_t Op{static_cast<Side::_t>(My ^ Side::Mask)};
     assert (OP.isSlider(pi));
     assert (OP.pinnerCandidates()[pi]);
 
-    return MY.pinLineFrom(~OP.squareOf(pi));
+    return MY.pinRayFrom(~OP.squareOf(pi));
 }
 
 bool Position::setEnPassant(Square ep) {
@@ -131,9 +131,9 @@ bool Position::setEnPassant(Square ep) {
 
     //check against illegal en passant set field like "8/5bk1/8/2Pp4/8/1K6/8/8 w - d6"
     for (Pi pi : OP.pinnerCandidates() & OP.attacksTo(victimSquare)) {
-        auto pinLine = pinLineFrom<My>(pi);
-        if (pinLine[~victimSquare]) {
-            Bb betweenPieces{(pinLine & OCCUPIED) - ~victimSquare};
+        auto pinRay = pinRayFrom<My>(pi);
+        if (pinRay[~victimSquare]) {
+            Bb betweenPieces{(pinRay & OCCUPIED) - ~victimSquare};
             if (betweenPieces.none()) { return false; }
         }
     }
@@ -157,9 +157,9 @@ bool Position::isLegalEnPassant(Pi killer, Square to) const {
     if (!MY.kingSquare().is<Rank5>()) {
         //diagonal pin
         for (Pi pi : OP.pinnerCandidates() & OP.attacksTo(~from)) {
-            auto pinLine = pinLineFrom<My>(pi);
-            if (pinLine[from] && !pinLine[to]) {
-                Bb betweenPieces{(pinLine & OCCUPIED) - from};
+            auto pinRay = pinRayFrom<My>(pi);
+            if (pinRay[from] && !pinRay[to]) {
+                Bb betweenPieces{(pinRay & OCCUPIED) - from};
                 if (betweenPieces.none()) { return false; } //the true pin discovered
             }
         }
@@ -167,10 +167,10 @@ bool Position::isLegalEnPassant(Pi killer, Square to) const {
     else {
         //vertical pin
         for (Pi pi : OP.pinnerCandidates() & OP.of<Rank4>()) {
-            auto pinLine = pinLineFrom<My>(pi);
-            if (pinLine[from]) {
+            auto pinRay = pinRayFrom<My>(pi);
+            if (pinRay[from]) {
                 Square victim{to.rankDown()};
-                Bb betweenPieces{(pinLine & OCCUPIED) - from - victim};
+                Bb betweenPieces{(pinRay & OCCUPIED) - from - victim};
                 if (betweenPieces.none()) { return false; } //the true pin discovered
             }
         }
@@ -209,9 +209,6 @@ void Position::set(Side My, Pi pi, PieceType ty, Square to) {
     if (MY.isSlider(pi)) {
         MY.updatePinRays(~OP.kingSquare(), pi);
 
-        if (MY.isCastling(pi)) {
-            MY.clearCastling(pi);
-        }
         //slider attacks updated separately
     }
     else {
@@ -230,7 +227,6 @@ void Position::move(Pi pi, Square from, Square to) {
     assert (ty != King);
 
     MY.move(pi, ty, from, to);
-
     set(My, pi, ty, to);
 
     MY.assertValid(pi);
@@ -267,15 +263,6 @@ template <Side::_t My>
 void Position::makeCastling(Pi rook, Square rookFrom, Square kingFrom) {
     const Side::_t Op{static_cast<Side::_t>(My ^ Side::Mask)};
     //castling encoded as the given rook captures the own king
-
-    assert (kingFrom != rookFrom && rookFrom.is<Rank1>() && kingFrom.is<Rank1>());
-
-    MY.assertValid(TheKing);
-    assert (kingFrom == MY.kingSquare());
-
-    MY.assertValid(rook);
-    assert (MY.is<Rook>(rook) && MY.isCastling(rook));
-    assert (rookFrom == MY.squareOf(rook));
 
     Square kingTo{(rookFrom < kingFrom)? C1:G1};
     Square rookTo{(rookFrom < kingFrom)? D1:F1};

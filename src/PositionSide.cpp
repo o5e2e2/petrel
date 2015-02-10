@@ -1,5 +1,5 @@
 #include "PositionSide.hpp"
-
+#include "io.hpp"
 #include "BetweenSquares.hpp"
 #include "PieceTypeAttack.hpp"
 #include "CastlingRules.hpp"
@@ -45,28 +45,9 @@ void PositionSide::clear(PieceType ty, Square from) {
     evaluation.clear(ty, from);
 }
 
-void PositionSide::clear(Pi pi, PieceType ty, Square from) {
-    assertValid(pi);
-
-    attacks.clear(pi);
-    types.clear(pi);
-    squares.clear(pi);
-
-    clear(ty, from);
-}
-
-void PositionSide::capture(Square from) {
-    Pi pi{pieceOn(from)};
-
-    assertValid(pi);
-    clear(pi, typeOf(pi), from);
-}
-
-void PositionSide::drop(PieceType ty, Square to) {
+void PositionSide::set(PieceType ty, Square to) {
     piecesBb += to;
-    if (ty == Pawn) {
-        pawnsBb += to;
-    }
+    if (ty == Pawn) { pawnsBb += to; }
     zobrist.drop(ty, to);
     evaluation.drop(ty, to);
 }
@@ -74,8 +55,39 @@ void PositionSide::drop(PieceType ty, Square to) {
 void PositionSide::drop(Pi pi, PieceType ty, Square to) {
     types.drop(pi, ty);
     squares.drop(pi, to);
+    set(ty, to);
 
-    drop(ty, to);
+    assertValid(pi);
+}
+
+void PositionSide::capture(Square from) {
+    Pi pi{pieceOn(from)};
+
+    assertValid(pi);
+
+    PieceType ty = typeOf(pi);
+
+    if (ty == Rook && isCastling(pi)) {
+        zobrist.clearCastling(from);
+    }
+    clear(ty, from);
+
+    squares.clear(pi);
+    types.clear(pi);
+    attacks.clear(pi);
+}
+
+void PositionSide::move(Pi pi, PieceType ty, Square from, Square to) {
+    assertValid(pi);
+    assert (from != to);
+
+    if (ty == Rook && isCastling(pi)) {
+        clearCastling(pi, from);
+    }
+    clear(ty, from);
+
+    squares.move(pi, to);
+    set(ty, to);
 
     assertValid(pi);
 }
@@ -99,33 +111,34 @@ void PositionSide::promote(Pi pi, PromoType ty, Square from, Square to) {
     assertValid(pi);
 }
 
-void PositionSide::move(Pi pi, PieceType ty, Square from, Square to) {
-    assertValid(pi);
-    assert (from != to);
-
-    squares.move(pi, to);
-    clear(ty, from);
-    drop(ty, to);
-
-    assertValid(pi);
-}
-
 void PositionSide::moveKing(Square from, Square to) {
+    assertValid(TheKing);
+
     move(TheKing, King, from, to);
     setLeaperAttack(TheKing, King, to);
     clearCastlings();
+
+    assertValid(TheKing);
 }
 
 void PositionSide::castle(Pi rook, Square rookFrom, Square rookTo, Square kingFrom, Square kingTo) {
+    assertValid(rook);
+    assertValid(TheKing);
+    assert (kingFrom == kingSquare() && kingFrom.is<Rank1>());
+    assert (rookFrom == squareOf(rook) && rookFrom.is<Rank1>());
+
     squares.castle(rook, rookTo, TheKing, kingTo);
 
-    clear(King, kingFrom);
     clear(Rook, rookFrom);
-    drop(Rook, rookTo);
-    drop(King, kingTo);
+    clear(King, kingFrom);
+    set(King, kingTo);
+    set(Rook, rookTo);
 
     setLeaperAttack(TheKing, King, kingTo);
     clearCastlings();
+
+    assertValid(TheKing);
+    assertValid(rook);
 }
 
 void PositionSide::setLeaperAttack(Pi pi, PieceType ty, Square to) {
@@ -141,24 +154,26 @@ void PositionSide::updateSliderAttacks(VectorPiMask affectedSliders, Bb _occupie
     }
 }
 
-void PositionSide::clearCastling(Pi pi) {
+void PositionSide::clearCastling(Pi pi, Square from) {
     assertValid(pi);
-    assert (is<Rook>(pi));
+    assert (from == squareOf(pi));
+    assert (from.is<Rank1>());
+
     types.clearCastling(pi);
-    zobrist.clearCastling(squareOf(pi));
+    zobrist.clearCastling(from);
 }
 
 void PositionSide::clearCastlings() {
     for (Pi pi : castlingRooks()) {
-        clearCastling(pi);
+        clearCastling(pi, squareOf(pi));
     }
 }
 
 void PositionSide::setCastling(Pi rook) {
-    assert (is<Rook>(rook));
     types.setCastling(rook);
 
     Square from = squareOf(rook);
+    assert (from.is<Rank1>());
     zobrist.setCastling(from);
     ::castlingRules.set(kingSquare(), from);
 }
@@ -227,7 +242,7 @@ void PositionSide::clearEnPassants() {
     types.clearEnPassants();
 }
 
-const Bb& PositionSide::pinLineFrom(Square from) const {
+const Bb& PositionSide::pinRayFrom(Square from) const {
     return ::between(kingSquare(), from);
 }
 
