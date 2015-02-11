@@ -54,7 +54,7 @@ public:
     bool setup();
     bool setCastling(Side, File);
     bool setCastling(Side, CastlingSide);
-    bool setEnPassant(Square);
+    bool setEnPassant(File);
 };
 
 #endif

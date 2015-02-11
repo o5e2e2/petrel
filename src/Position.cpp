@@ -1,6 +1,4 @@
 #include "Position.hpp"
-#include "io.hpp"
-
 #include <utility>
 
 #define MY side[My]
@@ -118,15 +116,11 @@ const Bb& Position::pinRayFrom(Pi pi) const {
     return MY.pinRayFrom(~OP.squareOf(pi));
 }
 
-bool Position::setEnPassant(Square ep) {
-    if (!ep.is<Rank3>()) { return false; }
-    if (OCCUPIED[~ep]) { return false; }
-    if (OCCUPIED[~(ep.rankDown())]) { return false; }
+bool Position::setEnPassant(File ep) {
+    if (OCCUPIED[Square(ep, Rank7)]) { return false; }
+    if (OCCUPIED[Square(ep, Rank6)]) { return false; }
 
-    File fileFrom{ep};
-
-    Square victimSquare{ep.rankUp()};
-
+    Square victimSquare(ep, Rank4);
     if (!OP.isOn(victimSquare)) { return false; }
     Pi victim{OP.pieceOn(victimSquare)};
 
@@ -319,10 +313,10 @@ void Position::makePawnMove(Pi pi, Square from, Square to) {
 
         if (from.is<Rank5>() && to.is<Rank5>()) {
             //en passant move
-            Square ep{to.rankUp()};
-            move<My>(pi, from, ep);
-            updateSliderAttacksKing<My>(MY.attacksTo(from, to, ep));
-            updateSliderAttacks<Op>(OP.attacksTo(~from, ~to, ~ep));
+            Square _to(File{to}, Rank6);
+            move<My>(pi, from, _to);
+            updateSliderAttacksKing<My>(MY.attacksTo(from, to, _to));
+            updateSliderAttacks<Op>(OP.attacksTo(~from, ~to, ~_to));
         }
         else {
             //simple pawn capture
@@ -406,9 +400,9 @@ Move readMove(std::istream& in, const Position& pos, Color colorToMove) {
     //convert special moves (castling, promotion, ep) to the internal move format
     if (pos.MY.is<Pawn>(pi)) {
         if (from.is<Rank5>() && pos.OP.hasEnPassant()) {
-            Square ep{~pos.OP.enPassantSquare()};
-            if (to == ep.rankUp()) {
-                return Move::makeSpecial(from, ep);
+            File ep = pos.OP.enPassantFile();
+            if (File{to} == ep) {
+                return Move::makeSpecial(from, Square(ep, Rank5));
             }
         }
         else if (from.is<Rank7>()) {
@@ -438,7 +432,7 @@ Move Position::createMove(Side My, Square from, Square to) const {
     const Side Op{~My};
 
     if ( MY.is<Pawn>(MY.pieceOn(from)) ) {
-        if ( from.is<Rank7>() || (OP.hasEnPassant() && to == ~OP.enPassantSquare()) ) {
+        if ( from.is<Rank7>() || (from.is<Rank5>() && OP.hasEnPassant() && File{to} == OP.enPassantFile()) ) {
             return Move::makeSpecial(from, to);
         }
     }

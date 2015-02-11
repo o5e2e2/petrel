@@ -17,12 +17,12 @@ void PositionMoves::generateEnPassantMoves() {
     const Side::_t Op{static_cast<Side::_t>(My ^ Side::Mask)};
 
     assert (MY.hasEnPassant());
+    assert (OP.hasEnPassant());
 
-    Square ep{~OP.enPassantSquare()};
-    assert (ep.is<Rank5>());
-    assert ((MY.pawns() & MY.attacksTo(ep.rankUp()) & MY.enPassantPawns()) == MY.enPassantPawns());
+    File ep{OP.enPassantFile()};
+    assert ((MY.pawns() & MY.attacksTo(Square(ep, Rank6)) & MY.enPassantPawns()) == MY.enPassantPawns());
 
-    moves[Rank5] |= VectorPiRank{File{ep}} & VectorPiRank{MY.enPassantPawns()};
+    moves[Rank5] |= VectorPiRank{ep} & VectorPiRank{MY.enPassantPawns()};
 }
 
 template <Side::_t My>

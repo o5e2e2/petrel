@@ -29,7 +29,6 @@ struct Square : Index<64, square_t> {
     Square& flip() { *this = static_cast<_t>(*this ^ RankMask); return *this; }
     constexpr Square operator ~ () const { return static_cast<_t>(*this ^ RankMask); }
     constexpr Square rankUp() const { return static_cast<_t>(*this - RankOffset); }
-    constexpr Square rankDown() const { return static_cast<_t>(*this + RankOffset); }
 
     template <Rank::_t Rank> constexpr bool is() const { return (*this & RankMask) == (Rank << RankShift); }
     template <File::_t File> constexpr bool is() const { return (*this & static_cast<File::_t>(File::Mask)) == File; }

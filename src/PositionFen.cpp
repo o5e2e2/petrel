@@ -248,18 +248,17 @@ namespace EnPassant {
 
         Square ep{Square::Begin};
         if (in >> ep) {
-            if (colorToMove == White) { ep.flip(); }
-            assert (ep.is<Rank3>());
-            pos.setEnPassant(ep);
+            (void)colorToMove; //silence unused parameter warning
+            assert (colorToMove == White? ep.is<Rank6>() : ep.is<Rank3>());
+            pos.setEnPassant(File{ep});
         }
         return in;
     }
 
     std::ostream& write(std::ostream& out, const PositionSide& side, Color colorToMove) {
         if (side.hasEnPassant()) {
-            Square ep = side.enPassantSquare().rankDown();
-            if (colorToMove == White) { ep.flip(); }
-            out << ep;
+            File ep = side.enPassantFile();
+            out << (colorToMove == White? Square(ep, Rank6) : Square(ep, Rank3));
         }
         else {
             out << '-';

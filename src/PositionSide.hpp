@@ -77,10 +77,9 @@ public:
     VectorPiMask castlingRooks() const { return types.castlingRooks(); }
     void castle(Pi rook, Square rookFrom, Square rookTo, Square kingFrom, Square kingTo);
 
-    bool hasEnPassant() const { return enPassantPawns().any(); }
-    Pi getEnPassant() const { return types.getEnPassant(); }
-    Square enPassantSquare() const { return squareOf(getEnPassant()); }
     VectorPiMask enPassantPawns() const { return types.enPassantPawns(); }
+    bool hasEnPassant() const { return enPassantPawns().any(); }
+    File enPassantFile() const { Square ep = squareOf(types.getEnPassant()); assert (ep.is<Rank4>()); return File{ep}; }
     void markEnPassant(Pi);
     void setEnPassant(Pi, File);
     void clearEnPassant();

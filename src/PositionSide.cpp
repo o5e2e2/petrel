@@ -1,5 +1,4 @@
 #include "PositionSide.hpp"
-#include "io.hpp"
 #include "BetweenSquares.hpp"
 #include "PieceTypeAttack.hpp"
 #include "CastlingRules.hpp"
@@ -223,19 +222,19 @@ void PositionSide::markEnPassant(Pi pi) {
 
 void PositionSide::setEnPassant(Pi pi, File fileFrom) {
     markEnPassant(pi);
-
     assert (squareOf(pi).is<Rank4>());
     assert (File{squareOf(pi)} == fileFrom);
+
     zobrist.setEnPassant(fileFrom);
 }
 
 void PositionSide::clearEnPassant() {
-    Pi pi{getEnPassant()};
-    assert (is<Pawn>(pi));
-    types.clearEnPassant(pi);
+    assert (hasEnPassant());
+    assert (types.enPassantPawns().isSingleton());
+    assert ((types.enPassantPawns() & squares.of<Rank4>()) == types.enPassantPawns());
 
-    assert (squareOf(pi).is<Rank4>());
-    zobrist.clearEnPassant(File{squareOf(pi)});
+    zobrist.clearEnPassant(enPassantFile());
+    types.clearEnPassants();
 }
 
 void PositionSide::clearEnPassants() {
