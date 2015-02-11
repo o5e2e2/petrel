@@ -123,6 +123,8 @@ bool Position::setEnPassant(Square ep) {
     if (OCCUPIED[~ep]) { return false; }
     if (OCCUPIED[~(ep.rankDown())]) { return false; }
 
+    File fileFrom{ep};
+
     Square victimSquare{ep.rankUp()};
 
     if (!OP.isOn(victimSquare)) { return false; }
@@ -144,16 +146,16 @@ bool Position::setEnPassant(Square ep) {
 }
 
 template <Side::_t My>
-bool Position::isLegalEnPassant(Pi killer, Square to) const {
+bool Position::isLegalEnPassant(Pi killer, File ep) const {
     const Side::_t Op{static_cast<Side::_t>(My ^ Side::Mask)};
 
     MY.assertValid(killer);
     assert (MY.is<Pawn>(killer));
-    assert (MY.allAttacks()[killer][to]);
-    assert (to.is<Rank6>());
-
     Square from{ MY.squareOf(killer) };
     assert (from.is<Rank5>());
+
+    Square to(ep, Rank6);
+    assert (MY.allAttacks()[killer][to]);
 
     if (!MY.kingSquare().is<Rank5>()) {
         for (Pi pi : OP.pinnerCandidates() & OP.attacksTo(~from)) {
@@ -168,7 +170,8 @@ bool Position::isLegalEnPassant(Pi killer, Square to) const {
         for (Pi pi : OP.pinnerCandidates() & OP.of<Rank4>()) {
             auto pinRay = pinRayFrom<My>(pi);
             if (pinRay[from]) {
-                Square victim{to.rankDown()};
+                Square victim(ep, Rank5);
+                assert (OP.is<Pawn>(OP.pieceOn(~victim)));
                 Bb betweenPieces{(pinRay & OCCUPIED) - from - victim};
                 if (betweenPieces.none()) { return false; } //the true vertical pin
             }
@@ -184,24 +187,26 @@ void Position::setLegalEnPassant(Pi victim) {
     assert (!MY.hasEnPassant());
     assert (!OP.hasEnPassant());
 
-    Square ep{~MY.squareOf(victim)};
-    assert (ep.is<Rank5>());
+    File ep = File{MY.squareOf(victim)};
 
-    Square to{ep.rankUp()};
-    assert (to.is<Rank6>());
+    auto killers = OP.pawns() & OP.attacksTo(Square(ep, Rank6));
+
+    if (killers.none()) {
+        return;
+    }
 
     if ( (MY.attacksTo(~OP.kingSquare()) % victim).any() ) {
         return; //discovered check
     }
 
-    for (Pi pi : OP.pawns() & OP.attacksTo(to)) {
-        if (isLegalEnPassant<Op>(pi, to)) {
+    for (Pi pi : killers) {
+        if (isLegalEnPassant<Op>(pi, ep)) {
             OP.markEnPassant(pi);
         }
     }
 
     if (OP.hasEnPassant()) {
-        MY.setEnPassant(victim, ~ep);
+        MY.setEnPassant(victim, ep);
     }
 }
 

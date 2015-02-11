@@ -82,7 +82,7 @@ public:
     Square enPassantSquare() const { return squareOf(getEnPassant()); }
     VectorPiMask enPassantPawns() const { return types.enPassantPawns(); }
     void markEnPassant(Pi);
-    void setEnPassant(Pi, Square);
+    void setEnPassant(Pi, File);
     void clearEnPassant();
     void clearEnPassants();
 
