@@ -223,22 +223,23 @@ void PositionSide::markEnPassant(Pi pi) {
 
 void PositionSide::setEnPassant(Pi pi, Square from) {
     markEnPassant(pi);
-    zobrist.setEnPassant(from);
+
+    assert (from.is<Rank4>());
+    zobrist.setEnPassant(File{from});
 }
 
 void PositionSide::clearEnPassant() {
-    assert (hasEnPassant());
     Pi pi{getEnPassant()};
-
     assert (is<Pawn>(pi));
-    assert (squareOf(pi).is<Rank4>());
     types.clearEnPassant(pi);
-    zobrist.clearEnPassant(squareOf(pi));
+
+    assert (squareOf(pi).is<Rank4>());
+    zobrist.clearEnPassant(File{squareOf(pi)});
 }
 
 void PositionSide::clearEnPassants() {
     assert (hasEnPassant());
-    assert ((types.enPassantPawns() % squares.of<Rank5>()).none());
+    assert ((types.enPassantPawns() & squares.of<Rank5>()) == types.enPassantPawns());
     types.clearEnPassants();
 }
 

@@ -37,7 +37,7 @@ public:
     const Position& getPos() const { return pos;}
 
     void limitMoves(std::istream&, MatrixPiBb&, Color) const;
-    Color makeMoves(std::istream&, Color);
+    void makeMoves(std::istream&, Color&);
 };
 
 #endif

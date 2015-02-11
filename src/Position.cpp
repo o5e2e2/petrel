@@ -1,4 +1,5 @@
 #include "Position.hpp"
+#include "io.hpp"
 
 #include <utility>
 
@@ -155,23 +156,21 @@ bool Position::isLegalEnPassant(Pi killer, Square to) const {
     assert (from.is<Rank5>());
 
     if (!MY.kingSquare().is<Rank5>()) {
-        //diagonal pin
         for (Pi pi : OP.pinnerCandidates() & OP.attacksTo(~from)) {
             auto pinRay = pinRayFrom<My>(pi);
             if (pinRay[from] && !pinRay[to]) {
                 Bb betweenPieces{(pinRay & OCCUPIED) - from};
-                if (betweenPieces.none()) { return false; } //the true pin discovered
+                if (betweenPieces.none()) { return false; } //the true diagonal pin
             }
         }
     }
     else {
-        //vertical pin
         for (Pi pi : OP.pinnerCandidates() & OP.of<Rank4>()) {
             auto pinRay = pinRayFrom<My>(pi);
             if (pinRay[from]) {
                 Square victim{to.rankDown()};
                 Bb betweenPieces{(pinRay & OCCUPIED) - from - victim};
-                if (betweenPieces.none()) { return false; } //the true pin discovered
+                if (betweenPieces.none()) { return false; } //the true vertical pin
             }
         }
     }
@@ -191,11 +190,16 @@ void Position::setLegalEnPassant(Pi victim) {
     Square to{ep.rankUp()};
     assert (to.is<Rank6>());
 
+    if ( (MY.attacksTo(~OP.kingSquare()) % victim).any() ) {
+        return; //discovered check
+    }
+
     for (Pi pi : OP.pawns() & OP.attacksTo(to)) {
         if (isLegalEnPassant<Op>(pi, to)) {
             OP.markEnPassant(pi);
         }
     }
+
     if (OP.hasEnPassant()) {
         MY.setEnPassant(victim, ~ep);
     }

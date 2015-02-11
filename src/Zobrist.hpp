@@ -48,8 +48,8 @@ public:
     void drop(PieceType ty, Square to) { _v ^= key(ty, to); }
     void clear(PieceType ty, Square from) { drop(ty, from); }
 
-    void setEnPassant(Square from) { assert (from.is<Rank4>()); drop( Pawn, Square(File(from), Rank8) ); }
-    void clearEnPassant(Square from) { setEnPassant(from); }
+    void setEnPassant(File fileFrom) { drop( Pawn, Square(fileFrom, Rank8) ); }
+    void clearEnPassant(File fileFrom) { setEnPassant(fileFrom); }
 
     void setCastling(Square from) { assert (from.is<Rank1>()); drop(Pawn, from); }
     void clearCastling(Square from) { setCastling(from); }

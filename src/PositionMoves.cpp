@@ -170,7 +170,8 @@ void PositionMoves::generateCheckEvasions() {
 
     generateUnderpromotions<My>();
 
-    if ((OP.enPassantPawns() & checkers).any()) {
+    if (MY.hasEnPassant()) {
+        assert (OP.enPassantPawns() == checkers);
         generateEnPassantMoves<My>();
     }
 
@@ -232,7 +233,7 @@ void PositionMoves::limitMoves(std::istream& in, MatrixPiBb& searchmoves, Color 
 
 }
 
-Color PositionMoves::makeMoves(std::istream& in, Color colorToMove) {
+void PositionMoves::makeMoves(std::istream& in, Color& colorToMove) {
     while (in) {
         auto before_current_move = in.tellg(); //save the streampos for error reporting
 
@@ -254,7 +255,6 @@ Color PositionMoves::makeMoves(std::istream& in, Color colorToMove) {
         const_cast<Position&>(pos).makeMove<Op>(m.from(), m.to());
         generateMoves<My>();
     }
-    return colorToMove;
 }
 
 #undef MY

@@ -100,7 +100,7 @@ void Uci::position() {
 
     next("moves");
 
-    colorToMove = PositionMoves{rootPosition}.makeMoves(command, colorToMove);
+    PositionMoves{rootPosition}.makeMoves(command, colorToMove);
 }
 
 void Uci::setStartpos() {
