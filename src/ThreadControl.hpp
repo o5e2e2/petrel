@@ -22,13 +22,21 @@ private:
     typedef std::lock_guard<decltype(statusChanging)> StatusLock;
 
     bool isStatus(Status to) const { return status == to; }
-    void wait(Status to);
 
+    template <typename Condition>
+    void signal(Status, Condition);
+
+    template <typename Condition>
+    sequence_t signalSequence(Status,  Condition);
+
+    template <typename Condition>
+    void wait(Condition);
+
+    void wait(Status to);
     void signal(Status to);
     void signal(Status from, Status to);
-
-    sequence_t signalSequence(Status from, Status to);
     void signal(sequence_t seq, Status from, Status to);
+    sequence_t signalSequence(Status from, Status to);
 
     virtual void thread_body() = 0;
 

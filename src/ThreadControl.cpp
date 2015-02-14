@@ -11,13 +11,22 @@ ThreadControl::ThreadControl () : status{Ready}, sequence{0} {
     std::thread(infinite_loop).detach();
 }
 
-void ThreadControl::signal(Status to) {
-    if (!isStatus(to)) {
+template <typename Condition>
+void ThreadControl::wait(Condition condition) {
+    if (!condition()) {
+        std::unique_lock<decltype(statusChanging)> statusLock(statusChanging);
+        statusChanged.wait(statusLock, condition);
+    }
+}
+
+template <typename Condition>
+void ThreadControl::signal(Status to, Condition condition) {
+    if (condition()) {
         bool isChanged{false};
         {
             StatusLock statusLock(statusChanging);
 
-            if (!isStatus(to)) {
+            if (condition()) {
                 status = to;
                 isChanged = true;
             }
@@ -29,70 +38,50 @@ void ThreadControl::signal(Status to) {
     }
 }
 
-void ThreadControl::signal(Status from, Status to) {
-    if (isStatus(from)) {
+template <typename Condition>
+ThreadControl::sequence_t ThreadControl::signalSequence(Status to, Condition condition) {
+    if (condition()) {
         bool isChanged{false};
+        sequence_t result;
         {
             StatusLock statusLock(statusChanging);
 
-            if (isStatus(from)) {
-                status = to;
-                isChanged = true;
-            }
-        }
-
-        if (isChanged) {
-            statusChanged.notify_all();
-        }
-    }
-}
-
-void ThreadControl::signal(sequence_t seq, Status from, Status to) {
-    if (seq != 0 && seq == sequence && isStatus(from)) {
-        bool isChanged{false};
-        {
-            StatusLock statusLock(statusChanging);
-
-            if (seq == sequence && isStatus(from)) {
-                status = to;
-                isChanged = true;
-            }
-        }
-
-        if (isChanged) {
-            statusChanged.notify_all();
-        }
-    }
-}
-
-ThreadControl::sequence_t ThreadControl::signalSequence(Status from, Status to) {
-    if (isStatus(from)) {
-        sequence_t seq;
-        bool isChanged{false};
-        {
-            StatusLock statusLock(statusChanging);
-
-            if (isStatus(from)) {
-                status = to;
-                isChanged = true;
-
+            if (condition()) {
                 ++sequence;
                 if (sequence == 0) { sequence = 1; } //wrap around
-                seq = sequence;
+                result = sequence;
+
+                status = to;
+                isChanged = true;
             }
         }
 
         if (isChanged) {
             statusChanged.notify_all();
-            return seq;
+            return result;
         }
     }
     return 0;
 }
 
-void ThreadControl::wait(Status to) {
-    if (!isStatus(to)) {
-        std::unique_lock<decltype(statusChanging)> statusLock(statusChanging);
-        statusChanged.wait(statusLock, [this, to] { return isStatus(to); });
+void ThreadControl::signal(Status to) {
+    signal(to, [this, to]() { return !isStatus(to); });
+}
+
+void ThreadControl::signal(Status from, Status to) {
+    signal(to, [this, from]() { return isStatus(from); });
+}
+
+void ThreadControl::signal(sequence_t seq, Status from, Status to) {
+    if (seq != 0) {
+        signal(to, [this, seq, from]() { return sequence == seq && isStatus(from); });
     }
+}
+
+ThreadControl::sequence_t ThreadControl::signalSequence(Status from, Status to) {
+    return signalSequence(to, [this, from]() { return isStatus(from); });
+}
+
+void ThreadControl::wait(Status to) {
+    wait([this, to] { return isStatus(to); });
 }
