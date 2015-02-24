@@ -31,12 +31,12 @@ int Uci::operator() (std::istream& in) {
         else if (next("call")) { call(); }
         else {
             auto peek = command.peek();
-            if (command.eof() || peek == '#' || peek == ';') {
-                continue; //ignore empty or comment line
+            if (peek == '#' || peek == ';') {
+                continue; //ignore comment line
             }
         }
 
-        //syntax error if something unparsed left
+        //error if something non-blank left
         if (!next("")) {
             uciOutput.error(command);
         }
