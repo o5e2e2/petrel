@@ -8,7 +8,6 @@
 SearchControl::SearchControl () : rootWindow(*this) { clear(); }
 
 void SearchControl::clear() {
-    transpositionTable.clear();
     info.clear();
 }
 

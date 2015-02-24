@@ -2,79 +2,86 @@
 #define TRANSPOSITION_TABLE_HPP
 
 #include <new>
-#include "bitops.hpp"
 #include "Vector.hpp"
 #include "Zobrist.hpp"
 
 class TranspositionTable {
-public:
     class CACHE_ALIGN Cluster {
         __m128i _t[4];
-
-    public:
-        Cluster () { _t[0] = _t[1] = _t[2] = _t[3] = _mm_setzero_si128(); }
     };
 
     typedef std::size_t size_type;
 
-private:
-    enum { Mega = 1024 * 1024 };
-    static const size_type MaxHash = static_cast<size_type>(4096) * Mega; //4Gb
+    static size_type round(size_type bytes);
+    void setMaxSize();
 
-    char* hash;
-    size_type size;
+    Cluster* hash;
     size_type mask;
+    size_type size;
+    size_type maxSize;
 
-    static size_type round(size_type bytes) {
-        return (bytes > 0)? ::singleton<decltype(bytes)>(::bsr(bytes)+1):0;
-    }
+    Cluster one;
 
     TranspositionTable (const TranspositionTable&) = delete;
     TranspositionTable& operator = (const TranspositionTable&) = delete;
 
+    void free() {
+        if (size > sizeof(Cluster)) {
+            delete[] hash;
+        }
+        hash = &one;
+        size = sizeof(Cluster);
+        mask = 0;
+    }
+
 public:
-    TranspositionTable () : hash{nullptr}, size{0}, mask{0} {}
-   ~TranspositionTable () { delete[] hash; }
+    TranspositionTable () : hash{&one}, mask{0}, size{sizeof(Cluster)} { setMaxSize(); }
+   ~TranspositionTable () { free(); }
 
-    size_type getMaxSize() const { return MaxHash; }
-    unsigned  getMaxSizeMb() const { return small_cast<unsigned>(getMaxSize() / Mega); }
-
+    size_type getMaxSize() const { return maxSize; }
     size_type getSize() const { return size; }
-    unsigned  getSizeMb() const { return small_cast<unsigned>(getSize() / Mega); }
 
-    size_type resize(size_type bytes) {
-        bytes = std::min(bytes, getMaxSize());
+    size_type setSize(size_type bytes) {
+        if (size == bytes) {
+            return size; //do nothing
+        }
+
+        free();
+        setMaxSize();
+
+        if (bytes <= sizeof(Cluster)) {
+            assert (size == sizeof(Cluster));
+            assert (mask == 0);
+            return size;
+        }
+
+        bytes = std::min(bytes, maxSize);
         bytes = round(bytes);
 
-        delete[] hash;
-        size = 0;
-
-        hash = nullptr;
-        while (hash == nullptr && bytes > 0) {
+        for (; bytes > sizeof(Cluster); bytes >>= 1) {
             hash = reinterpret_cast<decltype(hash)>(new (std::nothrow) Cluster[bytes/sizeof(Cluster)]);
-            bytes >>= 1;
+
+            if (hash != nullptr) {
+                size = bytes;
+                break;
+            }
         }
+
+        if (hash == nullptr) {
+            hash = &one;
+        }
+
         clear();
-
-        size = bytes;
-        mask = (bytes-1) ^ (sizeof(Cluster)-1);
-
+        mask = (size-1) ^ (sizeof(Cluster)-1);
         return size;
     }
 
-    unsigned resizeMb(unsigned megabytes) {
-        resize(megabytes * Mega);
-        return getSizeMb();
-    }
-
     void clear() {
-        if (size > 0) {
-            std::memset(hash, 0, size);
-        }
+        std::memset(hash, 0, size);
     }
 
-    char* lookup(Zobrist z) const {
-        return &(hash[static_cast<Zobrist::_t>(z) & mask]);
+    char* lookup(Zobrist z) {
+        return &(reinterpret_cast<char*>(hash)[static_cast<Zobrist::_t>(z) & mask]);
     }
 
 };

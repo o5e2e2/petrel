@@ -5,7 +5,7 @@
 #include "PositionMoves.hpp"
 
 Uci::Uci (std::ostream& out)
-    : searchControl{}, uciOutput(out, chessVariant, colorToMove)
+    : searchControl{}, uciOutput(out, chessVariant, colorToMove), uciHash(searchControl.tt())
 {
     ucinewgame();
 }
@@ -46,8 +46,9 @@ int Uci::operator() (std::istream& in) {
 }
 
 void Uci::ucinewgame() {
-    searchControl.clear();
     setStartpos();
+    searchControl.clear();
+    uciHash.clear();
 }
 
 void Uci::setoption() {
@@ -69,9 +70,9 @@ void Uci::setoption() {
     if (next("Hash")) {
         next("value");
 
-        unsigned megabytes;
-        if (command >> megabytes) {
-            searchControl.tt().resizeMb(megabytes);
+        UciHash::_t mebibytes;
+        if (command >> mebibytes) {
+            uciHash.setSize(mebibytes);
             return;
         }
     }
@@ -118,7 +119,7 @@ void Uci::go() {
 }
 
 void Uci::uci() const {
-    uciOutput.uci(searchControl);
+    uciOutput.uci(uciHash);
 }
 
 void Uci::isready() const {

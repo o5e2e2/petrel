@@ -40,7 +40,6 @@ public:
     void stop() { searchThread.commandStop(sequence); wait(); }
 
     TranspositionTable& tt() { return transpositionTable; }
-    const TranspositionTable& tt() const { return transpositionTable; }
 
     void go(SearchOutput&, const Position&, const SearchLimit&);
 };

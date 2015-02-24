@@ -5,6 +5,7 @@
 #include "Position.hpp"
 #include "SearchControl.hpp"
 #include "SearchLimit.hpp"
+#include "UciHash.hpp"
 #include "UciOutput.hpp"
 
 class Uci {
@@ -12,6 +13,7 @@ class Uci {
     UciOutput uciOutput;
     Position rootPosition; //initial chess position to analyze
     SearchLimit goLimit;
+    UciHash uciHash;
 
     ChessVariant chessVariant; //format of castling moves output
     Color colorToMove; //initial position color for long algebraic format moves output

@@ -5,10 +5,11 @@
 #include "typedefs.hpp"
 #include "SearchOutput.hpp"
 
+class Move;
+class Position;
 class SearchControl;
 class SearchInfo;
-class Position;
-class Move;
+class UciHash;
 
 class UciOutput : public SearchOutput {
     std::ostream& out; //output stream
@@ -25,7 +26,7 @@ public:
     //called from Uci
     UciOutput (std::ostream&, const ChessVariant&, const Color&);
     void isready(const SearchControl&) const;
-    void uci(const SearchControl&) const;
+    void uci(const UciHash&) const;
     void info_fen(const Position&) const;
     void echo(std::istream&) const;
     void error(std::istream&) const;

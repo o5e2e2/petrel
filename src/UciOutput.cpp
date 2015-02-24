@@ -1,9 +1,10 @@
 #include "UciOutput.hpp"
 #include "OutputBuffer.hpp"
+#include "Move.hpp"
+#include "PositionFen.hpp"
 #include "SearchControl.hpp"
 #include "SearchInfo.hpp"
-#include "PositionFen.hpp"
-#include "Move.hpp"
+#include "UciHash.hpp"
 
 namespace {
     std::ostream& operator << (std::ostream& out, Clock::_t duration) {
@@ -15,15 +16,15 @@ namespace {
 UciOutput::UciOutput (std::ostream& o, const ChessVariant& v, const Color& c)
     : out(o), chessVariant(v), colorToMove(c), isreadyWaiting(false) {}
 
-void UciOutput::uci(const SearchControl& search) const {
-    auto max_mb = search.tt().getMaxSizeMb();
-    auto current_mb = search.tt().getSizeMb();
+void UciOutput::uci(const UciHash& uciHash) const {
+    auto currentMiB = uciHash.getSize();
+    auto maxMiB = uciHash.getMaxSize();
 
     OutputBuffer ob{out};
     ob << "id name " << io::app_version << '\n';
     ob << "id author Aleks Peshkov\n";
     ob << "option name UCI_Chess960 type check default " << (chessVariant == Chess960? "true":"false") << '\n';
-    ob << "option name Hash type spin min 0 max " << max_mb << " default " << current_mb << '\n';
+    ob << "option name Hash type spin min 0 max " << maxMiB << " default " << currentMiB << '\n';
     ob << "uciok\n";
 }
 
