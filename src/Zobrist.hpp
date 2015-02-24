@@ -42,7 +42,7 @@ public:
 
     void clear() { *this = Zobrist{}; }
 
-    Zobrist& flip() { _v = ::bswap(_v); return *this; }
+    Zobrist& flip() { _v = ~::bswap(_v); return *this; }
     Zobrist operator ~ () const { return Zobrist{*this}.flip(); }
 
     void drop(PieceType ty, Square to) { _v ^= key(ty, to); }
