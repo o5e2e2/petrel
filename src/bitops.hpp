@@ -158,22 +158,26 @@ typedef int index_t; //small numbers [0..N) with a known upper bound
 
 #if !defined PLATFORM_64
 
-    inline constexpr unsigned __int32 lo(unsigned __int64 b) {
+    constexpr unsigned __int32 lo(unsigned __int64 b) {
         return small_cast<unsigned __int32>(b);
     }
-    inline constexpr unsigned __int32 hi(unsigned __int64 b) {
+
+    constexpr unsigned __int32 hi(unsigned __int64 b) {
         return static_cast<unsigned __int32>(b >> 32);
     }
-    inline constexpr unsigned __int64 combine(unsigned __int32 lo, unsigned __int32 hi) {
+
+    constexpr unsigned __int64 combine(unsigned __int32 lo, unsigned __int32 hi) {
         return (static_cast<unsigned __int64>(hi) << 32) | static_cast<unsigned __int64>(lo);
     }
-    inline constexpr __int32 lo(__int64 b) {
+
+    constexpr __int32 lo(__int64 b) {
         return static_cast<__int32>( ::lo(static_cast<unsigned __int64>(b)) );
     }
-    inline constexpr __int32 hi(__int64 b) {
+
+    constexpr __int32 hi(__int64 b) {
         return static_cast<__int32>( ::hi(static_cast<unsigned __int64>(b)) );
     }
-    inline constexpr __int64 combine(__int32 lo, __int32 hi) {
+    constexpr __int64 combine(__int32 lo, __int32 hi) {
         return static_cast<__int64>( ::combine(static_cast<unsigned __int32>(lo), static_cast<unsigned __int32>(hi)) );
     }
 

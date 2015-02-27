@@ -3,6 +3,7 @@
 
 #include "typedefs.hpp"
 #include "Vector.hpp"
+#include "VectorOf.hpp"
 
 class VectorPiSingle {
     typedef __m128i _t;
@@ -20,6 +21,11 @@ public:
     _t operator[] (Pi pi) const {
         return _v[pi];
     }
+
+    _t except(Pi pi) const {
+        return _v[pi] ^ ::vectorOfAll[0xff];
+    };
+
 };
 
 extern const VectorPiSingle vectorPiSingle;

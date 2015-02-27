@@ -24,6 +24,8 @@ public:
     VectorPiMask (_t v) : Base(v) { assert (isOk()); }
     VectorPiMask (Pi pi) : Base(::vectorPiSingle[pi]) {}
 
+    static VectorPiMask negate(_t v) { return VectorPiMask{ _mm_cmpeq_epi8(v, ::vectorOfAll[0]) }; }
+
     operator PieceSet() const {
         assert (isOk());
         return PieceSet( static_cast<PieceSet::_t>(_mm_movemask_epi8(this->_v)) );

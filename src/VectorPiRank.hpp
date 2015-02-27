@@ -26,7 +26,7 @@ struct VectorPiRank : VectorPiBit<VectorPiRank, File> {
         return BitRank{small_cast<BitRank::_t>(_mm_cvtsi128_si32(v))};
     }
 
-    BitRank operator [] (Pi pi) const { return reinterpret_cast<const BitRank&>(Base::operator[](pi)); }
+    constexpr const BitRank& operator [] (Pi pi) const { return reinterpret_cast<const BitRank&>(Base::operator[](pi)); }
 
     VectorPiMask operator [] (File file) const {
         _t file_vector = ::vectorOfAll[BitRank{file}];

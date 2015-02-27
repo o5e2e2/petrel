@@ -23,44 +23,40 @@ protected:
 public:
     using Base::Base;
 
-    bool isEmpty(Pi pi) const { return (*this)[pi] == 0; }
+    constexpr bool isEmpty(Pi pi) const { return (*this)[pi] == 0; }
     void clear() { *this = Self(); }
     void clear(Pi pi) { (*this)[pi] = 0; }
 
-    const element_type& operator [] (Pi pi) const { return reinterpret_cast<const element_type*>(this)[pi]; }
+    constexpr const element_type& operator [] (Pi pi) const { return reinterpret_cast<const element_type*>(this)[pi]; }
     element_type& operator [] (Pi pi) { return reinterpret_cast<element_type*>(this)[pi]; }
 
-    bool is(Pi pi, index_type _Bit) const { return ((*this)[pi] & single(_Bit)) != 0; }
+    constexpr bool is(Pi pi, element_type bitmask) const { return ((*this)[pi] & bitmask) != 0; }
+    constexpr bool is(Pi pi, index_type _Bit) const { return is(pi, single(_Bit)); }
 
     VectorPiMask anyOf(index_type _Bit) const {
-        _t mask = singleVector(_Bit);
+        return allOf(single(_Bit));
+    }
+
+    VectorPiMask allOf(element_type bitmask) const {
+        _t mask = ::vectorOfAll[bitmask];
         return _mm_cmpeq_epi8(mask, this->_v & mask);
     }
 
-    VectorPiMask noneMask() const {
-        return _mm_cmpeq_epi8(this->_v, ::vectorOfAll[0]);
+    VectorPiMask anyOf(element_type bitmask) const {
+        _t mask = ::vectorOfAll[bitmask];
+        return VectorPiMask::negate(_mm_cmpeq_epi8(this->_v & mask, ::vectorOfAll[0]));
     }
 
     VectorPiMask notEmpty() const {
-        return _mm_cmpeq_epi8(_mm_cmpeq_epi8(this->_v, ::vectorOfAll[0]), ::vectorOfAll[0]);
-    }
-
-    VectorPiMask getAnyMask(element_type bitmask) const {
-        _t mask = ::vectorOfAll[bitmask];
-        return _mm_cmpeq_epi8(_mm_cmpeq_epi8(this->_v & mask, ::vectorOfAll[0]), ::vectorOfAll[0]);
-    }
-
-    VectorPiMask getAllMask(element_type bitmask) const {
-        _t mask = ::vectorOfAll[bitmask];
-        return _mm_cmpeq_epi8(mask, this->_v & mask);
+        return VectorPiMask::negate(_mm_cmpeq_epi8(this->_v, ::vectorOfAll[0]));
     }
 
     void clear(index_type _Bit) {
         this->_v &= exceptSingleVector(_Bit);
     }
 
-    void clearMasked(index_type _Bit, index_type bitmask) {
-        _t mask = singleVector(bitmask);
+    void clearIf(index_type _Bit, index_type _Mask) {
+        _t mask = singleVector(_Mask);
         this->_v &= _mm_cmpeq_epi8(this->_v & mask, ::vectorOfAll[0]) | exceptSingleVector(_Bit);
     }
 
