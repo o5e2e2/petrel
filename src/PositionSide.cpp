@@ -12,8 +12,8 @@
         Square sq = squares.squareOf(pi);
         assert (piecesBb[sq]);
 
-        assert (!types.is(pi, Pawn) || pawnsBb[sq]);
-        assert (!types.is(pi, Pawn) || (!sq.is(Rank1) && !sq.is(Rank8)));
+        assert (!types.isPawn(pi) || pawnsBb[sq]);
+        assert (!types.isPawn(pi) || (!sq.is(Rank1) && !sq.is(Rank8)));
         assert (!types.isEnPassant(pi) || sq.is(Rank4) || sq.is(Rank5));
     }
 #endif
@@ -93,7 +93,7 @@ void PositionSide::move(Pi pi, PieceType ty, Square from, Square to) {
 
 void PositionSide::promote(Pi pi, PromoType ty, Square from, Square to) {
     assertValid(pi);
-    assert (types.is(pi, Pawn));
+    assert (types.isPawn(pi));
     assert (from != to);
 
     types.promote(pi, ty);
@@ -180,7 +180,7 @@ void PositionSide::setCastling(Pi rook) {
 bool PositionSide::setCastling(CastlingSide side) {
     if (!kingSquare().is(Rank1)) { return false; }
 
-    auto rooks = of(Rook) & of(Rank1);
+    auto rooks = piecesOfType(Rook) & piecesOn(Rank1);
 
     Pi theRook;
     if (side == KingSide) {
@@ -204,9 +204,9 @@ bool PositionSide::setCastling(File file) {
 
     Square rookFrom(file, Rank1);
 
-    if (isOn(rookFrom)) {
+    if (isPieceOn(rookFrom)) {
         Pi pi{ pieceOn(rookFrom) };
-        if (is(pi, Rook)) {
+        if (isTypeOf(pi, Rook)) {
             setCastling(pi);
             return true;
         }
@@ -216,7 +216,7 @@ bool PositionSide::setCastling(File file) {
 }
 
 void PositionSide::markEnPassant(Pi pi) {
-    assert (is(pi, Pawn));
+    assert (isPawn(pi));
     types.setEnPassant(pi);
 }
 
@@ -231,7 +231,7 @@ void PositionSide::setEnPassant(Pi pi, File fileFrom) {
 void PositionSide::clearEnPassant() {
     assert (hasEnPassant());
     assert (types.enPassantPawns().isSingleton());
-    assert ((types.enPassantPawns() & squares.of(Rank4)) == types.enPassantPawns());
+    assert ((types.enPassantPawns() & squares.piecesOn(Rank4)) == types.enPassantPawns());
 
     zobrist.clearEnPassant(enPassantFile());
     types.clearEnPassants();
@@ -239,7 +239,7 @@ void PositionSide::clearEnPassant() {
 
 void PositionSide::clearEnPassants() {
     assert (hasEnPassant());
-    assert ((types.enPassantPawns() & squares.of(Rank5)) == types.enPassantPawns());
+    assert ((types.enPassantPawns() & squares.piecesOn(Rank5)) == types.enPassantPawns());
     types.clearEnPassants();
 }
 

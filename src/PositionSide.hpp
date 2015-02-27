@@ -43,35 +43,32 @@ public:
         void assertValid(Pi) const;
     #endif
 
-    const Bb& occ() const { return piecesBb; }
-    const Bb& occPawns() const { return pawnsBb; }
-    const MatrixPiBb& allAttacks() const { return attacks; }
+    const Bb& occupiedSquares() const { return piecesBb; }
+    bool isOccupied(Square sq) const { return piecesBb[sq]; }
+    VectorPiMask alivePieces() const { assert (squares.alivePieces() == types.alivePieces()); return squares.alivePieces(); }
 
+    const MatrixPiBb& allAttacks() const { return attacks; }
     static Zobrist zobrist_combine(const PositionSide& my, const PositionSide& op) { return Zobrist::combine(my.zobrist, op.zobrist); }
 
-    bool operator [] (Square sq) const { return piecesBb[sq]; }
-
-    bool isOn(Square sq) const { assert (piecesBb[sq] == squares.isOn(sq)); return squares.isOn(sq); }
     Square squareOf(Pi pi) const { assertValid(pi); return squares.squareOf(pi); }
     Square kingSquare() const { return squareOf(TheKing); }
-    Pi pieceOn(Square sq) const { assert (isOn(sq)); Pi pi = squares.pieceOn(sq); assertValid(pi); return pi; }
-    VectorPiMask on(Square sq) const { return squares.on(sq); }
-    VectorPiMask of(Rank rank) const { return squares.of(rank); }
 
-    bool is(Pi pi, PieceType ty) const { assertValid(pi); return types.is(pi, ty); }
-    VectorPiMask of(PieceType ty) const { return types.of(ty); }
+    bool isPieceOn(Square sq) const { assert (piecesBb[sq] == squares.isPieceOn(sq)); return squares.isPieceOn(sq); }
+    Pi pieceOn(Square sq) const { Pi pi = squares.pieceOn(sq); assertValid(pi); return pi; }
+    VectorPiMask piecesOn(Square sq) const { return squares.piecesOn(sq); }
+    VectorPiMask piecesOn(Rank rank) const { return squares.piecesOn(rank); }
+
+    bool isTypeOf(Pi pi, PieceType ty) const { assertValid(pi); return types.isTypeOf(pi, ty); }
+    VectorPiMask piecesOfType(PieceType ty) const { return types.piecesOfType(ty); }
     PieceType typeOf(Pi pi) const { assertValid(pi); return types.typeOf(pi); }
     PieceType typeOf(Square sq) const { return typeOf(pieceOn(sq)); }
 
-    VectorPiMask alive() const { assert (squares.alive() == types.alive()); return squares.alive(); }
-    VectorPiMask pawns() const { return types.of(Pawn); }
+    const Bb& occupiedByPawns() const { return pawnsBb; }
+    VectorPiMask pawns() const { return types.piecesOfType(Pawn); }
+    bool isPawn(Pi pi) const { assertValid(pi); return types.isPawn(pi); }
+
     VectorPiMask sliders() const { return types.sliders(); }
     bool isSlider(Pi pi) const { assertValid(pi); return types.isSlider(pi); }
-
-    void capture(Square);
-    void move(Pi, PieceType, Square, Square);
-    void moveKing(Square, Square);
-    void promote(Pi, PromoType, Square, Square);
 
     CastlingSide castlingSideOf(Pi pi) const { assert (isCastling(pi)); return squareOf(pi) < kingSquare()? QueenSide:KingSide; }
     VectorPiMask castlingRooks() const { return types.castlingRooks(); }
@@ -95,6 +92,11 @@ public:
     VectorPiMask attacksTo(Square a) const { return attacks[a]; }
     VectorPiMask attacksTo(Square a, Square b) const { return attacks[a] | attacks[b]; }
     VectorPiMask attacksTo(Square a, Square b, Square c) const { return attacks[a] | attacks[b] | attacks[c]; }
+
+    void capture(Square);
+    void move(Pi, PieceType, Square, Square);
+    void moveKing(Square, Square);
+    void promote(Pi, PromoType, Square, Square);
 
     //used only during initial position setup
     void drop(Pi, PieceType, Square);

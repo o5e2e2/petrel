@@ -39,20 +39,20 @@ void PositionMoves::generateUnderpromotions() {
 }
 
 template <Side::_t My>
-void PositionMoves::generateKingMoves() {
+void PositionMoves::generateKingMoves(Bb attackedSquares) {
     const Side::_t Op{~My};
 
     //TRICK: our attacks do not hide under attacked king shadow
-    Bb kingMoves = ::pieceTypeAttack(King, MY.kingSquare()) % (MY.occ() | attacked);
+    Bb kingMoves = ::pieceTypeAttack(King, MY.kingSquare()) % (MY.occupiedSquares() | attackedSquares);
     moves.set(TheKing, kingMoves);
 }
 
 template <Side::_t My>
-void PositionMoves::generateCastlingMoves() {
+void PositionMoves::generateCastlingMoves(Bb attackedSquares) {
     const Side::_t Op{~My};
 
     for (Pi pi : MY.castlingRooks()) {
-        if ( ::castlingRules.isLegal(MY.castlingSideOf(pi), OCCUPIED, attacked) ) {
+        if ( ::castlingRules.isLegal(MY.castlingSideOf(pi), OCCUPIED, attackedSquares) ) {
             //castling encoded as the rook moves over the own king square
             moves.add(pi, MY.kingSquare());
         }
@@ -97,7 +97,7 @@ void PositionMoves::correctCheckEvasionsByPawns(Bb checkLine, Square checkFrom) 
         badPawnsPlaces |= (checkLine << 9) % Bb{FileA};
         badPawnsPlaces |= (checkLine << 7) % Bb{FileH};
 
-        for (Square from : MY.occPawns() & badPawnsPlaces) {
+        for (Square from : MY.occupiedByPawns() & badPawnsPlaces) {
             Pi pi{MY.pieceOn(from)};
 
             Bb b{Bb{from.rankUp()} % OCCUPIED & checkLine};
@@ -111,7 +111,7 @@ void PositionMoves::correctCheckEvasionsByPawns(Bb checkLine, Square checkFrom) 
     //pawns double push over check line
     {
         Bb badPawnsPlaces{ (checkLine<<16) % (Bb{OCCUPIED}<<8) & Bb{Rank2} };
-        for (Square from : MY.occPawns() & badPawnsPlaces) {
+        for (Square from : MY.occupiedByPawns() & badPawnsPlaces) {
             Pi pi{MY.pieceOn(from)};
             moves.add(pi, Rank4, File{from});
         }
@@ -131,7 +131,7 @@ void PositionMoves::excludePinnedMoves(VectorPiMask pinnerCandidates) {
         Bb betweenPieces{pinRay & OCCUPIED};
         assert (betweenPieces.any());
 
-        if (betweenPieces.isSingleton() && (betweenPieces & MY.occ()).any()) {
+        if (betweenPieces.isSingleton() && (betweenPieces & MY.occupiedSquares()).any()) {
             //we discovered a true pinned piece
             Pi pinned{MY.pieceOn(betweenPieces.index())};
 
@@ -142,7 +142,7 @@ void PositionMoves::excludePinnedMoves(VectorPiMask pinnerCandidates) {
 }
 
 template <Side::_t My>
-void PositionMoves::generateCheckEvasions() {
+void PositionMoves::generateCheckEvasions(Bb attackedSquares) {
     const Side::_t Op{~My};
 
     VectorPiMask checkers{OP.attacksTo(~MY.kingSquare())};
@@ -150,32 +150,31 @@ void PositionMoves::generateCheckEvasions() {
     if (!checkers.isSingleton()) {
         //multiple (double) checker's case: no moves except king's ones are possible
         moves.clear();
-        generateKingMoves<My>();
-        return;
+    }
+    else {
+        //single checker case
+        Pi checker{checkers.index()};
+        Square checkFrom{~OP.squareOf(checker)};
+
+        auto checkLine = MY.pinRayFrom(checkFrom);
+
+        //general case: check evasion moves of all pieces
+        moves = MY.allAttacks() & (checkLine + checkFrom);
+
+        //pawns moves are special case
+        correctCheckEvasionsByPawns<My>(checkLine, checkFrom);
+
+        excludePinnedMoves<My>(OP.pinnerCandidates() % checkers);
+
+        generateUnderpromotions<My>();
+
+        if (MY.hasEnPassant()) {
+            assert (OP.enPassantPawns() == checkers);
+            generateEnPassantMoves<My>();
+        }
     }
 
-    //single checker case
-    Pi checker{checkers.index()};
-    Square checkFrom{~OP.squareOf(checker)};
-
-    auto checkLine = MY.pinRayFrom(checkFrom);
-
-    //general case: check evasion moves of all pieces
-    moves = MY.allAttacks() & (checkLine + checkFrom);
-
-    //pawns moves are special case
-    correctCheckEvasionsByPawns<My>(checkLine, checkFrom);
-
-    excludePinnedMoves<My>(OP.pinnerCandidates() % checkers);
-
-    generateUnderpromotions<My>();
-
-    if (MY.hasEnPassant()) {
-        assert (OP.enPassantPawns() == checkers);
-        generateEnPassantMoves<My>();
-    }
-
-    generateKingMoves<My>();
+    generateKingMoves<My>(attackedSquares);
 }
 
 //generate all legal moves from the current position for the current side to move
@@ -184,20 +183,20 @@ void PositionMoves::generateMoves() {
     const Side::_t Op{~My};
 
     //squares attacked by opponent pieces
-    attacked = ~OP.allAttacks().gather();
+    Bb attackedSquares = ~OP.allAttacks().gather();
 
-    if ( attacked[MY.kingSquare()] ) {
-        generateCheckEvasions<My>();
+    if ( attackedSquares[MY.kingSquare()] ) {
+        generateCheckEvasions<My>(attackedSquares);
         return;
     }
 
     //the most general case: captures and non captures for all pieces
-    moves = MY.allAttacks() % MY.occ();
+    moves = MY.allAttacks() % MY.occupiedSquares();
 
     //pawns moves treated separately
     generatePawnMoves<My>();
 
-    generateCastlingMoves<My>();
+    generateCastlingMoves<My>(attackedSquares);
 
     //TRICK: castling encoded as a rook move, so we implicitly cover the case of pinned castling in Chess960
     excludePinnedMoves<My>(OP.pinnerCandidates());
@@ -209,7 +208,7 @@ void PositionMoves::generateMoves() {
         generateEnPassantMoves<My>();
     }
 
-    generateKingMoves<My>();
+    generateKingMoves<My>(attackedSquares);
 }
 
 void PositionMoves::limitMoves(std::istream& in, MatrixPiBb& searchmoves, Color color) const {
@@ -218,7 +217,7 @@ void PositionMoves::limitMoves(std::istream& in, MatrixPiBb& searchmoves, Color 
         if (m.isNull()) { break; }
 
         Square from{m.from()};
-        if (MY.isOn(from)) {
+        if (MY.isPieceOn(from)) {
             Pi pi{MY.pieceOn(from)};
             Square to{m.to()};
 

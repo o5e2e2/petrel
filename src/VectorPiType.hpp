@@ -37,14 +37,14 @@ public:
     }
 #endif
 
-    VectorPiMask alive() const { return _v.notEmpty(); }
+    VectorPiMask alivePieces() const { return _v.notEmpty(); }
     void clear() { _v.clear(); }
     void clear(Pi pi) { assert (!_v.is(pi, King) || _v.is(pi, Rook) || _v.is(pi, Pawn)); _v.clear(pi); }
     void drop(Pi pi, PieceType ty) { assert (isEmpty(pi)); _v.set(pi, ty); }
-    void promote(Pi pi, PromoType ty) { assert (is(pi, Pawn)); _v.clear(pi); _v.set(pi, ty); }
+    void promote(Pi pi, PromoType ty) { assert (isPawn(pi)); _v.clear(pi); _v.set(pi, ty); }
 
-    VectorPiMask of(PieceType ty) const { return _v.get(ty); }
-    bool is(Pi pi, PieceType ty) const { assertValid(pi); return _v.is(pi, ty); }
+    VectorPiMask piecesOfType(PieceType ty) const { return _v.anyOf(ty); }
+    bool isTypeOf(Pi pi, PieceType ty) const { assertValid(pi); return _v.is(pi, ty); }
     PieceType typeOf(Pi pi) const {
         assertValid(pi);
         return static_cast<PieceType::_t>( ::bsf(static_cast<unsigned>(_v[pi])) );
@@ -52,24 +52,25 @@ public:
 
     VectorPiMask sliders() const { return _v.getAnyMask(SliderMask); }
     bool isSlider(Pi pi) const { assertValid(pi); return (_v[pi] & SliderMask) != 0; }
+    bool isPawn(Pi pi) const { return isTypeOf(pi, Pawn); }
 
     VectorPiMask castlingRooks() const { return _v.getAllMask(CastlingMask); }
-    bool isCastling(Pi pi) const { assert (isSlider(pi)); return is(pi, CastlingRook); }
-    void setCastling(Pi pi) { assert (is(pi, Rook)); assert (!isCastling(pi)); _v.set(pi, CastlingRook); }
-    void clearCastling(Pi pi) { assert (is(pi, Rook)); assert (isCastling(pi)); _v.clear(pi, CastlingRook); }
+    bool isCastling(Pi pi) const { assert (isSlider(pi)); return _v.is(pi, CastlingRook); }
+    void setCastling(Pi pi) { assert (isTypeOf(pi, Rook)); assert (!isCastling(pi)); _v.set(pi, CastlingRook); }
+    void clearCastling(Pi pi) { assert (isTypeOf(pi, Rook)); assert (isCastling(pi)); _v.clear(pi, CastlingRook); }
 
     VectorPiMask enPassantPawns() const { return _v.getAllMask(EnPassantMask); }
     Pi getEnPassant() const {
         Pi pi{ enPassantPawns().index() };
-        assert (is(pi, Pawn));
+        assert (isPawn(pi));
         return pi;
     }
-    bool isEnPassant(Pi pi) const { return is(pi, Pawn) && is(pi, EnPassantPawn); }
-    void setEnPassant(Pi pi) { assert (is(pi, Pawn)); assert (!isEnPassant(pi)); _v.set(pi, EnPassantPawn); }
-    void clearEnPassant(Pi pi) { assert (is(pi, Pawn)); assert (isEnPassant(pi)); _v.clear(pi, EnPassantPawn); }
+    bool isEnPassant(Pi pi) const { return isPawn(pi) && isTypeOf(pi, EnPassantPawn); }
+    void setEnPassant(Pi pi) { assert (isPawn(pi)); assert (!isEnPassant(pi)); _v.set(pi, EnPassantPawn); }
+    void clearEnPassant(Pi pi) { assert (isPawn(pi)); assert (isEnPassant(pi)); _v.clear(pi, EnPassantPawn); }
     void clearEnPassants() { _v.clearMasked(EnPassantPawn, Pawn); }
 
-    VectorPiMask pinnerCandidates() const { return of(PinRay); }
+    VectorPiMask pinnerCandidates() const { return piecesOfType(PinRay); }
     void setPinRay(Pi pi) { assert (isSlider(pi)); _v.set(pi, PinRay); }
     void clearPinRay(Pi pi) { assert (isSlider(pi)); _v.clear(pi, PinRay); }
 

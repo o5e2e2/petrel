@@ -28,7 +28,7 @@ void Position::swapSides() {
 }
 
 void Position::syncSides() {
-    occupied[My] = MY.occ() + ~OP.occ();
+    occupied[My] = MY.occupiedSquares() + ~OP.occupiedSquares();
     occupied[Op] = ~occupied[My];
     zobrist = PositionSide::zobrist_combine(MY, OP);
 }
@@ -57,8 +57,8 @@ void Position::updateSliderAttacks(VectorPiMask affected) {
 }
 
 bool Position::setup() {
-    updateSliderAttacksKing<Op>(OP.alive());
-    updateSliderAttacks<My>(MY.alive());
+    updateSliderAttacksKing<Op>(OP.alivePieces());
+    updateSliderAttacks<My>(MY.alivePieces());
     return MY.attacksTo(~OP.kingSquare()).none(); //not in check
 }
 
@@ -69,7 +69,7 @@ bool Position::drop(Side My, PieceType ty, Square to) {
     if ( ty == Pawn && (to.is(Rank1) || to.is(Rank8)) ) { return false; }
 
     if (ty != King) {
-        Pi pi{ (MY.alive() | Pi{TheKing}).seekVacant() };
+        Pi pi{ (MY.alivePieces() | Pi{TheKing}).seekVacant() };
 
         MY.drop(pi, ty, to);
         set(My, pi, ty, to);
@@ -121,10 +121,10 @@ bool Position::setEnPassant(File ep) {
     if (OCCUPIED[Square(ep, Rank6)]) { return false; }
 
     Square victimSquare(ep, Rank4);
-    if (!OP.isOn(victimSquare)) { return false; }
+    if (!OP.isPieceOn(victimSquare)) { return false; }
     Pi victim{OP.pieceOn(victimSquare)};
 
-    if (!OP.is(victim, Pawn)) { return false; }
+    if (!OP.isPawn(victim)) { return false; }
 
     //check against illegal en passant set field like "8/5bk1/8/2Pp4/8/1K6/8/8 w - d6"
     for (Pi pi : OP.pinnerCandidates() & OP.attacksTo(victimSquare)) {
@@ -144,7 +144,7 @@ bool Position::isLegalEnPassant(Pi killer, File ep) const {
     const Side::_t Op{~My};
 
     MY.assertValid(killer);
-    assert (MY.is(killer, Pawn));
+    assert (MY.isPawn(killer));
     Square from{ MY.squareOf(killer) };
     assert (from.is(Rank5));
 
@@ -161,11 +161,11 @@ bool Position::isLegalEnPassant(Pi killer, File ep) const {
         }
     }
     else {
-        for (Pi pi : OP.pinnerCandidates() & OP.of(Rank4)) {
+        for (Pi pi : OP.pinnerCandidates() & OP.piecesOn(Rank4)) {
             auto pinRay = pinRayFrom<My>(pi);
             if (pinRay[from]) {
                 Square victim(ep, Rank5);
-                assert (OP.is(OP.pieceOn(~victim), Pawn));
+                assert (OP.isPawn(OP.pieceOn(~victim)));
                 Bb betweenPieces{(pinRay & OCCUPIED) - from - victim};
                 if (betweenPieces.none()) { return false; } //the true vertical pin
             }
@@ -250,7 +250,7 @@ void Position::makeKingMove(Square from, Square to) {
 
     MY.assertValid(pi);
 
-    if (OP[~to]) {
+    if (OP.isOccupied(~to)) {
         //capture
         OP.capture(~to);
         updateSliderAttacksKing<My>(MY.attacksTo(from));
@@ -278,7 +278,7 @@ void Position::makeCastling(Pi rook, Square rookFrom, Square kingFrom) {
     //TRICK: castling should not affect opponent's sliders, otherwise it is check or pin
     //TRICK: castling rook should attack 'kingFrom' square
     //TRICK: only first rank sliders can be affected
-    updateSliderAttacksKing<My>(MY.attacksTo(rookFrom, kingFrom) & MY.of(Rank1));
+    updateSliderAttacksKing<My>(MY.attacksTo(rookFrom, kingFrom) & MY.piecesOn(Rank1));
 
     MY.assertValid(TheKing);
     MY.assertValid(rook);
@@ -296,7 +296,7 @@ void Position::makePawnMove(Pi pi, Square from, Square to) {
         MY.promote(pi, ty, from, promoted_to);
         set(My, pi, static_cast<PieceType>(ty), promoted_to);
 
-        if (OP[~promoted_to]) {
+        if (OP.isOccupied(~promoted_to)) {
             OP.capture(~promoted_to);
 
             updateSliderAttacksKing<My>(MY.attacksTo(from) | pi);
@@ -308,7 +308,7 @@ void Position::makePawnMove(Pi pi, Square from, Square to) {
         }
 
     }
-    else if (OP[~to]) {
+    else if (OP.isOccupied(~to)) {
         OP.capture(~to);
 
         if (from.is(Rank5) && to.is(Rank5)) {
@@ -352,13 +352,13 @@ void Position::makeMove(Square from, Square to) {
 
     Pi pi{MY.pieceOn(from)};
 
-    if (MY.is(pi, Pawn)) {
+    if (MY.isPawn(pi)) {
         makePawnMove<My>(pi, from, to);
     }
     else if (from == MY.kingSquare()) {
         makeKingMove<My>(from, to);
     }
-    else if (OP[~to]) {
+    else if (OP.isOccupied(~to)) {
         //simple non-pawn capture
         OP.capture(~to);
         move<My>(pi, from, to);
@@ -394,11 +394,11 @@ Move readMove(std::istream& in, const Position& pos, Color colorToMove) {
         to.flip();
     }
 
-    if (!pos.MY.isOn(from) || (from == to)) { io::fail_pos(in, before_move); return Move::null(); }
+    if (!pos.MY.isPieceOn(from) || (from == to)) { io::fail_pos(in, before_move); return Move::null(); }
     Pi pi{pos.MY.pieceOn(from)};
 
     //convert special moves (castling, promotion, ep) to the internal move format
-    if (pos.MY.is(pi, Pawn)) {
+    if (pos.MY.isPawn(pi)) {
         if (from.is(Rank5) && pos.OP.hasEnPassant()) {
             File ep = pos.OP.enPassantFile();
             if (File{to} == ep) {
@@ -414,14 +414,14 @@ Move readMove(std::istream& in, const Position& pos, Color colorToMove) {
         }
     }
     else if (pi == TheKing && from.is(Rank1) && to.is(Rank1)) {
-        if ( (pos.MY.castlingRooks() & pos.MY.on(to)).any() ) {
+        if ( (pos.MY.castlingRooks() & pos.MY.piecesOn(to)).any() ) {
             //from Chess960 castling encoding
             return Move::makeCastling(to, from);
         }
-        else if (from == E1 && to == G1 && pos.MY[A1]) {
+        else if (from == E1 && to == G1 && pos.MY.isOccupied(A1)) {
             return Move::makeCastling(A1, E1);
         }
-        else if (from == E1 && to == C1 && pos.MY[H1]) {
+        else if (from == E1 && to == C1 && pos.MY.isOccupied(H1)) {
             return Move::makeCastling(H1, E1);
         }
     }
@@ -431,7 +431,7 @@ Move readMove(std::istream& in, const Position& pos, Color colorToMove) {
 Move Position::createMove(Side My, Square from, Square to) const {
     const Side Op{~My};
 
-    if ( MY.is(MY.pieceOn(from), Pawn) ) {
+    if ( MY.isPawn(MY.pieceOn(from)) ) {
         if ( from.is(Rank7) || (from.is(Rank5) && OP.hasEnPassant() && File{to} == OP.enPassantFile()) ) {
             return Move::makeSpecial(from, to);
         }

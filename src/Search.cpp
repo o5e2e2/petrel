@@ -25,7 +25,7 @@ namespace Perft {
 
         SearchWindow childWindow(window);
 
-        for (Pi pi : pm.side(My).alive()) {
+        for (Pi pi : pm.side(My).alivePieces()) {
             Square from{ pm.side(My).squareOf(pi) };
 
             for (Square to : moves[pi]) {
@@ -55,7 +55,7 @@ namespace PerftDivide {
         SearchWindow childWindow(window);
         childWindow.searchFn = Perft::perft;
 
-        for (Pi pi : pm.side(My).alive()) {
+        for (Pi pi : pm.side(My).alivePieces()) {
             Square from = pm.side(My).squareOf(pi);
 
             for (Square to : moves[pi]) {

@@ -155,11 +155,11 @@ std::ostream& Board::write(std::ostream& out, const PositionSide& white, const P
         FOR_INDEX(File, file) {
             Square sq(file,rank);
 
-            if (white[sq]) {
+            if (white.isOccupied(sq)) {
                 if (blank_squares != 0) { out << blank_squares; blank_squares = 0; }
                 out << static_cast<io::char_type>(std::toupper( white.typeOf(sq).to_char() ));
             }
-            else if (black[~sq]) {
+            else if (black.isOccupied(~sq)) {
                 if (blank_squares != 0) { out << blank_squares; blank_squares = 0; }
                 out << black.typeOf(~sq).to_char();
             }

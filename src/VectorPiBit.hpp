@@ -32,7 +32,7 @@ public:
 
     bool is(Pi pi, index_type _Bit) const { return ((*this)[pi] & single(_Bit)) != 0; }
 
-    VectorPiMask get(index_type _Bit) const {
+    VectorPiMask anyOf(index_type _Bit) const {
         _t mask = singleVector(_Bit);
         return _mm_cmpeq_epi8(mask, this->_v & mask);
     }

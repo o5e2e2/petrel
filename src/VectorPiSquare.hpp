@@ -27,16 +27,16 @@ public:
 #endif
 
     Square squareOf(Pi pi) const { assertValid(pi); return _v[pi]; }
-    bool isOn(Square sq) const { return on(sq).any(); }
-    Pi pieceOn(Square sq) const { assert (isOn(sq)); return on(sq).index(); }
+    bool isPieceOn(Square sq) const { return piecesOn(sq).any(); }
+    Pi pieceOn(Square sq) const { assert (isPieceOn(sq)); return piecesOn(sq).index(); }
 
-    VectorPiMask alive() const { return _v.notEmpty(); }
+    VectorPiMask alivePieces() const { return _v.notEmpty(); }
 
-    VectorPiMask on(Square sq) const { return _v == sq; }
+    VectorPiMask piecesOn(Square sq) const { return _v == sq; }
     VectorPiMask leftForward(Square sq) const { return _v < sq; }
     VectorPiMask rightBackward(Square sq) const { return _v > sq; }
 
-    VectorPiMask of(Rank rank) const {
+    VectorPiMask piecesOn(Rank rank) const {
         return _mm_cmpeq_epi8(static_cast<_t>(_v) & ::vectorOfAll[static_cast<unsigned char>(0xff^File::Mask)], ::vectorOfAll[rank << 3]);
     }
 
