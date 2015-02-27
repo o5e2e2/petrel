@@ -18,7 +18,7 @@ struct VectorPiRank : VectorPiBit<VectorPiRank, File> {
     VectorPiRank (VectorPiMask m) : Base(static_cast<VectorPiMask::_t>(m)) {}
 
     BitRank gather() const {
-        _t v = static_cast<_t>(*this);
+        _t v = this->_v;
         v |= _mm_unpackhi_epi64(v, v); //64
         v |= _mm_shuffle_epi32(v, _MM_SHUFFLE(1, 1, 1, 1)); //32
         v |= _mm_shufflelo_epi16(v, _MM_SHUFFLE(1, 1, 1, 1)); //16
@@ -30,7 +30,7 @@ struct VectorPiRank : VectorPiBit<VectorPiRank, File> {
 
     VectorPiMask operator [] (File file) const {
         _t file_vector = ::vectorOfAll[BitRank{file}];
-        return _mm_cmpeq_epi8(file_vector, static_cast<_t>(*this) & file_vector);
+        return _mm_cmpeq_epi8(file_vector, this->_v & file_vector);
     }
 
 };

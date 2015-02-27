@@ -33,12 +33,12 @@ public:
     constexpr explicit Bb (Rank::_t r) : Bb{BB(0xff) << 8*r} {}
     constexpr explicit Bb (File::_t f) : Bb{BB(0x0101010101010101) << f} {}
 
-    Bb operator ~ () const { return Bb{::bswap(static_cast<_t>(*this))}; }
+    Bb operator ~ () const { return Bb{::bswap(this->_v)}; }
 
     void move(Square from, Square to) { assert (from != to); *this -= from; *this += to; }
 
     using BitSet::operator[];
-    constexpr BitRank operator[] (Rank r) const { return BitRank(small_cast<BitRank::_t>(static_cast<_t>(*this) >> 8*r)); }
+    constexpr BitRank operator[] (Rank r) const { return BitRank(small_cast<BitRank::_t>(this->_v >> 8*r)); }
 
     constexpr friend Bb operator << (Bb b, unsigned offset) { return Bb{static_cast<_t>(b) << offset}; }
     constexpr friend Bb operator >> (Bb b, unsigned offset) { return Bb{static_cast<_t>(b) >> offset}; }
@@ -49,7 +49,7 @@ public:
     constexpr static Bb diagonal(Square sq) { return Bb{BB(0x0102040810204080), 8*(Rank(sq) + File(sq) - 7)} - sq; }
     constexpr static Bb antidiag(Square sq) { return Bb{BB(0x8040201008040201), 8*(Rank(sq) - File(sq))} - sq; }
 
-    constexpr explicit operator __int64 () const { return static_cast<__int64>(static_cast<_t>(*this)); }
+    constexpr explicit operator __int64 () const { return static_cast<__int64>(this->_v); }
 
     friend std::ostream& operator << (std::ostream& out, Bb bb) {
         FOR_INDEX(Rank, rank) {

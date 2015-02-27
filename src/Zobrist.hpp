@@ -40,7 +40,7 @@ public:
     constexpr explicit Zobrist (_t z) : _v(z) {}
     constexpr explicit operator _t () const { return _v; }
 
-    void clear() { *this = Zobrist{}; }
+    void clear() { *this = {}; }
 
     Zobrist& flip() { _v = ~::bswap(_v); return *this; }
     Zobrist operator ~ () const { return Zobrist{*this}.flip(); }
@@ -51,7 +51,7 @@ public:
     void setEnPassant(File fileFrom) { drop( Pawn, Square(fileFrom, Rank8) ); }
     void clearEnPassant(File fileFrom) { setEnPassant(fileFrom); }
 
-    void setCastling(Square from) { assert (from.is<Rank1>()); drop(Pawn, from); }
+    void setCastling(Square from) { assert (from.is(Rank1)); drop(Pawn, from); }
     void clearCastling(Square from) { setCastling(from); }
 
     static Zobrist combine(Arg my, Arg op) { return Zobrist{my._v ^= static_cast<_t>(~op)}; }

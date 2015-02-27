@@ -36,9 +36,8 @@ public:
     VectorPiMask leftForward(Square sq) const { return _v < sq; }
     VectorPiMask rightBackward(Square sq) const { return _v > sq; }
 
-    template <Rank::_t Rank>
-    VectorPiMask of() const {
-        return _mm_cmpeq_epi8(static_cast<_t>(_v) & ::vectorOfAll[static_cast<unsigned char>(0xff^File::Mask)], ::vectorOfAll[Rank << 3]);
+    VectorPiMask of(Rank rank) const {
+        return _mm_cmpeq_epi8(static_cast<_t>(_v) & ::vectorOfAll[static_cast<unsigned char>(0xff^File::Mask)], ::vectorOfAll[rank << 3]);
     }
 
     void clear() { _v.clear(); }
@@ -82,15 +81,5 @@ public:
         return out;
     }
 };
-
-template <> inline VectorPiMask VectorPiSquare::of<Rank1>() const {
-    //TRICK: rightBackward(A2) is equal to of<Rank1>(), but a bit faster
-    return rightBackward(A2);
-}
-
-template <> inline VectorPiMask VectorPiSquare::of<Rank8>() const {
-    //TRICK: leftForward(H7) is equal of<Rank8>(), but a bit faster
-    return leftForward(H7);
-}
 
 #endif

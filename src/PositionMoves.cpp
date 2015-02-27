@@ -14,7 +14,7 @@ const PositionSide& PositionMoves::side(Side si) const {
 
 template <Side::_t My>
 void PositionMoves::generateEnPassantMoves() {
-    const Side::_t Op{static_cast<Side::_t>(My ^ Side::Mask)};
+    const Side::_t Op{~My};
 
     assert (MY.hasEnPassant());
     assert (OP.hasEnPassant());
@@ -27,7 +27,7 @@ void PositionMoves::generateEnPassantMoves() {
 
 template <Side::_t My>
 void PositionMoves::generateUnderpromotions() {
-    const Side::_t Op{static_cast<Side::_t>(My ^ Side::Mask)};
+    const Side::_t Op{~My};
 
     //TRICK: promoted piece type encoded inside pawn destination square rank
     VectorPiRank promotions = moves[Rank8] & VectorPiRank{MY.pawns()};
@@ -40,7 +40,7 @@ void PositionMoves::generateUnderpromotions() {
 
 template <Side::_t My>
 void PositionMoves::generateKingMoves() {
-    const Side::_t Op{static_cast<Side::_t>(My ^ Side::Mask)};
+    const Side::_t Op{~My};
 
     //TRICK: our attacks do not hide under attacked king shadow
     Bb kingMoves = ::pieceTypeAttack(King, MY.kingSquare()) % (MY.occ() | attacked);
@@ -49,7 +49,7 @@ void PositionMoves::generateKingMoves() {
 
 template <Side::_t My>
 void PositionMoves::generateCastlingMoves() {
-    const Side::_t Op{static_cast<Side::_t>(My ^ Side::Mask)};
+    const Side::_t Op{~My};
 
     for (Pi pi : MY.castlingRooks()) {
         if ( ::castlingRules.isLegal(MY.castlingSideOf(pi), OCCUPIED, attacked) ) {
@@ -61,7 +61,7 @@ void PositionMoves::generateCastlingMoves() {
 
 template <Side::_t My>
 void PositionMoves::generatePawnMoves() {
-    const Side::_t Op{static_cast<Side::_t>(My ^ Side::Mask)};
+    const Side::_t Op{~My};
 
     for (Pi pi : MY.pawns()) {
         Square from{ MY.squareOf(pi) };
@@ -85,7 +85,7 @@ void PositionMoves::generatePawnMoves() {
 
 template <Side::_t My>
 void PositionMoves::correctCheckEvasionsByPawns(Bb checkLine, Square checkFrom) {
-    const Side::_t Op{static_cast<Side::_t>(My ^ Side::Mask)};
+    const Side::_t Op{~My};
 
     //after generic move generation
     //we need to correct moves of some pawns
@@ -122,7 +122,7 @@ void PositionMoves::correctCheckEvasionsByPawns(Bb checkLine, Square checkFrom) 
 //exclude illegal moves due pin
 template <Side::_t My>
 void PositionMoves::excludePinnedMoves(VectorPiMask pinnerCandidates) {
-    const Side::_t Op{static_cast<Side::_t>(My ^ Side::Mask)};
+    const Side::_t Op{~My};
 
     for (Pi pi : pinnerCandidates) {
         Square pinFrom{~OP.squareOf(pi)};
@@ -143,7 +143,7 @@ void PositionMoves::excludePinnedMoves(VectorPiMask pinnerCandidates) {
 
 template <Side::_t My>
 void PositionMoves::generateCheckEvasions() {
-    const Side::_t Op{static_cast<Side::_t>(My ^ Side::Mask)};
+    const Side::_t Op{~My};
 
     VectorPiMask checkers{OP.attacksTo(~MY.kingSquare())};
 
@@ -181,7 +181,7 @@ void PositionMoves::generateCheckEvasions() {
 //generate all legal moves from the current position for the current side to move
 template <Side::_t My>
 void PositionMoves::generateMoves() {
-    const Side::_t Op{static_cast<Side::_t>(My ^ Side::Mask)};
+    const Side::_t Op{~My};
 
     //squares attacked by opponent pieces
     attacked = ~OP.allAttacks().gather();

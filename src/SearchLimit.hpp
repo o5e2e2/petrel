@@ -33,7 +33,7 @@ class SearchLimit {
 
 public:
     SearchLimit ();
-    void read(std::istream&, const Position&, color_t);
+    void read(std::istream&, const Position&, Color);
 
     depth_t      getDepth()  const { return depth; }
     node_count_t getNodes()  const { return nodes;}

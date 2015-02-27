@@ -23,15 +23,15 @@ struct Square : Index<64, square_t> {
     using Base::Base;
     constexpr Square (File f, Rank r) : Base{static_cast<_t>(f + (r << RankShift))} {}
 
-    constexpr explicit operator File() const { return static_cast<File::_t>(static_cast<unsigned>(*this) & File::Mask); }
-    constexpr explicit operator Rank() const { return static_cast<Rank::_t>(*this >> RankShift); }
+    constexpr explicit operator File() const { return static_cast<File::_t>(this->_v & File::Mask); }
+    constexpr explicit operator Rank() const { return static_cast<Rank::_t>(static_cast<unsigned>(this->_v) >> RankShift); }
 
-    Square& flip() { *this = static_cast<_t>(*this ^ RankMask); return *this; }
-    constexpr Square operator ~ () const { return static_cast<_t>(*this ^ RankMask); }
-    constexpr Square rankUp() const { return static_cast<_t>(*this - RankOffset); }
+    Square& flip() { this->_v = static_cast<_t>(this->_v ^ RankMask); return *this; }
+    constexpr Square operator ~ () const { return static_cast<_t>(this->_v ^ RankMask); }
+    constexpr Square rankUp() const { return static_cast<_t>(this->_v - RankOffset); }
 
-    template <Rank::_t Rank> constexpr bool is() const { return (*this & RankMask) == (Rank << RankShift); }
-    template <File::_t File> constexpr bool is() const { return (*this & static_cast<File::_t>(File::Mask)) == File; }
+    constexpr bool is(Rank rank) const { return (this->_v & RankMask) == (rank << RankShift); }
+    constexpr bool is(File file) const { return (this->_v & File::Mask) == file; }
 
     //PieceTypeAttack table initialization
     constexpr signed x88(signed d_file, signed d_rank) const;

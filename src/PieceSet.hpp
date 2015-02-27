@@ -9,7 +9,7 @@ public:
     using BitSet::BitSet;
 
     Pi seekVacant() const {
-        _t x = static_cast<_t>(*this);
+        _t x = this->_v;
         x = ~x & (x+1); //TRICK: isolate the lowest unset bit
         return PieceSet{x}.index();
     }

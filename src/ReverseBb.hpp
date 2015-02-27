@@ -50,7 +50,7 @@ class ReverseBb : public BitArray<ReverseBb, __m128i> {
     static _t hyperbola(_t v) { return v ^ bit_reverse(v); }
     static _t combine(Bb, Bb);
 
-    explicit operator Bb () const { return Bb{ static_cast<Bb::_t>( _mm_cvtsi128_si64(static_cast<_t>(*this)) ) }; }
+    explicit operator Bb () const { return Bb{ static_cast<Bb::_t>( _mm_cvtsi128_si64(this->_v) ) }; }
 
 public:
     explicit ReverseBb (Bb b) : Base( hyperbola(_mm_cvtsi64_si128(static_cast<__int64>(b))) ) {}
@@ -58,10 +58,10 @@ public:
     Bb attack(SliderType type, Square from) const {
         const Directions& dir = direction[type][from];
 
-        _t a = dir[Horizont] & _mm_sub_epi64(static_cast<_t>(*this) & dir[Horizont], singleton[from]);
-        a ^=   dir[Vertical] & _mm_sub_epi64(static_cast<_t>(*this) & dir[Vertical], singleton[from]);
-        a ^=   dir[Diagonal] & _mm_sub_epi64(static_cast<_t>(*this) & dir[Diagonal], singleton[from]);
-        a ^=   dir[Antidiag] & _mm_sub_epi64(static_cast<_t>(*this) & dir[Antidiag], singleton[from]);
+        _t a = dir[Horizont] & _mm_sub_epi64(this->_v & dir[Horizont], singleton[from]);
+        a ^=   dir[Vertical] & _mm_sub_epi64(this->_v & dir[Vertical], singleton[from]);
+        a ^=   dir[Diagonal] & _mm_sub_epi64(this->_v & dir[Diagonal], singleton[from]);
+        a ^=   dir[Antidiag] & _mm_sub_epi64(this->_v & dir[Antidiag], singleton[from]);
 
         return Bb{ static_cast<Bb::_t>( _mm_cvtsi128_si64(hyperbola(a)) ) };
     }

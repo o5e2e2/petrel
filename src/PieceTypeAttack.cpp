@@ -1,7 +1,7 @@
 #include "PieceTypeAttack.hpp"
 
 constexpr signed Square::x88(signed d_file, signed d_rank) const {
-    return static_cast<_t>(*this) + (static_cast<_t>(*this) & 070) + d_file + 16*d_rank;
+    return this->_v + (this->_v & 070) + d_file + 16*d_rank;
 }
 
 constexpr Bb Square::operator() (signed d_file, signed d_rank) const {

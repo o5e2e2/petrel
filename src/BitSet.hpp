@@ -19,13 +19,13 @@ public:
     constexpr BitSet (Index i) : BitSet(::singleton<_t>(i)) {}
     constexpr BitSet (typename Index::_t i) : BitSet(::singleton<_t>(i)) {}
 
-    constexpr _t without_lsb() const { return ::without_lsb(static_cast<_t>(*this)); }
+    constexpr _t without_lsb() const { return ::without_lsb(this->_v); }
 
     constexpr bool operator [] (Index i) const { return (self() & Self{i}).any(); }
     bool isSingleton() const { assert (self().any()); return without_lsb() == 0; }
 
-    constexpr Index first() const { return static_cast<typename Index::_t>(::bsf(static_cast<_t>(*this))); }
-    constexpr Index last()  const { return static_cast<typename Index::_t>(::bsr(static_cast<_t>(*this))); }
+    constexpr Index first() const { return static_cast<typename Index::_t>(::bsf(this->_v)); }
+    constexpr Index last()  const { return static_cast<typename Index::_t>(::bsr(this->_v)); }
 
     Index index() const { assert (self().any() && self().isSingleton()); return self().first(); }
 

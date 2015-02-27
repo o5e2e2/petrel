@@ -30,7 +30,7 @@ class Board {
         }
         else if (ty == Pawn) {
             //pawns should not occupy first and last ranks
-            if (sq.is<Rank1>() || sq.is<Rank8>()) {
+            if (sq.is(Rank1) || sq.is(Rank8)) {
                 return false;
             }
         }
@@ -175,7 +175,7 @@ std::ostream& Board::write(std::ostream& out, const PositionSide& white, const P
     return out;
 }
 
-class Castling {
+class CastlingRights {
     std::set<io::char_type> castlingSet;
 
     void insert(const PositionSide& side, Color color, ChessVariant chessVariant) {
@@ -195,7 +195,7 @@ class Castling {
     }
 
 public:
-    Castling (const PositionSide& white, const PositionSide& black, ChessVariant chessVariant) {
+    CastlingRights (const PositionSide& white, const PositionSide& black, ChessVariant chessVariant) {
         insert(white, White, chessVariant);
         insert(black, Black, chessVariant);
     }
@@ -229,19 +229,19 @@ public:
         return in;
     }
 
-    friend std::ostream& operator << (std::ostream& out, const Castling& castling) {
-        if (castling.castlingSet.empty()) {
+    friend std::ostream& operator << (std::ostream& out, const CastlingRights& castlingRights) {
+        if (castlingRights.castlingSet.empty()) {
             out << '-';
         }
         else {
-            for (auto castling_symbol : castling.castlingSet) { out << castling_symbol; }
+            for (auto castling_symbol : castlingRights.castlingSet) { out << castling_symbol; }
         }
         return out;
     }
 
 };
 
-namespace EnPassant {
+namespace EnPassantSquare {
     std::istream& read(std::istream& in, Position& pos, Color colorToMove) {
         in >> std::ws;
         if (in.peek() == '-') { in.ignore(); return in; }
@@ -249,7 +249,7 @@ namespace EnPassant {
         Square ep{Square::Begin};
         if (in >> ep) {
             (void)colorToMove; //silence unused parameter warning
-            assert (colorToMove == White? ep.is<Rank6>() : ep.is<Rank3>());
+            assert (colorToMove == White? ep.is(Rank6) : ep.is(Rank3));
             pos.setEnPassant(File{ep});
         }
         return in;
@@ -272,8 +272,8 @@ namespace EnPassant {
 namespace PositionFen {
     void read(std::istream& in, Position& pos, Color& colorToMove) {
         Board::read(in, pos, colorToMove);
-        Castling::read(in, pos, colorToMove);
-        EnPassant::read(in, pos, colorToMove);
+        CastlingRights::read(in, pos, colorToMove);
+        EnPassantSquare::read(in, pos, colorToMove);
 
         if (in) {
             unsigned fifty, moves;
@@ -293,9 +293,9 @@ namespace PositionFen {
 
         Board::write(out, white, black);
         out << ' ' << colorToMove;
-        out << ' ' << Castling(white, black, chessVariant);
+        out << ' ' << CastlingRights(white, black, chessVariant);
         out << ' ';
-        EnPassant::write(out, pos.side[Op], colorToMove);
+        EnPassantSquare::write(out, pos.side[Op], colorToMove);
     }
 
 } //end of PositionFen namespace

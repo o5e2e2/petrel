@@ -16,8 +16,8 @@ class VectorPiMask : public BitArray<VectorPiMask, __m128i> {
     typedef BitArray<VectorPiMask, __m128i> Base;
 
     bool isOk() const {
-        _t v = _mm_cmpgt_epi8(::vectorOfAll[0], static_cast<_t>(*this));
-        return _mm_movemask_epi8(_mm_cmpeq_epi8(static_cast<_t>(*this), v)) == 0xffffu;
+        _t v = _mm_cmpgt_epi8(::vectorOfAll[0], this->_v);
+        return _mm_movemask_epi8(_mm_cmpeq_epi8(this->_v, v)) == 0xffffu;
     }
 
 public:
@@ -26,7 +26,7 @@ public:
 
     operator PieceSet() const {
         assert (isOk());
-        return PieceSet( static_cast<PieceSet::_t>(_mm_movemask_epi8(static_cast<_t>(*this))) );
+        return PieceSet( static_cast<PieceSet::_t>(_mm_movemask_epi8(this->_v)) );
     }
 
     bool operator[] (Pi pi) const { return PieceSet{*this}[pi]; }

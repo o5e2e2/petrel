@@ -45,7 +45,7 @@ public:
     }
 
     void clear() {
-        *this = VectorPiEnum{};
+        *this = {};
     }
 
     void drop(Pi pi, element_type e) {

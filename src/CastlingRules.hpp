@@ -15,7 +15,7 @@ public:
     }
 
     void set(Square king, Square rook) {
-        assert (king.is<Rank1>() && rook.is<Rank1>() && king != rook);
+        assert (king.is(Rank1) && rook.is(Rank1) && king != rook);
         if (king < rook) {
             unimpeded[KingSide]  = ((::between(king, G1)+G1) | (::between(rook, F1)+F1)) % (Bb{king} + rook);
             unattacked[KingSide]  = (::between(king, G1)+G1) | king;

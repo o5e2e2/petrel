@@ -35,7 +35,7 @@ void Position::syncSides() {
 
 template <Side::_t My>
 void Position::updateSliderAttacksKing(VectorPiMask affected) {
-    const Side::_t Op{static_cast<Side::_t>(My ^ Side::Mask)};
+    const Side::_t Op{~My};
 
     syncSides();
 
@@ -47,7 +47,7 @@ void Position::updateSliderAttacksKing(VectorPiMask affected) {
 
 template <Side::_t My>
 void Position::updateSliderAttacks(VectorPiMask affected) {
-    const Side::_t Op{static_cast<Side::_t>(My ^ Side::Mask)};
+    const Side::_t Op{~My};
 
     affected &= MY.sliders();
     if (affected.any()) {
@@ -63,10 +63,10 @@ bool Position::setup() {
 }
 
 bool Position::drop(Side My, PieceType ty, Square to) {
-    const Side::_t Op{static_cast<Side::_t>(My ^ Side::Mask)};
+    const Side::_t Op{~My};
 
     if (OCCUPIED[to]) { return false; }
-    if ( ty == Pawn && (to.is<Rank1>() || to.is<Rank8>()) ) { return false; }
+    if ( ty == Pawn && (to.is(Rank1) || to.is(Rank8)) ) { return false; }
 
     if (ty != King) {
         Pi pi{ (MY.alive() | Pi{TheKing}).seekVacant() };
@@ -97,7 +97,7 @@ bool Position::setCastling(Side My, CastlingSide castlingSide) {
 
 template <Side::_t My>
 void Position::clearEnPassant() {
-    const Side::_t Op{static_cast<Side::_t>(My ^ Side::Mask)};
+    const Side::_t Op{~My};
 
     if (MY.hasEnPassant()) {
         MY.clearEnPassant();
@@ -109,7 +109,7 @@ void Position::clearEnPassant() {
 
 template <Side::_t My>
 const Bb& Position::pinRayFrom(Pi pi) const {
-    const Side::_t Op{static_cast<Side::_t>(My ^ Side::Mask)};
+    const Side::_t Op{~My};
     assert (OP.isSlider(pi));
     assert (OP.pinnerCandidates()[pi]);
 
@@ -124,7 +124,7 @@ bool Position::setEnPassant(File ep) {
     if (!OP.isOn(victimSquare)) { return false; }
     Pi victim{OP.pieceOn(victimSquare)};
 
-    if (!OP.is<Pawn>(victim)) { return false; }
+    if (!OP.is(victim, Pawn)) { return false; }
 
     //check against illegal en passant set field like "8/5bk1/8/2Pp4/8/1K6/8/8 w - d6"
     for (Pi pi : OP.pinnerCandidates() & OP.attacksTo(victimSquare)) {
@@ -141,17 +141,17 @@ bool Position::setEnPassant(File ep) {
 
 template <Side::_t My>
 bool Position::isLegalEnPassant(Pi killer, File ep) const {
-    const Side::_t Op{static_cast<Side::_t>(My ^ Side::Mask)};
+    const Side::_t Op{~My};
 
     MY.assertValid(killer);
-    assert (MY.is<Pawn>(killer));
+    assert (MY.is(killer, Pawn));
     Square from{ MY.squareOf(killer) };
-    assert (from.is<Rank5>());
+    assert (from.is(Rank5));
 
     Square to(ep, Rank6);
     assert (MY.allAttacks()[killer][to]);
 
-    if (!MY.kingSquare().is<Rank5>()) {
+    if (!MY.kingSquare().is(Rank5)) {
         for (Pi pi : OP.pinnerCandidates() & OP.attacksTo(~from)) {
             auto pinRay = pinRayFrom<My>(pi);
             if (pinRay[from] && !pinRay[to]) {
@@ -161,11 +161,11 @@ bool Position::isLegalEnPassant(Pi killer, File ep) const {
         }
     }
     else {
-        for (Pi pi : OP.pinnerCandidates() & OP.of<Rank4>()) {
+        for (Pi pi : OP.pinnerCandidates() & OP.of(Rank4)) {
             auto pinRay = pinRayFrom<My>(pi);
             if (pinRay[from]) {
                 Square victim(ep, Rank5);
-                assert (OP.is<Pawn>(OP.pieceOn(~victim)));
+                assert (OP.is(OP.pieceOn(~victim), Pawn));
                 Bb betweenPieces{(pinRay & OCCUPIED) - from - victim};
                 if (betweenPieces.none()) { return false; } //the true vertical pin
             }
@@ -176,7 +176,7 @@ bool Position::isLegalEnPassant(Pi killer, File ep) const {
 
 template <Side::_t My>
 void Position::setLegalEnPassant(Pi victim) {
-    const Side::_t Op{static_cast<Side::_t>(My ^ Side::Mask)};
+    const Side::_t Op{~My};
 
     assert (!MY.hasEnPassant());
     assert (!OP.hasEnPassant());
@@ -205,7 +205,7 @@ void Position::setLegalEnPassant(Pi victim) {
 }
 
 void Position::set(Side My, Pi pi, PieceType ty, Square to) {
-    const Side::_t Op{static_cast<Side::_t>(My ^ Side::Mask)};
+    const Side::_t Op{~My};
 
     assert (ty != King);
 
@@ -221,7 +221,7 @@ void Position::set(Side My, Pi pi, PieceType ty, Square to) {
 
 template <Side::_t My>
 void Position::move(Pi pi, Square from, Square to) {
-    const Side::_t Op{static_cast<Side::_t>(My ^ Side::Mask)};
+    const Side::_t Op{~My};
 
     MY.assertValid(pi);
     assert (from == MY.squareOf(pi));
@@ -237,7 +237,7 @@ void Position::move(Pi pi, Square from, Square to) {
 
 template <Side::_t My>
 void Position::makeKingMove(Square from, Square to) {
-    const Side::_t Op{static_cast<Side::_t>(My ^ Side::Mask)};
+    const Side::_t Op{~My};
 
     Pi pi = TheKing;
 
@@ -264,7 +264,7 @@ void Position::makeKingMove(Square from, Square to) {
 
 template <Side::_t My>
 void Position::makeCastling(Pi rook, Square rookFrom, Square kingFrom) {
-    const Side::_t Op{static_cast<Side::_t>(My ^ Side::Mask)};
+    const Side::_t Op{~My};
     //castling encoded as the given rook captures the own king
 
     Square kingTo{(rookFrom < kingFrom)? C1:G1};
@@ -278,7 +278,7 @@ void Position::makeCastling(Pi rook, Square rookFrom, Square kingFrom) {
     //TRICK: castling should not affect opponent's sliders, otherwise it is check or pin
     //TRICK: castling rook should attack 'kingFrom' square
     //TRICK: only first rank sliders can be affected
-    updateSliderAttacksKing<My>(MY.attacksTo(rookFrom, kingFrom) & MY.of<Rank1>());
+    updateSliderAttacksKing<My>(MY.attacksTo(rookFrom, kingFrom) & MY.of(Rank1));
 
     MY.assertValid(TheKing);
     MY.assertValid(rook);
@@ -286,9 +286,9 @@ void Position::makeCastling(Pi rook, Square rookFrom, Square kingFrom) {
 
 template <Side::_t My>
 void Position::makePawnMove(Pi pi, Square from, Square to) {
-    const Side::_t Op{static_cast<Side::_t>(My ^ Side::Mask)};
+    const Side::_t Op{~My};
 
-    if (from.is<Rank7>()) {
+    if (from.is(Rank7)) {
         //decoding promotion piece type and destination square
         PromoType ty = Move::decodePromoType(to);
         Square promoted_to = Square(File(to), Rank8);
@@ -311,7 +311,7 @@ void Position::makePawnMove(Pi pi, Square from, Square to) {
     else if (OP[~to]) {
         OP.capture(~to);
 
-        if (from.is<Rank5>() && to.is<Rank5>()) {
+        if (from.is(Rank5) && to.is(Rank5)) {
             //en passant move
             Square _to(File{to}, Rank6);
             move<My>(pi, from, _to);
@@ -331,7 +331,7 @@ void Position::makePawnMove(Pi pi, Square from, Square to) {
         updateSliderAttacksKing<My>(MY.attacksTo(from, to));
         updateSliderAttacks<Op>(OP.attacksTo(~from, ~to));
 
-        if (from.is<Rank2>() && to.is<Rank4>()) {
+        if (from.is(Rank2) && to.is(Rank4)) {
             setLegalEnPassant<My>(pi);
         }
     }
@@ -341,7 +341,7 @@ void Position::makePawnMove(Pi pi, Square from, Square to) {
 
 template <Side::_t My>
 void Position::makeMove(Square from, Square to) {
-    const Side::_t Op{static_cast<Side::_t>(My ^ Side::Mask)};
+    const Side::_t Op{~My};
 
     //Assumes that the given move is valid and legal
     //En Passant capture encoded as the pawn captures the pawn
@@ -352,7 +352,7 @@ void Position::makeMove(Square from, Square to) {
 
     Pi pi{MY.pieceOn(from)};
 
-    if (MY.is<Pawn>(pi)) {
+    if (MY.is(pi, Pawn)) {
         makePawnMove<My>(pi, from, to);
     }
     else if (from == MY.kingSquare()) {
@@ -398,14 +398,14 @@ Move readMove(std::istream& in, const Position& pos, Color colorToMove) {
     Pi pi{pos.MY.pieceOn(from)};
 
     //convert special moves (castling, promotion, ep) to the internal move format
-    if (pos.MY.is<Pawn>(pi)) {
-        if (from.is<Rank5>() && pos.OP.hasEnPassant()) {
+    if (pos.MY.is(pi, Pawn)) {
+        if (from.is(Rank5) && pos.OP.hasEnPassant()) {
             File ep = pos.OP.enPassantFile();
             if (File{to} == ep) {
                 return Move::makeSpecial(from, Square(ep, Rank5));
             }
         }
-        else if (from.is<Rank7>()) {
+        else if (from.is(Rank7)) {
             PromoType promo{PromoType::Begin};
             if (in >> promo) {
                 return Move(from, to, promo);
@@ -413,7 +413,7 @@ Move readMove(std::istream& in, const Position& pos, Color colorToMove) {
             else { io::fail_pos(in, before_move); return Move::null(); }
         }
     }
-    else if (pi == TheKing && from.is<Rank1>() && to.is<Rank1>()) {
+    else if (pi == TheKing && from.is(Rank1) && to.is(Rank1)) {
         if ( (pos.MY.castlingRooks() & pos.MY.on(to)).any() ) {
             //from Chess960 castling encoding
             return Move::makeCastling(to, from);
@@ -431,8 +431,8 @@ Move readMove(std::istream& in, const Position& pos, Color colorToMove) {
 Move Position::createMove(Side My, Square from, Square to) const {
     const Side Op{~My};
 
-    if ( MY.is<Pawn>(MY.pieceOn(from)) ) {
-        if ( from.is<Rank7>() || (from.is<Rank5>() && OP.hasEnPassant() && File{to} == OP.enPassantFile()) ) {
+    if ( MY.is(MY.pieceOn(from), Pawn) ) {
+        if ( from.is(Rank7) || (from.is(Rank5) && OP.hasEnPassant() && File{to} == OP.enPassantFile()) ) {
             return Move::makeSpecial(from, to);
         }
     }

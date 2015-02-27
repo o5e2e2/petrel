@@ -12,15 +12,15 @@ typedef int index_t; //small numbers [0..N) with a known upper bound
 
 template <int _Limit, typename _Value = int>
 class Index {
+    static io::literal The_string;
 public:
     typedef _Value _t;
 
     enum { Mask = _Limit-1, Size = _Limit };
     static const _t Begin = static_cast<_t>(0);
 
-private:
+protected:
     int _v;
-    static io::literal The_string;
 
 public:
     constexpr Index () : _v{Size} {}

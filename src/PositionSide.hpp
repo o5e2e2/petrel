@@ -56,15 +56,15 @@ public:
     Square kingSquare() const { return squareOf(TheKing); }
     Pi pieceOn(Square sq) const { assert (isOn(sq)); Pi pi = squares.pieceOn(sq); assertValid(pi); return pi; }
     VectorPiMask on(Square sq) const { return squares.on(sq); }
-    template <Rank::_t Rank> VectorPiMask of() const { return squares.of<Rank>(); }
+    VectorPiMask of(Rank rank) const { return squares.of(rank); }
 
-    template <PieceType::_t Type> bool is(Pi pi) const { assertValid(pi); return types.is<Type>(pi); }
-    template <PieceType::_t Type> VectorPiMask of() const { return types.of<Type>(); }
+    bool is(Pi pi, PieceType ty) const { assertValid(pi); return types.is(pi, ty); }
+    VectorPiMask of(PieceType ty) const { return types.of(ty); }
     PieceType typeOf(Pi pi) const { assertValid(pi); return types.typeOf(pi); }
     PieceType typeOf(Square sq) const { return typeOf(pieceOn(sq)); }
 
     VectorPiMask alive() const { assert (squares.alive() == types.alive()); return squares.alive(); }
-    VectorPiMask pawns() const { return types.of<Pawn>(); }
+    VectorPiMask pawns() const { return types.of(Pawn); }
     VectorPiMask sliders() const { return types.sliders(); }
     bool isSlider(Pi pi) const { assertValid(pi); return types.isSlider(pi); }
 
@@ -79,7 +79,7 @@ public:
 
     VectorPiMask enPassantPawns() const { return types.enPassantPawns(); }
     bool hasEnPassant() const { return enPassantPawns().any(); }
-    File enPassantFile() const { Square ep = squareOf(types.getEnPassant()); assert (ep.is<Rank4>()); return File{ep}; }
+    File enPassantFile() const { Square ep = squareOf(types.getEnPassant()); assert (ep.is(Rank4)); return File{ep}; }
     void markEnPassant(Pi);
     void setEnPassant(Pi, File);
     void clearEnPassant();
