@@ -6,7 +6,7 @@
 #include "SearchThread.hpp"
 #include "SearchWindow.hpp"
 #include "Timer.hpp"
-#include "TranspositionTable.hpp"
+#include "HashMemory.hpp"
 
 class SearchLimit;
 class Position;
@@ -23,7 +23,7 @@ private:
     SearchThread::sequence_t sequence;
     SearchWindow rootWindow;
 
-    TranspositionTable transpositionTable;
+    HashMemory transpositionTable;
 
     SearchControl (const SearchControl&) = delete;
     SearchControl& operator = (const SearchControl&) = delete;
@@ -39,7 +39,7 @@ public:
     void wait() { searchThread.waitReady(); }
     void stop() { searchThread.commandStop(sequence); wait(); }
 
-    TranspositionTable& tt() { return transpositionTable; }
+    HashMemory& tt() { return transpositionTable; }
 
     void go(SearchOutput&, const Position&, const SearchLimit&);
 };

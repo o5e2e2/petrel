@@ -2,21 +2,21 @@
 #define UCI_HASH_HPP
 
 #include <cstddef>
-#include "TranspositionTable.hpp"
+#include "HashMemory.hpp"
 
 class UciHash {
     enum { MiB = 1024 * 1024 };
-    TranspositionTable& tt;
+    HashMemory& hashMemory;
 
 public:
     typedef unsigned _t;
-    UciHash (TranspositionTable& _tt) : tt(_tt) {}
+    UciHash (HashMemory& hash) : hashMemory(hash) {}
 
-    void clear() { tt.clear(); }
-    void setSize(_t mb) { tt.setSize(static_cast<std::size_t>(mb) * MiB); }
+    void clear() { hashMemory.clear(); }
+    void setSize(_t mb) { hashMemory.setSize(static_cast<std::size_t>(mb) * MiB); }
 
-    _t getSize()    const { return small_cast<_t>(tt.getSize() / MiB); }
-    _t getMaxSize() const { return small_cast<_t>(tt.getMaxSize() / MiB); }
+    _t getSize()    const { return small_cast<_t>(hashMemory.getSize() / MiB); }
+    _t getMaxSize() const { return small_cast<_t>(hashMemory.getMaxSize() / MiB); }
 };
 
 #endif

@@ -6,7 +6,6 @@
 #include "Evaluation.hpp"
 #include "PieceTypeAttack.hpp"
 #include "Timer.hpp"
-#include "TranspositionTable.hpp"
 #include "Uci.hpp"
 #include "VectorOf.hpp"
 #include "VectorPiOrder.hpp"
