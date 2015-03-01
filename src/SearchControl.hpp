@@ -40,6 +40,7 @@ public:
     void stop() { searchThread.commandStop(sequence); wait(); }
 
     HashMemory& tt() { return transpositionTable; }
+    const HashMemory& tt() const { return transpositionTable; }
 
     void go(SearchOutput&, const Position&, const SearchLimit&);
 };

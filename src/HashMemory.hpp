@@ -36,8 +36,10 @@ public:
     size_type getSize() const { return size; }
     static size_type getMaxSize();
 
-    char* lookup(Zobrist z) {
-        return &(reinterpret_cast<char*>(hash)[static_cast<Zobrist::_t>(z) & mask]);
+    char* lookup(Zobrist z) const {
+        auto p = &(reinterpret_cast<char*>(hash)[static_cast<Zobrist::_t>(z) & mask]);
+        _mm_prefetch(p, _MM_HINT_T1);
+        return p;
     }
 
 };

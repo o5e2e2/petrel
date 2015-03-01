@@ -44,6 +44,8 @@ public:
     friend void PositionFen::write(std::ostream&, const Position&, Color, ChessVariant);
     Move createMove(Side, Square, Square) const;
 
+    const Zobrist& getZobrist() const { return zobrist; }
+
     //serie of irreversible moves with extra legality check
     friend Move readMove(std::istream&, const Position&, Color);
 

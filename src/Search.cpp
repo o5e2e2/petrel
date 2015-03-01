@@ -7,12 +7,9 @@
 #define CUT(found) { if (found) { return true; } } ((void)0)
 
 namespace Perft {
-    bool perftX(const Position& pos, SearchWindow& window) {
-        window.control.info.nodesQuota--;
-        return perft(pos, window);
-    }
-
     bool perft(const Position& parent, SearchWindow& window) {
+        auto tt = window.control.tt().lookup(parent.getZobrist());
+
         PositionMoves pm(parent);
         MatrixPiBb& moves = pm.getMoves();
 
@@ -31,8 +28,9 @@ namespace Perft {
             for (Square to : moves[pi]) {
                 moves.clear(pi, to);
 
+                window.control.info.nodesQuota--;
                 Position childPos(parent, from, to);
-                CUT (perftX(childPos, childWindow));
+                CUT (perft(childPos, childWindow));
             }
         }
 
@@ -41,13 +39,6 @@ namespace Perft {
 }
 
 namespace PerftDivide {
-    bool perftX(const Position& pos, SearchWindow& window) {
-        window.control.info.nodesQuota--;
-        CUT (Perft::perft(pos, window));
-        window.control.info.report_perft_divide();
-        return false;
-    }
-
     bool perft(const Position& parent, SearchWindow& window) {
         PositionMoves pm(parent);
         MatrixPiBb& moves = pm.getMoves();
@@ -59,12 +50,16 @@ namespace PerftDivide {
             Square from = pm.side(My).squareOf(pi);
 
             for (Square to : moves[pi]) {
+                childWindow.control.info.currmove = parent.createMove(My, from, to);
+
                 moves.clear(pi, to);
 
-                childWindow.control.info.currmove = parent.createMove(My, from, to);
                 Position childPos{parent, from, to};
 
-                CUT (perftX(childPos, childWindow));
+                window.control.info.nodesQuota--;
+                CUT (Perft::perft(childPos, childWindow));
+
+                window.control.info.report_perft_divide();
             }
         }
 
