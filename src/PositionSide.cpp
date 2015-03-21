@@ -221,10 +221,10 @@ void PositionSide::markEnPassant(Pi pi) {
 }
 
 void PositionSide::setEnPassant(Pi pi, File fileFrom) {
-    markEnPassant(pi);
     assert (squareOf(pi).is(Rank4));
     assert (File{squareOf(pi)} == fileFrom);
 
+    markEnPassant(pi);
     zobrist.setEnPassant(fileFrom);
 }
 

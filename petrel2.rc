@@ -1,23 +1,23 @@
 uci
 
-echo 620:
+echo 325293:
 position fen 6kr///////6K1 b k
-go depth 2
+go depth 5
 wait
 
-echo 719:
+echo 401634:
 position fen 5kr1///////5K2 b k
-go depth 2
+go depth 5
 wait
 
-echo 781:
+echo 459256:
 position fen 4kr2///////4K3 b k
-go depth 2
+go depth 5
 wait
 
-echo 901:
+echo 539692:
 position fen 3kr3///////3K4 b k
-go depth 2
+go depth 5
 wait
 
 echo 53392:

@@ -1,4 +1,5 @@
 #include "Search.hpp"
+#include "PerftTT.hpp"
 #include "Position.hpp"
 #include "PositionMoves.hpp"
 #include "SearchControl.hpp"
@@ -8,7 +9,14 @@
 
 namespace Perft {
     bool perft(const Position& parent, SearchWindow& window) {
-        auto tt = window.control.tt().lookup(parent.getZobrist());
+        char* record( window.control.tt().lookup(parent.getZobrist()));
+
+        PerftTT tt(record);
+        node_count_t n = tt.get(parent.getZobrist(), window.draft);
+        if (n) {
+            window.control.info.perftNodes += n;
+            return false;
+        }
 
         PositionMoves pm(parent);
         MatrixPiBb& moves = pm.getMoves();
@@ -22,6 +30,7 @@ namespace Perft {
 
         SearchWindow childWindow(window);
 
+        n = window.control.info.perftNodes;
         for (Pi pi : pm.side(My).alivePieces()) {
             Square from{ pm.side(My).squareOf(pi) };
 
@@ -33,7 +42,8 @@ namespace Perft {
                 CUT (perft(childPos, childWindow));
             }
         }
-
+        n = window.control.info.perftNodes - n;
+        tt.set(parent.getZobrist(), window.draft, n);
         return false;
     }
 }
