@@ -17,14 +17,11 @@ UciOutput::UciOutput (std::ostream& o, const ChessVariant& v, const Color& c)
     : out(o), chessVariant(v), colorToMove(c), isreadyWaiting(false) {}
 
 void UciOutput::uci(const UciHash& uciHash) const {
-    auto currentMiB = uciHash.getSize();
-    auto maxMiB = uciHash.getMaxSize();
-
     OutputBuffer ob{out};
     ob << "id name " << io::app_version << '\n';
     ob << "id author Aleks Peshkov\n";
     ob << "option name UCI_Chess960 type check default " << (chessVariant == Chess960? "true":"false") << '\n';
-    ob << "option name Hash type spin min 0 max " << maxMiB << " default " << currentMiB << '\n';
+    uciHash.option(ob);
     ob << "uciok\n";
 }
 
