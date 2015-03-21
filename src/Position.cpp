@@ -116,11 +116,11 @@ const Bb& Position::pinRayFrom(Pi pi) const {
     return MY.pinRayFrom(~OP.squareOf(pi));
 }
 
-bool Position::setEnPassant(File ep) {
-    if (OCCUPIED[Square(ep, Rank7)]) { return false; }
-    if (OCCUPIED[Square(ep, Rank6)]) { return false; }
+bool Position::setEnPassant(File epFile) {
+    if (OCCUPIED[Square(epFile, Rank7)]) { return false; }
+    if (OCCUPIED[Square(epFile, Rank6)]) { return false; }
 
-    Square victimSquare(ep, Rank4);
+    Square victimSquare(epFile, Rank4);
     if (!OP.isPieceOn(victimSquare)) { return false; }
     Pi victim{OP.pieceOn(victimSquare)};
 
@@ -140,7 +140,7 @@ bool Position::setEnPassant(File ep) {
 }
 
 template <Side::_t My>
-bool Position::isLegalEnPassant(Pi killer, File ep) const {
+bool Position::isLegalEnPassant(Pi killer, File epFile) const {
     const Side::_t Op{~My};
 
     MY.assertValid(killer);
@@ -148,7 +148,7 @@ bool Position::isLegalEnPassant(Pi killer, File ep) const {
     Square from{ MY.squareOf(killer) };
     assert (from.is(Rank5));
 
-    Square to(ep, Rank6);
+    Square to(epFile, Rank6);
     assert (MY.allAttacks()[killer][to]);
 
     if (!MY.kingSquare().is(Rank5)) {
@@ -164,7 +164,7 @@ bool Position::isLegalEnPassant(Pi killer, File ep) const {
         for (Pi pi : OP.pinnerCandidates() & OP.piecesOn(Rank4)) {
             auto pinRay = pinRayFrom<My>(pi);
             if (pinRay[from]) {
-                Square victim(ep, Rank5);
+                Square victim(epFile, Rank5);
                 assert (OP.isPawn(OP.pieceOn(~victim)));
                 Bb betweenPieces{(pinRay & OCCUPIED) - from - victim};
                 if (betweenPieces.none()) { return false; } //the true vertical pin
@@ -181,9 +181,9 @@ void Position::setLegalEnPassant(Pi victim) {
     assert (!MY.hasEnPassant());
     assert (!OP.hasEnPassant());
 
-    File ep = File{MY.squareOf(victim)};
+    File epFile = File{MY.squareOf(victim)};
 
-    auto killers = OP.pawns() & OP.attacksTo(Square(ep, Rank6));
+    auto killers = OP.pawns() & OP.attacksTo(Square(epFile, Rank6));
 
     if (killers.none()) {
         return;
@@ -194,13 +194,13 @@ void Position::setLegalEnPassant(Pi victim) {
     }
 
     for (Pi pi : killers) {
-        if (isLegalEnPassant<Op>(pi, ep)) {
+        if (isLegalEnPassant<Op>(pi, epFile)) {
             OP.markEnPassant(pi);
         }
     }
 
     if (OP.hasEnPassant()) {
-        MY.setEnPassant(victim, ep);
+        MY.setEnPassant(victim, epFile);
     }
 }
 
@@ -400,9 +400,9 @@ Move readMove(std::istream& in, const Position& pos, Color colorToMove) {
     //convert special moves (castling, promotion, ep) to the internal move format
     if (pos.MY.isPawn(pi)) {
         if (from.is(Rank5) && pos.OP.hasEnPassant()) {
-            File ep = pos.OP.enPassantFile();
-            if (File{to} == ep) {
-                return Move::makeSpecial(from, Square(ep, Rank5));
+            File epFile = pos.OP.enPassantFile();
+            if (File{to} == epFile) {
+                return Move::makeSpecial(from, Square(epFile, Rank5));
             }
         }
         else if (from.is(Rank7)) {

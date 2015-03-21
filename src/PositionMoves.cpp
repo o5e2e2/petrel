@@ -19,10 +19,10 @@ void PositionMoves::generateEnPassantMoves() {
     assert (MY.hasEnPassant());
     assert (OP.hasEnPassant());
 
-    File ep{OP.enPassantFile()};
-    assert ((MY.pawns() & MY.attacksTo(Square(ep, Rank6)) & MY.enPassantPawns()) == MY.enPassantPawns());
+    File epFile = OP.enPassantFile();
+    assert ((MY.pawns() & MY.attacksTo(Square(epFile, Rank6)) & MY.enPassantPawns()) == MY.enPassantPawns());
 
-    moves[Rank5] |= VectorPiRank{ep} & VectorPiRank{MY.enPassantPawns()};
+    moves[Rank5] |= VectorPiRank(epFile) & VectorPiRank{MY.enPassantPawns()};
 }
 
 template <Side::_t My>

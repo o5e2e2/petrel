@@ -257,8 +257,8 @@ namespace EnPassantSquare {
 
     std::ostream& write(std::ostream& out, const PositionSide& side, Color colorToMove) {
         if (side.hasEnPassant()) {
-            File ep = side.enPassantFile();
-            out << (colorToMove == White? Square(ep, Rank6) : Square(ep, Rank3));
+            File epFile = side.enPassantFile();
+            out << (colorToMove == White? Square(epFile, Rank6) : Square(epFile, Rank3));
         }
         else {
             out << '-';
