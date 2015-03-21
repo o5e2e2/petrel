@@ -96,18 +96,6 @@ bool Position::setCastling(Side My, CastlingSide castlingSide) {
 }
 
 template <Side::_t My>
-void Position::clearEnPassant() {
-    const Side::_t Op{~My};
-
-    if (MY.hasEnPassant()) {
-        MY.clearEnPassant();
-        OP.clearEnPassants();
-    }
-    assert (!MY.hasEnPassant());
-    assert (!OP.hasEnPassant());
-}
-
-template <Side::_t My>
 const Bb& Position::pinRayFrom(Pi pi) const {
     const Side::_t Op{~My};
     assert (OP.isSlider(pi));
@@ -348,7 +336,12 @@ void Position::makeMove(Square from, Square to) {
     //Castling move encoded as rook captures the king
 
     //clear en passant status from the previous move
-    clearEnPassant<Op>();
+    if (OP.hasEnPassant()) {
+        OP.clearEnPassant();
+        MY.clearEnPassants();
+    }
+    assert (!MY.hasEnPassant());
+    assert (!OP.hasEnPassant());
 
     Pi pi{MY.pieceOn(from)};
 

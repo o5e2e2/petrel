@@ -13,7 +13,7 @@ namespace Perft {
 
         PerftTT tt(record);
         node_count_t n = tt.get(parent.getZobrist(), window.draft);
-        if (n) {
+        if (n && !parent.side[My].hasEnPassant()) {
             window.control.info.perftNodes += n;
             return false;
         }
@@ -43,7 +43,9 @@ namespace Perft {
             }
         }
         n = window.control.info.perftNodes - n;
-        tt.set(parent.getZobrist(), window.draft, n);
+        if (!parent.side[My].hasEnPassant()) {
+            tt.set(parent.getZobrist(), window.draft, n);
+        }
         return false;
     }
 }

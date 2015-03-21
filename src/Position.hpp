@@ -7,6 +7,7 @@
 #include "PositionFen.hpp"
 
 class Position {
+public:
     friend class PositionMoves;
 
     Side::array<PositionSide> side;
@@ -22,7 +23,6 @@ private:
     template <Side::_t> const Bb& pinRayFrom(Pi) const;
     template <Side::_t> bool isLegalEnPassant(Pi, File) const;
     template <Side::_t> void setLegalEnPassant(Pi);
-    template <Side::_t> void clearEnPassant();
 
     template <Side::_t> void move(Pi, Square, Square);
     template <Side::_t> void updateSliderAttacks(VectorPiMask);

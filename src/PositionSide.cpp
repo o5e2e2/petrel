@@ -221,6 +221,7 @@ void PositionSide::markEnPassant(Pi pi) {
 }
 
 void PositionSide::setEnPassant(Pi pi, File fileFrom) {
+    assert (!hasEnPassant());
     assert (squareOf(pi).is(Rank4));
     assert (File{squareOf(pi)} == fileFrom);
 
