@@ -38,7 +38,7 @@ public:
 
     char* lookup(Zobrist z) const {
         auto p = &(reinterpret_cast<char*>(hash)[static_cast<Zobrist::_t>(z) & mask]);
-        _mm_prefetch(p, _MM_HINT_T0);
+        _mm_prefetch(p, _MM_HINT_T1);
         return p;
     }
 

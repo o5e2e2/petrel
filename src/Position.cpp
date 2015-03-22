@@ -189,6 +189,7 @@ void Position::setLegalEnPassant(Pi victim) {
 
     if (OP.hasEnPassant()) {
         MY.setEnPassant(victim, epFile);
+        zobrist = PositionSide::zobrist_combine(MY, OP);
     }
 }
 
@@ -317,12 +318,13 @@ void Position::makePawnMove(Pi pi, Square from, Square to) {
         //simple pawn move
         move<My>(pi, from, to);
 
+        updateSliderAttacksKing<My>(MY.attacksTo(from, to));
+        updateSliderAttacks<Op>(OP.attacksTo(~from, ~to));
+
         if (from.is(Rank2) && to.is(Rank4)) {
             setLegalEnPassant<My>(pi);
         }
 
-        updateSliderAttacksKing<My>(MY.attacksTo(from, to));
-        updateSliderAttacks<Op>(OP.attacksTo(~from, ~to));
     }
 
     MY.assertValid(pi);
