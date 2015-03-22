@@ -14,17 +14,19 @@ class PerftTT {
 
     PerftRecord* record;
 
+    static Zobrist::_t key(Zobrist z, depth_t d) {
+        return (static_cast<Zobrist::_t>(z) & ~DepthMask) | ((d << 6) & DepthMask);
+    }
+
 public:
     PerftTT(char* c) : record(reinterpret_cast<decltype(record)>(c)) {}
 
     node_count_t get(Zobrist z, depth_t d) const {
-        Zobrist::_t key = (static_cast<Zobrist::_t>(z) & ~DepthMask) | ((d << 6) & DepthMask);
-        return (record->key == key)? record->perft : 0;
+        return (record->key == key(z, d))? record->perft : 0;
     }
 
     void set(Zobrist z, depth_t d, node_count_t n) {
-        auto key = (static_cast<Zobrist::_t>(z) & ~DepthMask) | ((d << 6) & DepthMask);
-        record->key = key;
+        record->key = key(z, d);
         record->perft = n;
     }
 };

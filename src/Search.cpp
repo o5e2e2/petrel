@@ -9,20 +9,20 @@
 
 namespace Perft {
     bool perft(const Position& parent, SearchWindow& window) {
-        char* record( window.control.tt().lookup(parent.getZobrist()));
-
-        PerftTT tt(record);
-        node_count_t n = tt.get(parent.getZobrist(), window.draft);
-        if (n && !parent.side[My].hasEnPassant()) {
-            window.control.info.perftNodes += n;
-            return false;
-        }
+        char* record = window.control.tt().lookup(parent.getZobrist());
 
         PositionMoves pm(parent);
         MatrixPiBb& moves = pm.getMoves();
 
         if (window.draft <= 0) {
             window.control.info.perftNodes += moves.count();
+            return false;
+        }
+
+        PerftTT tt(record);
+        node_count_t n = tt.get(parent.getZobrist(), window.draft);
+        if (n) {
+            window.control.info.perftNodes += n;
             return false;
         }
 
@@ -42,10 +42,9 @@ namespace Perft {
                 CUT (perft(childPos, childWindow));
             }
         }
+
         n = window.control.info.perftNodes - n;
-        if (!parent.side[My].hasEnPassant()) {
-            tt.set(parent.getZobrist(), window.draft, n);
-        }
+        tt.set(parent.getZobrist(), window.draft, n);
         return false;
     }
 }
