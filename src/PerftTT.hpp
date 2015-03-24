@@ -19,6 +19,11 @@ class PerftTT {
         return (static_cast<Zobrist::_t>(z) & ~DepthMask) | ((static_cast<Zobrist::_t>(d) << 6) & DepthMask);
     }
 
+    void set(index_t i, Zobrist::_t k, node_count_t n) {
+        (*record)[i].key = k;
+        (*record)[i].perft = n;
+    }
+
 public:
     PerftTT(char* c) : record(reinterpret_cast<decltype(record)>(c)) {}
 
@@ -31,22 +36,26 @@ public:
 
     void set(Zobrist z, depth_t d, node_count_t n) {
         Zobrist::_t k = key(z, d);
-        Zobrist::_t smallest_d = ~(static_cast<Zobrist::_t>(0));
 
-        int best = 0;
-        for (int i = 0; i < 4; ++i) {
-            Zobrist::_t rk = (*record)[i].key;
-            if (rk == k) { best = i; break; }
+        Zobrist::_t rk = (*record)[0].key;
+        if (rk == k) { set(0, k, n); return; }
 
-            if (smallest_d > (rk & DepthMask)) {
-                smallest_d = (rk & DepthMask);
-                best = i;
+        index_t min_i = 0;
+        Zobrist::_t min_d = rk & DepthMask;
+
+        for (index_t i = 1; i < 4; ++i) {
+            rk = (*record)[i].key;
+            if (rk == k) { set(i, k, n); return; }
+
+            if ((rk & DepthMask) < min_d) {
+                min_i = i;
+                min_d = rk & DepthMask;
             }
         }
 
-        (*record)[best].key = k;
-        (*record)[best].perft = n;
+        set(min_i, k, n);
     }
+
 };
 
 #endif
