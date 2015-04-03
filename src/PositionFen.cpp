@@ -2,6 +2,7 @@
 
 #include "PositionFen.hpp"
 #include "Position.hpp"
+#include "CastlingRules.hpp"
 
 namespace {
 
@@ -180,11 +181,14 @@ class CastlingRights {
 
     void insert(const PositionSide& side, Color color, ChessVariant chessVariant) {
         for (Pi pi : side.castlingRooks()) {
-            io::char_type castling_symbol =
-                (chessVariant == Chess960)
-                ? File{side.squareOf(pi)}.to_char()
-                : side.castlingSideOf(pi).to_char()
-            ;
+            io::char_type castling_symbol;
+
+            if (chessVariant == Chess960) {
+                castling_symbol = File{side.squareOf(pi)}.to_char();
+            }
+            else {
+                castling_symbol = CastlingRules::castlingSide(side.kingSquare(), side.squareOf(pi)).to_char();
+            }
 
             if (color == White) {
                 castling_symbol = static_cast<io::char_type>(std::toupper(castling_symbol));

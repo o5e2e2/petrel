@@ -174,7 +174,6 @@ void PositionSide::setCastling(Pi rook) {
     Square from = squareOf(rook);
     assert (from.is(Rank1));
     zobrist.setCastling(from);
-    ::castlingRules.set(kingSquare(), from);
 }
 
 bool PositionSide::setCastling(CastlingSide side) {

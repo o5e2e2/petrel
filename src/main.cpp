@@ -22,6 +22,7 @@ const VectorPiSingle vectorPiSingle; //256
 const ReverseBb::BitReverse ReverseBb::bit_reverse; //64
 const VectorBitCount bit_count; //48
 const VectorPiOrder::_t VectorPiOrder::sorted = _mm_setr_epi8(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15);
+const CastlingRules castlingRules; //128
 
 const PieceSquareTable Evaluation::pst;
 
@@ -32,8 +33,6 @@ template <> io::literal CastlingSide::The_string{"kq"};
 template <> io::literal File::The_string{"abcdefgh"};
 template <> io::literal Rank::The_string{"87654321"};
 template <> io::literal Pi::The_string{"K123456789abcdef"};
-
-CastlingRules castlingRules; //constant during the same Chess960 game (32)
 
 Timer::TimerPool Timer::timerPool;
 

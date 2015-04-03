@@ -52,7 +52,7 @@ void PositionMoves::generateCastlingMoves(Bb attackedSquares) {
     const Side::_t Op{~My};
 
     for (Pi pi : MY.castlingRooks()) {
-        if ( ::castlingRules.isLegal(MY.castlingSideOf(pi), OCCUPIED, attackedSquares) ) {
+        if ( ::castlingRules.isLegal(MY.kingSquare(), MY.squareOf(pi), OCCUPIED, attackedSquares) ) {
             //castling encoded as the rook moves over the own king square
             moves.add(pi, MY.kingSquare());
         }

@@ -30,8 +30,9 @@ public:
     constexpr Bb (Square::_t sq) : Base(sq) {}
     constexpr explicit Bb (_t v) : Base(v) {}
 
-    constexpr explicit Bb (Rank::_t r) : Bb{BB(0xff) << 8*r} {}
     constexpr explicit Bb (File::_t f) : Bb{BB(0x0101010101010101) << f} {}
+    constexpr explicit Bb (Rank::_t r) : Bb{BB(0xff) << 8*r} {}
+    constexpr Bb (BitRank b, Rank::_t r) : Bb{static_cast<_t>(static_cast<BitRank::_t>(b)) << 8*r} {}
 
     Bb operator ~ () const { return Bb{::bswap(this->_v)}; }
 
