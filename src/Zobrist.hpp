@@ -13,14 +13,40 @@ class Zobrist {
     private:
         _t key[PieceType::Size][Square::Size];
 
+        constexpr static _t r(_t n, index_t i) { return n << i | n >> (64-i); }
+
     public:
         Key () {
+#ifdef RANDOM_KEYS
             std::mt19937_64 random;
             FOR_INDEX(PieceType, ty) {
                 FOR_INDEX(Square, sq) {
                     key[ty][sq] = random();
                 }
             }
+#else
+            _t init[] = {
+                0x0218a392d367abbfull,
+                0x0218fd49de59b457ull,
+                0x021b2a4fd16bc773ull,
+                0x0323dba73562fc25ull,
+                0x032fc73dbac2a4d1ull,
+                0x03422eadec73253full,
+                0x026763d5c37e5a45ull,
+            };
+
+            FOR_INDEX(PieceType, ty) {
+                FOR_INDEX(Square, sq) {
+                    key[ty][sq] = r(init[ty], sq);
+                }
+            }
+
+            FOR_INDEX(File, file) {
+                _t extra = init[PieceType::Size];
+                key[Pawn][Square(file, Rank8)] = r(extra ^ init[Pawn], Square(file, Rank4)); //en passant
+                key[Pawn][Square(file, Rank1)] = r(extra ^ init[Rook], Square(file, Rank1)); //castling
+            }
+#endif
         }
 
         const _t& operator() (PieceType ty, Square sq) const { return key[ty][sq]; }
