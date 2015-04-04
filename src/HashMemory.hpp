@@ -6,6 +6,10 @@
 #include "Zobrist.hpp"
 
 class HashMemory {
+public:
+    typedef std::size_t size_t;
+
+private:
     class CACHE_ALIGN Cluster {
         __m128i _t[4];
     };
@@ -13,28 +17,31 @@ class HashMemory {
     Cluster one;
     Cluster* hash;
 
-    typedef std::size_t size_type;
-    size_type mask;
-    size_type size;
-    static const size_type ClusterSize = sizeof(Cluster);
+    size_t mask;
+    size_t size;
+    size_t max;
+    static const size_t ClusterSize = sizeof(Cluster);
 
     HashMemory (const HashMemory&) = delete;
     HashMemory& operator = (const HashMemory&) = delete;
 
-    static size_type round(size_type bytes);
+    static size_t round(size_t bytes);
 
-    void set(Cluster*, size_type);
+    void set(Cluster*, size_t);
+    void setOne();
     void free();
 
+    void setMax();
+
 public:
-    HashMemory () { set(&one, ClusterSize); }
+    HashMemory () { set(&one, ClusterSize); setMax(); }
    ~HashMemory () { free(); }
 
-    void clear() { std::memset(hash, 0, size); }
-    void setSize(size_type bytes);
+    void resize(size_t bytes);
 
-    size_type getSize() const { return size; }
-    static size_type getMaxSize();
+    size_t getSize() const { return size; }
+    size_t getMask() const { return mask; }
+    size_t getMax()  const { return max; }
 
     char* lookup(Zobrist z) const {
         auto p = &(reinterpret_cast<char*>(hash)[static_cast<Zobrist::_t>(z) & mask]);

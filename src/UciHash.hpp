@@ -13,20 +13,19 @@ private:
     enum { MiB = 1024 * 1024 };
     HashMemory& hashMemory;
 
-    _t getSize()    const { return small_cast<_t>(hashMemory.getSize() / MiB); }
-    _t getMaxSize() const { return small_cast<_t>(hashMemory.getMaxSize() / MiB); }
+    static _t toMiB(HashMemory::size_t bytes) { return small_cast<_t>(bytes / MiB); }
 
 public:
     UciHash (HashMemory& hash) : hashMemory(hash) {}
 
-    void clear() { hashMemory.clear(); }
-    void setSize(_t mb) { hashMemory.setSize(static_cast<std::size_t>(mb) * MiB); }
+    void newGame() { /*hashMemory.clear();*/ }
+    void resize(_t mb) { hashMemory.resize(static_cast<HashMemory::size_t>(mb) * MiB); }
 
     std::ostream& option(std::ostream& out) const {
-        auto currentMiB = getSize();
-        auto maxMiB = getMaxSize();
+        auto current = hashMemory.getSize();
+        auto max = hashMemory.getMax();
 
-        out << "option name Hash type spin min 0 max " << maxMiB << " default " << currentMiB << '\n';
+        out << "option name Hash type spin min 0 max " << toMiB(max) << " default " << toMiB(current) << '\n';
         return out;
     }
 };

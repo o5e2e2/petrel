@@ -48,7 +48,7 @@ int Uci::operator() (std::istream& in) {
 void Uci::ucinewgame() {
     setStartpos();
     searchControl.clear();
-    uciHash.clear();
+    uciHash.newGame();
 }
 
 void Uci::setoption() {
@@ -67,13 +67,15 @@ void Uci::setoption() {
         }
     }
 
-    if (next("Hash")) {
-        next("value");
+    if (searchControl.isReady()) {
+        if (next("Hash")) {
+            next("value");
 
-        UciHash::_t mebibytes;
-        if (command >> mebibytes) {
-            uciHash.setSize(mebibytes);
-            return;
+            UciHash::_t mebibytes;
+            if (command >> mebibytes) {
+                uciHash.resize(mebibytes);
+                return;
+            }
         }
     }
 

@@ -4,7 +4,7 @@
 #ifdef _WIN32
 
 #include <windows.h>
-std::size_t getFreeMemory() {
+std::size_t getAvailableMemory() {
     MEMORYSTATUSEX status;
     status.dwLength = sizeof(status);
     status.ullAvailPhys = 0;
@@ -16,7 +16,7 @@ std::size_t getFreeMemory() {
 #else
 
 #include <unistd.h>
-std::size_t getFreeMemory() {
+std::size_t getAvailableMemory() {
     auto pages = sysconf(_SC_AVPHYS_PAGES);
     auto page_size = sysconf(_SC_PAGE_SIZE);
     return static_cast<std::size_t>(pages) * static_cast<std::size_t>(page_size);
@@ -24,40 +24,46 @@ std::size_t getFreeMemory() {
 
 #endif
 
-HashMemory::size_type HashMemory::round(size_type bytes) {
+void HashMemory::setMax() {
+    this->max = round(::getAvailableMemory());
+}
+
+HashMemory::size_t HashMemory::round(size_t bytes) {
     return (bytes > 0)? ::singleton<decltype(bytes)>(::bsr(bytes)):0;
 }
 
-HashMemory::size_type HashMemory::getMaxSize() {
-    auto available = getFreeMemory();
-    return round(available);
-}
+void HashMemory::set(Cluster* _hash, size_t _size) {
+    std::memset(_hash, 0, _size);
 
-void HashMemory::set(Cluster* _hash, size_type _size) {
-    hash = _hash;
-    size = _size;
+    this->hash = _hash;
+    this->size = _size;
 
     assert (size == round(size));
-    mask = (size-1) ^ (ClusterSize-1);
-
-    clear();
+    this->mask = (size-1) ^ (ClusterSize-1);
 }
 
-void HashMemory::setSize(size_type bytes) {
+void HashMemory::setOne() {
+    set(&one, ClusterSize);
+}
+
+void HashMemory::resize(size_t bytes) {
     bytes = (bytes <= ClusterSize)? ClusterSize : round(bytes);
 
-    if (size == bytes) {
+    if (bytes == this->size) {
         return;
     }
 
     free();
+    setMax();
 
-    bytes = std::min(bytes, getMaxSize());
-    for (; bytes > ClusterSize; bytes >>= 1) {
-        auto p = reinterpret_cast<decltype(hash)>(new (std::nothrow) Cluster[bytes/ClusterSize]);
+    bytes = std::min(bytes, getMax());
+
+    auto clusters = bytes / ClusterSize;
+    for (; clusters > 1; clusters >>= 1) {
+        auto p = reinterpret_cast<decltype(hash)>(new (std::nothrow) Cluster[clusters]);
 
         if (p) {
-            set(p, bytes);
+            set(p, static_cast<size_t>(clusters) * ClusterSize);
             return;
         }
     }
@@ -65,9 +71,10 @@ void HashMemory::setSize(size_type bytes) {
 }
 
 void HashMemory::free() {
-    if (size > ClusterSize) {
-        delete[] hash;
-    }
+    if (this->size > ClusterSize) {
+        auto toFree = this->hash;
+        setOne();
 
-    set(&one, ClusterSize);
+        delete[] toFree;
+    }
 }
