@@ -65,8 +65,9 @@ void PositionSide::capture(Square from) {
     assertValid(pi);
 
     PieceType ty = typeOf(pi);
+    assert (!ty.is(King));
 
-    if (ty.is(Rook) && isCastling(pi)) {
+    if (isCastling(pi)) {
         zobrist.clearCastling(from);
     }
     clear(ty, from);
@@ -80,8 +81,9 @@ void PositionSide::move(Pi pi, PieceType ty, Square from, Square to) {
     assertValid(pi);
     assert (from != to);
 
-    if (ty.is(Rook) && isCastling(pi)) {
-        clearCastling(pi, from);
+    if (isCastling(pi)) {
+        zobrist.clearCastling(from);
+        types.clearCastling(pi);
     }
     clear(ty, from);
 
@@ -154,19 +156,11 @@ void PositionSide::updateSliderAttacks(VectorPiMask affectedSliders, Bb _occupie
     }
 }
 
-void PositionSide::clearCastling(Pi pi, Square from) {
-    assertValid(pi);
-    assert (from.is(squareOf(pi)));
-    assert (from.is(Rank1));
-
-    types.clearCastling(pi);
-    zobrist.clearCastling(from);
-}
-
 void PositionSide::clearCastlings() {
     for (Pi pi : castlingRooks()) {
-        clearCastling(pi, squareOf(pi));
+        zobrist.clearCastling(squareOf(pi));
     }
+    types.clearCastlings();
 }
 
 void PositionSide::setCastling(Pi rook) {

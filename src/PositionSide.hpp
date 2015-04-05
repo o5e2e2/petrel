@@ -26,7 +26,6 @@ class PositionSide {
     void clear(PieceType, Square);
 
     void setCastling(Pi);
-    void clearCastling(Pi, Square);
     void clearCastlings();
     bool isCastling(Pi pi) const { assertValid(pi); return types.isCastling(pi); }
 
