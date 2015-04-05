@@ -32,7 +32,7 @@ namespace Perft {
 
         n = window.control.info.perftNodes;
         for (Pi pi : pm.side(My).alivePieces()) {
-            Square from{ pm.side(My).squareOf(pi) };
+            Square from = pm.side(My).squareOf(pi);
 
             for (Square to : moves[pi]) {
                 moves.clear(pi, to);

@@ -46,7 +46,7 @@ void PositionSide::clear(PieceType ty, Square from) {
 
 void PositionSide::set(PieceType ty, Square to) {
     piecesBb += to;
-    if (ty == Pawn) { pawnsBb += to; }
+    if (ty.is(Pawn)) { pawnsBb += to; }
     zobrist.drop(ty, to);
     evaluation.drop(ty, to);
 }
@@ -66,7 +66,7 @@ void PositionSide::capture(Square from) {
 
     PieceType ty = typeOf(pi);
 
-    if (ty == Rook && isCastling(pi)) {
+    if (ty.is(Rook) && isCastling(pi)) {
         zobrist.clearCastling(from);
     }
     clear(ty, from);
@@ -80,7 +80,7 @@ void PositionSide::move(Pi pi, PieceType ty, Square from, Square to) {
     assertValid(pi);
     assert (from != to);
 
-    if (ty == Rook && isCastling(pi)) {
+    if (ty.is(Rook) && isCastling(pi)) {
         clearCastling(pi, from);
     }
     clear(ty, from);
@@ -113,9 +113,10 @@ void PositionSide::promote(Pi pi, PromoType ty, Square from, Square to) {
 void PositionSide::moveKing(Square from, Square to) {
     assertValid(TheKing);
 
+    clearCastlings();
+
     move(TheKing, King, from, to);
     setLeaperAttack(TheKing, King, to);
-    clearCastlings();
 
     assertValid(TheKing);
 }
@@ -123,18 +124,18 @@ void PositionSide::moveKing(Square from, Square to) {
 void PositionSide::castle(Pi rook, Square rookFrom, Square rookTo, Square kingFrom, Square kingTo) {
     assertValid(rook);
     assertValid(TheKing);
-    assert (kingFrom == kingSquare() && kingFrom.is(Rank1));
-    assert (rookFrom == squareOf(rook) && rookFrom.is(Rank1));
+    assert (kingSquare().is(kingFrom) && kingFrom.is(Rank1));
+    assert (squareOf(rook).is(rookFrom) && rookFrom.is(Rank1));
+
+    clearCastlings();
 
     squares.castle(rook, rookTo, TheKing, kingTo);
-
     clear(Rook, rookFrom);
     clear(King, kingFrom);
     set(King, kingTo);
     set(Rook, rookTo);
 
     setLeaperAttack(TheKing, King, kingTo);
-    clearCastlings();
 
     assertValid(TheKing);
     assertValid(rook);
@@ -155,7 +156,7 @@ void PositionSide::updateSliderAttacks(VectorPiMask affectedSliders, Bb _occupie
 
 void PositionSide::clearCastling(Pi pi, Square from) {
     assertValid(pi);
-    assert (from == squareOf(pi));
+    assert (from.is(squareOf(pi)));
     assert (from.is(Rank1));
 
     types.clearCastling(pi);
@@ -182,16 +183,19 @@ bool PositionSide::setCastling(CastlingSide side) {
     auto rooks = piecesOfType(Rook) & piecesOn(Rank1);
 
     Pi theRook;
-    if (side == KingSide) {
-        auto rightRooks = rooks & squares.rightBackward(kingSquare());
-        if (rightRooks.none()) { return false; }
-        theRook = rightRooks.last();
-    }
-    else {
-        assert (side == QueenSide);
-        auto leftRooks = rooks & squares.leftForward(kingSquare());
-        if (leftRooks.none()) { return false; }
-        theRook = leftRooks.first();
+    switch (side) {
+        case KingSide: {
+            auto rightRooks = rooks & squares.rightBackward(kingSquare());
+            if (rightRooks.none()) { return false; }
+            theRook = rightRooks.last();
+            break;
+        }
+        case QueenSide: {
+            auto leftRooks = rooks & squares.leftForward(kingSquare());
+            if (leftRooks.none()) { return false; }
+            theRook = leftRooks.first();
+            break;
+        }
     }
 
     setCastling(theRook);
@@ -231,7 +235,7 @@ void PositionSide::setEnPassant(Pi pi, File fileFrom) {
 void PositionSide::clearEnPassant() {
     assert (hasEnPassant());
     assert (types.enPassantPawns().isSingleton());
-    assert ((types.enPassantPawns() & squares.piecesOn(Rank4)) == types.enPassantPawns());
+    assert (types.enPassantPawns() <= squares.piecesOn(Rank4));
 
     zobrist.clearEnPassant(enPassantFile());
     types.clearEnPassants();
@@ -239,7 +243,7 @@ void PositionSide::clearEnPassant() {
 
 void PositionSide::clearEnPassants() {
     assert (hasEnPassant());
-    assert ((types.enPassantPawns() & squares.piecesOn(Rank5)) == types.enPassantPawns());
+    assert (types.enPassantPawns() <= squares.piecesOn(Rank5));
     types.clearEnPassants();
 }
 

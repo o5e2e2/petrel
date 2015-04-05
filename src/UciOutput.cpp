@@ -20,7 +20,7 @@ void UciOutput::uci(const UciHash& uciHash) const {
     OutputBuffer ob{out};
     ob << "id name " << io::app_version << '\n';
     ob << "id author Aleks Peshkov\n";
-    ob << "option name UCI_Chess960 type check default " << (chessVariant == Chess960? "true":"false") << '\n';
+    ob << "option name UCI_Chess960 type check default " << (chessVariant.is(Chess960)? "true":"false") << '\n';
     uciHash.option(ob);
     ob << "uciok\n";
 }

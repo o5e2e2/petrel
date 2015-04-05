@@ -33,7 +33,7 @@ public:
         assert ( !isEmpty(pi) );
         assert ( _v.is(pi, King) || ::is_singleton(_v[pi] & PieceTypeMask) );
         assert ( !_v.is(pi, PinRay) || ((_v[pi] & SliderMask) != 0) );
-        assert ( !_v.is(pi, King) || (pi == TheKing && !_v.is(pi, Rook) && !_v.is(pi, Pawn)) || _v.is(pi, Rook) || _v.is(pi, Pawn) );
+        assert ( !_v.is(pi, King) || (pi.is(TheKing) && !_v.is(pi, Rook) && !_v.is(pi, Pawn)) || _v.is(pi, Rook) || _v.is(pi, Pawn) );
     }
 #endif
 
@@ -41,8 +41,8 @@ public:
     VectorPiMask sliders() const { return _v.anyOf(SliderMask); }
     bool isSlider(Pi pi) const { assertValid(pi); return (_v[pi] & SliderMask) != 0; }
 
-    VectorPiMask piecesOfType(PieceType ty) const { assert (ty != King); return _v.anyOf(ty); }
-    bool isTypeOf(Pi pi, PieceType ty) const { assert (ty != King); assertValid(pi); return _v.is(pi, ty); }
+    VectorPiMask piecesOfType(PieceType ty) const { assert (!ty.is(King)); return _v.anyOf(ty); }
+    bool isTypeOf(Pi pi, PieceType ty) const { assert (!ty.is(King)); assertValid(pi); return _v.is(pi, ty); }
     PieceType typeOf(Pi pi) const { assertValid(pi); return static_cast<PieceType::_t>( ::bsf(static_cast<unsigned>(_v[pi])) ); }
     bool isPawn(Pi pi) const { return isTypeOf(pi, Pawn); }
 

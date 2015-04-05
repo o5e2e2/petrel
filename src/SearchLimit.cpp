@@ -30,8 +30,8 @@ SearchLimit::SearchLimit () :
 }
 
 void SearchLimit::read(std::istream& command, const Position& rootPosition, Color colorToMove) {
-    Side white{(colorToMove == White)? My:Op};
-    Side black{(colorToMove == Black)? My:Op};
+    Side white{colorToMove.is(White)? My:Op};
+    Side black{colorToMove.is(Black)? My:Op};
 
     clear();
 

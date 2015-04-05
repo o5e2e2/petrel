@@ -23,20 +23,20 @@ class Board {
     Color::array< PieceType::array<Squares> > pieces;
 
     bool drop(Color color, PieceType ty, Square sq) {
-        if (ty == King) {
+        if (ty.is(King)) {
             //the king should be only one per each color
             if (!pieces[color][King].empty()) {
                 return false;
             }
         }
-        else if (ty == Pawn) {
+        else if (ty.is(Pawn)) {
             //pawns should not occupy first and last ranks
             if (sq.is(Rank1) || sq.is(Rank8)) {
                 return false;
             }
         }
 
-        pieces[color][ty].insert((color == White)? sq:~sq);
+        pieces[color][ty].insert(color.is(White)? sq:~sq);
         return true;
     }
 
@@ -109,7 +109,7 @@ bool Board::setPosition(Position& pos, Board&& board, Color colorToMove) {
         }
 
         auto king = pieces[color][King].begin();
-        if ( pos.drop( (color == colorToMove)? My:Op, King, *king) ) {
+        if ( pos.drop((color.is(colorToMove)? My:Op), King, *king) ) {
             pieces[color][King].erase(king);
         }
         else {
@@ -124,7 +124,7 @@ bool Board::setPosition(Position& pos, Board&& board, Color colorToMove) {
             while ( !pieces[color][ty].empty() ) {
                 auto piece = pieces[color][ty].begin();
 
-                if ( pos.drop( (color == colorToMove)? My:Op, ty, *piece) ) {
+                if ( pos.drop( color.is(colorToMove)? My:Op, ty, *piece) ) {
                     pieces[color][ty].erase(piece);
                 }
                 else {
@@ -183,14 +183,17 @@ class CastlingRights {
         for (Pi pi : side.castlingRooks()) {
             io::char_type castling_symbol;
 
-            if (chessVariant == Chess960) {
-                castling_symbol = File{side.squareOf(pi)}.to_char();
-            }
-            else {
-                castling_symbol = CastlingRules::castlingSide(side.kingSquare(), side.squareOf(pi)).to_char();
+            switch (chessVariant) {
+                case Orthodox:
+                    castling_symbol = CastlingRules::castlingSide(side.kingSquare(), side.squareOf(pi)).to_char();
+                    break;
+
+                case Chess960:
+                    castling_symbol = File{side.squareOf(pi)}.to_char();
+                    break;
             }
 
-            if (color == White) {
+            if (color.is(White)) {
                 castling_symbol = static_cast<io::char_type>(std::toupper(castling_symbol));
             }
 
@@ -215,14 +218,14 @@ public:
 
                 CastlingSide side{CastlingSide::Begin};
                 if ( side.from_char(c) ) {
-                    if (pos.setCastling((color == colorToMove)? My:Op, side)) {
+                    if (pos.setCastling(color.is(colorToMove)? My:Op, side)) {
                         continue;
                     }
                 }
                 else {
                     File file{File::Begin};
                     if ( file.from_char(c) ) {
-                        if (pos.setCastling((color == colorToMove)? My:Op, file)) {
+                        if (pos.setCastling(color.is(colorToMove)? My:Op, file)) {
                             continue;
                         }
                     }
@@ -253,7 +256,7 @@ namespace EnPassantSquare {
         Square ep{Square::Begin};
         if (in >> ep) {
             (void)colorToMove; //silence unused parameter warning
-            assert (colorToMove == White? ep.is(Rank6) : ep.is(Rank3));
+            assert (colorToMove.is(White)? ep.is(Rank6) : ep.is(Rank3));
             pos.setEnPassant(File{ep});
         }
         return in;
@@ -262,7 +265,7 @@ namespace EnPassantSquare {
     std::ostream& write(std::ostream& out, const PositionSide& side, Color colorToMove) {
         if (side.hasEnPassant()) {
             File epFile = side.enPassantFile();
-            out << (colorToMove == White? Square(epFile, Rank6) : Square(epFile, Rank3));
+            out << (colorToMove.is(White)? Square(epFile, Rank6) : Square(epFile, Rank3));
         }
         else {
             out << '-';
@@ -292,8 +295,8 @@ namespace PositionFen {
     }
 
     void write(std::ostream& out, const Position& pos, Color colorToMove, ChessVariant chessVariant) {
-        const PositionSide& white = pos.side[(colorToMove == White)? My:Op];
-        const PositionSide& black = pos.side[(colorToMove == Black)? My:Op];
+        const PositionSide& white = pos.side[colorToMove.is(White)? My:Op];
+        const PositionSide& black = pos.side[colorToMove.is(Black)? My:Op];
 
         Board::write(out, white, black);
         out << ' ' << colorToMove;

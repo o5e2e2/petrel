@@ -30,6 +30,7 @@ struct Square : Index<64, square_t> {
     constexpr Square operator ~ () const { return static_cast<_t>(this->_v ^ RankMask); }
     constexpr Square rankUp() const { return static_cast<_t>(this->_v - RankOffset); }
 
+    using Base::is;
     constexpr bool is(Rank rank) const { return (this->_v & RankMask) == (rank << RankShift); }
     constexpr bool is(File file) const { return (this->_v & File::Mask) == file; }
 

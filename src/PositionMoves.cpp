@@ -20,7 +20,7 @@ void PositionMoves::generateEnPassantMoves() {
     assert (OP.hasEnPassant());
 
     File epFile = OP.enPassantFile();
-    assert ((MY.pawns() & MY.attacksTo(Square(epFile, Rank6)) & MY.enPassantPawns()) == MY.enPassantPawns());
+    assert (MY.enPassantPawns() <= ( MY.pawns() & MY.attacksTo(Square(epFile, Rank6)) ));
 
     moves[Rank5] |= VectorPiRank(epFile) & VectorPiRank{MY.enPassantPawns()};
 }
@@ -72,7 +72,7 @@ void PositionMoves::generatePawnMoves() {
         fileTo %= OCCUPIED[rankTo];
 
         //double push
-        if ((rankTo == Rank3) && (fileTo % OCCUPIED[Rank4]).any()) {
+        if ((rankTo.is(Rank3)) && (fileTo % OCCUPIED[Rank4]).any()) {
             moves.set(pi, Rank4, fileTo);
         }
 

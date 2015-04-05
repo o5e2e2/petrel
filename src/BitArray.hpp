@@ -50,22 +50,27 @@ public:
     constexpr bool none() const { return self() == Self{}; }
     constexpr bool any()  const { return !self().none(); }
 
+    constexpr bool none(Arg a) const { return (self() & a).none(); }
+
     Self& operator  = (Arg a) { Base::operator = (a); return self(); }
     Self& operator &= (Arg a) { Base::operator &= (a); return self(); }
     Self& operator |= (Arg a) { Base::operator |= (a); return self(); }
     Self& operator ^= (Arg a) { Base::operator ^= (a); return self(); }
     Self& operator %= (Arg a) { Base::operator %= (a); return self(); }  //"and not"
-    Self& operator += (Arg a) { assert ((self() & a).none()); return self() ^= a; }
-    Self& operator -= (Arg a) { assert ((self() & a) == a); return self() ^= a; }
+    Self& operator += (Arg a) { assert (none(a)); return self() ^= a; }
+    Self& operator -= (Arg a) { assert (self() >= a); return self() ^= a; }
 
     constexpr friend bool operator == (Arg a, Arg b) { return a.Base::operator== (b); }
     constexpr friend bool operator != (Arg a, Arg b) { return !(a == b); }
+    constexpr friend bool operator <= (Arg a, Arg b) { return (a & b) == a; }
+    constexpr friend bool operator >= (Arg a, Arg b) { return b <= a; }
     constexpr friend Self operator &  (Arg a, Arg b) { return Self{a} &= b; }
     constexpr friend Self operator |  (Arg a, Arg b) { return Self{a} |= b; }
     constexpr friend Self operator ^  (Arg a, Arg b) { return Self{a} ^= b; }
     constexpr friend Self operator %  (Arg a, Arg b) { return Self{a} %= b; }
     constexpr friend Self operator +  (Arg a, Arg b) { return Self{a} += b; }
     constexpr friend Self operator -  (Arg a, Arg b) { return Self{a} -= b; }
+
 };
 
 #endif

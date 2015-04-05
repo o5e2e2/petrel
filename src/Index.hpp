@@ -31,6 +31,8 @@ public:
     constexpr void assertValid() const { assert (isOk()); }
     constexpr bool isOk() const { return static_cast<unsigned>(_v) < static_cast<unsigned>(Size); }
 
+    constexpr bool is(_t v) const { return _v == v; }
+
     Index& operator ++ () {
         assertValid();
         ++_v;
@@ -42,9 +44,7 @@ public:
         _v ^= Mask;
         return *this;
     }
-
     constexpr Index operator ~ () const { return Index{*this}.flip(); }
-    constexpr const io::char_type& to_char() const { return The_string[*this]; }
 
     bool from_char(io::char_type c) {
         if (const void* p = std::memchr(The_string, c, _Limit)) {
@@ -54,6 +54,7 @@ public:
         }
         return false;
     }
+    constexpr const io::char_type& to_char() const { return The_string[*this]; }
 
     friend std::istream& operator >> (std::istream& in, Index& i) {
         io::char_type c;

@@ -19,29 +19,37 @@ public:
                 Square king(kingFile, Rank1);
                 Square rook(rookFile, Rank1);
 
-                if (king < rook) {
-                    castlingRules[kingFile][rookFile].unimpeded  = ((::between(king, G1)+G1) | (::between(rook, F1)+F1)) % (Bb{king} + rook);
-                    castlingRules[kingFile][rookFile].unattacked = (::between(king, G1)+G1) | king;
+                if (king == rook) {
+                    castlingRules[kingFile][rookFile].unimpeded  = Bb::empty();
+                    castlingRules[kingFile][rookFile].unattacked = Bb::empty();
+                    continue;
                 }
-                else if (rook < king) {
-                    castlingRules[kingFile][rookFile].unimpeded  = ((::between(king, C1)+C1) | (::between(rook, D1)+D1)) % (Bb{king} + rook);
-                    castlingRules[kingFile][rookFile].unattacked = (::between(king, C1)+C1) | king;
-                }
-                else {
-                    castlingRules[kingFile][rookFile].unimpeded  = Bb(Rank1);
-                    castlingRules[kingFile][rookFile].unattacked = Bb(Rank1);
+
+                switch (castlingSide(king, rook)) {
+                    case QueenSide:
+                        castlingRules[kingFile][rookFile].unimpeded  = ((::between(king, C1)+C1) | (::between(rook, D1)+D1)) % (Bb{king} + rook);
+                        castlingRules[kingFile][rookFile].unattacked = (::between(king, C1)+C1) | king;
+                        break;
+
+                    case KingSide:
+                        castlingRules[kingFile][rookFile].unimpeded  = ((::between(king, G1)+G1) | (::between(rook, F1)+F1)) % (Bb{king} + rook);
+                        castlingRules[kingFile][rookFile].unattacked = (::between(king, G1)+G1) | king;
+                        break;
                 }
             }
         }
     }
 
     bool isLegal(Square king, Square rook, Bb occupied, Bb attacked) const {
+        assert (king.is(Rank1));
+        assert (rook.is(Rank1));
+        assert (king != rook);
         return (occupied & castlingRules[File(king)][File(rook)].unimpeded).none() && (attacked & castlingRules[File(king)][File(rook)].unattacked).none();
     }
 
     static CastlingSide castlingSide(Square king, Square rook) {
-        assert (Rank(king) == Rank1);
-        assert (Rank(rook) == Rank1);
+        assert (king.is(Rank1));
+        assert (rook.is(Rank1));
         assert (king != rook);
         return (rook < king)? QueenSide:KingSide;
     }
