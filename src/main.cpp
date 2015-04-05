@@ -4,6 +4,7 @@
 #include "BetweenSquares.hpp"
 #include "CastlingRules.hpp"
 #include "Evaluation.hpp"
+#include "PerftTT.hpp"
 #include "PieceTypeAttack.hpp"
 #include "Timer.hpp"
 #include "Uci.hpp"
@@ -35,6 +36,8 @@ template <> io::literal Rank::The_string{"87654321"};
 template <> io::literal Pi::The_string{"K123456789abcdef"};
 
 Timer::TimerPool Timer::timerPool;
+PerftTT::age_t PerftTT::age = 0;
+PerftTT::used_t PerftTT::used = 0;
 
 int main(int argc, const char* argv[]) {
     //speed tricks

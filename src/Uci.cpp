@@ -5,7 +5,7 @@
 #include "PositionMoves.hpp"
 
 Uci::Uci (std::ostream& out)
-    : searchControl{}, uciOutput(out, chessVariant, colorToMove), uciHash(searchControl.tt())
+    : searchControl{}, uciHash(searchControl.tt()), uciOutput(out, uciHash, chessVariant, colorToMove)
 {
     ucinewgame();
 }
@@ -18,7 +18,7 @@ int Uci::operator() (std::istream& in) {
 
         if (next("position"))  { position(); }
         else if (next("go"))   { go(); }
-        else if (next("stop")) { searchControl.stop(); }
+        else if (next("stop")) { stop(); }
         else if (next("isready"))    { isready(); }
         else if (next("setoption"))  { setoption(); }
         else if (next("ucinewgame")) { ucinewgame(); }
@@ -67,15 +67,14 @@ void Uci::setoption() {
         }
     }
 
-    if (searchControl.isReady()) {
-        if (next("Hash")) {
-            next("value");
+    if (next("Hash")) {
+        next("value");
 
-            UciHash::_t mebibytes;
-            if (command >> mebibytes) {
-                uciHash.resize(mebibytes);
-                return;
-            }
+        UciHash::_t mebibytes;
+        if (command >> mebibytes) {
+            stop();
+            uciHash.resize(mebibytes);
+            return;
         }
     }
 
@@ -121,11 +120,15 @@ void Uci::go() {
 }
 
 void Uci::uci() const {
-    uciOutput.uci(uciHash);
+    uciOutput.uci();
 }
 
 void Uci::isready() const {
     uciOutput.isready(searchControl);
+}
+
+void Uci::stop() {
+    searchControl.stop();
 }
 
 void Uci::echo() const {

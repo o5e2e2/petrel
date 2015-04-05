@@ -13,20 +13,22 @@ class UciHash;
 
 class UciOutput : public SearchOutput {
     std::ostream& out; //output stream
+    const UciHash& uciHash;
     const ChessVariant& chessVariant; //format of castling moves output
     const Color& colorToMove; //initial position color for moves long algebraic format output
 
     mutable volatile bool isreadyWaiting; //set when got 'isready' command while thinking
 
     void write(std::ostream&, const Move&) const;
+    void hashfull(std::ostream&) const;
     void nps(std::ostream&, const SearchInfo&) const;
     void info_nps(std::ostream&, const SearchInfo&) const;
 
 public:
     //called from Uci
-    UciOutput (std::ostream&, const ChessVariant&, const Color&);
+    UciOutput (std::ostream&, const UciHash&, const ChessVariant&, const Color&);
     void isready(const SearchControl&) const;
-    void uci(const UciHash&) const;
+    void uci() const;
     void info_fen(const Position&) const;
     void echo(std::istream&) const;
     void error(std::istream&) const;

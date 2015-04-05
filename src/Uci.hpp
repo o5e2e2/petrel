@@ -10,10 +10,10 @@
 
 class Uci {
     SearchControl searchControl;
+    UciHash uciHash;
     UciOutput uciOutput;
     Position rootPosition; //initial chess position to analyze
     SearchLimit goLimit;
-    UciHash uciHash;
 
     ChessVariant chessVariant; //format of castling moves output
     Color colorToMove; //initial position color for long algebraic format moves output
@@ -29,6 +29,7 @@ class Uci {
     void position();
     void setStartpos();
     void go();
+    void stop();
 
     //UCI protocol extensions
     void call();

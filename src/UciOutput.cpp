@@ -13,10 +13,10 @@ namespace {
     }
 }
 
-UciOutput::UciOutput (std::ostream& o, const ChessVariant& v, const Color& c)
-    : out(o), chessVariant(v), colorToMove(c), isreadyWaiting(false) {}
+UciOutput::UciOutput (std::ostream& o, const UciHash& h, const ChessVariant& v, const Color& c)
+    : out(o), uciHash(h), chessVariant(v), colorToMove(c), isreadyWaiting(false) {}
 
-void UciOutput::uci(const UciHash& uciHash) const {
+void UciOutput::uci() const {
     OutputBuffer ob{out};
     ob << "id name " << io::app_version << '\n';
     ob << "id author Aleks Peshkov\n";
@@ -85,6 +85,14 @@ void UciOutput::nps(std::ostream& ob, const SearchInfo& info) const {
                 ob << " nps " << _nps;
             }
         }
+    }
+    hashfull(ob);
+}
+
+void UciOutput::hashfull(std::ostream& ob) const {
+    auto _full = uciHash.hashfull();
+    if ( _full > 0) {
+        ob << " hashfull " << _full;
     }
 }
 

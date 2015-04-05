@@ -32,6 +32,10 @@ HashMemory::size_t HashMemory::round(size_t bytes) {
     return (bytes > 0)? ::singleton<decltype(bytes)>(::bsr(bytes)):0;
 }
 
+void HashMemory::clear() {
+    std::memset(this->hash, 0, this->size);
+}
+
 void HashMemory::set(Cluster* _hash, size_t _size) {
     std::memset(_hash, 0, _size);
 

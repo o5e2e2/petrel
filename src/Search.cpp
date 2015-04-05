@@ -91,11 +91,15 @@ namespace PerftRoot {
     }
 
     bool perft(const Position& parent, SearchWindow& window) {
+        PerftTT::nextAge();
+
         if (window.draft > 0) {
             perftX(parent, window);
         }
         else {
-            for (window.draft = 1; !perftX(parent, window); ++window.draft) {}
+            for (window.draft = 1; !perftX(parent, window); ++window.draft) {
+                PerftTT::nextAge();
+            }
         }
 
         window.control.info.report_bestmove();

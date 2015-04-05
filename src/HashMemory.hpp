@@ -20,7 +20,6 @@ private:
     size_t mask;
     size_t size;
     size_t max;
-    static const size_t ClusterSize = sizeof(Cluster);
 
     HashMemory (const HashMemory&) = delete;
     HashMemory& operator = (const HashMemory&) = delete;
@@ -34,10 +33,13 @@ private:
     void setMax();
 
 public:
+    static const size_t ClusterSize = sizeof(Cluster);
+
     HashMemory () { set(&one, ClusterSize); setMax(); }
    ~HashMemory () { free(); }
 
     void resize(size_t bytes);
+    void clear();
 
     size_t getSize() const { return size; }
     size_t getMask() const { return mask; }
