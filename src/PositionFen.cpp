@@ -233,6 +233,7 @@ public:
             }
             io::fail_char(in);
         }
+        pos.syncZobrist();
         return in;
     }
 

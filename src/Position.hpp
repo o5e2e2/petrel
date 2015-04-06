@@ -57,6 +57,7 @@ public:
     bool setCastling(Side, File);
     bool setCastling(Side, CastlingSide);
     bool setEnPassant(File);
+    void syncZobrist();
 };
 
 #endif

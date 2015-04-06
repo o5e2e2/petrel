@@ -163,6 +163,10 @@ bool Position::isLegalEnPassant(Pi killer, File epFile) const {
     return true;
 }
 
+void Position::syncZobrist() {
+    zobrist = PositionSide::zobrist_combine(MY, OP);
+}
+
 template <Side::_t My>
 void Position::setLegalEnPassant(Pi victim) {
     const Side::_t Op{~My};
@@ -190,7 +194,7 @@ void Position::setLegalEnPassant(Pi victim) {
 
     if (OP.hasEnPassant()) {
         MY.setEnPassant(victim, epFile);
-        zobrist = PositionSide::zobrist_combine(MY, OP);
+        syncZobrist();
     }
 }
 

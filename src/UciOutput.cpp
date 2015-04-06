@@ -1,6 +1,7 @@
 #include "UciOutput.hpp"
 #include "OutputBuffer.hpp"
 #include "Move.hpp"
+#include "Position.hpp"
 #include "PositionFen.hpp"
 #include "SearchControl.hpp"
 #include "SearchInfo.hpp"
@@ -103,6 +104,7 @@ void UciOutput::info_fen(const Position& pos) const {
     OutputBuffer ob{out};
     ob << "info fen ";
     PositionFen::write(ob, pos, colorToMove, chessVariant);
+    //ob << " key 0x" << std::hex << pos.getZobrist();
     ob << '\n';
 }
 
