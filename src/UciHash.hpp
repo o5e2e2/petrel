@@ -19,6 +19,7 @@ private:
 
 public:
     UciHash (HashMemory& hash) : hashMemory(hash) {}
+
     void resize(_t mb) {
         hashMemory.resize(static_cast<HashMemory::size_t>(mb) * MiB);
         PerftTT::resetAge();
@@ -34,12 +35,20 @@ public:
         auto max = hashMemory.getMax();
 
         out << "option name Hash type spin min 0 max " << toMiB(max) << " default " << toMiB(current) << '\n';
+
         return out;
     }
 
-    HashMemory::size_t hashfull() const {
-        return (static_cast<HashMemory::size_t>(PerftTT::getUsed())*1000) / getHashTotalRecords();
+    std::ostream& hashfull(std::ostream& out) const {
+        auto hf = (static_cast<HashMemory::size_t>(PerftTT::getUsed())*1000) / getHashTotalRecords();
+
+        if (hf > 0) {
+            out << " hashfull " << hf;
+        }
+
+        return out;
     }
+
 };
 
 #endif

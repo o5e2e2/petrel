@@ -86,14 +86,7 @@ void UciOutput::nps(std::ostream& ob, const SearchInfo& info) const {
             }
         }
 
-        hashfull(ob);
-    }
-}
-
-void UciOutput::hashfull(std::ostream& ob) const {
-    auto _full = uciHash.hashfull();
-    if ( _full > 0) {
-        ob << " hashfull " << _full;
+        uciHash.hashfull(ob);
     }
 }
 
