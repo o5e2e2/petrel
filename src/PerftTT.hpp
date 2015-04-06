@@ -40,6 +40,10 @@ class PerftTT {
         return static_cast<depth_t>(static_cast<std::size_t>((*record)[i].key & DepthMask) >> DepthShift);
     }
 
+    node_count_t getNodes(index_t i) {
+        return (*record)[i].key & ~AgeMask;
+    }
+
     void set(index_t i, Zobrist k, node_count_t n) {
         if (getAge(i) != age) {
             ++used;
@@ -76,12 +80,12 @@ public:
 
             auto i_a = getAge(i);
 
-            index_t i_d = 0;
-            if (i_a == age /*|| ((i_a + 1) & 3) == age*/) {
-                i_d = getDepth(i);
-            }
+            index_t i_d = (i_a == age)? i_d = getDepth(i) : 0;
 
-            if (min_d > i_d) {
+            if (min_d >= i_d) {
+                if (min_d == i_d && getNodes(min_i) <= getNodes(i)) {
+                    continue;
+                }
                 min_i = i;
                 min_d = i_d;
             }
