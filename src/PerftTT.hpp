@@ -79,8 +79,7 @@ public:
             if (i_k == k) { set(i, k, n); return; }
 
             auto i_a = getAge(i);
-
-            index_t i_d = (i_a == age)? i_d = getDepth(i) : 0;
+            index_t i_d = (i_a == age)? getDepth(i) : 0;
 
             if (min_d >= i_d) {
                 if (min_d == i_d && getNodes(min_i) <= getNodes(i)) {
