@@ -64,7 +64,7 @@ private:
 public:
     constexpr Zobrist () : _v{0} {}
     constexpr explicit Zobrist (_t z) : _v(z) {}
-    constexpr explicit operator _t () const { return _v; }
+    constexpr operator const _t& () const { return _v; }
 
     void clear() { *this = {}; }
 

@@ -15,6 +15,7 @@ private:
     HashMemory& hashMemory;
 
     static _t toMiB(HashMemory::size_t bytes) { return small_cast<_t>(bytes / MiB); }
+    HashMemory::size_t getHashTotalRecords() const { return hashMemory.getSize() / (HashMemory::ClusterSize/4); }
 
 public:
     UciHash (HashMemory& hash) : hashMemory(hash) {}
@@ -36,8 +37,8 @@ public:
         return out;
     }
 
-    unsigned long hashfull() const {
-        return (static_cast<unsigned long>(PerftTT::getUsed())*1000) / (hashMemory.getSize() * 4 / HashMemory::ClusterSize);
+    HashMemory::size_t hashfull() const {
+        return (static_cast<HashMemory::size_t>(PerftTT::getUsed())*1000) / getHashTotalRecords();
     }
 };
 

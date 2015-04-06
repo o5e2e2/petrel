@@ -85,8 +85,9 @@ void UciOutput::nps(std::ostream& ob, const SearchInfo& info) const {
                 ob << " nps " << _nps;
             }
         }
+
+        hashfull(ob);
     }
-    hashfull(ob);
 }
 
 void UciOutput::hashfull(std::ostream& ob) const {
