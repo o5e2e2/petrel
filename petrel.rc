@@ -1,11 +1,13 @@
 echo 193690690:
+#setoption uci_chess960 true
 position fen r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 25
-go depth 4
-wait
+position
 
 echo 8031647685:
+setoption hash 16
+go depth 1
+wait
 go depth 5
-isready
 
 #position fen nqbnrbkr/pppppppp/8/8/8/8/PPPPPPPP/NQBNRBKR w KQkq - 0 1
 #position moves e2e4
