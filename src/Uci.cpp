@@ -5,7 +5,7 @@
 #include "PositionMoves.hpp"
 
 Uci::Uci (std::ostream& out)
-    : searchControl{}, uciHash(searchControl.tt()), uciOutput(out, uciHash, chessVariant, colorToMove)
+    : searchControl{}, uciHash(searchControl.tt()), uciOutput(out, uciHash, chessVariant, colorToMove), chessVariant(Orthodox)
 {
     ucinewgame();
 }
