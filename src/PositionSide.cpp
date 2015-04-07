@@ -163,12 +163,18 @@ void PositionSide::clearCastlings() {
     types.clearCastlings();
 }
 
-void PositionSide::setCastling(Pi rook) {
-    types.setCastling(rook);
+bool PositionSide::setCastling(Pi pi) {
+    if (isCastling(pi)) { return false; }
 
-    Square from = squareOf(rook);
+    Square from = squareOf(pi);
+
+    assert (typeOf(pi).is(Rook));
     assert (from.is(Rank1));
+
     zobrist.setCastling(from);
+    types.setCastling(pi);
+
+    return true;
 }
 
 bool PositionSide::setCastling(CastlingSide side) {
@@ -181,19 +187,21 @@ bool PositionSide::setCastling(CastlingSide side) {
         case KingSide: {
             auto rightRooks = rooks & squares.rightBackward(kingSquare());
             if (rightRooks.none()) { return false; }
+
             theRook = rightRooks.last();
             break;
         }
         case QueenSide: {
             auto leftRooks = rooks & squares.leftForward(kingSquare());
             if (leftRooks.none()) { return false; }
-            theRook = leftRooks.first();
+
+            //TRICK: see the same pieces on the same rank order in class SquareOrder
+            theRook = leftRooks.last();
             break;
         }
     }
 
-    setCastling(theRook);
-    return true;
+    return setCastling(theRook);
 }
 
 bool PositionSide::setCastling(File file) {
@@ -204,8 +212,7 @@ bool PositionSide::setCastling(File file) {
     if (isPieceOn(rookFrom)) {
         Pi pi{ pieceOn(rookFrom) };
         if (isTypeOf(pi, Rook)) {
-            setCastling(pi);
-            return true;
+            return setCastling(pi);
         }
     }
 
