@@ -2,7 +2,7 @@
 #define VECTOR_PI_SINGLE_HPP
 
 #include "typedefs.hpp"
-#include "Vector.hpp"
+#include "bitops128.hpp"
 #include "VectorOf.hpp"
 
 class VectorPiSingle {

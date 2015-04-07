@@ -1,7 +1,7 @@
 #ifndef VECTOR_BIT_COUNT_HPP
 #define VECTOR_BIT_COUNT_HPP
 
-#include "Vector.hpp"
+#include "bitops128.hpp"
 
 class VectorBitCount {
 public:

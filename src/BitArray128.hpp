@@ -1,14 +1,8 @@
-#ifndef VECTOR_HPP
-#define VECTOR_HPP
+#ifndef BIT_ARRAY_128_HPP
+#define BIT_ARRAY_128_HPP
 
-#include "bitops.hpp"
+#include "bitops128.hpp"
 #include "BitArray.hpp"
-
-#if defined __SSSE3__ || defined _M_X64 || (defined _MSC_VER && defined _M_IX86_FP && _M_IX86_FP >= 2)
-#   include <tmmintrin.h>
-#else
-#   error The code requiers to enable compiler to use SSSE3 extension
-#endif
 
 template <>
 constexpr BitArrayBase<__m128i>::BitArrayBase () : _v{0,0} {}

@@ -1,7 +1,7 @@
 #ifndef VECTOR_OF_HPP
 #define VECTOR_OF_HPP
 
-#include "Vector.hpp"
+#include "bitops128.hpp"
 #include "Index.hpp"
 
 class VectorOf : Index<0x100>::static_array<__m128i> {

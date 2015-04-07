@@ -1,7 +1,7 @@
 #ifndef VECTOR_PI_BIT_HPP
 #define VECTOR_PI_BIT_HPP
 
-#include "Vector.hpp"
+#include "BitArray128.hpp"
 #include "VectorOf.hpp"
 #include "VectorPiMask.hpp"
 

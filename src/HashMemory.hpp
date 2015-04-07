@@ -2,7 +2,7 @@
 #define HASH_MEMORY_HPP
 
 #include <new>
-#include "Vector.hpp"
+#include "bitops128.hpp"
 #include "Zobrist.hpp"
 
 class HashMemory {

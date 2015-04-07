@@ -1,7 +1,6 @@
 #ifndef VECTOR_PI_ENUM_HPP
 #define VECTOR_PI_ENUM_HPP
 
-#include "Vector.hpp"
 #include "VectorPiMask.hpp"
 #include "VectorOf.hpp"
 
