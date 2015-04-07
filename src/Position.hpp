@@ -12,7 +12,6 @@ public:
 
     Side::array<PositionSide> side;
     Side::array<Bb> occupied; //pieces of both sides
-    Zobrist zobrist;
 
 private:
     Position& operator = (const Position&) = delete;
@@ -44,7 +43,7 @@ public:
     friend void PositionFen::write(std::ostream&, const Position&, Color, ChessVariant);
     Move createMove(Side, Square, Square) const;
 
-    const Zobrist& getZobrist() const { return zobrist; }
+    Zobrist getZobrist() const;
 
     //serie of irreversible moves with extra legality check
     friend Move readMove(std::istream&, const Position&, Color);
@@ -57,7 +56,6 @@ public:
     bool setCastling(Side, File);
     bool setCastling(Side, CastlingSide);
     bool setEnPassant(File);
-    void syncZobrist();
 };
 
 #endif

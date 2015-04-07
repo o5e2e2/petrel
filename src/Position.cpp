@@ -19,19 +19,17 @@ Position::Position (const Position& parent, Square from, Square to)
     makeMove<Op>(from, to);
 }
 
-Position::Position () : side{}, occupied{}, zobrist{} {}
+Position::Position () : side{}, occupied{} {}
 
 void Position::swapSides() {
     using std::swap;
     PositionSide::swap(MY, OP);
     swap(occupied[My], occupied[Op]);
-    zobrist.flip();
 }
 
 void Position::syncSides() {
     occupied[My] = MY.occupiedSquares() + ~OP.occupiedSquares();
     occupied[Op] = ~occupied[My];
-    zobrist = PositionSide::zobrist_combine(MY, OP);
 }
 
 template <Side::_t My>
@@ -163,8 +161,8 @@ bool Position::isLegalEnPassant(Pi killer, File epFile) const {
     return true;
 }
 
-void Position::syncZobrist() {
-    zobrist = PositionSide::zobrist_combine(MY, OP);
+Zobrist Position::getZobrist() const {
+    return PositionSide::zobrist_combine(MY, OP);
 }
 
 template <Side::_t My>
@@ -194,7 +192,7 @@ void Position::setLegalEnPassant(Pi victim) {
 
     if (OP.hasEnPassant()) {
         MY.setEnPassant(victim, epFile);
-        syncZobrist();
+        //syncZobrist();
     }
 }
 
