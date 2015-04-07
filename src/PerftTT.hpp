@@ -1,12 +1,14 @@
 #ifndef Perft_TT_HPP
 #define Perft_TT_HPP
 
+#include <limits>
 #include "Zobrist.hpp"
 #include "HashMemory.hpp"
 
 class PerftTT {
     typedef unsigned age_t;
     typedef node_count_t used_t;
+    typedef HashBucket::Index Index;
 
     static age_t age;
     static used_t used;
@@ -21,19 +23,19 @@ class PerftTT {
         node_count_t perft;
 
         age_t getAge() {
-            return static_cast<age_t>(perft >> AgeShift);
+            return static_cast<age_t>(static_cast<std::size_t>(perft) >> AgeShift);
         }
 
         depth_t getDepth() {
             return static_cast<depth_t>(static_cast<std::size_t>(key) >> DepthShift & 0xFF);
         }
 
-        std::size_t getNodes() {
-            return key & ~AgeMask;
+        node_count_t getNodes() {
+            return perft & ~AgeMask;
         }
 
     };
-    typedef Index<4>::array<PerftRecord> Bucket;
+    typedef Index::array<PerftRecord> Bucket;
 
     union {
         HashBucket h;
@@ -48,7 +50,7 @@ class PerftTT {
         return (n & ~AgeMask) | (static_cast<decltype(n)>(a) << AgeShift);
     }
 
-    void set(Index<4> i, Zobrist k, node_count_t n) {
+    void set(Index i, Zobrist k, node_count_t n) {
         if (b[i].getAge() != age) {
             ++used;
         }
@@ -61,7 +63,7 @@ public:
     PerftTT(HashBucket::_t* p) : h(p) {}
 
     node_count_t get(Zobrist z, depth_t d) {
-        FOR_INDEX(Index<4>, i) {
+        FOR_INDEX(Index, i) {
             if (b[i].key == key(z, d)) {
                 if (b[i].getAge() != age) {
                     ++used;
@@ -69,7 +71,7 @@ public:
                     b[i].perft = perft(b[i].perft, age);
                     h.save(i);
                 }
-                return b[i].perft & ~AgeMask;
+                return b[i].getNodes();
             }
         }
         return 0;
@@ -78,21 +80,23 @@ public:
     void set(Zobrist z, depth_t d, node_count_t n) {
         Zobrist k = key(z, d);
 
-        Index<4> min_i = 0;
-        index_t min_d = 0xFF;
+        Index min_i = 0;
+        depth_t min_d = 0xFF;
+        auto min_n = std::numeric_limits<node_count_t>::max();
 
-        FOR_INDEX(Index<4>, i) {
+        FOR_INDEX(Index, i) {
             if (b[i].key == k) { set(i, k, n); return; }
 
-            auto i_a = b[i].getAge();
-            index_t i_d = (i_a == age)? b[i].getDepth() : 0;
+            depth_t i_d{ (b[i].getAge() == age)? b[i].getDepth() : 0 };
+            auto i_n = b[i].getNodes();
 
             if (min_d >= i_d) {
-                if (min_d == i_d && b[min_i].getNodes() <= b[i].getNodes()) {
+                if (min_d == i_d && min_n <= i_n) {
                     continue;
                 }
                 min_i = i;
                 min_d = i_d;
+                min_n = i_n;
             }
         }
 

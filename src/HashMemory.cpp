@@ -37,22 +37,22 @@ void HashMemory::clear() {
     std::memset(this->hash, 0, this->size);
 }
 
-void HashMemory::set(HashBucket* _hash, size_t _size) {
+void HashMemory::set(_t* _hash, size_t _size) {
     std::memset(_hash, 0, _size);
 
     this->hash = _hash;
     this->size = _size;
 
     assert (size == round(size));
-    this->mask = (size-1) ^ (BucketSize-1);
+    this->mask = (size-1) ^ (sizeof(_t)-1);
 }
 
 void HashMemory::setOne() {
-    set(&one, BucketSize);
+    set(reinterpret_cast<_t*>(&one), HashBucket::Size);
 }
 
 void HashMemory::resize(size_t bytes) {
-    bytes = (bytes <= BucketSize)? BucketSize : round(bytes);
+    bytes = (bytes <= HashBucket::Size)? HashBucket::Size : round(bytes);
 
     if (bytes == this->size) {
         return;
@@ -63,12 +63,12 @@ void HashMemory::resize(size_t bytes) {
 
     bytes = std::min(bytes, getMax());
 
-    auto clusters = bytes / BucketSize;
-    for (; clusters > 1; clusters >>= 1) {
-        auto p = reinterpret_cast<decltype(hash)>(new (std::nothrow) HashBucket[clusters]);
+    auto records = bytes / sizeof(_t);
+    for (; records > HashBucket::Size/sizeof(_t); records >>= 1) {
+        auto p = new (std::nothrow) _t[records];
 
         if (p) {
-            set(p, static_cast<size_t>(clusters) * BucketSize);
+            set(p, static_cast<size_t>(records) * sizeof(_t));
             return;
         }
     }
@@ -76,7 +76,7 @@ void HashMemory::resize(size_t bytes) {
 }
 
 void HashMemory::free() {
-    if (this->size > BucketSize) {
+    if (this->size > HashBucket::Size) {
         auto toFree = this->hash;
         setOne();
 

@@ -8,11 +8,12 @@
 class HashMemory {
 public:
     typedef std::size_t size_t;
+    typedef HashBucket::_t _t;
 
 private:
 
-    HashBucket  one;
-    HashBucket* hash;
+    HashBucket one;
+    _t* hash;
 
     size_t mask;
     size_t size;
@@ -23,15 +24,13 @@ private:
 
     static size_t round(size_t bytes);
 
-    void set(HashBucket*, size_t);
+    void set(_t*, size_t);
     void setOne();
     void free();
 
     void setMax();
 
 public:
-    static const size_t BucketSize = sizeof(HashBucket);
-
     HashMemory () { setOne(); setMax(); }
    ~HashMemory () { free(); }
 
@@ -39,13 +38,19 @@ public:
     void clear();
 
     size_t getSize() const { return size; }
-    size_t getMask() const { return mask; }
     size_t getMax()  const { return max; }
 
-    HashBucket::_t* lookup(Zobrist z) const {
-        auto p = reinterpret_cast<char*>(hash) + (static_cast<Zobrist::_t>(z) & mask);
-        _mm_prefetch(p, _MM_HINT_T1);
-        return reinterpret_cast<HashBucket::_t*>(p);
+    _t* lookup(Zobrist z) const {
+        auto o = reinterpret_cast<char*>(hash) + (static_cast<Zobrist::_t>(z) & mask);
+        _mm_prefetch(o, _MM_HINT_T0);
+        if (HashBucket::Size > 0100) {
+            _mm_prefetch(::xor_ptr<char, 0100>(o, 1), _MM_HINT_T0);
+            if (HashBucket::Size > 0200) {
+                _mm_prefetch(::xor_ptr<char, 0100>(o, 2), _MM_HINT_T0);
+                _mm_prefetch(::xor_ptr<char, 0100>(o, 3), _MM_HINT_T0);
+            }
+        }
+        return reinterpret_cast<_t*>(o);
     }
 
 };

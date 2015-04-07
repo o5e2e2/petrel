@@ -67,6 +67,11 @@ constexpr bool is_singleton(T n) { return (n != 0) && (::without_lsb(n) == 0); }
 
 typedef int index_t; //small numbers [0..N) with a known upper bound
 
+template <typename T, int N = sizeof(T)>
+constexpr T* xor_ptr(T* p, index_t i) {
+    return reinterpret_cast<T*>(reinterpret_cast<uintptr_t>(p) ^ static_cast<uintptr_t>(i) * N);
+}
+
 #if defined __GNUC__
     INLINE index_t bsf(std::uint32_t b) {
         assert (b != 0);

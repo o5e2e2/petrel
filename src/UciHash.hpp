@@ -15,7 +15,7 @@ private:
     HashMemory& hashMemory;
 
     static _t toMiB(HashMemory::size_t bytes) { return small_cast<_t>(bytes / MiB); }
-    HashMemory::size_t getHashTotalRecords() const { return hashMemory.getSize() / (HashMemory::BucketSize/4); }
+    HashMemory::size_t getHashTotalRecords() const { return hashMemory.getSize() / sizeof(HashMemory::_t); }
 
 public:
     UciHash (HashMemory& hash) : hashMemory(hash) {}
