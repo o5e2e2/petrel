@@ -1,5 +1,6 @@
 setoption uci_chess960 true
 setoption hash 64
+uci
 position startpos moves e2e4 e7e5 f1c4 g8f6 d2d4 c7c6 d4e5 f6e4 g1e2 e4f2 e5e6 f8e7 e6d7 e8f8
 echo info fen rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w AH -
 position
@@ -14,7 +15,6 @@ wait
 
 echo 8031647685:
 go depth 5
-wait
 
 #position fen nqbnrbkr/pppppppp/8/8/8/8/PPPPPPPP/NQBNRBKR w KQkq - 0 1
 #position moves e2e4

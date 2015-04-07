@@ -19,10 +19,26 @@ class PerftTT {
     struct PerftRecord {
         Zobrist key;
         node_count_t perft;
-    };
 
-    typedef PerftRecord Bucket[4];
-    Bucket* record;
+        age_t getAge() {
+            return static_cast<age_t>(perft >> AgeShift);
+        }
+
+        depth_t getDepth() {
+            return static_cast<depth_t>(static_cast<std::size_t>(key) >> DepthShift & 0xFF);
+        }
+
+        std::size_t getNodes() {
+            return key & ~AgeMask;
+        }
+
+    };
+    typedef Index<4>::array<PerftRecord> Bucket;
+
+    union {
+        HashBucket h;
+        Bucket b;
+    };
 
     static constexpr Zobrist key(Zobrist::_t z, depth_t d) {
         return Zobrist{ (z & ~DepthMask) | ((static_cast<decltype(z)>(static_cast<unsigned>(d)) << DepthShift) & DepthMask) };
@@ -32,37 +48,28 @@ class PerftTT {
         return (n & ~AgeMask) | (static_cast<decltype(n)>(a) << AgeShift);
     }
 
-    age_t getAge(index_t i) {
-        return static_cast<age_t>(static_cast<std::size_t>((*record)[i].perft) >> AgeShift);
-    }
-
-    depth_t getDepth(index_t i) {
-        return static_cast<depth_t>(static_cast<std::size_t>((*record)[i].key & DepthMask) >> DepthShift);
-    }
-
-    node_count_t getNodes(index_t i) {
-        return (*record)[i].key & ~AgeMask;
-    }
-
-    void set(index_t i, Zobrist k, node_count_t n) {
-        if (getAge(i) != age) {
+    void set(Index<4> i, Zobrist k, node_count_t n) {
+        if (b[i].getAge() != age) {
             ++used;
         }
-        (*record)[i].key = k;
-        (*record)[i].perft = perft(n, age);
+        b[i].key = k;
+        b[i].perft = perft(n, age);
+        h.save(i);
     }
 
 public:
-    PerftTT(char* c) : record(reinterpret_cast<decltype(record)>(c)) {}
+    PerftTT(HashBucket::_t* p) : h(p) {}
 
     node_count_t get(Zobrist z, depth_t d) {
-        for (int i = 0; i < 4; ++i) {
-            if ((*record)[i].key == key(z, d)) {
-                if (getAge(i) != age) {
-                    (*record)[i].perft = perft((*record)[i].perft, age);
+        FOR_INDEX(Index<4>, i) {
+            if (b[i].key == key(z, d)) {
+                if (b[i].getAge() != age) {
                     ++used;
+
+                    b[i].perft = perft(b[i].perft, age);
+                    h.save(i);
                 }
-                return (*record)[i].perft & ~AgeMask;
+                return b[i].perft & ~AgeMask;
             }
         }
         return 0;
@@ -71,18 +78,17 @@ public:
     void set(Zobrist z, depth_t d, node_count_t n) {
         Zobrist k = key(z, d);
 
-        index_t min_i = 0;
+        Index<4> min_i = 0;
         index_t min_d = 0xFF;
 
-        for (index_t i = 0; i < 4; ++i) {
-            Zobrist i_k = (*record)[i].key;
-            if (i_k == k) { set(i, k, n); return; }
+        FOR_INDEX(Index<4>, i) {
+            if (b[i].key == k) { set(i, k, n); return; }
 
-            auto i_a = getAge(i);
-            index_t i_d = (i_a == age)? getDepth(i) : 0;
+            auto i_a = b[i].getAge();
+            index_t i_d = (i_a == age)? b[i].getDepth() : 0;
 
             if (min_d >= i_d) {
-                if (min_d == i_d && getNodes(min_i) <= getNodes(i)) {
+                if (min_d == i_d && b[min_i].getNodes() <= b[i].getNodes()) {
                     continue;
                 }
                 min_i = i;

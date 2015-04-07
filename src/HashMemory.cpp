@@ -1,3 +1,4 @@
+#include <new>
 #include "HashMemory.hpp"
 #include "bitops.hpp"
 
@@ -36,22 +37,22 @@ void HashMemory::clear() {
     std::memset(this->hash, 0, this->size);
 }
 
-void HashMemory::set(Cluster* _hash, size_t _size) {
+void HashMemory::set(HashBucket* _hash, size_t _size) {
     std::memset(_hash, 0, _size);
 
     this->hash = _hash;
     this->size = _size;
 
     assert (size == round(size));
-    this->mask = (size-1) ^ (ClusterSize-1);
+    this->mask = (size-1) ^ (BucketSize-1);
 }
 
 void HashMemory::setOne() {
-    set(&one, ClusterSize);
+    set(&one, BucketSize);
 }
 
 void HashMemory::resize(size_t bytes) {
-    bytes = (bytes <= ClusterSize)? ClusterSize : round(bytes);
+    bytes = (bytes <= BucketSize)? BucketSize : round(bytes);
 
     if (bytes == this->size) {
         return;
@@ -62,12 +63,12 @@ void HashMemory::resize(size_t bytes) {
 
     bytes = std::min(bytes, getMax());
 
-    auto clusters = bytes / ClusterSize;
+    auto clusters = bytes / BucketSize;
     for (; clusters > 1; clusters >>= 1) {
-        auto p = reinterpret_cast<decltype(hash)>(new (std::nothrow) Cluster[clusters]);
+        auto p = reinterpret_cast<decltype(hash)>(new (std::nothrow) HashBucket[clusters]);
 
         if (p) {
-            set(p, static_cast<size_t>(clusters) * ClusterSize);
+            set(p, static_cast<size_t>(clusters) * BucketSize);
             return;
         }
     }
@@ -75,7 +76,7 @@ void HashMemory::resize(size_t bytes) {
 }
 
 void HashMemory::free() {
-    if (this->size > ClusterSize) {
+    if (this->size > BucketSize) {
         auto toFree = this->hash;
         setOne();
 

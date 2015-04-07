@@ -10,7 +10,7 @@
 namespace Perft {
     bool perft(const Position& parent, SearchWindow& window) {
         Zobrist zobrist = parent.getZobrist();
-        char* record = window.control.tt().lookup(zobrist);
+        auto origin = window.control.tt().lookup(zobrist);
 
         PositionMoves pm(parent);
         MatrixPiBb& moves = pm.getMoves();
@@ -20,8 +20,9 @@ namespace Perft {
             return false;
         }
 
-        PerftTT tt(record);
-        node_count_t n = tt.get(zobrist, window.draft);
+        PerftTT tt(origin);
+        auto n = tt.get(zobrist, window.draft);
+
         if (n) {
             window.control.info.perftNodes += n;
             return false;
