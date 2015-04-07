@@ -2,6 +2,7 @@
 #define REVERSE_BB_HPP
 
 #include "BitArray128.hpp"
+#include "BitArray128Reverse.hpp"
 #include "Bb.hpp"
 
 /**
@@ -20,22 +21,7 @@ class ReverseBb : public BitArray<ReverseBb, __m128i> {
     struct Singleton : Square::static_array<_t> { Singleton (); };
     static const Singleton singleton;
 
-    class BitReverse {
-        typedef __m128i _t;
-        _t lo_nibble_reverse, hi_nibble_reverse, lo_nibble_mask, byte_reverse;
-    public:
-        BitReverse ();
-
-        _t operator() (_t v) const {
-            _t lo = _mm_shuffle_epi8(lo_nibble_reverse, lo_nibble_mask & v);
-            _t hi = _mm_shuffle_epi8(hi_nibble_reverse, lo_nibble_mask & _mm_srli_epi16(v, 4));
-            return _mm_shuffle_epi8(lo ^ hi, byte_reverse);
-        }
-    };
-    static const BitReverse bit_reverse;
-
     static _t hyperbola(_t v) { return v ^ bit_reverse(v); }
-    static _t combine(Bb, Bb);
 
     explicit operator Bb () const { return Bb{ static_cast<Bb::_t>( _mm_cvtsi128_si64(this->_v) ) }; }
 

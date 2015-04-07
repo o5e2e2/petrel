@@ -3,6 +3,7 @@
 
 #include "io.hpp"
 #include "PositionSide.hpp"
+#include "DualBbOccupied.hpp"
 #include "Move.hpp"
 #include "PositionFen.hpp"
 
@@ -11,7 +12,7 @@ public:
     friend class PositionMoves;
 
     Side::array<PositionSide> side;
-    Side::array<Bb> occupied; //pieces of both sides
+    DualBbOccupied occupied; //pieces of both sides
 
 private:
     Position& operator = (const Position&) = delete;

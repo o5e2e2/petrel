@@ -78,11 +78,11 @@ public:
 #if defined ASSERT_INDEX_CHECK
         using std::array<T, Size>::at;
         T& operator[] (Index i) { return at(static_cast<size_type>(i)); };
-        const T& operator[] (Index i) const { return at(static_cast<size_type>(i)); };
+        constexpr const T& operator[] (Index i) const { return at(static_cast<size_type>(i)); };
 #else
         using std::array<T, Size>::operator[];
         T& operator[] (Index i) { return operator[](static_cast<size_type>(i)); };
-        const T& operator[] (Index i) const { return operator[](static_cast<size_type>(i)); };
+        constexpr const T& operator[] (Index i) const { return operator[](static_cast<size_type>(i)); };
 #endif
     };
 

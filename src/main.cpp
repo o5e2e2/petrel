@@ -2,6 +2,7 @@
 * Startup constant initialization
 */
 #include "BetweenSquares.hpp"
+#include "BitArray128Reverse.hpp"
 #include "CastlingRules.hpp"
 #include "Evaluation.hpp"
 #include "PerftTT.hpp"
@@ -11,16 +12,16 @@
 #include "VectorOf.hpp"
 #include "VectorPiOrder.hpp"
 #include "VectorPiSingle.hpp"
-#include "Zobrist.hpp"
+#include "ZobristKey.hpp"
 
 const BetweenSquares between; //32k
 const ReverseBb::Direction ReverseBb::direction; //12k
 const ReverseBb::Singleton ReverseBb::singleton; //1k
 const PieceTypeAttack pieceTypeAttack; //3k
 const VectorOf vectorOfAll; //4k
-const Zobrist::Key Zobrist::key; //3k
+const ZobristKey zobristKey; //3k
 const VectorPiSingle vectorPiSingle; //256
-const ReverseBb::BitReverse ReverseBb::bit_reverse; //64
+const BitReverse bit_reverse; //64
 const VectorBitCount bit_count; //48
 const VectorPiOrder::_t VectorPiOrder::sorted = _mm_setr_epi8(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15);
 const CastlingRules castlingRules; //128

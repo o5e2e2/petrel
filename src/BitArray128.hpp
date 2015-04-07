@@ -8,12 +8,12 @@ template <>
 constexpr BitArrayBase<__m128i>::BitArrayBase () : _v{0,0} {}
 
 template <>
-inline void BitArrayBase<__m128i>::operator %= (BitArrayBase<__m128i> a) {
+INLINE void BitArrayBase<__m128i>::operator %= (BitArrayBase<__m128i> a) {
     _v = _mm_andnot_si128(a._v, _v);
 }
 
 template <>
-inline bool BitArrayBase<__m128i>::operator == (BitArrayBase<__m128i> a) {
+INLINE bool BitArrayBase<__m128i>::operator == (BitArrayBase<__m128i> a) {
     return _mm_movemask_epi8( _mm_cmpeq_epi8(_v, a._v) ) == 0xffffu;
 }
 

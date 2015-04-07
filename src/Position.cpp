@@ -24,12 +24,11 @@ Position::Position () : side{}, occupied{} {}
 void Position::swapSides() {
     using std::swap;
     PositionSide::swap(MY, OP);
-    swap(occupied[My], occupied[Op]);
+    occupied.swap();
 }
 
 void Position::syncSides() {
-    occupied[My] = MY.occupiedSquares() + ~OP.occupiedSquares();
-    occupied[Op] = ~occupied[My];
+    occupied = DualBbOccupied(MY.occupiedSquares(), OP.occupiedSquares());
 }
 
 template <Side::_t My>
@@ -162,7 +161,7 @@ bool Position::isLegalEnPassant(Pi killer, File epFile) const {
 }
 
 Zobrist Position::getZobrist() const {
-    return PositionSide::zobrist_combine(MY, OP);
+    return Zobrist(MY.getZobrist(), OP.getZobrist());
 }
 
 template <Side::_t My>

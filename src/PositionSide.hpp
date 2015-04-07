@@ -36,6 +36,8 @@ public:
 
     static void swap(PositionSide&, PositionSide&);
 
+    const Zobrist& getZobrist() const { return zobrist; }
+
     #ifdef NDEBUG
         void assertValid(Pi) const {}
     #else
@@ -47,7 +49,6 @@ public:
     VectorPiMask alivePieces() const { assert (squares.alivePieces() == types.alivePieces()); return squares.alivePieces(); }
 
     const MatrixPiBb& allAttacks() const { return attacks; }
-    static Zobrist zobrist_combine(const PositionSide& my, const PositionSide& op) { return Zobrist::combine(my.zobrist, op.zobrist); }
 
     Square squareOf(Pi pi) const { assertValid(pi); return squares.squareOf(pi); }
     Square kingSquare() const { return squareOf(TheKing); }
