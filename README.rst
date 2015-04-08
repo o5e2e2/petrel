@@ -4,7 +4,7 @@ Developer's notes about source code internals
 The code created to compile with recent GCC with C++11 features support.
 Latest code is not tested with MinGW for Windows, but should be fixed easily.
 
-The text below assumes that the reader does know chess programming terminology.
+*The text below assumes that the reader does know chess programming terminology.*
 
 The engine uses nor mailbox nor bitboard board representation. The fundamental
 datasructure is 16 byte vector: vector of bytes for each chess piece of
@@ -22,7 +22,6 @@ separately in one of 8 piece vectors. This allows very fast implemenation
 of attackTo() function and relatively fast update of attack table state.
 The engine uses so called Reversed BitBoard (aka Hyperbola Quintessense)
 piece attack generation of sliding pieces (bishops, rooks, queens).
-
 Legal moves matrix generated directly from the attack matrix.
 
 The engine does not internally distinguish white and black playing sides.
