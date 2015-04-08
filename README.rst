@@ -4,17 +4,20 @@ Developer's notes about source code internals
 The code created to compile with recent GCC with C++11 features support.
 Latest code is not tested with MinGW for Windows, but should be fixed easily.
 
+The engine extensively uses PSHUFB processor instruction that is
+available only on SSSE3 instruction set. Porting to ARM NEON should be possible.
+Porting to platform without rich SIMD instruction set is possible only with
+large performance penalty.
+
+Chess programming details
+-------------------------
+
 *The text below assumes that the reader does know chess programming terminology.*
 
 The engine uses nor mailbox nor bitboard board representation. The fundamental
 datasructure is 16 byte vector: vector of bytes for each chess piece of
 one of chess playing side. This 16 byte vector perfectly fits into SSE
 register of modern x86 (and x64) processors.
-
-The engine extensively uses PSHUFB processor instruction that is
-available only on SSSE3 instruction set. Porting to ARM NEON should be possible.
-Porting to platform without rich SIMD instruction set is possible only with
-large performance penalty.
 
 The engine incrementally updates attack table using unique data
 structure -- matrix of pieces and bitboards. Each bitboard rank stored
