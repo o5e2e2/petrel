@@ -11,6 +11,7 @@ public:
     typedef HashBucket::_t _t;
 
 private:
+    enum {ClusterSize = HashBucket::Size};
 
     HashBucket one;
     _t* hash;
@@ -44,9 +45,9 @@ public:
         auto o = reinterpret_cast<char*>(hash) + (static_cast<Zobrist::_t>(z) & mask);
         _mm_prefetch(o, _MM_HINT_T0);
 
-        if (HashBucket::Size > 0100) {
+        if (ClusterSize > 0100) {
             _mm_prefetch(::xor_ptr<char, 0100>(o, 1), _MM_HINT_T0);
-            if (HashBucket::Size > 0200) {
+            if (ClusterSize > 0200) {
                 _mm_prefetch(::xor_ptr<char, 0100>(o, 2), _MM_HINT_T0);
                 _mm_prefetch(::xor_ptr<char, 0100>(o, 3), _MM_HINT_T0);
             }

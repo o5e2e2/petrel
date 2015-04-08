@@ -1,4 +1,4 @@
-#include <new>
+#include <stdlib.h>
 #include "HashMemory.hpp"
 #include "bitops.hpp"
 
@@ -25,6 +25,11 @@ std::size_t getAvailableMemory() {
 
 #endif
 
+void* allocate(std::size_t size, std::size_t alignment) {
+    void* result;
+    return (posix_memalign(&result, alignment, size) == 0)? result:nullptr;
+}
+
 void HashMemory::setMax() {
     this->max = round(::getAvailableMemory());
 }
@@ -48,13 +53,14 @@ void HashMemory::set(_t* _hash, size_t _size) {
 }
 
 void HashMemory::setOne() {
-    set(reinterpret_cast<_t*>(&one), HashBucket::Size);
+    set(reinterpret_cast<_t*>(&one), ClusterSize);
 }
 
 void HashMemory::resize(size_t bytes) {
-    bytes = (bytes <= HashBucket::Size)? HashBucket::Size : round(bytes);
+    bytes = (bytes <= ClusterSize)? ClusterSize : round(bytes);
 
     if (bytes == this->size) {
+        clear();
         return;
     }
 
@@ -63,12 +69,11 @@ void HashMemory::resize(size_t bytes) {
 
     bytes = std::min(bytes, getMax());
 
-    auto records = bytes / sizeof(_t);
-    for (; records > HashBucket::Size/sizeof(_t); records >>= 1) {
-        auto p = new (std::nothrow) _t[records];
+    for (; bytes > ClusterSize; bytes >>= 1) {
+        auto p = ::allocate(bytes, ClusterSize);
 
         if (p) {
-            set(p, static_cast<size_t>(records) * sizeof(_t));
+            set(reinterpret_cast<_t*>(p), bytes);
             return;
         }
     }
@@ -76,10 +81,10 @@ void HashMemory::resize(size_t bytes) {
 }
 
 void HashMemory::free() {
-    if (this->size > HashBucket::Size) {
-        auto toFree = this->hash;
+    if (this->size > ClusterSize) {
+        auto p = this->hash;
         setOne();
 
-        delete[] toFree;
+        ::free(p);
     }
 }
