@@ -40,17 +40,16 @@ used to flip squares, bitbords and other data structures from opposite
 side of view to the current one. Flipping operation reverses bytes
 order inside bitboard and switches ranks inside squares.
 
-* class Bb (BitBoard) -- bitset of bits for each square of the chessboard
-* class Pi (Piece Index) -- one of 16 piece slots in a vector
-* class VectorPi -- 16 byte long vector.
+* class Bb: BitBoard -- bitset of bits for each square of the chessboard
+* class Pi: Piece Index -- one of 16 piece slots in a byte vector
+* class VectorPi: Vector of piece data
+* class Side: { My, Op } -- side to move, opposite side
 
-* typename _t -- internal value type used inside class templates
+* typename _t -- internal value type used inside classes
 * _v -- actual internal value of "_t" type
-* typename Self -- the name of the current template class
-* typename Arg -- function argument type (either "Self" or "const Self&")
 
 * operator ~ used for flipping squares and bitboards between sides
-* operator %" is shorcut to "and not" set operation
+* operator %" is a shorcut to "and not" set operation
 * operator +, "operator -" for bitsets with assert test that sets are disjoint
 
 Aleks Peshkov (mailto:aleks.peshkov@gmail.com)
