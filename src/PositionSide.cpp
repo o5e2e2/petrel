@@ -177,31 +177,20 @@ bool PositionSide::setCastling(Pi pi) {
     return true;
 }
 
-bool PositionSide::setCastling(CastlingSide side) {
+bool PositionSide::setCastling(CastlingSide castlingSide) {
     if (!kingSquare().is(Rank1)) { return false; }
 
-    auto rooks = piecesOfType(Rook) & piecesOn(Rank1);
+    Square outerSquare = kingSquare();
 
-    Pi theRook;
-    switch (side) {
-        case KingSide: {
-            auto rightRooks = rooks & squares.rightBackward(kingSquare());
-            if (rightRooks.none()) { return false; }
-
-            theRook = rightRooks.last();
-            break;
-        }
-        case QueenSide: {
-            auto leftRooks = rooks & squares.leftForward(kingSquare());
-            if (leftRooks.none()) { return false; }
-
-            //TRICK: see the same pieces on the same rank order in class SquareOrder
-            theRook = leftRooks.last();
-            break;
+    for (Pi rook : piecesOfType(Rook) & piecesOn(Rank1)) {
+        if (CastlingRules::castlingSide(outerSquare, squareOf(rook)).is(castlingSide)) {
+            outerSquare = squareOf(rook);
         }
     }
 
-    return setCastling(theRook);
+    if (outerSquare == kingSquare()) { return false; } //no rook found
+
+    return setCastling(pieceOn(outerSquare));
 }
 
 bool PositionSide::setCastling(File file) {
