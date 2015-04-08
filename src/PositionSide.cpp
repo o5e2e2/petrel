@@ -180,7 +180,7 @@ bool PositionSide::setCastling(Pi pi) {
 bool PositionSide::setCastling(CastlingSide castlingSide) {
     if (!kingSquare().is(Rank1)) { return false; }
 
-    Square outerSquare = kingSquare();
+    Square outerSquare{ kingSquare() };
 
     for (Pi rook : piecesOfType(Rook) & piecesOn(Rank1)) {
         if (CastlingRules::castlingSide(outerSquare, squareOf(rook)).is(castlingSide)) {

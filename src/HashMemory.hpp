@@ -43,6 +43,7 @@ public:
     _t* lookup(Zobrist z) const {
         auto o = reinterpret_cast<char*>(hash) + (static_cast<Zobrist::_t>(z) & mask);
         _mm_prefetch(o, _MM_HINT_T0);
+
         if (HashBucket::Size > 0100) {
             _mm_prefetch(::xor_ptr<char, 0100>(o, 1), _MM_HINT_T0);
             if (HashBucket::Size > 0200) {
@@ -50,6 +51,7 @@ public:
                 _mm_prefetch(::xor_ptr<char, 0100>(o, 3), _MM_HINT_T0);
             }
         }
+
         return reinterpret_cast<_t*>(o);
     }
 
