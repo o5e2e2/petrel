@@ -11,7 +11,7 @@ public:
     typedef HashBucket::_t _t;
 
 private:
-    enum {ClusterSize = HashBucket::Size};
+    static const size_t ClusterSize = HashBucket::Size;
 
     HashBucket one;
     _t* hash;

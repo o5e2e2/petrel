@@ -1,34 +1,6 @@
-#include <stdlib.h>
 #include "HashMemory.hpp"
 #include "bitops.hpp"
-
-#ifdef _WIN32
-
-#include <windows.h>
-std::size_t getAvailableMemory() {
-    MEMORYSTATUSEX status;
-    status.dwLength = sizeof(status);
-    status.ullAvailPhys = 0;
-
-    GlobalMemoryStatusEx(&status);
-    return status.ullAvailPhys;
-}
-
-#else
-
-#include <unistd.h>
-std::size_t getAvailableMemory() {
-    auto pages = sysconf(_SC_AVPHYS_PAGES);
-    auto page_size = sysconf(_SC_PAGE_SIZE);
-    return static_cast<std::size_t>(pages) * static_cast<std::size_t>(page_size);
-}
-
-#endif
-
-void* allocate(std::size_t size, std::size_t alignment) {
-    void* result;
-    return (posix_memalign(&result, alignment, size) == 0)? result:nullptr;
-}
+#include "memory.hpp"
 
 void HashMemory::setMax() {
     this->max = round(::getAvailableMemory());
@@ -39,11 +11,11 @@ HashMemory::size_t HashMemory::round(size_t bytes) {
 }
 
 void HashMemory::clear() {
-    std::memset(this->hash, 0, this->size);
+    ::memset(this->hash, 0, this->size);
 }
 
 void HashMemory::set(_t* _hash, size_t _size) {
-    std::memset(_hash, 0, _size);
+    ::memset(_hash, 0, _size);
 
     this->hash = _hash;
     this->size = _size;
@@ -70,7 +42,7 @@ void HashMemory::resize(size_t bytes) {
     bytes = std::min(bytes, getMax());
 
     for (; bytes > ClusterSize; bytes >>= 1) {
-        auto p = ::allocate(bytes, ClusterSize);
+        auto p = ::allocateAligned(bytes, ClusterSize);
 
         if (p) {
             set(reinterpret_cast<_t*>(p), bytes);
@@ -85,6 +57,6 @@ void HashMemory::free() {
         auto p = this->hash;
         setOne();
 
-        ::free(p);
+        ::freeAligned(p);
     }
 }
