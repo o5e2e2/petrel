@@ -9,8 +9,8 @@ available only on SSSE3 instruction set. Porting to ARM NEON should be possible.
 Porting to platform without rich SIMD instruction set is possible only with
 large performance penalty.
 
-Chess programming details
--------------------------
+Chess programming code details
+------------------------------
 
 *The text below assumes that the reader does know chess programming terminology.*
 
@@ -33,7 +33,7 @@ Internally squares are relative to each side's base rank, so all pawns are
 pushing from RANK_2 and promoting at RANK_8, both kings at starting position
 are set to E1 square and so on.
 
-Some abbreviations and conventions in the source code
+Abbreviations and conventions used in the source code
 -----------------------------------------------------
 As convention overloaded "~" operation
 used to flip squares, bitbords and other data structures from opposite
