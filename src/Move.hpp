@@ -34,9 +34,9 @@ public:
         : Move(f, Square(File(t), static_cast<Rank::_t>(+ty)), Special)
         {}
 
-    constexpr static Move null() { return Move{}; }
-    constexpr static Move makeSpecial(Square f, Square t) { return Move(f, t, Special); }
-    constexpr static Move makeCastling(Square f, Square t) { return Move(f, t, Special); }
+    constexpr static Move nullMove() { return Move{}; }
+    constexpr static Move enPassantMove(Square f, Square t) { return Move(f, t, Special); }
+    constexpr static Move castlingMove(Square f, Square t) { return Move(f, t, Special); }
 
     Square from() const { return static_cast<Square::_t>(_v >>FromShift & Square::Mask); }
     Square to() const { return static_cast<Square::_t>(_v >>ToShift & Square::Mask); }

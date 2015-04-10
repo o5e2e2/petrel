@@ -383,7 +383,7 @@ void Position::makeMove(Square from, Square to) {
 
 Move readMove(std::istream& in, const Position& pos, Color colorToMove) {
     in >> std::ws;
-    if (in.eof()) { return Move::null(); }
+    if (in.eof()) { return Move::nullMove(); }
 
     auto before_move = in.tellg();
 
@@ -407,7 +407,7 @@ Move readMove(std::istream& in, const Position& pos, Color colorToMove) {
             if (from.is(Rank5) && pos.OP.hasEnPassant()) {
                 File epFile = pos.OP.enPassantFile();
                 if (epFile.is(File(to))) {
-                    return Move::makeSpecial(from, Square(epFile, Rank5));
+                    return Move::enPassantMove(from, Square(epFile, Rank5));
                 }
                 //else generic move
             }
@@ -422,19 +422,19 @@ Move readMove(std::istream& in, const Position& pos, Color colorToMove) {
         else if (pi.is(TheKing) && to.is(Rank1)) {
             if (from.is(E1) && to.is(G1)) {
                 if (pos.MY.isOccupied(A1) && (pos.MY.castlingRooks() & pos.MY.piecesOn(A1)).any()) {
-                    return Move::makeCastling(A1, E1);
+                    return Move::castlingMove(A1, E1);
                 }
                 else { goto fail; }
             }
             else if (from.is(E1) && to.is(C1)) {
                 if (pos.MY.isOccupied(H1) && (pos.MY.castlingRooks() & pos.MY.piecesOn(H1)).any()) {
-                    return Move::makeCastling(H1, E1);
+                    return Move::castlingMove(H1, E1);
                 }
                 else { goto fail; }
             }
             else if (pos.MY.isOccupied(to)) { //Chess960 castling encoding
                 if ((pos.MY.castlingRooks() & pos.MY.piecesOn(to)).any()) {
-                    return Move::makeCastling(to, from);
+                    return Move::castlingMove(to, from);
                 }
                 else { goto fail; }
             }
@@ -445,7 +445,7 @@ Move readMove(std::istream& in, const Position& pos, Color colorToMove) {
 
 fail:
     io::fail_pos(in, before_move);
-    return Move::null();
+    return Move::nullMove();
 }
 
 Move Position::createMove(Side My, Square from, Square to) const {
@@ -453,11 +453,11 @@ Move Position::createMove(Side My, Square from, Square to) const {
 
     if ( MY.isPawn(MY.pieceOn(from)) ) {
         if ( from.is(Rank7) || (from.is(Rank5) && OP.hasEnPassant() && OP.enPassantFile().is(File(to))) ) {
-            return Move::makeSpecial(from, to);
+            return Move::enPassantMove(from, to);
         }
     }
     else if (MY.kingSquare().is(to)) {
-        return Move::makeCastling(from, to);
+        return Move::castlingMove(from, to);
     }
     return Move(from, to);
 }
