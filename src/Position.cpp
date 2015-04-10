@@ -187,11 +187,26 @@ void Position::set(Side My, Pi pi, PieceType ty, Square to) {
 }
 
 template <Side::_t My>
+void Position::movePawn(Pi pi, Square from, Square to) {
+    const Side::_t Op{~My};
+
+    MY.assertValid(pi);
+    assert (MY.squareOf(pi).is(from));
+    assert (MY.isPawn(pi));
+
+    MY.movePawn(pi, from, to);
+    MY.setLeaperAttack(pi, Pawn, to);
+
+    MY.assertValid(pi);
+}
+
+template <Side::_t My>
 void Position::move(Pi pi, Square from, Square to) {
     const Side::_t Op{~My};
 
     MY.assertValid(pi);
     assert (MY.squareOf(pi).is(from));
+    assert (!MY.isPawn(pi));
 
     PieceType ty{MY.typeOf(pi)};
     assert (!ty.is(King));
@@ -213,6 +228,7 @@ void Position::makeKingMove(Square from, Square to) {
     assert (MY.typeOf(pi).is(King));
 
     MY.moveKing(from, to);
+    MY.setLeaperAttack(TheKing, King, to);
     OP.updatePinRays(~to);
 
     MY.assertValid(pi);
@@ -237,6 +253,7 @@ void Position::makeCastling(Pi rook, Square rookFrom, Square kingFrom) {
     Square rookTo = CastlingRules::castlingSide(kingFrom, rookFrom).is(QueenSide)? D1:F1;
 
     MY.castle(rook, rookFrom, rookTo, kingFrom, kingTo);
+    MY.setLeaperAttack(TheKing, King, kingTo);
 
     MY.updatePinRays(~OP.kingSquare(), rook);
     OP.updatePinRays(~kingTo);
@@ -280,20 +297,20 @@ void Position::makePawnMove(Pi pi, Square from, Square to) {
         if (from.is(Rank5) && to.is(Rank5)) {
             //en passant move
             Square _to(File{to}, Rank6);
-            move<My>(pi, from, _to);
+            movePawn<My>(pi, from, _to);
             updateSliderAttacksKing<My>(MY.attacksTo(from, to, _to));
             updateSliderAttacks<Op>(OP.attacksTo(~from, ~to, ~_to));
         }
         else {
             //simple pawn capture
-            move<My>(pi, from, to);
+            movePawn<My>(pi, from, to);
             updateSliderAttacksKing<My>(MY.attacksTo(from));
             updateSliderAttacks<Op>(OP.attacksTo(~from));
         }
     }
     else {
         //simple pawn move
-        move<My>(pi, from, to);
+        movePawn<My>(pi, from, to);
 
         updateSliderAttacksKing<My>(MY.attacksTo(from, to));
         updateSliderAttacks<Op>(OP.attacksTo(~from, ~to));
@@ -373,45 +390,62 @@ Move readMove(std::istream& in, const Position& pos, Color colorToMove) {
     Square from{Square::Begin};
     Square to{Square::Begin};
     in >> from >> to;
-    if (!in) { io::fail_pos(in, before_move); return Move::null(); }
+    if (!in) { goto fail; }
 
     if (colorToMove.is(Black)) {
         from.flip();
         to.flip();
     }
 
-    if (!pos.MY.isPieceOn(from) || (from == to)) { io::fail_pos(in, before_move); return Move::null(); }
-    Pi pi{pos.MY.pieceOn(from)};
+    if (!pos.MY.isPieceOn(from) || (from == to)) { goto fail; }
 
-    //convert special moves (castling, promotion, ep) to the internal move format
-    if (pos.MY.isPawn(pi)) {
-        if (from.is(Rank5) && pos.OP.hasEnPassant()) {
-            File epFile = pos.OP.enPassantFile();
-            if (epFile.is(File(to))) {
-                return Move::makeSpecial(from, Square(epFile, Rank5));
+    {
+        Pi pi{pos.MY.pieceOn(from)};
+
+        //convert special moves (castling, promotion, ep) to the internal move format
+        if (pos.MY.isPawn(pi)) {
+            if (from.is(Rank5) && pos.OP.hasEnPassant()) {
+                File epFile = pos.OP.enPassantFile();
+                if (epFile.is(File(to))) {
+                    return Move::makeSpecial(from, Square(epFile, Rank5));
+                }
+                //else generic move
+            }
+            else if (from.is(Rank7)) {
+                PromoType promo{PromoType::Begin};
+                if (in >> promo) {
+                    return Move(from, to, promo);
+                }
+                else { goto fail; }
             }
         }
-        else if (from.is(Rank7)) {
-            PromoType promo{PromoType::Begin};
-            if (in >> promo) {
-                return Move(from, to, promo);
+        else if (pi.is(TheKing) && to.is(Rank1)) {
+            if (from.is(E1) && to.is(G1)) {
+                if (pos.MY.isOccupied(A1) && (pos.MY.castlingRooks() & pos.MY.piecesOn(A1)).any()) {
+                    return Move::makeCastling(A1, E1);
+                }
+                else { goto fail; }
             }
-            else { io::fail_pos(in, before_move); return Move::null(); }
+            else if (from.is(E1) && to.is(C1)) {
+                if (pos.MY.isOccupied(H1) && (pos.MY.castlingRooks() & pos.MY.piecesOn(H1)).any()) {
+                    return Move::makeCastling(H1, E1);
+                }
+                else { goto fail; }
+            }
+            else if (pos.MY.isOccupied(to)) { //Chess960 castling encoding
+                if ((pos.MY.castlingRooks() & pos.MY.piecesOn(to)).any()) {
+                    return Move::makeCastling(to, from);
+                }
+                else { goto fail; }
+            }
         }
+
+        return Move(from, to);
     }
-    else if (pi.is(TheKing) && from.is(Rank1) && to.is(Rank1)) {
-        if ( (pos.MY.castlingRooks() & pos.MY.piecesOn(to)).any() ) {
-            //from Chess960 castling encoding
-            return Move::makeCastling(to, from);
-        }
-        else if (from.is(E1) && to.is(G1) && pos.MY.isOccupied(A1)) {
-            return Move::makeCastling(A1, E1);
-        }
-        else if (from.is(E1) && to.is(C1) && pos.MY.isOccupied(H1)) {
-            return Move::makeCastling(H1, E1);
-        }
-    }
-    return Move(from, to);
+
+fail:
+    io::fail_pos(in, before_move);
+    return Move::null();
 }
 
 Move Position::createMove(Side My, Square from, Square to) const {

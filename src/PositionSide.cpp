@@ -39,22 +39,28 @@ void PositionSide::swap(PositionSide& my, PositionSide& op) {
 
 void PositionSide::clear(PieceType ty, Square from) {
     piecesBb -= from;
-    pawnsBb &= piecesBb;
     zobrist.clear(ty, from);
     evaluation.clear(ty, from);
 }
 
-void PositionSide::set(PieceType ty, Square to) {
+void PositionSide::drop(PieceType ty, Square to) {
     piecesBb += to;
-    if (ty.is(Pawn)) { pawnsBb += to; }
     zobrist.drop(ty, to);
     evaluation.drop(ty, to);
 }
 
+void PositionSide::move(PieceType ty, Square from, Square to) {
+    piecesBb.move(from, to);
+    zobrist.move(ty, from, to);
+    evaluation.move(ty, from, to);
+}
+
 void PositionSide::drop(Pi pi, PieceType ty, Square to) {
+    drop(ty, to);
+    if (ty.is(Pawn)) { pawnsBb += to; }
+
     types.drop(pi, ty);
     squares.drop(pi, to);
-    set(ty, to);
 
     assertValid(pi);
 }
@@ -64,20 +70,25 @@ void PositionSide::capture(Square from) {
 
     assertValid(pi);
 
-    PieceType ty = typeOf(pi);
-    assert (!ty.is(King));
+    attacks.clear(pi);
 
     if (isCastling(pi)) {
         zobrist.clearCastling(from);
     }
+
+    PieceType ty = typeOf(pi);
+    assert (!ty.is(King));
+
     clear(ty, from);
+    pawnsBb &= piecesBb; //clear if pawn
+
     squares.clear(pi);
     types.clear(pi);
-
-    attacks.clear(pi);
 }
 
 void PositionSide::move(Pi pi, PieceType ty, Square from, Square to) {
+    assert (!ty.is(King));
+    assert (!ty.is(Pawn));
     assertValid(pi);
     assert (from != to);
 
@@ -85,37 +96,33 @@ void PositionSide::move(Pi pi, PieceType ty, Square from, Square to) {
         zobrist.clearCastling(from);
         types.clearCastling(pi);
     }
-    clear(ty, from);
 
+    move(ty, from, to);
     squares.move(pi, to);
-    set(ty, to);
 
     assertValid(pi);
 }
 
-void PositionSide::promote(Pi pi, PromoType ty, Square from, Square to) {
+void PositionSide::movePawn(Pi pi, Square from, Square to) {
     assertValid(pi);
-    assert (types.isPawn(pi));
-    assert (from.is(Rank7) && to.is(Rank8));
+    assert (isPawn(pi));
+    assert (from != to);
 
+    pawnsBb.move(from, to);
+    move(Pawn, from, to);
     squares.move(pi, to);
-    piecesBb.move(from, to);
-    pawnsBb -= from;
-
-    types.promote(pi, ty);
-    zobrist.promote(from, to, ty);
-    evaluation.promote(from, to, ty);
 
     assertValid(pi);
 }
 
 void PositionSide::moveKing(Square from, Square to) {
     assertValid(TheKing);
+    assert (from != to);
 
     clearCastlings();
 
-    move(TheKing, King, from, to);
-    setLeaperAttack(TheKing, King, to);
+    move(King, from, to);
+    squares.move(TheKing, to);
 
     assertValid(TheKing);
 }
@@ -128,16 +135,32 @@ void PositionSide::castle(Pi rook, Square rookFrom, Square rookTo, Square kingFr
 
     clearCastlings();
 
-    squares.castle(rook, rookTo, TheKing, kingTo);
     clear(Rook, rookFrom);
     clear(King, kingFrom);
-    set(King, kingTo);
-    set(Rook, rookTo);
+    drop(King, kingTo);
+    drop(Rook, rookTo);
 
-    setLeaperAttack(TheKing, King, kingTo);
+    squares.castle(rook, rookTo, TheKing, kingTo);
 
     assertValid(TheKing);
     assertValid(rook);
+}
+
+void PositionSide::promote(Pi pi, PromoType ty, Square from, Square to) {
+    assertValid(pi);
+    assert (types.isPawn(pi));
+    assert (from.is(Rank7) && to.is(Rank8));
+
+    piecesBb.move(from, to);
+    pawnsBb -= from;
+
+    squares.move(pi, to);
+    types.promote(pi, ty);
+
+    zobrist.promote(from, to, ty);
+    evaluation.promote(from, to, ty);
+
+    assertValid(pi);
 }
 
 void PositionSide::setLeaperAttack(Pi pi, PieceType ty, Square to) {
@@ -160,6 +183,7 @@ void PositionSide::clearCastlings() {
     for (Pi pi : castlingRooks()) {
         zobrist.clearCastling(squareOf(pi));
     }
+
     types.clearCastlings();
 }
 
@@ -171,8 +195,8 @@ bool PositionSide::setCastling(Pi pi) {
     assert (typeOf(pi).is(Rook));
     assert (from.is(Rank1));
 
-    zobrist.setCastling(from);
     types.setCastling(pi);
+    zobrist.setCastling(from);
 
     return true;
 }

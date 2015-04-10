@@ -22,6 +22,7 @@ private:
     template <Side::_t> void setLegalEnPassant(Pi);
 
     template <Side::_t> void move(Pi, Square, Square);
+    template <Side::_t> void movePawn(Pi, Square, Square);
     template <Side::_t> void updateSliderAttacks(VectorPiMask);
     template <Side::_t> void updateSliderAttacksKing(VectorPiMask); //remove king to avoid hiding it under its own shadow when in check
 

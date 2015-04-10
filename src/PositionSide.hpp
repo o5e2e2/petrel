@@ -22,8 +22,9 @@ class PositionSide {
     Zobrist zobrist; //Zobrist hash key of pieces of the current side
     Evaluation evaluation;
 
-    void set(PieceType, Square);
     void clear(PieceType, Square);
+    void drop(PieceType, Square);
+    void move(PieceType, Square, Square);
 
     bool setCastling(Pi);
     void clearCastlings();
@@ -94,6 +95,7 @@ public:
 
     void capture(Square);
     void move(Pi, PieceType, Square, Square);
+    void movePawn(Pi, Square, Square);
     void moveKing(Square, Square);
     void promote(Pi, PromoType, Square, Square);
 

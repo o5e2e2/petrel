@@ -34,6 +34,8 @@ public:
     void setCastling(Square from) { assert (from.is(Rank1)); drop(Pawn, from); }
     void clearCastling(Square from) { setCastling(from); }
 
+    void move(PieceType ty, Square from, Square to) { clear(ty, from); drop(ty, to); }
+
     void promote(Square from, Square to, PromoType ty) {
         assert (from.is(Rank7) && to.is(Rank8));
         clear(Pawn, from);
