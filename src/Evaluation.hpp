@@ -109,6 +109,12 @@ public:
     void clear(PieceType ty, Square from) { _v -= pst(ty, from); }
     void move(PieceType ty, Square from, Square to) { clear(ty, from); drop(ty, to); }
 
+    void promote(Square from, Square to, PromoType ty) {
+        assert (from.is(Rank7) && to.is(Rank8));
+        clear(Pawn, from);
+        drop(static_cast<PieceType::_t>(ty), to);
+    }
+
 };
 
 #endif

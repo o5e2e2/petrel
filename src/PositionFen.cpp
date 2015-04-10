@@ -100,7 +100,7 @@ std::istream& operator >> (std::istream& in, Board& board) {
 
 bool Board::setPosition(Position& pos, Board&& board, Color colorToMove) {
     auto&& pieces = board.pieces;
-    pos = {};
+    pos = Position(0);
 
     //kings should be placed before any opponent's non king pieces
     FOR_INDEX(Color, color) {

@@ -249,9 +249,8 @@ void PositionMoves::makeMoves(std::istream& in, Color& colorToMove) {
             break;
         }
 
+        const_cast<Position&>(pos).makeMove(pos, m.from(), m.to());
         colorToMove.flip();
-        const_cast<Position&>(pos).swapSides();
-        const_cast<Position&>(pos).makeMove<Op>(m.from(), m.to());
         generateMoves<My>();
     }
 }

@@ -6,27 +6,6 @@
 #define OP side[Op]
 #define OCCUPIED occupied[My]
 
-Position::Position (const Position& parent, int) {
-    assert (this != &parent);
-    MY = parent.OP;
-    OP = parent.MY;
-}
-
-Position::Position (const Position& parent, Square from, Square to)
-    : Position(parent, 0)
-{
-    //PRE: child position has already flipped sides, so we make the given move for the opposite side to move
-    makeMove<Op>(from, to);
-}
-
-Position::Position () : side{}, occupied{} {}
-
-void Position::swapSides() {
-    using std::swap;
-    PositionSide::swap(MY, OP);
-    occupied.swap();
-}
-
 void Position::syncSides() {
     occupied = DualBbOccupied(MY.occupiedSquares(), OP.occupiedSquares());
 }
@@ -38,9 +17,7 @@ void Position::updateSliderAttacksKing(VectorPiMask affected) {
     syncSides();
 
     affected &= MY.sliders();
-    if (affected.any()) {
-        MY.updateSliderAttacks(affected, OCCUPIED - ~OP.kingSquare());
-    }
+    MY.updateSliderAttacks(affected, OCCUPIED - ~OP.kingSquare());
 }
 
 template <Side::_t My>
@@ -48,9 +25,8 @@ void Position::updateSliderAttacks(VectorPiMask affected) {
     const Side::_t Op{~My};
 
     affected &= MY.sliders();
-    if (affected.any()) {
-        MY.updateSliderAttacks(affected, OCCUPIED);
-    }
+    MY.updateSliderAttacks(affected, OCCUPIED);
+
     assert (MY.attacksTo(~OP.kingSquare()).none());
 }
 
@@ -331,6 +307,19 @@ void Position::makePawnMove(Pi pi, Square from, Square to) {
     MY.assertValid(pi);
 }
 
+void Position::makeMove(const Position& parent, Square from, Square to) {
+    if (this == &parent) {
+        PositionSide::swap(MY, OP);
+    }
+    else {
+        MY = parent.OP;
+        OP = parent.MY;
+    }
+
+    //PRE: position just flipped sides, so we make the parent move for the opposite side to move
+    makeMove<Op>(from, to);
+}
+
 template <Side::_t My>
 void Position::makeMove(Square from, Square to) {
     const Side::_t Op{~My};
@@ -342,7 +331,7 @@ void Position::makeMove(Square from, Square to) {
     //clear en passant status from the previous move
     if (OP.hasEnPassant()) {
         OP.clearEnPassant();
-        MY.clearEnPassants();
+        MY.unmarkEnPassants();
     }
     assert (!MY.hasEnPassant());
     assert (!OP.hasEnPassant());

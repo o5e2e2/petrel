@@ -34,6 +34,12 @@ public:
     void setCastling(Square from) { assert (from.is(Rank1)); drop(Pawn, from); }
     void clearCastling(Square from) { setCastling(from); }
 
+    void promote(Square from, Square to, PromoType ty) {
+        assert (from.is(Rank7) && to.is(Rank8));
+        clear(Pawn, from);
+        drop(static_cast<PieceType::_t>(ty), to);
+    }
+
     constexpr friend bool operator == (Arg a, Arg b) { return a._v == b._v; }
 };
 

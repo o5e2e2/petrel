@@ -71,9 +71,9 @@ void PositionSide::capture(Square from) {
         zobrist.clearCastling(from);
     }
     clear(ty, from);
-
     squares.clear(pi);
     types.clear(pi);
+
     attacks.clear(pi);
 }
 
@@ -96,18 +96,15 @@ void PositionSide::move(Pi pi, PieceType ty, Square from, Square to) {
 void PositionSide::promote(Pi pi, PromoType ty, Square from, Square to) {
     assertValid(pi);
     assert (types.isPawn(pi));
-    assert (from != to);
-
-    types.promote(pi, ty);
+    assert (from.is(Rank7) && to.is(Rank8));
 
     squares.move(pi, to);
     piecesBb.move(from, to);
     pawnsBb -= from;
 
-    zobrist.clear(Pawn, from);
-    evaluation.clear(Pawn, from);
-    zobrist.drop(static_cast<PieceType::_t>(ty), to);
-    evaluation.drop(static_cast<PieceType::_t>(ty), to);
+    types.promote(pi, ty);
+    zobrist.promote(from, to, ty);
+    evaluation.promote(from, to, ty);
 
     assertValid(pi);
 }
@@ -149,10 +146,13 @@ void PositionSide::setLeaperAttack(Pi pi, PieceType ty, Square to) {
     attacks.set(pi, ::pieceTypeAttack(ty, to));
 }
 
-void PositionSide::updateSliderAttacks(VectorPiMask affectedSliders, Bb _occupied) {
-    ReverseBb blockers{ _occupied };
-    for (Pi pi : affectedSliders) {
-        attacks.setSliderAttack(pi, static_cast<SliderType>(typeOf(pi)), squareOf(pi), blockers);
+void PositionSide::updateSliderAttacks(VectorPiMask affectedSliders, Bb occupied) {
+    if (affectedSliders.any()) {
+        ReverseBb blockers{ occupied };
+        for (Pi pi : affectedSliders) {
+            Bb attack = blockers.attack(static_cast<SliderType>(typeOf(pi)), squareOf(pi));
+            attacks.set(pi, attack);
+        }
     }
 }
 
@@ -210,15 +210,23 @@ bool PositionSide::setCastling(File file) {
 
 void PositionSide::markEnPassant(Pi pi) {
     assert (isPawn(pi));
+    assert (squareOf(pi).is(Rank5));
     types.setEnPassant(pi);
 }
 
+void PositionSide::unmarkEnPassants() {
+    assert (hasEnPassant());
+    assert (types.enPassantPawns() <= squares.piecesOn(Rank5));
+    types.clearEnPassants();
+}
+
 void PositionSide::setEnPassant(Pi pi, File fileFrom) {
+    assert (isPawn(pi));
     assert (!hasEnPassant());
     assert (squareOf(pi).is(Rank4));
     assert (File{squareOf(pi)} == fileFrom);
 
-    markEnPassant(pi);
+    types.setEnPassant(pi);
     zobrist.setEnPassant(fileFrom);
 }
 
@@ -228,12 +236,6 @@ void PositionSide::clearEnPassant() {
     assert (types.enPassantPawns() <= squares.piecesOn(Rank4));
 
     zobrist.clearEnPassant(enPassantFile());
-    types.clearEnPassants();
-}
-
-void PositionSide::clearEnPassants() {
-    assert (hasEnPassant());
-    assert (types.enPassantPawns() <= squares.piecesOn(Rank5));
     types.clearEnPassants();
 }
 

@@ -77,9 +77,9 @@ public:
     bool hasEnPassant() const { return enPassantPawns().any(); }
     File enPassantFile() const { Square ep = squareOf(types.getEnPassant()); assert (ep.is(Rank4)); return File{ep}; }
     void markEnPassant(Pi);
+    void unmarkEnPassants();
     void setEnPassant(Pi, File);
     void clearEnPassant();
-    void clearEnPassants();
 
     const Bb& pinRayFrom(Square) const;
     VectorPiMask pinnerCandidates() const { return types.pinnerCandidates(); }

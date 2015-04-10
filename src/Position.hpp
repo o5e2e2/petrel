@@ -15,9 +15,6 @@ public:
     DualBbOccupied occupied; //pieces of both sides
 
 private:
-    Position& operator = (const Position&) = delete;
-    Position (const Position&) = delete;
-
     void set(Side, Pi, PieceType, Square);
 
     template <Side::_t> const Bb& pinRayFrom(Pi) const;
@@ -31,15 +28,14 @@ private:
     template <Side::_t> void makeKingMove(Square, Square);
     template <Side::_t> void makePawnMove(Pi, Square, Square);
     template <Side::_t> void makeCastling(Pi, Square, Square);
+    template <Side::_t> void makeMove(Square, Square);
 
-    void swapSides();
     void syncSides();
 
 public:
-    Position ();
-    Position (const Position& parent, int); //null move
-    Position (const Position& parent, Square from, Square to);
-    Position& operator = (Position&&) = default;
+    Position () {};
+    Position (int) : side{} {};
+    Position (const Position& parent, Square from, Square to) { makeMove(parent, from, to); }
 
     friend void PositionFen::write(std::ostream&, const Position&, Color, ChessVariant);
     Move createMove(Side, Square, Square) const;
@@ -49,7 +45,7 @@ public:
     //serie of irreversible moves with extra legality check
     friend Move readMove(std::istream&, const Position&, Color);
 
-    template <Side::_t> void makeMove(Square, Square);
+    void makeMove(const Position& parent, Square from, Square to);
 
     //initial position setup
     bool drop(Side, PieceType, Square);

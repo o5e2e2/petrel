@@ -144,10 +144,6 @@ public:
         return bit_count.total(result);
     }
 
-    void setSliderAttack(Pi pi, SliderType ty, Square sq, ReverseBb blockers) {
-        set(pi, blockers.attack(ty, sq));
-    }
-
 };
 
 #endif
