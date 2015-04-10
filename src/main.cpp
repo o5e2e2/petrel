@@ -26,7 +26,7 @@ const VectorBitCount bit_count; //48
 const VectorPiOrder::_t VectorPiOrder::sorted = _mm_setr_epi8(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15);
 const CastlingRules castlingRules; //128
 
-const PieceSquareTable Evaluation::pst;
+const PieceSquareTable Evaluation::pst; //7*64
 
 template <> io::literal PieceType::The_string{"qrbnpk"};
 template <> io::literal PromoType::The_string{"qrbn"};

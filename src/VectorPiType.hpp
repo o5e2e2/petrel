@@ -17,8 +17,8 @@ class VectorPiType {
         SliderMask = ::singleton<_t>(Queen)|::singleton<_t>(Rook)|::singleton<_t>(Bishop),
         LeaperMask = ::singleton<_t>(King)|::singleton<_t>(Knight)|::singleton<_t>(Pawn),
         PieceTypeMask = SliderMask|LeaperMask,
-        CastlingMask  = ::singleton<_t>(CastlingRook)|::singleton<_t>(Rook),
-        EnPassantMask = ::singleton<_t>(EnPassantPawn)|::singleton<_t>(Pawn)
+        CastlingMask  = ::singleton<_t>(SpecialPiece)|::singleton<_t>(Rook),
+        EnPassantMask = ::singleton<_t>(SpecialPiece)|::singleton<_t>(Pawn)
     };
 
     Value _v;
@@ -47,17 +47,17 @@ public:
     bool isPawn(Pi pi) const { return isTypeOf(pi, Pawn); }
 
     VectorPiMask castlingRooks() const { return _v.allOf(CastlingMask); }
-    bool isCastling(Pi pi) const { return isTypeOf(pi, Rook) && _v.is(pi, CastlingRook); }
-    void setCastling(Pi pi) { assert (isTypeOf(pi, Rook)); assert (!isCastling(pi)); _v.set(pi, CastlingRook); }
-    void clearCastling(Pi pi) { assert (isCastling(pi)); _v.clear(pi, CastlingRook); }
-    void clearCastlings() { _v.clearIf(CastlingRook, Rook); }
+    bool isCastling(Pi pi) const { return isTypeOf(pi, Rook) && _v.is(pi, SpecialPiece); }
+    void setCastling(Pi pi) { assert (isTypeOf(pi, Rook)); assert (!isCastling(pi)); _v.set(pi, SpecialPiece); }
+    void clearCastling(Pi pi) { assert (isCastling(pi)); _v.clear(pi, SpecialPiece); }
+    void clearCastlings() { _v.clearIf(SpecialPiece, Rook); }
 
     VectorPiMask enPassantPawns() const { return _v.allOf(EnPassantMask); }
     Pi   getEnPassant() const { Pi pi{ enPassantPawns().index() }; assert (isPawn(pi)); return pi; }
-    bool isEnPassant(Pi pi) const { return isPawn(pi) && _v.is(pi, EnPassantPawn); }
-    void setEnPassant(Pi pi) { assert (isPawn(pi)); assert (!isEnPassant(pi)); _v.set(pi, EnPassantPawn); }
-    void clearEnPassant(Pi pi) { assert (isEnPassant(pi)); _v.clear(pi, EnPassantPawn); }
-    void clearEnPassants() { _v.clearIf(EnPassantPawn, Pawn); }
+    bool isEnPassant(Pi pi) const { return isPawn(pi) && _v.is(pi, SpecialPiece); }
+    void setEnPassant(Pi pi) { assert (isPawn(pi)); assert (!isEnPassant(pi)); _v.set(pi, SpecialPiece); }
+    void clearEnPassant(Pi pi) { assert (isEnPassant(pi)); _v.clear(pi, SpecialPiece); }
+    void clearEnPassants() { _v.clearIf(SpecialPiece, Pawn); }
 
     VectorPiMask pinnerCandidates() const { return _v.anyOf(PinRay); }
     void setPinRay(Pi pi) { assert (isSlider(pi)); _v.set(pi, PinRay); }

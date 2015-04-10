@@ -10,7 +10,7 @@
 class PieceSquareTable {
 public:
     typedef unsigned char _t;
-    _t pst[PieceType::Size][Square::Size];
+    _t pst[PieceTag::Size][Square::Size];
 
 public:
     PieceSquareTable () : pst {
@@ -74,7 +74,7 @@ public:
             E(100, 20),E(100, 20),E(100,  0),E(100,  0),E(100,  0),E(100,  0),E(100, 20),E(100, 20),
             E(100, 20),E(100, 30),E(100, 10),E(100,  0),E(100,  0),E(100, 10),E(100, 30),E(100, 20)
         },
-        /*{
+        {
             E(100,-50),E(100,-40),E(100,-30),E(100,-20),E(100,-20),E(100,-30),E(100,-40),E(100,-50),
             E(100,-30),E(100,-20),E(100,-10),E(100,  0),E(100,  0),E(100,-10),E(100,-20),E(100,-30),
             E(100,-30),E(100,-10),E(100, 20),E(100, 30),E(100, 30),E(100, 20),E(100,-10),E(100,-30),
@@ -83,11 +83,11 @@ public:
             E(100,-30),E(100,-10),E(100,-20),E(100,-20),E(100,-20),E(100,-20),E(100,-20),E(100,-30),
             E(100,-30),E(100,-30),E(100,  0),E(100,  0),E(100,  0),E(100,  0),E(100,-30),E(100,-30),
             E(100,-50),E(100,-30),E(100,-30),E(100,-30),E(100,-30),E(100,-30),E(100,-30),E(100,-50)
-        }*/
+        }
     }
     {}
 
-    const _t& operator() (PieceType ty, Square sq) const { return pst[ty][sq]; }
+    const _t& operator() (PieceTag ty, Square sq) const { return pst[ty][sq]; }
 };
 
 class Evaluation {
@@ -105,14 +105,18 @@ public:
     explicit operator _t () const { return _v; }
     void clear() { _v = 0; }
 
-    void drop(PieceType ty, Square to) { _v += pst(ty, to); }
-    void clear(PieceType ty, Square from) { _v -= pst(ty, from); }
-    void move(PieceType ty, Square from, Square to) { clear(ty, from); drop(ty, to); }
+    void drop(PieceType::_t ty, Square to) { _v += pst(ty, to); }
+    void clear(PieceType::_t ty, Square from) { _v -= pst(ty, from); }
 
-    void promote(Square from, Square to, PromoType ty) {
+    void move(PieceType::_t ty, Square from, Square to) {
+        clear(ty, from);
+        drop(ty, to);
+    }
+
+    void promote(Square from, Square to, PromoType::_t ty) {
         assert (from.is(Rank7) && to.is(Rank8));
         clear(Pawn, from);
-        drop(static_cast<PieceType::_t>(ty), to);
+        drop(ty, to);
     }
 
 };
