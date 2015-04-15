@@ -90,7 +90,7 @@ bool Position::setEnPassant(File epFile) {
 
     //check against illegal en passant set field like "8/5bk1/8/2Pp4/8/1K6/8/8 w - d6"
     for (Pi pi : OP.pinnerCandidates() & OP.attacksTo(victimSquare)) {
-        auto pinRay = pinRayFrom<My>(pi);
+        Bb pinRay = pinRayFrom<My>(pi);
         if (pinRay[~victimSquare]) {
             Bb betweenPieces{(pinRay & OCCUPIED) - ~victimSquare};
             if (betweenPieces.none()) { return false; }
@@ -115,7 +115,7 @@ bool Position::isLegalEnPassant(Pi killer, File epFile) const {
 
     if (!MY.kingSquare().is(Rank5)) {
         for (Pi pi : OP.pinnerCandidates() & OP.attacksTo(~from)) {
-            auto pinRay = pinRayFrom<My>(pi);
+            Bb pinRay = pinRayFrom<My>(pi);
             if (pinRay[from] && !pinRay[to]) {
                 Bb betweenPieces{(pinRay & OCCUPIED) - from};
                 if (betweenPieces.none()) { return false; } //the true diagonal pin
@@ -124,7 +124,7 @@ bool Position::isLegalEnPassant(Pi killer, File epFile) const {
     }
     else {
         for (Pi pi : OP.pinnerCandidates() & OP.piecesOn(Rank4)) {
-            auto pinRay = pinRayFrom<My>(pi);
+            Bb pinRay = pinRayFrom<My>(pi);
             if (pinRay[from]) {
                 Square victim(epFile, Rank5);
                 assert (OP.isPawn(OP.pieceOn(~victim)));
