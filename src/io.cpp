@@ -1,23 +1,24 @@
 #include "io.hpp"
 
 namespace io {
-    void fail_here(std::istream& in) {
+    std::istream& fail_here(std::istream& in) {
         in.setstate(std::ios::failbit);
+        return in;
     }
 
-    void fail_char(std::istream& in) {
+    std::istream& fail_char(std::istream& in) {
         in.unget();
-        io::fail_here(in);
+        return io::fail_here(in);
     }
 
-    void fail_pos(std::istream& in, std::streampos rewind) {
+    std::istream& fail_pos(std::istream& in, std::streampos rewind) {
         in.clear();
         in.seekg(rewind);
-        io::fail_here(in);
+        return io::fail_here(in);
     }
 
-    void fail_rewind(std::istream& in) {
-        io::fail_pos(in, 0);
+    std::istream& fail_rewind(std::istream& in) {
+        return io::fail_pos(in, 0);
     }
 
     /**
@@ -54,7 +55,7 @@ namespace io {
     }
 
     std::ostream& app_version(std::ostream& out) {
-        typedef std::ostream::char_type _t;
+        typedef io::char_type _t;
 
         _t year[] {__DATE__[7], __DATE__[8], __DATE__[9], __DATE__[10], '\0'};
 
