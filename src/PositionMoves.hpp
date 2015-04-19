@@ -6,6 +6,7 @@
 
 class PositionSide;
 class Position;
+class Move;
 
 class PositionMoves {
     //filled and used during move generation
@@ -34,6 +35,8 @@ public:
     const PositionSide& side(Side) const;
     MatrixPiBb& getMoves() { return moves; }
     const Position& getPos() const { return pos;}
+
+    std::istream& readMove(std::istream&, Move&, Color) const;
 
     void limitMoves(std::istream&, MatrixPiBb&, Color) const;
     void makeMoves(std::istream&, Color&);

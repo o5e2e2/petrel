@@ -43,9 +43,6 @@ public:
 
     Zobrist getZobrist() const;
 
-    //serie of irreversible moves with extra legality check
-    friend Move readMove(std::istream&, const Position&, Color);
-
     void makeMove(const Position& parent, Square from, Square to);
 
     //initial position setup

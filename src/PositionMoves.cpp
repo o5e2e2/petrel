@@ -211,47 +211,97 @@ void PositionMoves::generateMoves() {
     generateKingMoves<My>(attackedSquares);
 }
 
-void PositionMoves::limitMoves(std::istream& in, MatrixPiBb& searchmoves, Color color) const {
-    while (in) {
-        Move m { readMove(in, pos, color) };
-        if (m.isNull()) { break; }
+std::istream& PositionMoves::readMove(std::istream& in, Move& move, Color colorToMove) const {
+    auto before_move = in.tellg();
 
-        Square from{m.from()};
-        if (MY.isPieceOn(from)) {
-            Pi pi{MY.pieceOn(from)};
-            Square to{m.to()};
+    Square from{Square::Begin};
+    Square to{Square::Begin};
 
-            if (moves.is(pi, to)) {
-                searchmoves.set(pi, to);
-            }
-        }
-        else {
-            break;
-        }
+    in >> std::ws >> from >> to;
+    if (!in) { goto fail; }
+
+    if (colorToMove.is(Black)) {
+        from.flip();
+        to.flip();
     }
 
+    if (MY.isPieceOn(from) && (from != to)) {
+        Pi pi{MY.pieceOn(from)};
+
+        //convert special moves (castling, promotion, ep) to the internal move format
+        if (pi.is(TheKing) && to.is(Rank1)) {
+            if (from.is(E1) && to.is(G1)) {
+                if (MY.isPieceOn(A1) && (MY.castlingRooks() & MY.piecesOn(A1)).any()) {
+                    move = Move::castlingMove(A1, E1);
+                    return in;
+                }
+                else { goto fail; }
+            }
+            else if (from.is(E1) && to.is(C1)) {
+                if (MY.isPieceOn(H1) && (MY.castlingRooks() & MY.piecesOn(H1)).any()) {
+                    move = Move::castlingMove(H1, E1);
+                    return in;
+                }
+                else { goto fail; }
+            }
+            else if (MY.isPieceOn(to)) { //Chess960 castling encoding
+                if ((MY.castlingRooks() & MY.piecesOn(to)).any()) {
+                    move = Move::castlingMove(to, from);
+                    return in;
+                }
+                else { goto fail; }
+            }
+            //else generic move
+        }
+        else if (MY.isPawn(pi)) {
+            if (from.is(Rank7)) {
+                PromoType promo{PromoType::Begin};
+                if (in >> promo) {
+                    move = Move(from, to, promo);
+                    return in;
+                }
+                else { goto fail; }
+            }
+            else if (from.is(Rank5) && OP.hasEnPassant() && OP.enPassantFile().is(File(to))) {
+                move = Move::enPassantMove(from, Square(File(to), Rank5));
+                return in;
+            }
+            //else generic move
+        }
+
+        move = Move(from, to);
+        return in;
+    }
+
+fail:
+    move = Move::nullMove();
+    return io::fail_pos(in, before_move);
+}
+
+void PositionMoves::limitMoves(std::istream& in, MatrixPiBb& searchmoves, Color color) const {
+    for (Move move; readMove(in, move, color); ) {
+        Pi pi{MY.pieceOn(move.from())};
+        Square to{move.to()};
+
+        if (moves.is(pi, to)) {
+            searchmoves.set(pi, to);
+        }
+        else {
+            io::fail_here(in);
+        }
+    }
 }
 
 void PositionMoves::makeMoves(std::istream& in, Color& colorToMove) {
-    while (in) {
-        auto before_current_move = in.tellg(); //save the streampos for error reporting
-
-        Move m{ readMove(in, pos, colorToMove) };
-
-        if (m.isNull()) {
-            if (!in.eof()) { io::fail_pos(in, before_current_move); }
-            break;
+    for (Move move; readMove(in, move, colorToMove); ) {
+        if (moves.is(MY.pieceOn(move.from()), move.to())) {
+            const_cast<Position&>(pos).makeMove(pos, move.from(), move.to());
+            colorToMove.flip();
+            generateMoves<My>();
         }
-
-        if (!moves.is(MY.pieceOn(m.from()), m.to())) {
-            //detected an illegal move
-            io::fail_pos(in, before_current_move);
-            break;
+        else {
+            io::fail_here(in);
         }
-
-        const_cast<Position&>(pos).makeMove(pos, m.from(), m.to());
-        colorToMove.flip();
-        generateMoves<My>();
     }
 }
 
