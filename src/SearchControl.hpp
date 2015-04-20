@@ -42,7 +42,7 @@ public:
     HashMemory& tt() { return transpositionTable; }
     const HashMemory& tt() const { return transpositionTable; }
 
-    void go(SearchOutput&, const Position&, const SearchLimit&);
+    void go(SearchOutput&, const SearchLimit&);
 };
 
 #endif

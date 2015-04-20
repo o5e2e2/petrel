@@ -4,8 +4,13 @@
 #include "PositionFen.hpp"
 #include "PositionMoves.hpp"
 
-Uci::Uci (std::ostream& out)
-    : searchControl{}, uciHash(searchControl.tt()), uciOutput(out, uciHash, chessVariant, colorToMove), chessVariant(Orthodox)
+Uci::Uci (std::ostream& out):
+    searchControl{},
+    uciHash(searchControl.tt()),
+    uciOutput(out, uciHash, chessVariant, colorToMove),
+    searchMoves(rootPosition),
+    goLimit(searchMoves),
+    chessVariant(Orthodox)
 {
     ucinewgame();
 }
@@ -102,7 +107,7 @@ void Uci::position() {
 
     next("moves");
 
-    PositionMoves{rootPosition}.makeMoves(command, colorToMove);
+    PositionMoves::makeMoves(command, rootPosition, colorToMove);
 }
 
 void Uci::setStartpos() {
@@ -115,8 +120,11 @@ void Uci::go() {
         return;
     }
 
-    goLimit.read(command, rootPosition, colorToMove);
-    searchControl.go(uciOutput, rootPosition, goLimit);
+    goLimit.read(command, colorToMove);
+
+    if (next("")) {
+        searchControl.go(uciOutput, goLimit);
+    }
 }
 
 void Uci::uci() const {

@@ -3,6 +3,7 @@
 
 #include "io.hpp"
 #include "Position.hpp"
+#include "PositionMoves.hpp"
 #include "SearchControl.hpp"
 #include "SearchLimit.hpp"
 #include "UciHash.hpp"
@@ -13,6 +14,8 @@ class Uci {
     UciHash uciHash;
     UciOutput uciOutput;
     Position rootPosition; //initial chess position to analyze
+
+    PositionMoves searchMoves;
     SearchLimit goLimit;
 
     ChessVariant chessVariant; //format of castling moves output

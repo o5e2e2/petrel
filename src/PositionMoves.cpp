@@ -278,30 +278,61 @@ fail:
     return io::fail_pos(in, before_move);
 }
 
-void PositionMoves::limitMoves(std::istream& in, MatrixPiBb& searchmoves, Color color) const {
-    for (Move move; readMove(in, move, color); ) {
-        Pi pi{MY.pieceOn(move.from())};
-        Square to{move.to()};
+void PositionMoves::limitMoves(std::istream& in, Color color) {
+    MatrixPiBb searchMoves;
+    index_t limit = 0;
 
-        if (moves.is(pi, to)) {
-            searchmoves.set(pi, to);
+    while (in) {
+        auto before_move = in.tellg();
+
+        Move move;
+        if (readMove(in, move, color)) {
+            Pi pi{ MY.pieceOn(move.from()) };
+            Square to{ move.to() };
+
+            if (moves.is(pi, to) && !searchMoves.is(pi, to)) {
+                searchMoves.set(pi, to);
+                ++limit;
+                continue;
+            }
+
         }
-        else {
-            io::fail_here(in);
-        }
+
+        io::fail_pos(in, before_move);
+    }
+
+    if (limit > 0) {
+        moves = searchMoves;
+        in.clear();
+        return;
+    }
+
+    if (in.eof()) {
+        io::fail_rewind(in);
     }
 }
 
-void PositionMoves::makeMoves(std::istream& in, Color& colorToMove) {
-    for (Move move; readMove(in, move, colorToMove); ) {
-        if (moves.is(MY.pieceOn(move.from()), move.to())) {
-            const_cast<Position&>(pos).makeMove(pos, move.from(), move.to());
-            colorToMove.flip();
-            generateMoves<My>();
+void PositionMoves::makeMoves(std::istream& in, Position& pos, Color& colorToMove) {
+    PositionMoves pm(pos);
+
+    while (in) {
+        auto before_move = in.tellg();
+
+        Move move;
+        if (pm.readMove(in, move, colorToMove)) {
+            Square from{ move.from() };
+            Square to{ move.to() } ;
+            Pi pi{ MY.pieceOn(move.from()) };
+
+            pm.generateMoves();
+            if (pm.moves.is(pi, to)) {
+                pos.makeMove(pos, from, to);
+                colorToMove.flip();
+                continue;
+            }
         }
-        else {
-            io::fail_here(in);
-        }
+
+        io::fail_pos(in, before_move);
     }
 }
 

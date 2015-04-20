@@ -13,6 +13,7 @@ namespace Perft {
         auto origin = window.control.tt().lookup(zobrist);
 
         PositionMoves pm(parent);
+        pm.generateMoves();
         MatrixPiBb& moves = pm.getMoves();
 
         if (window.draft <= 0) {
@@ -54,6 +55,7 @@ namespace Perft {
 namespace PerftDivide {
     bool perft(const Position& parent, SearchWindow& window) {
         PositionMoves pm(parent);
+        pm.generateMoves();
         MatrixPiBb& moves = pm.getMoves();
 
         SearchWindow childWindow(window);

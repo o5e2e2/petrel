@@ -4,9 +4,9 @@
 #include "io.hpp"
 #include "Index.hpp"
 #include "Clock.hpp"
-#include "MatrixPiBb.hpp"
 
 class Position;
+class PositionMoves;
 
 class SearchLimit {
     static const depth_t MaxDepth = 1000;
@@ -27,17 +27,20 @@ class SearchLimit {
     bool perft;
     bool divide;
 
-    MatrixPiBb searchmoves;
+    PositionMoves& searchMoves;
 
-    void clear() { *this = {}; }
+    void clear();
 
 public:
-    SearchLimit ();
-    void read(std::istream&, const Position&, Color);
+    SearchLimit (PositionMoves&);
+    void read(std::istream&, Color);
 
     depth_t      getDepth()  const { return depth; }
     node_count_t getNodes()  const { return nodes;}
     bool         getDivide() const { return divide; }
+
+    const PositionMoves& getSearchMoves() const { return searchMoves; }
+    const Position& getPos() const;
 
     Clock::_t getThinkingTime() const;
 };

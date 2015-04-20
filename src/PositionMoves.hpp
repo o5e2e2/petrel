@@ -14,9 +14,6 @@ class PositionMoves {
 
     const Position& pos;
 
-    PositionMoves () = delete;
-    PositionMoves& operator = (const PositionMoves&) = delete;
-
     //legal move generation helpers
     template <Side::_t> void generateEnPassantMoves();
     template <Side::_t> void generateUnderpromotions();
@@ -30,7 +27,9 @@ class PositionMoves {
     template <Side::_t> void generateMoves();
 
 public:
-    PositionMoves (const Position& p) : pos(p) { generateMoves<My>(); }
+    PositionMoves (const Position& p) : pos(p) {}
+
+    void generateMoves() { generateMoves<My>(); }
 
     const PositionSide& side(Side) const;
     MatrixPiBb& getMoves() { return moves; }
@@ -38,8 +37,8 @@ public:
 
     std::istream& readMove(std::istream&, Move&, Color) const;
 
-    void limitMoves(std::istream&, MatrixPiBb&, Color) const;
-    void makeMoves(std::istream&, Color&);
+    void limitMoves(std::istream&, Color);
+    static void makeMoves(std::istream&, Position&, Color&);
 };
 
 #endif

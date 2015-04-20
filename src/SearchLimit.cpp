@@ -11,32 +11,31 @@ namespace {
     }
 }
 
-SearchLimit::SearchLimit () :
-    movetime(Clock::_t::zero()),
-
-    nodes(std::numeric_limits<node_count_t>::max()),
-    movestogo(0),
-    depth(0),
-    mate(0),
-
-    ponder(false),
-    infinite(false),
-    perft(false),
-    divide(false),
-
-    searchmoves()
+SearchLimit::SearchLimit (PositionMoves& pm) :
+    searchMoves(pm)
 {
-    time[My] = time[Op] = inc[My] = inc[Op] = Clock::_t::zero();
+    clear();
 }
 
-void SearchLimit::read(std::istream& command, const Position& rootPosition, Color colorToMove) {
+void SearchLimit::clear() {
+    movetime = time[My] = time[Op] = inc[My] = inc[Op] = Clock::_t::zero();
+    ponder = infinite = perft = divide = false;
+    nodes = std::numeric_limits<node_count_t>::max();
+
+    movestogo = 0;
+    depth = 0;
+    mate = 0;
+}
+
+const Position& SearchLimit::getPos() const { return searchMoves.getPos(); }
+
+void SearchLimit::read(std::istream& command, Color colorToMove) {
     Side white{colorToMove.is(White)? My:Op};
     Side black{colorToMove.is(Black)? My:Op};
 
     clear();
-
-    PositionMoves p(rootPosition);
-    searchmoves = p.getMoves();
+    searchMoves.generateMoves();
+    perft = true; //DEBUG
 
     while (command) {
         if      (io::next(command, "depth"))    { command >> depth; depth = std::min(depth, MaxDepth); }
@@ -49,13 +48,12 @@ void SearchLimit::read(std::istream& command, const Position& rootPosition, Colo
         else if (io::next(command, "movetime")) { command >> movetime; }
         else if (io::next(command, "ponder"))   { ponder = true; }
         else if (io::next(command, "infinite")) { infinite = true; }
-        else if (io::next(command, "searchmoves")) { p.limitMoves(command, searchmoves, colorToMove); }
         else if (io::next(command, "perft"))    { perft = true; }
         else if (io::next(command, "divide"))   { divide = true; }
-        else { break; }
+        else if (io::next(command, "searchmoves")) { searchMoves.limitMoves(command, colorToMove); }
+        else { io::fail_here(command); }
     }
 
-    perft = true; //DEBUG
 }
 
 Clock::_t SearchLimit::getThinkingTime() const {
