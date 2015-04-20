@@ -28,7 +28,7 @@ public:
     //called from Uci
     UciOutput (std::ostream&, const UciHash&, const ChessVariant&, const Color&);
     void isready(const SearchControl&) const;
-    void uci() const;
+    void uciok() const;
     void info_fen(const Position&) const;
     void echo(std::istream&) const;
     void error(std::istream&) const;
@@ -37,8 +37,8 @@ public:
     //called from Search
     void readyok(const SearchInfo&) const override;
     void bestmove(const SearchInfo&) const override;
-    void perft_depth(const SearchInfo&) const override;
-    void perft_move(const SearchInfo&) const override;
+    void info_depth(const SearchInfo&) const override;
+    void info_currmove(const SearchInfo&) const override;
 };
 
 #endif

@@ -25,14 +25,11 @@ class Uci {
     bool next(io::literal keyword) const { return io::next(command, keyword); }
 
     //UCI command handlers
-    void uci() const;
-    void isready() const;
     void ucinewgame();
     void setoption();
     void position();
     void setStartpos();
     void go();
-    void stop();
 
     //UCI protocol extensions
     void call();

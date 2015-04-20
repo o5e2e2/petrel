@@ -48,7 +48,7 @@ void SearchInfo::report_bestmove() {
 void SearchInfo::report_perft_depth() {
     resetNodesQuota();
 
-    out->perft_depth(*this);
+    out->info_depth(*this);
     clear();
 }
 
@@ -56,6 +56,6 @@ void SearchInfo::report_perft_divide() {
     resetNodesQuota();
 
     currmovenumber++;
-    out->perft_move(*this);
+    out->info_currmove(*this);
     perftDivide = perftNodes;
 }

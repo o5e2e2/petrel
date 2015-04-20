@@ -17,7 +17,7 @@ namespace {
 UciOutput::UciOutput (std::ostream& o, const UciHash& h, const ChessVariant& v, const Color& c)
     : out(o), uciHash(h), chessVariant(v), colorToMove(c), isreadyWaiting(false) {}
 
-void UciOutput::uci() const {
+void UciOutput::uciok() const {
     OutputBuffer ob{out};
     ob << "id name " << io::app_version << '\n';
     ob << "id author Aleks Peshkov\n";
@@ -27,12 +27,12 @@ void UciOutput::uci() const {
 }
 
 void UciOutput::isready(const SearchControl& search) const {
+    isreadyWaiting = true;
+
     if (search.isReady()) {
-        OutputBuffer{out} << "readyok\n";
         isreadyWaiting = false;
-    }
-    else {
-        isreadyWaiting = true;
+
+        OutputBuffer{out} << "readyok\n";
     }
 }
 
@@ -52,14 +52,14 @@ void UciOutput::bestmove(const SearchInfo& info) const {
     ob << "bestmove "; write(ob, info.bestmove); ob << '\n';
 }
 
-void UciOutput::perft_depth(const SearchInfo& info) const {
+void UciOutput::info_depth(const SearchInfo& info) const {
     OutputBuffer ob{out};
     ob << "info depth " << info.depth;
     nps(ob, info);
     ob << " string perft " << info.perftNodes << '\n';
 }
 
-void UciOutput::perft_move(const SearchInfo& info) const {
+void UciOutput::info_currmove(const SearchInfo& info) const {
     OutputBuffer ob{out};
     ob << "info currmovenumber " << info.currmovenumber;
     ob << " currmove "; write(ob, info.currmove);

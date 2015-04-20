@@ -23,11 +23,11 @@ int Uci::operator() (std::istream& in) {
 
         if (next("position"))  { position(); }
         else if (next("go"))   { go(); }
-        else if (next("stop")) { stop(); }
-        else if (next("isready"))    { isready(); }
+        else if (next("stop")) { searchControl.stop(); }
+        else if (next("isready"))    { uciOutput.isready(searchControl); }
         else if (next("setoption"))  { setoption(); }
         else if (next("ucinewgame")) { ucinewgame(); }
-        else if (next("uci"))  { uci(); }
+        else if (next("uci"))  { uciOutput.uciok(); }
         else if (next("quit")) { break; }
         //UCI extensions
         else if (next("exit")) { return exit(); }
@@ -72,12 +72,11 @@ void Uci::setoption() {
         }
     }
 
-    if (next("Hash")) {
+    if (next("Hash") && searchControl.isReady()) {
         next("value");
 
         UciHash::_t mebibytes;
         if (command >> mebibytes) {
-            stop();
             uciHash.resize(mebibytes);
             return;
         }
@@ -125,18 +124,6 @@ void Uci::go() {
     if (next("")) {
         searchControl.go(uciOutput, goLimit);
     }
-}
-
-void Uci::uci() const {
-    uciOutput.uci();
-}
-
-void Uci::isready() const {
-    uciOutput.isready(searchControl);
-}
-
-void Uci::stop() {
-    searchControl.stop();
 }
 
 void Uci::echo() const {
