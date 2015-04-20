@@ -21,6 +21,13 @@ namespace io {
         return io::fail_pos(in, 0);
     }
 
+    std::istream& skip_token(std::istream& in) {
+        while (in && !std::isspace(in.peek())) {
+            in.ignore();
+        }
+        return in;
+    }
+
     /**
      * Tries to read the next token and compare it with the given keyword
      * Return:

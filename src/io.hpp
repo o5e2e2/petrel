@@ -17,6 +17,7 @@ namespace io {
 
     bool next(std::istream&, io::literal);
 
+    std::istream& skip_token(std::istream&);
     std::ostream& app_version(std::ostream&);
 }
 
