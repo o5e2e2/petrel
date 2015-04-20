@@ -51,7 +51,7 @@ int Uci::operator() (std::istream& in) {
 }
 
 void Uci::ucinewgame() {
-    setStartpos();
+    startpos();
     searchControl.clear();
     uciHash.newGame();
 }
@@ -97,7 +97,7 @@ void Uci::position() {
     }
 
     if (next("startpos")) {
-        setStartpos();
+        startpos();
     }
 
     if (next("fen")) {
@@ -109,7 +109,7 @@ void Uci::position() {
     PositionMoves::makeMoves(command, rootPosition, colorToMove);
 }
 
-void Uci::setStartpos() {
+void Uci::startpos() {
     PositionFen::setStartpos(rootPosition, colorToMove);
 }
 
