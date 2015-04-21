@@ -23,6 +23,7 @@ template <typename Condition>
 void ThreadControl::signal(Status to, Condition condition) {
     if (condition()) {
         bool isChanged{false};
+
         {
             StatusLock statusLock(statusChanging);
 
@@ -43,6 +44,7 @@ ThreadControl::sequence_t ThreadControl::signalSequence(Status to, Condition con
     if (condition()) {
         bool isChanged{false};
         sequence_t result;
+
         {
             StatusLock statusLock(statusChanging);
 
