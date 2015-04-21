@@ -4,8 +4,13 @@
 std::ostream& Move::write(std::ostream& out, Move move, Color colorToMove, ChessVariant chessVariant) {
     if (move.isNull()) { return out << "0000"; }
 
-    Square move_from = colorToMove.is(White)? move.from():~move.from();
-    Square move_to = colorToMove.is(White)? move.to():~move.to();
+    Square move_from = move.from();
+    Square move_to = move.to();
+
+    if (colorToMove.is(Black)) {
+        move_from.flip();
+        move_to.flip();
+    }
 
     if (!move.isSpecial()) {
         out << move_from << move_to;
@@ -13,7 +18,7 @@ std::ostream& Move::write(std::ostream& out, Move move, Color colorToMove, Chess
     else {
         if (move.from().is(Rank7)) {
             //the type of a promoted pawn piece encoded in place of to's rank
-            Square promoted_to(File(move_to), colorToMove.is(White)? Rank8:Rank1);
+            Square promoted_to(File(move_to), colorToMove.is(White)? Rank8 : Rank1);
             PromoType promo = Move::decodePromoType(move.to());
             out << move_from << promoted_to << promo;
         }
@@ -39,7 +44,7 @@ std::ostream& Move::write(std::ostream& out, Move move, Color colorToMove, Chess
             //en passant capture move internally encoded as pawn captures pawn
             assert (move.from().is(Rank5));
             assert (move.to().is(Rank5));
-            out << move_from << Square{File{move_to}, colorToMove.is(White)? Rank6:Rank3};
+            out << move_from << Square{File{move_to}, colorToMove.is(White)? Rank6 : Rank3};
         }
     }
     return out;

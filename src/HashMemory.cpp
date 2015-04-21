@@ -7,7 +7,7 @@ void HashMemory::setMax() {
 }
 
 HashMemory::size_t HashMemory::round(size_t bytes) {
-    return (bytes > 0)? ::singleton<decltype(bytes)>(::bsr(bytes)):0;
+    return (bytes > 0)? ::singleton<decltype(bytes)>(::bsr(bytes)) : 0;
 }
 
 void HashMemory::clear() {

@@ -15,7 +15,7 @@ class DualBbOccupied {
 
 public:
     constexpr DualBbOccupied () : _v{0, 0} {}
-    constexpr const Bb& operator [] (Side side) const { return occupied[side]; }
+    constexpr const Bb& operator [] (Side si) const { return occupied[si]; }
 
     DualBbOccupied (Bb my, Bb op) {
         _v = ::combine(my, op);

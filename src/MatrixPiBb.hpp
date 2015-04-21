@@ -52,9 +52,9 @@ public:
         matrix[rank] = (matrix[rank] % VectorPiMask{pi}) + (VectorPiRank{b} & VectorPiMask{pi});
     }
 
-    void set(Pi pi, Bb b) {
+    void set(Pi pi, Bb bb) {
         FOR_INDEX(Rank, rank) {
-            set(pi, rank, b[rank]);
+            set(pi, rank, bb[rank]);
         }
     }
 
@@ -66,9 +66,9 @@ public:
         add(pi, Rank{sq}, File{sq});
     }
 
-    void add(Pi pi, Bb b) {
+    void add(Pi pi, Bb bb) {
         FOR_INDEX(Rank, rank) {
-            matrix[rank] += VectorPiRank{b[rank]} & VectorPiMask{pi};
+            matrix[rank] += VectorPiRank{bb[rank]} & VectorPiMask{pi};
         }
     }
 
@@ -107,31 +107,31 @@ public:
         return Bb{b};
     }
 
-    void filter(Pi pi, Bb b) {
+    void filter(Pi pi, Bb bb) {
         VectorPiMask exceptPi{ ::vectorPiSingle.except(pi) };
         FOR_INDEX(Rank, rank) {
-            matrix[rank] &= VectorPiRank{b[rank]} | exceptPi;
+            matrix[rank] &= VectorPiRank{bb[rank]} | exceptPi;
         }
     }
 
-    friend MatrixPiBb operator % (const MatrixPiBb& from, Bb b) {
+    friend MatrixPiBb operator % (const MatrixPiBb& from, Bb bb) {
         MatrixPiBb result;
         FOR_INDEX(Rank, rank) {
-            result.matrix[rank] = from.matrix[rank] % VectorPiRank{b[rank]};
+            result.matrix[rank] = from.matrix[rank] % VectorPiRank{bb[rank]};
         }
         return result;
     }
 
-    void operator &= (Bb b) {
+    void operator &= (Bb bb) {
         FOR_INDEX(Rank, rank) {
-            matrix[rank] &= VectorPiRank{b[rank]};
+            matrix[rank] &= VectorPiRank{bb[rank]};
         }
     }
 
-    friend MatrixPiBb operator & (const MatrixPiBb& from, Bb b) {
+    friend MatrixPiBb operator & (const MatrixPiBb& from, Bb bb) {
         MatrixPiBb result;
         FOR_INDEX(Rank, rank) {
-            result.matrix[rank] = from.matrix[rank] & VectorPiRank{b[rank]};
+            result.matrix[rank] = from.matrix[rank] & VectorPiRank{bb[rank]};
         }
         return result;
     }

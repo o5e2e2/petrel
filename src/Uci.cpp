@@ -4,6 +4,8 @@
 #include "PositionFen.hpp"
 #include "PositionMoves.hpp"
 
+#define SHOULD_BE_READY  if (!searchControl.isReady()) { io::fail_rewind(command); return; }
+
 Uci::Uci (std::ostream& out):
     searchControl{},
     uciHash(searchControl.tt()),
@@ -72,7 +74,9 @@ void Uci::setoption() {
         }
     }
 
-    if (next("Hash") && searchControl.isReady()) {
+    SHOULD_BE_READY;
+
+    if (next("Hash")) {
         next("value");
 
         UciHash::_t mebibytes;
@@ -91,10 +95,7 @@ void Uci::position() {
         return;
     }
 
-    if (!searchControl.isReady()) {
-        io::fail_rewind(command);
-        return;
-    }
+    SHOULD_BE_READY;
 
     if (next("startpos")) {
         startpos();
@@ -114,10 +115,7 @@ void Uci::startpos() {
 }
 
 void Uci::go() {
-    if (!searchControl.isReady()) {
-        io::fail_rewind(command);
-        return;
-    }
+    SHOULD_BE_READY;
 
     goLimit.read(command, colorToMove);
 
@@ -161,3 +159,5 @@ void Uci::call() {
 
     call(filename);
 }
+
+#undef SHOULD_BE_READY

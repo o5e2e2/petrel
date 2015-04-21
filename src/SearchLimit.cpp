@@ -30,8 +30,8 @@ void SearchLimit::clear() {
 const Position& SearchLimit::getPos() const { return searchMoves.getPos(); }
 
 void SearchLimit::read(std::istream& command, Color colorToMove) {
-    Side white{colorToMove.is(White)? My:Op};
-    Side black{colorToMove.is(Black)? My:Op};
+    Side white(colorToMove.is(White)? My : Op);
+    Side black(colorToMove.is(Black)? My : Op);
 
     clear();
     searchMoves.generateMoves();
@@ -51,7 +51,7 @@ void SearchLimit::read(std::istream& command, Color colorToMove) {
         else if (io::next(command, "perft"))    { perft = true; }
         else if (io::next(command, "divide"))   { divide = true; }
         else if (io::next(command, "searchmoves")) { searchMoves.limitMoves(command, colorToMove); }
-        else { io::fail_here(command); }
+        else { break; }
     }
 
 }
@@ -59,7 +59,7 @@ void SearchLimit::read(std::istream& command, Color colorToMove) {
 Clock::_t SearchLimit::getThinkingTime() const {
     if (movetime != Clock::_t::zero()) { return movetime; }
 
-    auto moves_to_go = movestogo? movestogo:60;
+    auto moves_to_go = movestogo? movestogo : 40;
     auto average = (time[My] + moves_to_go*inc[My]) / moves_to_go;
 
     return std::min(time[My], average);

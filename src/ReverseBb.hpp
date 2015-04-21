@@ -26,7 +26,7 @@ class ReverseBb : public BitArray<ReverseBb, __m128i> {
     explicit operator Bb () const { return Bb{ static_cast<Bb::_t>( _mm_cvtsi128_si64(this->_v) ) }; }
 
 public:
-    explicit ReverseBb (Bb b) : Base( hyperbola(_mm_cvtsi64_si128(static_cast<__int64>(b))) ) {}
+    explicit ReverseBb (Bb bb) : Base( hyperbola(_mm_cvtsi64_si128(static_cast<__int64>(bb))) ) {}
 
     Bb attack(SliderType type, Square from) const {
         const Directions& dir = direction[type][from];

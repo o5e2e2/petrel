@@ -51,7 +51,7 @@ public:
         assert (king.is(Rank1));
         assert (rook.is(Rank1));
         assert (king != rook);
-        return (rook < king)? QueenSide:KingSide;
+        return (rook < king)? QueenSide : KingSide;
     }
 };
 

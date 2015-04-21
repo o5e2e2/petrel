@@ -22,7 +22,7 @@ class Bb : public BitSet<Bb, Square, std::uint64_t> {
     Bb (int) = delete; //declared to catch type cast bugs
 
     //bidirectional signed shift
-    constexpr Bb (_t v, signed offset) : Bb( (offset >= 0)? (v << offset):(v >> -offset) ) {}
+    constexpr Bb (_t v, signed offset) : Bb( (offset >= 0)? (v << offset) : (v >> -offset) ) {}
 
 public:
     constexpr Bb () : Base() {}
@@ -41,8 +41,8 @@ public:
     using BitSet::operator[];
     constexpr BitRank operator[] (Rank r) const { return BitRank(small_cast<BitRank::_t>(this->_v >> 8*r)); }
 
-    constexpr friend Bb operator << (Bb b, unsigned offset) { return Bb{static_cast<_t>(b) << offset}; }
-    constexpr friend Bb operator >> (Bb b, unsigned offset) { return Bb{static_cast<_t>(b) >> offset}; }
+    constexpr friend Bb operator << (Bb bb, unsigned offset) { return Bb{static_cast<_t>(bb) << offset}; }
+    constexpr friend Bb operator >> (Bb bb, unsigned offset) { return Bb{static_cast<_t>(bb) >> offset}; }
 
     constexpr static Bb empty() { return {}; }
     constexpr static Bb horizont(Square sq) { return Bb{Rank(sq)} - sq; }
@@ -55,7 +55,7 @@ public:
     friend std::ostream& operator << (std::ostream& out, Bb bb) {
         FOR_INDEX(Rank, rank) {
             FOR_INDEX(File, file) {
-                out << (bb[Square(file, rank)]? file:'.');
+                out << (bb[Square(file, rank)]? file : '.');
             }
             out << '\n';
         }

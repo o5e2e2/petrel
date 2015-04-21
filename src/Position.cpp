@@ -249,8 +249,8 @@ template <Side::_t My>
 void Position::makeCastling(Pi rook, Square rookFrom, Square kingFrom) {
     const Side::_t Op{~My};
 
-    Square kingTo = CastlingRules::castlingSide(kingFrom, rookFrom).is(QueenSide)? C1:G1;
-    Square rookTo = CastlingRules::castlingSide(kingFrom, rookFrom).is(QueenSide)? D1:F1;
+    Square kingTo = CastlingRules::castlingSide(kingFrom, rookFrom).is(QueenSide)? C1 : G1;
+    Square rookTo = CastlingRules::castlingSide(kingFrom, rookFrom).is(QueenSide)? D1 : F1;
 
     MY.castle(rook, rookFrom, rookTo, kingFrom, kingTo);
     MY.setLeaperAttack(TheKing, King, kingTo);

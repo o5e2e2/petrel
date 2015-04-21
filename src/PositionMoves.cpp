@@ -90,7 +90,7 @@ void PositionMoves::correctCheckEvasionsByPawns(Bb checkLine, Square checkFrom) 
     //after generic move generation
     //we need to correct moves of some pawns
     {
-        //potential locations of the pawns which default generated moves should be corrected
+        //potential locations of the pawns where default generated moves should be corrected
         Bb badPawnsPlaces{checkLine << 8}; //simple pawn push over check line
 
         //the general case generates invalid diagonal moves to empty squares
@@ -100,11 +100,11 @@ void PositionMoves::correctCheckEvasionsByPawns(Bb checkLine, Square checkFrom) 
         for (Square from : MY.occupiedByPawns() & badPawnsPlaces) {
             Pi pi{MY.pieceOn(from)};
 
-            Bb b{Bb{from.rankUp()} % OCCUPIED & checkLine};
-            b += ::pieceTypeAttack(Pawn, from) & checkFrom;
+            Bb bb{Bb{from.rankUp()} % OCCUPIED & checkLine};
+            bb += ::pieceTypeAttack(Pawn, from) & checkFrom;
 
             Rank rank{from.rankUp()};
-            moves.set(pi, rank, b[rank]);
+            moves.set(pi, rank, bb[rank]);
         }
     }
 

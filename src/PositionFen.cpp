@@ -36,7 +36,7 @@ class Board {
             }
         }
 
-        pieces[color][ty].insert(color.is(White)? sq:~sq);
+        pieces[color][ty].insert(color.is(White)? sq : ~sq);
         return true;
     }
 
@@ -57,7 +57,7 @@ std::istream& operator >> (std::istream& in, Board& board) {
     File file{FileA}; Rank rank{Rank8};
     for (io::char_type c; in.get(c); ) {
         if (std::isalpha(c) && rank.isOk() && file.isOk()) {
-            Color color = std::isupper(c)? White:Black;
+            Color color = std::isupper(c)? White : Black;
             c = static_cast<io::char_type>(std::tolower(c));
 
             PieceType ty{PieceType::Begin};
@@ -102,14 +102,17 @@ bool Board::setPosition(Position& pos, Board&& board, Color colorToMove) {
     auto&& pieces = board.pieces;
     pos = Position(0);
 
-    //kings should be placed before any opponent's non king pieces
+    //TRICK: kings should be placed before any opponent's non king pieces
     FOR_INDEX(Color, color) {
         if (pieces[color][King].empty()) {
             return false;
         }
 
+        Side si(color.is(colorToMove)? My : Op);
+
         auto king = pieces[color][King].begin();
-        if ( pos.drop((color.is(colorToMove)? My:Op), King, *king) ) {
+
+        if (pos.drop(si, King, *king)) {
             pieces[color][King].erase(king);
         }
         else {
@@ -120,11 +123,13 @@ bool Board::setPosition(Position& pos, Board&& board, Color colorToMove) {
     }
 
     FOR_INDEX(Color, color) {
+        Side si(color.is(colorToMove)? My : Op);
+
         FOR_INDEX(PieceType, ty) {
             while ( !pieces[color][ty].empty() ) {
                 auto piece = pieces[color][ty].begin();
 
-                if ( pos.drop( color.is(colorToMove)? My:Op, ty, *piece) ) {
+                if (pos.drop(si, ty, *piece)) {
                     pieces[color][ty].erase(piece);
                 }
                 else {
@@ -213,19 +218,21 @@ public:
 
         for (io::char_type c; in.get(c) && !std::isblank(c); ) {
             if (std::isalpha(c)) {
-                Color color(std::isupper(c)? White:Black);
+                Color color(std::isupper(c)? White : Black);
+                Side si(color.is(colorToMove)? My : Op);
+
                 c = static_cast<io::char_type>(std::tolower(c));
 
-                CastlingSide side{CastlingSide::Begin};
-                if ( side.from_char(c) ) {
-                    if (pos.setCastling(color.is(colorToMove)? My:Op, side)) {
+                CastlingSide castlingSide{CastlingSide::Begin};
+                if ( castlingSide.from_char(c) ) {
+                    if (pos.setCastling(si, castlingSide)) {
                         continue;
                     }
                 }
                 else {
                     File file{File::Begin};
                     if ( file.from_char(c) ) {
-                        if (pos.setCastling(color.is(colorToMove)? My:Op, file)) {
+                        if (pos.setCastling(si, file)) {
                             continue;
                         }
                     }
@@ -296,8 +303,8 @@ namespace PositionFen {
     }
 
     void write(std::ostream& out, const Position& pos, Color colorToMove, ChessVariant chessVariant) {
-        const PositionSide& white = pos.side[colorToMove.is(White)? My:Op];
-        const PositionSide& black = pos.side[colorToMove.is(Black)? My:Op];
+        const PositionSide& white = pos.side[colorToMove.is(White)? My : Op];
+        const PositionSide& black = pos.side[colorToMove.is(Black)? My : Op];
 
         Board::write(out, white, black);
         out << ' ' << colorToMove;

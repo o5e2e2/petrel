@@ -25,7 +25,7 @@ std::size_t getAvailableMemory() {
 
 void* allocateAligned(std::size_t size, std::size_t alignment) {
     void* result;
-    return (::posix_memalign(&result, alignment, size) == 0)? result:nullptr;
+    return (::posix_memalign(&result, alignment, size) == 0)? result : nullptr;
 }
 
 void freeAligned(void* p) {

@@ -40,13 +40,14 @@ used to flip squares, bitbords and other data structures from opposite
 side of view to the current one. Flipping operation reverses bytes
 order inside bitboard and switches ranks inside squares.
 
-* class Bb: BitBoard -- bitset of bits for each square of the chessboard
-* class Pi: Piece Index -- one of 16 piece slots in a byte vector
-* class VectorPi: Vector of piece data
-* class Side: { My, Op } -- side to move, opposite side
+* Bb bb: BitBoard -- bitset of bits for each square of the chessboard
+* Pi pi: Piece Index -- one of 16 piece slots in a byte vector; {TheKing} = slot dedicated to the king
+* VectorPi v: Vector of piece data
+* Side si: {My, Op} -- side to move, opposite side
+* Color color: {White, Black}
+* PieceType ty: {Queen, Rook, Bishop, Knight, Pawn, King} -- colorless kind of chess piece
 
-* typename _t -- internal value type used inside classes
-* _v -- actual internal value of "_t" type
+* typename _t _v: internal typename and value used inside generic classes
 
 * operator ~ used for flipping squares and bitboards between sides
 * operator %" is a shorcut to "and not" set operation

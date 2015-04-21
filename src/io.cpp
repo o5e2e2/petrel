@@ -87,7 +87,7 @@ namespace io {
             '\0'
         };
 
-        _t day[] {(__DATE__[4] == ' ')? '0':__DATE__[4], __DATE__[5], '\0'};
+        _t day[] {((__DATE__[4] == ' ')? '0' : __DATE__[4]), __DATE__[5], '\0'};
 
         return out << "Petrel chess " << year << '-' << month << '-' << day
     #ifndef NDEBUG
