@@ -32,11 +32,12 @@ private:
     void acquireNodesQuota();
 
 public:
+    void decrementQuota() { --nodesQuota; }
     bool checkQuota(const SearchThread&);
 
     void clear();
-    void report_perft_divide();
-    void report_perft_depth();
+    void report_perft_divide(Move);
+    void report_perft_depth(depth_t);
     void report_bestmove();
 };
 

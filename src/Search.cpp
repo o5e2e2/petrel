@@ -40,7 +40,7 @@ namespace Perft {
             for (Square to : moves[pi]) {
                 moves.clear(pi, to);
 
-                window.control.info.nodesQuota--;
+                window.control.info.decrementQuota();
                 Position childPos(parent, from, to);
                 CUT (perft(childPos, childWindow));
             }
@@ -65,16 +65,14 @@ namespace PerftDivide {
             Square from = pm.side(My).squareOf(pi);
 
             for (Square to : moves[pi]) {
-                childWindow.control.info.currmove = parent.createMove(My, from, to);
-
                 moves.clear(pi, to);
 
                 Position childPos{parent, from, to};
 
-                window.control.info.nodesQuota--;
+                window.control.info.decrementQuota();
                 CUT (Perft::perft(childPos, childWindow));
 
-                window.control.info.report_perft_divide();
+                window.control.info.report_perft_divide(parent.createMove(My, from, to));
             }
         }
 
@@ -87,8 +85,7 @@ namespace PerftRoot {
         bool isAborted = window.searchFn(parent, window);
 
         if (!isAborted) {
-            window.control.info.depth = window.draft;
-            window.control.info.report_perft_depth();
+            window.control.info.report_perft_depth(window.draft);
         }
 
         return isAborted;

@@ -45,16 +45,18 @@ void SearchInfo::report_bestmove() {
     clear();
 }
 
-void SearchInfo::report_perft_depth() {
+void SearchInfo::report_perft_depth(depth_t draft) {
     resetNodesQuota();
 
+    depth = draft;
     out->info_depth(*this);
     clear();
 }
 
-void SearchInfo::report_perft_divide() {
+void SearchInfo::report_perft_divide(Move move) {
     resetNodesQuota();
 
+    currmove = move;
     currmovenumber++;
     out->info_currmove(*this);
     perftDivide = perftNodes;
