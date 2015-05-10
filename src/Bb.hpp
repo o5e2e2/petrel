@@ -16,18 +16,18 @@
  * BitBoard type: a bit for each chessboard square
  */
 class Bb : public BitSet<Bb, Square, std::uint64_t> {
-    typedef BitSet<Bb, Square, std::uint64_t> Base;
-
-    Bb (int) = delete; //declared to catch type cast bugs
+    //declared to catch type cast bugs
+    Bb (unsigned int) = delete;
+    Bb (int) = delete;
 
     //bidirectional signed shift
     constexpr Bb (_t v, signed offset) : Bb( (offset >= 0)? (v << offset) : (v >> -offset) ) {}
 
 public:
-    constexpr Bb () : Base() {}
-    constexpr Bb (Square sq) : Base(sq) {}
-    constexpr Bb (Square::_t sq) : Base(sq) {}
-    constexpr explicit Bb (_t v) : Base(v) {}
+    constexpr Bb () : BitSet() {}
+    constexpr Bb (Square sq) : BitSet(sq) {}
+    constexpr Bb (Square::_t sq) : BitSet(sq) {}
+    constexpr explicit Bb (_t v) : BitSet(v) {}
 
     constexpr explicit Bb (File::_t f) : Bb{BB(0x0101010101010101) << f} {}
     constexpr explicit Bb (Rank::_t r) : Bb{BB(0xff) << 8*r} {}

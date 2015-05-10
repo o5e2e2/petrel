@@ -16,12 +16,10 @@ enum square_t {
 
 class Bb;
 struct Square : Index<64, square_t> {
-    typedef Index<64, _t> Base;
-
     enum { RankShift = 3, RankOffset = (1 << RankShift), RankMask = (Rank::Mask << RankShift) };
 
-    using Base::Base;
-    constexpr Square (File f, Rank r) : Base{static_cast<_t>(f + (r << RankShift))} {}
+    using Index::Index;
+    constexpr Square (File f, Rank r) : Index{static_cast<_t>(f + (r << RankShift))} {}
 
     constexpr explicit operator File() const { return static_cast<File::_t>(this->_v & File::Mask); }
     constexpr explicit operator Rank() const { return static_cast<Rank::_t>(static_cast<unsigned>(this->_v) >> RankShift); }
@@ -30,7 +28,7 @@ struct Square : Index<64, square_t> {
     constexpr Square operator ~ () const { return static_cast<_t>(this->_v ^ RankMask); }
     constexpr Square rankUp() const { return static_cast<_t>(this->_v - RankOffset); }
 
-    using Base::is;
+    using Index::is;
     constexpr bool is(Rank rank) const { return (this->_v & RankMask) == (rank << RankShift); }
     constexpr bool is(File file) const { return (this->_v & File::Mask) == file; }
 

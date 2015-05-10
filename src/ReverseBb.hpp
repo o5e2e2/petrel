@@ -10,8 +10,6 @@
  * used for sliding pieces attacks generation
  */
 class ReverseBb : public BitArray<ReverseBb, __m128i> {
-    typedef BitArray<ReverseBb, __m128i> Base;
-
     enum direction_t { Horizont, Vertical, Diagonal, Antidiag };
     typedef Index<4, direction_t>::static_array<_t> Directions;
 
@@ -26,7 +24,7 @@ class ReverseBb : public BitArray<ReverseBb, __m128i> {
     explicit operator Bb () const { return Bb{ static_cast<Bb::_t>( _mm_cvtsi128_si64(this->_v) ) }; }
 
 public:
-    explicit ReverseBb (Bb bb) : Base( hyperbola(_mm_cvtsi64_si128(static_cast<__int64>(bb))) ) {}
+    explicit ReverseBb (Bb bb) : BitArray( hyperbola(_mm_cvtsi64_si128(static_cast<__int64>(bb))) ) {}
 
     Bb attack(SliderType type, Square from) const {
         const Directions& dir = direction[type][from];

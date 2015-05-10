@@ -10,12 +10,10 @@
 #include "VectorPiSingle.hpp"
 
 struct VectorPiRank : VectorPiBit<VectorPiRank, File> {
-    typedef VectorPiBit<VectorPiRank, File> Base;
-
-    constexpr VectorPiRank () : Base() {}
-    explicit VectorPiRank (BitRank br) : Base(::vectorOfAll[br]) {}
-    explicit VectorPiRank (File f) : Base(::vectorOfAll[BitRank{f}]) {}
-    VectorPiRank (VectorPiMask m) : Base(static_cast<VectorPiMask::_t>(m)) {}
+    constexpr VectorPiRank () : VectorPiBit() {}
+    explicit VectorPiRank (BitRank br) : VectorPiBit(::vectorOfAll[br]) {}
+    explicit VectorPiRank (File f) : VectorPiBit(::vectorOfAll[BitRank{f}]) {}
+    VectorPiRank (VectorPiMask m) : VectorPiBit(static_cast<VectorPiMask::_t>(m)) {}
 
     BitRank gather() const {
         _t v = this->_v;
@@ -26,7 +24,9 @@ struct VectorPiRank : VectorPiBit<VectorPiRank, File> {
         return BitRank{small_cast<BitRank::_t>(_mm_cvtsi128_si32(v))};
     }
 
-    constexpr const BitRank& operator [] (Pi pi) const { return reinterpret_cast<const BitRank&>(Base::operator[](pi)); }
+    constexpr const BitRank& operator [] (Pi pi) const {
+        return reinterpret_cast<const BitRank&>(VectorPiBit::operator[](pi));
+    }
 
     VectorPiMask operator [] (File file) const {
         _t file_vector = ::vectorOfAll[BitRank{file}];
