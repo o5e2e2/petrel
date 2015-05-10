@@ -75,13 +75,14 @@ public:
         out << '\n';
 
         FOR_INDEX(Pi, pi) {
-            out << std::setw(2) << static_cast<unsigned>(small_cast<unsigned char>((squares._v[pi])));
+            out << std::setw(2) << static_cast<unsigned>(small_cast<unsigned char>( squares._v[pi] ));
         }
         out << '\n';
 
         out.flags(flags);
         return out;
     }
+
 };
 
 #endif

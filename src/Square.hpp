@@ -38,7 +38,9 @@ struct Square : Index<64, square_t> {
     constexpr signed x88(signed d_file, signed d_rank) const;
     constexpr Bb operator() (signed d_file, signed d_rank) const;
 
-    friend std::ostream& operator << (std::ostream& out, Square sq) { return out << File{sq} << Rank{sq}; }
+    friend std::ostream& operator << (std::ostream& out, Square sq) {
+        return out << File{sq} << Rank{sq};
+    }
 
     friend std::istream& operator >> (std::istream& in, Square& sq) {
         auto pos_before = in.tellg();
@@ -52,6 +54,7 @@ struct Square : Index<64, square_t> {
         }
         return in;
     }
+
 };
 
 #endif

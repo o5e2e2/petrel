@@ -4,7 +4,7 @@
 #include "bitops.hpp"
 #include "BitArray.hpp"
 
-template <class Self, class Index, class Value = int>
+template <class Self, class Index, class Value = unsigned int>
 class BitSet : public BitArray<Self, Value> {
     typedef BitArray<Self, Value> Base;
 

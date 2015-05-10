@@ -12,6 +12,38 @@ namespace {
         auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
         return out << milliseconds;
     }
+
+    std::ostream& operator << (std::ostream& out, Bb bb) {
+        FOR_INDEX(Rank, rank) {
+            FOR_INDEX(File, file) {
+                out << (bb[Square(file, rank)]? file : '.');
+            }
+            out << '\n';
+        }
+        return out;
+    }
+
+    std::ostream& operator << (std::ostream& out, PieceSet v) {
+        auto flags(out.flags());
+
+        out << std::hex;
+        FOR_INDEX(Pi, pi) {
+            if (v[pi]) {
+                out << pi;
+            }
+            else {
+                out << ".";
+            }
+        }
+
+        out.flags(flags);
+        return out;
+    }
+
+    std::ostream& operator << (std::ostream& out, VectorPiMask v) {
+        return out << PieceSet{v};
+    }
+
 }
 
 UciOutput::UciOutput (std::ostream& o, const UciHash& h, const ChessVariant& v, const Color& c)

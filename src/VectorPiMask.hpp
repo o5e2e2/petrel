@@ -43,9 +43,6 @@ public:
     PieceSet begin() const { return *this; }
     PieceSet end() const { return {}; }
 
-    //for debugging
-    friend std::ostream& operator << (std::ostream& out, VectorPiMask v) { return out << PieceSet{v}; }
-
 };
 
 #endif

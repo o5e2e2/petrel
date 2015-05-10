@@ -47,9 +47,9 @@ public:
         }
     }
 
-    void set(Pi pi, Rank rank, BitRank b) {
+    void set(Pi pi, Rank rank, BitRank br) {
         //_mm_blendv_epi8
-        matrix[rank] = (matrix[rank] % VectorPiMask{pi}) + (VectorPiRank{b} & VectorPiMask{pi});
+        matrix[rank] = (matrix[rank] % VectorPiMask{pi}) + (VectorPiRank{br} & VectorPiMask{pi});
     }
 
     void set(Pi pi, Bb bb) {

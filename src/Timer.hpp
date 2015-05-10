@@ -5,7 +5,7 @@
 #include "Pool.hpp"
 #include "ThreadControl.hpp"
 
-class Timer : public ThreadControl {
+class Timer : private ThreadControl {
     typedef Pool<Timer> TimerPool;
     static TimerPool timerPool;
 

@@ -13,7 +13,7 @@ struct VectorPiRank : VectorPiBit<VectorPiRank, File> {
     typedef VectorPiBit<VectorPiRank, File> Base;
 
     constexpr VectorPiRank () : Base() {}
-    explicit VectorPiRank (BitRank r) : Base(::vectorOfAll[r]) {}
+    explicit VectorPiRank (BitRank br) : Base(::vectorOfAll[br]) {}
     explicit VectorPiRank (File f) : Base(::vectorOfAll[BitRank{f}]) {}
     VectorPiRank (VectorPiMask m) : Base(static_cast<VectorPiMask::_t>(m)) {}
 
