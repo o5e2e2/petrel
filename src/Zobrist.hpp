@@ -25,21 +25,26 @@ public:
     Zobrist& flip() { _v = ~::bswap(_v); return *this; }
     Zobrist operator ~ () const { return Zobrist{*this}.flip(); }
 
-    void drop(PieceType ty, Square to) { _v ^= zobristKey(ty, to); }
+    void drop(PieceTag::_t ty, Square to) { _v ^= zobristKey(ty, to); }
+    void drop(PieceType ty, Square to) { drop(static_cast<PieceTag::_t>(ty), to); }
+    void setEnPassant(Square sq) { assert (sq.is(Rank4)); drop(SpecialPiece, sq); }
+    void setEnPassant(File fileFrom) { setEnPassant(Square(fileFrom, Rank4)); }
+    void setCastling(Square sq) { assert (sq.is(Rank1)); drop(SpecialPiece, sq); }
+
+    void clear(PieceTag::_t ty, Square from) { drop(ty, from); }
     void clear(PieceType ty, Square from) { drop(ty, from); }
+    void clearEnPassant(Square sq) { setEnPassant(sq); }
+    void clearCastling(Square sq) { setCastling(sq); }
 
-    void setEnPassant(File fileFrom) { drop( Pawn, Square(fileFrom, Rank8) ); }
-    void clearEnPassant(File fileFrom) { setEnPassant(fileFrom); }
-
-    void setCastling(Square from) { assert (from.is(Rank1)); drop(Pawn, from); }
-    void clearCastling(Square from) { setCastling(from); }
-
-    void move(PieceType ty, Square from, Square to) { clear(ty, from); drop(ty, to); }
+    void move(PieceType ty, Square from, Square to) {
+        clear(ty, from);
+        drop(ty, to);
+    }
 
     void promote(Square from, Square to, PromoType ty) {
         assert (from.is(Rank7) && to.is(Rank8));
         clear(Pawn, from);
-        drop(static_cast<PieceType::_t>(ty), to);
+        drop(static_cast<PieceTag::_t>(ty), to);
     }
 
     constexpr friend bool operator == (Arg a, Arg b) { return a._v == b._v; }

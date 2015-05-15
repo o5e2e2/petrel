@@ -76,7 +76,8 @@ public:
 
     VectorPiMask enPassantPawns() const { return types.enPassantPawns(); }
     bool hasEnPassant() const { return enPassantPawns().any(); }
-    File enPassantFile() const { Square ep = squareOf(types.getEnPassant()); assert (ep.is(Rank4)); return File{ep}; }
+    Square enPassantSquare() const { Square ep = squareOf(types.getEnPassant()); assert (ep.is(Rank4)); return ep; }
+    File   enPassantFile()   const { return File{ enPassantSquare() }; }
     void markEnPassant(Pi);
     void unmarkEnPassants();
     void setEnPassant(Pi, File);

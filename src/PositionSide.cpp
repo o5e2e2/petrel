@@ -248,7 +248,7 @@ void PositionSide::setEnPassant(Pi pi, File fileFrom) {
     assert (isPawn(pi));
     assert (!hasEnPassant());
     assert (squareOf(pi).is(Rank4));
-    assert (File{squareOf(pi)} == fileFrom);
+    assert (squareOf(pi).is(fileFrom));
 
     types.setEnPassant(pi);
     zobrist.setEnPassant(fileFrom);
@@ -259,7 +259,7 @@ void PositionSide::clearEnPassant() {
     assert (types.enPassantPawns().isSingleton());
     assert (types.enPassantPawns() <= squares.piecesOn(Rank4));
 
-    zobrist.clearEnPassant(enPassantFile());
+    zobrist.clearEnPassant(enPassantSquare());
     types.clearEnPassants();
 }
 
