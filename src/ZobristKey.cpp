@@ -1,5 +1,9 @@
 #include "ZobristKey.hpp"
 
+namespace {
+    constexpr ZobristKey::_t rol(ZobristKey::_t n, Square::_t sq) { return n << sq | n >> (64-sq); }
+}
+
 ZobristKey::ZobristKey () {
     _t init[PieceTag::Size] = {
         0x0218a392cd5d3dbfull,
@@ -13,7 +17,7 @@ ZobristKey::ZobristKey () {
 
     FOR_INDEX(PieceTag, ty) {
         FOR_INDEX(Square, sq) {
-            key[ty][sq] = r(init[ty], sq);
+            key[ty][sq] = rol(init[ty], sq);
         }
     }
 

@@ -7,13 +7,13 @@
 class ZobristKey {
 public:
     typedef std::uint64_t _t;
-    ZobristKey ();
-    const _t& operator() (PieceTag ty, Square sq) const { return key[ty][sq]; }
 
 private:
     _t key[PieceTag::Size][Square::Size];
 
-    constexpr static _t r(_t n, Square::_t sq) { return n << sq | n >> (64-sq); }
+public:
+    ZobristKey ();
+    const _t& operator() (PieceTag ty, Square sq) const { return key[ty][sq]; }
 
 };
 
