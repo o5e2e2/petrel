@@ -39,6 +39,7 @@ public:
     void bestmove(const SearchInfo&) const override;
     void info_depth(const SearchInfo&) const override;
     void info_currmove(const SearchInfo&) const override;
+
 };
 
 #endif

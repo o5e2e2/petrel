@@ -17,7 +17,7 @@ namespace Perft {
         MatrixPiBb& moves = pm.getMoves();
 
         if (window.draft <= 0) {
-            window.control.info.perftNodes += moves.count();
+            window.control.addPerftNodes(moves.count());
             return false;
         }
 
@@ -25,7 +25,7 @@ namespace Perft {
         auto n = tt.get(zobrist, window.draft);
 
         if (n) {
-            window.control.info.perftNodes += n;
+            window.control.addPerftNodes(n);
             return false;
         }
 
@@ -33,20 +33,20 @@ namespace Perft {
 
         SearchWindow childWindow(window);
 
-        n = window.control.info.perftNodes;
+        n = window.control.getPerftNodes();
         for (Pi pi : pm.side(My).alivePieces()) {
             Square from = pm.side(My).squareOf(pi);
 
             for (Square to : moves[pi]) {
                 moves.clear(pi, to);
 
-                window.control.info.decrementQuota();
+                window.control.decrementQuota();
                 Position childPos(parent, from, to);
                 CUT (perft(childPos, childWindow));
             }
         }
 
-        n = window.control.info.perftNodes - n;
+        n = window.control.getPerftNodes() - n;
         tt.set(zobrist, window.draft, n);
         return false;
     }
@@ -69,10 +69,11 @@ namespace PerftDivide {
 
                 Position childPos{parent, from, to};
 
-                window.control.info.decrementQuota();
+                window.control.decrementQuota();
                 CUT (Perft::perft(childPos, childWindow));
 
-                window.control.info.report_perft_divide(parent.createMove(My, from, to));
+                Move move = parent.createMove(My, from, to);
+                window.control.report_perft_divide(move);
             }
         }
 
@@ -85,7 +86,7 @@ namespace PerftRoot {
         bool isAborted = window.searchFn(parent, window);
 
         if (!isAborted) {
-            window.control.info.report_perft_depth(window.draft);
+            window.control.report_perft_depth(window.draft);
         }
 
         return isAborted;
@@ -103,7 +104,7 @@ namespace PerftRoot {
             }
         }
 
-        window.control.info.report_bestmove();
+        window.control.report_bestmove();
         return true;
     }
 }
