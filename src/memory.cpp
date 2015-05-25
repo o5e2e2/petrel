@@ -16,7 +16,7 @@ std::size_t getAvailableMemory() {
 
 #include <unistd.h>
 std::size_t getAvailableMemory() {
-    auto pages = ::sysconf(_SC_AVPHYS_PAGES);
+    auto pages     = ::sysconf(_SC_AVPHYS_PAGES);
     auto page_size = ::sysconf(_SC_PAGE_SIZE);
     return static_cast<std::size_t>(pages) * static_cast<std::size_t>(page_size);
 }
@@ -24,8 +24,9 @@ std::size_t getAvailableMemory() {
 #endif
 
 void* allocateAligned(std::size_t size, std::size_t alignment) {
-    void* result;
-    return (::posix_memalign(&result, alignment, size) == 0)? result : nullptr;
+    void* result = nullptr;
+    ::posix_memalign(&result, alignment, size);
+    return result;
 }
 
 void freeAligned(void* p) {
