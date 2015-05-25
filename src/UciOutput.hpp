@@ -4,18 +4,19 @@
 #include "io.hpp"
 #include "typedefs.hpp"
 #include "SearchOutput.hpp"
+#include "UciHash.hpp"
 
 class Move;
 class Position;
 class SearchControl;
 class SearchInfo;
-class UciHash;
+class HashMemory;
 
 class UciOutput : public SearchOutput {
     std::ostream& out; //output stream
-    const UciHash& uciHash;
     const Color& colorToMove; //initial position color for moves long algebraic format output
 
+    UciHash uciHash;
     ChessVariant chessVariant; //format of castling moves output
     mutable volatile bool isreadyWaiting; //set when got 'isready' command while thinking
 
@@ -26,14 +27,17 @@ class UciOutput : public SearchOutput {
 
 public:
     //called from Uci
-    UciOutput (std::ostream&, const UciHash&, const Color&);
+    UciOutput (std::ostream&, const Color&, HashMemory&);
+    void newGame();
+    void setChess960(bool);
+    void resizeHash(UciHash::_t);
+
     void isready(const SearchControl&) const;
     void uciok() const;
     void info_fen(const Position&) const;
     void echo(std::istream&) const;
     void error(std::istream&) const;
     void error(const std::string&) const;
-    void setChess960(bool);
 
     //called from Search
     void readyok(const SearchInfo&) const override;

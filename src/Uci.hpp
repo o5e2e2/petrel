@@ -2,16 +2,15 @@
 #define UCI_HPP
 
 #include "io.hpp"
+#include "typedefs.hpp"
 #include "Position.hpp"
 #include "PositionMoves.hpp"
 #include "SearchControl.hpp"
 #include "SearchLimit.hpp"
-#include "UciHash.hpp"
 #include "UciOutput.hpp"
 
 class Uci {
     SearchControl searchControl;
-    UciHash uciHash;
     UciOutput uciOutput;
 
     Position rootPosition; //initial chess position to analyze

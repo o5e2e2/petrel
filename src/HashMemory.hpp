@@ -40,6 +40,7 @@ public:
 
     size_t getSize() const { return size; }
     size_t getMax()  const { return max; }
+    size_t getTotalRecords() const { return getSize() / sizeof(_t); }
 
     _t* lookup(Zobrist z) const {
         auto o = reinterpret_cast<char*>(hash) + (static_cast<Zobrist::_t>(z) & mask);

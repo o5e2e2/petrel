@@ -2,14 +2,12 @@
 
 #include "Uci.hpp"
 #include "PositionFen.hpp"
-#include "PositionMoves.hpp"
 
 #define SHOULD_BE_READY  if (!searchControl.isReady()) { io::fail_rewind(command); return; }
 
 Uci::Uci (std::ostream& out):
     searchControl{},
-    uciHash(searchControl.tt()),
-    uciOutput(out, uciHash, colorToMove),
+    uciOutput(out, colorToMove, searchControl.tt()),
     searchMoves(rootPosition),
     goLimit(searchMoves)
 {
@@ -56,7 +54,7 @@ void Uci::ucinewgame() {
 
     startpos();
     searchControl.clear();
-    uciHash.newGame();
+    uciOutput.newGame();
 }
 
 void Uci::setoption() {
@@ -82,7 +80,7 @@ void Uci::setoption() {
 
         UciHash::_t mebibytes;
         if (command >> mebibytes) {
-            uciHash.resize(mebibytes);
+            uciOutput.resizeHash(mebibytes);
             return;
         }
     }
