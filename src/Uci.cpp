@@ -9,10 +9,9 @@
 Uci::Uci (std::ostream& out):
     searchControl{},
     uciHash(searchControl.tt()),
-    uciOutput(out, uciHash, chessVariant, colorToMove),
+    uciOutput(out, uciHash, colorToMove),
     searchMoves(rootPosition),
-    goLimit(searchMoves),
-    chessVariant(Orthodox)
+    goLimit(searchMoves)
 {
     ucinewgame();
 }
@@ -67,11 +66,11 @@ void Uci::setoption() {
         next("value");
 
         if (next("true")) {
-            chessVariant = Chess960;
+            uciOutput.setChess960(true);
             return;
         }
         else if (next("false")) {
-            chessVariant = Orthodox;
+            uciOutput.setChess960(false);
             return;
         }
     }

@@ -46,8 +46,8 @@ namespace {
 
 }
 
-UciOutput::UciOutput (std::ostream& o, const UciHash& h, const ChessVariant& v, const Color& c)
-    : out(o), uciHash(h), chessVariant(v), colorToMove(c), isreadyWaiting(false) {}
+UciOutput::UciOutput (std::ostream& o, const UciHash& h, const Color& c)
+    : out(o), uciHash(h), colorToMove(c), chessVariant(Orthodox), isreadyWaiting(false) {}
 
 void UciOutput::uciok() const {
     OutputBuffer ob{out};
@@ -57,6 +57,8 @@ void UciOutput::uciok() const {
     uciHash.option(ob);
     ob << "uciok\n";
 }
+
+void UciOutput::setChess960(bool isChess960) { chessVariant = (isChess960? Chess960 : Orthodox); }
 
 void UciOutput::isready(const SearchControl& search) const {
     isreadyWaiting = true;
