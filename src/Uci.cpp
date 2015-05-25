@@ -53,6 +53,8 @@ int Uci::operator() (std::istream& in) {
 }
 
 void Uci::ucinewgame() {
+    SHOULD_BE_READY;
+
     startpos();
     searchControl.clear();
     uciHash.newGame();
@@ -139,9 +141,7 @@ int Uci::call(const std::string& filename) {
     std::ifstream file(filename);
 
     if (!file) {
-        std::ostringstream message;
-        message << "error opening file " << filename;
-        uciOutput.error(message.str());
+        uciOutput.error(std::string("error opening file: ") + filename);
         return 2;
     }
 
