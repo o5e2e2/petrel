@@ -6,7 +6,6 @@
 
 typedef index_t depth_t; //search tree depth (relative to root)
 typedef std::int64_t node_count_t;
-typedef signed node_quota_t;
 
 enum file_t { FileA, FileB, FileC, FileD, FileE, FileF, FileG, FileH };
 typedef Index<8, file_t> File;

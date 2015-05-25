@@ -21,7 +21,8 @@ void SearchInfo::resetNodesQuota() {
 void SearchInfo::acquireNodesQuota() {
     auto remaining = nodesLimit - nodes;
     if (remaining > 0) {
-        nodesQuota = static_cast<decltype(nodesQuota)>( std::min(decltype(remaining){TickLimit}, remaining) );
+        auto nextQuota = std::min(remaining, decltype(remaining){TickLimit});
+        nodesQuota = static_cast<decltype(nodesQuota)>(nextQuota);
         nodes += nodesQuota;
     }
 }

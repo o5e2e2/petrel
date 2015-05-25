@@ -10,6 +10,7 @@ class SearchThread;
 
 class SearchInfo {
     enum { TickLimit = 5000 }; // ~1 msec
+    typedef signed node_quota_t;
 
 public:
     node_quota_t nodesQuota; //number of remaining nodes before checking for terminate
