@@ -71,6 +71,9 @@ void Uci::setoption() {
             uciOutput.setChess960(false);
             return;
         }
+
+        io::fail_rewind(command);
+        return;
     }
 
     SHOULD_BE_READY;
@@ -83,6 +86,9 @@ void Uci::setoption() {
             uciOutput.resizeHash(mebibytes);
             return;
         }
+
+        io::fail_rewind(command);
+        return;
     }
 
     io::fail_rewind(command);
