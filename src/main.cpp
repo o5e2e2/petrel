@@ -63,5 +63,5 @@ int main(int argc, const char* argv[]) {
         uci.call(option);
     }
 
-    return uci(std::cin);
+    uci(std::cin);
 }

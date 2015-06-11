@@ -32,12 +32,12 @@ class Uci {
     //UCI protocol extensions
     void call();
     void echo() const;
-    int  exit() const;
+    void exit() const;
 
 public:
     Uci (std::ostream&);
-    int operator() (std::istream&);
-    int call(const std::string& filename);
+    void operator() (std::istream&);
+    void call(const std::string& filename);
 };
 
 #endif

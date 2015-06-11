@@ -36,7 +36,7 @@ public:
     HashMemory& tt() { return transpositionTable; }
     const HashMemory& tt() const { return transpositionTable; }
 
-    void go(SearchOutput&, const SearchLimit&);
+    void go(SearchOutput&, const Position&, const SearchLimit&);
 
     //callbacks from search thread
     bool checkQuota() const { return info.checkQuota(searchThread); }
