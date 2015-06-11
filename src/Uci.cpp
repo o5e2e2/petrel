@@ -114,31 +114,31 @@ void Uci::go() {
     Side white(colorToMove.is(White)? My : Op);
     Side black(colorToMove.is(Black)? My : Op);
 
-    auto& g = goLimit;
-
-    g.clear();
     searchMoves.generateMoves();
-    g.perft = true; //DEBUG
+
+    auto& l = searchLimit;
+    l.clear();
+    l.perft = true; //DEBUG
 
     while (command) {
-        if      (next("depth"))    { command >> g.depth; g.depth = std::min(g.depth, g.MaxDepth); }
-        else if (next("wtime"))    { command >> g.time[white]; }
-        else if (next("btime"))    { command >> g.time[black]; }
-        else if (next("winc"))     { command >> g.inc[white]; }
-        else if (next("binc"))     { command >> g.inc[black]; }
-        else if (next("movestogo")){ command >> g.movestogo; }
-        else if (next("nodes"))    { command >> g.nodes; }
-        else if (next("movetime")) { command >> g.movetime; }
-        else if (next("ponder"))   { g.ponder = true; }
-        else if (next("infinite")) { g.infinite = true; }
-        else if (next("perft"))    { g.perft = true; }
-        else if (next("divide"))   { g.divide = true; }
+        if      (next("depth"))    { command >> l.depth; l.depth = std::min(l.depth, l.MaxDepth); }
+        else if (next("wtime"))    { command >> l.time[white]; }
+        else if (next("btime"))    { command >> l.time[black]; }
+        else if (next("winc"))     { command >> l.inc[white]; }
+        else if (next("binc"))     { command >> l.inc[black]; }
+        else if (next("movestogo")){ command >> l.movestogo; }
+        else if (next("nodes"))    { command >> l.nodes; }
+        else if (next("movetime")) { command >> l.movetime; }
+        else if (next("ponder"))   { l.ponder = true; }
+        else if (next("infinite")) { l.infinite = true; }
+        else if (next("perft"))    { l.perft = true; }
+        else if (next("divide"))   { l.divide = true; }
         else if (next("searchmoves")) { searchMoves.limitMoves(command, colorToMove); }
         else { break; }
     }
 
     if (next("")) {
-        searchControl.go(uciOutput, rootPosition, goLimit);
+        searchControl.go(uciOutput, rootPosition, searchLimit);
     }
 }
 

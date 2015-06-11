@@ -11,14 +11,14 @@ void SearchControl::clear() {
     info.clear();
 }
 
-void SearchControl::go(SearchOutput& output, const Position& pos, const SearchLimit& goLimit) {
+void SearchControl::go(SearchOutput& output, const Position& pos, const SearchLimit& searchLimit) {
     info.clear();
     info.out = &output;
-    info.nodesLimit = goLimit.getNodes();
+    info.nodesLimit = searchLimit.getNodes();
 
-    rootWindow.draft = goLimit.getDepth();
-    rootWindow.searchFn = goLimit.getDivide()? PerftDivide::perft : Perft::perft;
+    rootWindow.draft = searchLimit.getDepth();
+    rootWindow.searchFn = searchLimit.getDivide()? PerftDivide::perft : Perft::perft;
 
     sequence = searchThread.start(PerftRoot::perft, pos, rootWindow);
-    Timer::start(goLimit.getThinkingTime(), searchThread, sequence);
+    Timer::start(searchLimit.getThinkingTime(), searchThread, sequence);
 }

@@ -17,7 +17,7 @@ class Uci {
     Color colorToMove; //initial position color for long algebraic format moves output
 
     PositionMoves searchMoves;
-    SearchLimit goLimit;
+    SearchLimit searchLimit;
 
     mutable std::istringstream command; //current input command line
     bool next(io::literal keyword) const { return io::next(command, keyword); }
