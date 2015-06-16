@@ -29,9 +29,12 @@ std::ostream& UciHash::option(std::ostream& out) const {
 }
 
 std::ostream& UciHash::hashfull(std::ostream& out) const {
-    auto hf = (static_cast<HashMemory::size_t>(PerftTT::getUsed())*1000) / hashMemory.getTotalRecords();
+    auto used  = PerftTT::getUsed();
+    auto total = hashMemory.getTotalRecords();
 
-    if (hf > 0) {
+    if (used > 0) {
+        auto hf = (static_cast<HashMemory::size_t>(used)*1000) / total;
+        hf = std::min(hf, static_cast<decltype(hf)>(1000));
         out << " hashfull " << hf;
     }
 
