@@ -1,5 +1,4 @@
 #include "SearchLimit.hpp"
-#include "PositionMoves.hpp"
 
 SearchLimit::SearchLimit () {
     clear();

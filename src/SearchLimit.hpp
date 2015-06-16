@@ -1,11 +1,8 @@
 #ifndef SEARCH_LIMIT_HPP
 #define SEARCH_LIMIT_HPP
 
-#include "Index.hpp"
+#include "typedefs.hpp"
 #include "Clock.hpp"
-
-class Position;
-class PositionMoves;
 
 class SearchLimit {
     friend class Uci;
