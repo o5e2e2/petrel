@@ -9,34 +9,29 @@
 
 class ThreadControl {
 public:
-    typedef int sequence_t;
+    typedef int _t;
 
 private:
-    enum Status { Ready, Run, Abort };
-    volatile Status status;
-    sequence_t sequence;
-
+    SpinLock statusChanging;
     std::condition_variable_any statusChanged;
 
-    SpinLock statusChanging;
     typedef std::lock_guard<decltype(statusChanging)> StatusLock;
+
+    enum Status { Ready, Run, Abort };
+    volatile Status status;
+    _t sequence;
 
     bool isStatus(Status to) const { return status == to; }
 
-    template <typename Condition>
-    void signal(Status, Condition);
-
-    template <typename Condition>
-    sequence_t signalSequence(Status,  Condition);
-
-    template <typename Condition>
-    void wait(Condition);
+    template <typename Condition> void wait(Condition);
+    template <typename Condition> void signal(Status, Condition);
+    template <typename Condition> _t   signalSequence(Status,  Condition);
 
     void wait(Status to);
     void signal(Status to);
     void signal(Status from, Status to);
-    void signal(sequence_t seq, Status from, Status to);
-    sequence_t signalSequence(Status from, Status to);
+    void signal(_t seq, Status from, Status to);
+    _t   signalSequence(Status from, Status to);
 
     virtual void thread_body() = 0;
 
@@ -47,9 +42,9 @@ public:
     bool isReady()   const { return isStatus(Ready); }
     bool isStopped() const { return isStatus(Abort); }
 
-    sequence_t commandRun()  { return signalSequence(Ready, Run); }
-    void commandStop(sequence_t seq) { signal(seq, Run, Abort); }
+    _t   commandRun() { return signalSequence(Ready, Run); }
     void commandStop() { signal(Run, Abort); }
+    void commandStop(_t seq) { signal(seq, Run, Abort); }
 
     void waitReady() { wait(Ready); }
 };

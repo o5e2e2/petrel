@@ -2,11 +2,12 @@
 #include "Search.hpp"
 #include "SearchWindow.hpp"
 
-SearchThread::sequence_t SearchThread::start(SearchFn* s, const Position& p, SearchWindow& w) {
+void SearchThread::set(SearchFn* s, const Position& p, SearchWindow& w) {
+    assert(isReady());
+
     searchFn = s;
     parent = &p;
     window = &w;
-    return commandRun();
 }
 
 void SearchThread::thread_body() {

@@ -9,36 +9,41 @@ class Timer : private ThreadControl {
     typedef Pool<Timer> TimerPool;
     static TimerPool timerPool;
 
-    TimerPool::_t selfIterator;
-    ThreadControl* slaveThread;
-    sequence_t slaveSequence;
+    TimerPool::_t timerSlot;
 
+    ThreadControl* slaveThread;
+    ThreadControl::_t slaveSequence;
     Clock::_t duration;
 
     void thread_body() override {
         std::this_thread::sleep_for(duration);
         slaveThread->commandStop(slaveSequence);
-        timerPool.release(std::move(selfIterator));
+        timerPool.release(std::move(timerSlot));
     }
 
-    void run(TimerPool::_t self, Clock::_t d, ThreadControl& thread, sequence_t seq) {
-        assert(&TimerPool::fetch(self) == this);
-
-        selfIterator = self;
-        duration = d;
+    void set(Clock::_t d, ThreadControl& thread, ThreadControl::_t seq) {
+        assert (isReady());
 
         slaveThread = &thread;
         slaveSequence = seq;
-
-        this->commandRun();
+        duration = d;
     }
 
 public:
-    static void start(Clock::_t duration, ThreadControl& slaveThread, ThreadControl::sequence_t seq) {
-        if (duration == Clock::_t::zero()) { return; } //zero duration means no timer
+    static ThreadControl::_t start(ThreadControl& slaveThread, Clock::_t duration) {
+        ThreadControl::_t slaveSequence = slaveThread.commandRun();
 
-        TimerPool::_t link = timerPool.acquire();
-        TimerPool::fetch(link).run(link, duration, slaveThread, seq);
+        //zero duration means no timer
+        if (duration != Clock::_t::zero()) {
+            TimerPool::_t timerSlot = timerPool.acquire();
+            Timer& timer = TimerPool::fetch(timerSlot);
+            timer.timerSlot = timerSlot;
+
+            timer.set(duration, slaveThread, slaveSequence);
+            timer.commandRun();
+        }
+
+        return slaveSequence;
     }
 
 };

@@ -16,7 +16,7 @@ class Position;
  */
 class SearchControl {
     SearchThread searchThread;
-    SearchThread::sequence_t sequence;
+    SearchThread::_t searchSequence;
     SearchWindow rootWindow;
     mutable SearchInfo info;
 
@@ -31,7 +31,7 @@ public:
 
     bool isReady() const { return searchThread.isReady(); }
     void wait() { searchThread.waitReady(); }
-    void stop() { searchThread.commandStop(sequence); wait(); }
+    void stop() { searchThread.commandStop(searchSequence); wait(); }
 
     HashMemory& tt() { return transpositionTable; }
     const HashMemory& tt() const { return transpositionTable; }

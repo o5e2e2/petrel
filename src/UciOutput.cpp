@@ -13,6 +13,7 @@ namespace {
         return out << milliseconds;
     }
 
+/*
     std::ostream& operator << (std::ostream& out, Bb bb) {
         FOR_INDEX(Rank, rank) {
             FOR_INDEX(File, file) {
@@ -43,7 +44,7 @@ namespace {
     std::ostream& operator << (std::ostream& out, VectorPiMask v) {
         return out << PieceSet{v};
     }
-
+*/
 }
 
 UciOutput::UciOutput (std::ostream& o, const Color& c, HashMemory& h)

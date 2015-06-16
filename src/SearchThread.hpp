@@ -12,7 +12,7 @@ class SearchThread : public ThreadControl {
     void thread_body() override;
 
 public:
-    sequence_t start(SearchFn*, const Position&, SearchWindow&);
+    void set(SearchFn*, const Position&, SearchWindow&);
 };
 
 #endif
