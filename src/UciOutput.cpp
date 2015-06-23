@@ -59,10 +59,6 @@ void UciOutput::uciok() const {
     ob << "uciok\n";
 }
 
-void UciOutput::newGame() {
-    uciHash.newGame();
-}
-
 void UciOutput::setChess960(bool isChess960) {
     chessVariant = (isChess960? Chess960 : Orthodox);
 }

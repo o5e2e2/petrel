@@ -4,11 +4,14 @@
 #include "SearchLimit.hpp"
 #include "SearchOutput.hpp"
 #include "SearchWindow.hpp"
+#include "PerftTT.hpp"
 
 SearchControl::SearchControl () : rootWindow(*this) { clear(); }
 
 void SearchControl::clear() {
     info.clear();
+    hashMemory.clear();
+    PerftTT::resetAge();
 }
 
 void SearchControl::go(SearchOutput& output, const Position& pos, const SearchLimit& searchLimit) {

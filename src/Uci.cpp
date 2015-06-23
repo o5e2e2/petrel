@@ -59,7 +59,6 @@ void Uci::ucinewgame() {
 
     startpos();
     searchControl.clear();
-    uciOutput.newGame();
 }
 
 void Uci::setoption() {

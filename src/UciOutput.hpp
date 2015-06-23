@@ -28,7 +28,6 @@ class UciOutput : public SearchOutput {
 public:
     //called from Uci
     UciOutput (std::ostream&, const Color&, HashMemory&);
-    void newGame();
     void setChess960(bool);
     void resizeHash(UciHash::_t);
 

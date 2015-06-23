@@ -14,11 +14,6 @@ void UciHash::UciHash::resize(_t mb) {
     PerftTT::resetAge();
 }
 
-void UciHash::newGame() {
-    hashMemory.clear();
-    PerftTT::resetAge();
-}
-
 std::ostream& UciHash::option(std::ostream& out) const {
     auto current = hashMemory.getSize();
     auto max = hashMemory.getMax();

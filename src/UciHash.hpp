@@ -15,7 +15,6 @@ private:
 public:
     UciHash (HashMemory& hash);
     void resize(_t mb);
-    void newGame();
 
     std::ostream& option(std::ostream& out) const;
     std::ostream& hashfull(std::ostream& out) const;
