@@ -3,11 +3,14 @@
 
 #include <atomic>
 #include <immintrin.h>
+#include <mutex>
 
 class SpinLock {
     std::atomic_flag atomic = ATOMIC_FLAG_INIT;
 
 public:
+    typedef std::lock_guard<SpinLock> Guard;
+
     bool try_lock() {
         return !atomic.test_and_set(std::memory_order_acquire);
     }

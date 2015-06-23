@@ -14,8 +14,8 @@ ThreadControl::ThreadControl () : status{Ready}, sequence{0} {
 template <typename Condition>
 void ThreadControl::wait(Condition condition) {
     if (!condition()) {
-        std::unique_lock<decltype(statusChanging)> statusLock(statusChanging);
-        statusChanged.wait(statusLock, condition);
+        std::unique_lock<decltype(statusLock)> lock(statusLock);
+        statusChanged.wait(lock, condition);
     }
 }
 
@@ -25,7 +25,7 @@ void ThreadControl::signal(Status to, Condition condition) {
         bool isChanged{false};
 
         {
-            StatusLock statusLock(statusChanging);
+            Lock lock(statusLock);
 
             if (condition()) {
                 status = to;
@@ -46,7 +46,7 @@ ThreadControl::_t ThreadControl::signalSequence(Status to, Condition condition) 
         ThreadControl::_t result;
 
         {
-            StatusLock statusLock(statusChanging);
+            Lock lock(statusLock);
 
             if (condition()) {
                 ++sequence;

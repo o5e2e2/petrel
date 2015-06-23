@@ -2,7 +2,6 @@
 #define POOL_HPP
 
 #include <forward_list>
-#include <mutex>
 #include "SpinLock.hpp"
 
 /**
@@ -14,8 +13,8 @@ class Pool {
     List used;
     List ready;
 
-    SpinLock lock;
-    typedef std::lock_guard<decltype(lock)> ListLock;
+    SpinLock listLock;
+    typedef SpinLock::Guard Lock;
 
 public:
     typedef typename List::iterator _t;
@@ -23,7 +22,7 @@ public:
     static Element& fetch(const _t& that) { return *std::next(that); }
 
     _t acquire() {
-        ListLock listLock(lock);
+        Lock lock(listLock);
 
         if (ready.empty()) {
             used.emplace_front();
@@ -38,7 +37,7 @@ public:
     //return the used element to the ready list
     void release(_t&& element) {
         if (element != ready.end()) {
-            ListLock listLock(lock);
+            Lock lock(listLock);
 
             ready.splice_after(ready.before_begin(), used, element);
             element = ready.end();

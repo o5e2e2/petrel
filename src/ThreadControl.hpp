@@ -2,9 +2,7 @@
 #define THREAD_CONTROL_HPP
 
 #include <thread>
-#include <mutex>
 #include <condition_variable>
-
 #include "SpinLock.hpp"
 
 class ThreadControl {
@@ -12,10 +10,10 @@ public:
     typedef int _t;
 
 private:
-    SpinLock statusChanging;
-    std::condition_variable_any statusChanged;
+    SpinLock statusLock;
+    typedef SpinLock::Guard Lock;
 
-    typedef std::lock_guard<decltype(statusChanging)> StatusLock;
+    std::condition_variable_any statusChanged;
 
     enum Status { Ready, Run, Abort };
     volatile Status status;

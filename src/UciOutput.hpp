@@ -1,6 +1,7 @@
 #ifndef UCI_OUTPUT_HPP
 #define UCI_OUTPUT_HPP
 
+#include <mutex>
 #include "io.hpp"
 #include "typedefs.hpp"
 #include "SearchOutput.hpp"
@@ -13,6 +14,9 @@ class HashMemory;
 
 class UciOutput : public SearchOutput {
     std::ostream& out; //output stream
+
+    mutable std::mutex outputLock;
+    typedef std::lock_guard<decltype(outputLock)> Lock;
 
     const Color& colorToMove; //initial position color for moves long algebraic format output
     const ChessVariant& chessVariant; //format of castling moves output

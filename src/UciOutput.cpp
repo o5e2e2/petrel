@@ -57,7 +57,9 @@ void UciOutput::uciok() const {
     auto current = hashMemory.getSize();
     auto max = hashMemory.getMax();
 
+    Lock lock(outputLock);
     OutputBuffer ob{out};
+
     ob << "id name " << io::app_version << '\n';
     ob << "id author Aleks Peshkov\n";
     ob << "option name UCI_Chess960 type check default " << (chessVariant.is(Chess960)? "true" : "false") << '\n';
@@ -66,40 +68,53 @@ void UciOutput::uciok() const {
 }
 
 void UciOutput::isready(const SearchControl& search) const {
-    isreadyWaiting = true;
+    Lock lock(outputLock);
 
     if (search.isReady()) {
         isreadyWaiting = false;
 
         OutputBuffer{out} << "readyok\n";
     }
+    else {
+        isreadyWaiting = true;
+    }
 }
 
 void UciOutput::readyok(const SearchInfo& info) const {
-    if (isreadyWaiting) {
-        isreadyWaiting = false;
+    if (outputLock.try_lock()) {
+        if (isreadyWaiting) {
+            isreadyWaiting = false;
 
-        OutputBuffer ob{out};
-        info_nps(ob, info);
-        ob << "readyok\n";
+            OutputBuffer ob{out};
+            info_nps(ob, info);
+            ob << "readyok\n";
+        }
+
+        outputLock.unlock();
     }
 }
 
 void UciOutput::bestmove(const SearchInfo& info) const {
+    Lock lock(outputLock);
     OutputBuffer ob{out};
+
     info_nps(ob, info);
     ob << "bestmove "; write(ob, info.bestmove); ob << '\n';
 }
 
 void UciOutput::info_depth(const SearchInfo& info) const {
+    Lock lock(outputLock);
     OutputBuffer ob{out};
+
     ob << "info depth " << info.depth;
     nps(ob, info);
     ob << " string perft " << info.perftNodes << '\n';
 }
 
 void UciOutput::info_currmove(const SearchInfo& info) const {
+    Lock lock(outputLock);
     OutputBuffer ob{out};
+
     ob << "info currmovenumber " << info.currmovenumber;
     ob << " currmove "; write(ob, info.currmove);
 
@@ -147,7 +162,9 @@ void UciOutput::info_nps(std::ostream& ob, const SearchInfo& info) const {
 }
 
 void UciOutput::info_fen(const Position& pos) const {
+    Lock lock(outputLock);
     OutputBuffer ob{out};
+
     ob << "info fen ";
     PositionFen::write(ob, pos, colorToMove, chessVariant);
     //ob << " key 0x" << std::hex << pos.getZobrist();
@@ -155,6 +172,7 @@ void UciOutput::info_fen(const Position& pos) const {
 }
 
 void UciOutput::echo(std::istream& in) const {
+    Lock lock(outputLock);
     OutputBuffer{out} << in.rdbuf() << '\n';
 }
 
