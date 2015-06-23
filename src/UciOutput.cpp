@@ -5,13 +5,16 @@
 #include "PositionFen.hpp"
 #include "SearchControl.hpp"
 #include "SearchInfo.hpp"
-#include "UciHash.hpp"
+#include "PerftTT.hpp"
 
 namespace {
     std::ostream& operator << (std::ostream& out, Clock::_t duration) {
         auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
         return out << milliseconds;
     }
+
+    enum { MiB = 1024 * 1024 };
+    constexpr HashMemory::size_t toMiB(HashMemory::size_t bytes) { return bytes / MiB; }
 
 /*
     std::ostream& operator << (std::ostream& out, Bb bb) {
@@ -47,24 +50,19 @@ namespace {
 */
 }
 
-UciOutput::UciOutput (std::ostream& o, const Color& c, HashMemory& h)
-    : out(o), colorToMove(c), uciHash(h), chessVariant(Orthodox), isreadyWaiting(false) {}
+UciOutput::UciOutput (std::ostream& o, const Color& c, const ChessVariant& v, const HashMemory& h)
+    : out(o), colorToMove(c), chessVariant(v), hashMemory(h), isreadyWaiting(false) {}
 
 void UciOutput::uciok() const {
+    auto current = hashMemory.getSize();
+    auto max = hashMemory.getMax();
+
     OutputBuffer ob{out};
     ob << "id name " << io::app_version << '\n';
     ob << "id author Aleks Peshkov\n";
     ob << "option name UCI_Chess960 type check default " << (chessVariant.is(Chess960)? "true" : "false") << '\n';
-    uciHash.option(ob);
+    ob << "option name Hash type spin min 0 max " << toMiB(max) << " default " << toMiB(current) << '\n';
     ob << "uciok\n";
-}
-
-void UciOutput::setChess960(bool isChess960) {
-    chessVariant = (isChess960? Chess960 : Orthodox);
-}
-
-void UciOutput::resizeHash(UciHash::_t mebibytes) {
-    uciHash.resize(mebibytes);
 }
 
 void UciOutput::isready(const SearchControl& search) const {
@@ -128,7 +126,14 @@ void UciOutput::nps(std::ostream& ob, const SearchInfo& info) const {
             }
         }
 
-        uciHash.hashfull(ob);
+        auto used  = PerftTT::getUsed();
+        if (used > 0) {
+            auto total = hashMemory.getTotalRecords();
+            auto hf = (static_cast<HashMemory::size_t>(used)*1000) / total;
+            hf = std::min(hf, static_cast<decltype(hf)>(1000));
+            ob << " hashfull " << hf;
+        }
+
     }
 }
 

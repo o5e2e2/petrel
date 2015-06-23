@@ -11,13 +11,15 @@
 
 class Uci {
     SearchControl searchControl;
-    UciOutput uciOutput;
 
     Position rootPosition; //initial chess position to analyze
     Color colorToMove; //initial position color for long algebraic format moves output
+    ChessVariant chessVariant;
 
     PositionMoves searchMoves;
     SearchLimit searchLimit;
+
+    UciOutput uciOutput;
 
     mutable std::istringstream command; //current input command line
     bool next(io::literal keyword) const { return io::next(command, keyword); }

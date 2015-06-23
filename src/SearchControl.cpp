@@ -10,7 +10,12 @@ SearchControl::SearchControl () : rootWindow(*this) { clear(); }
 
 void SearchControl::clear() {
     info.clear();
-    hashMemory.clear();
+    transpositionTable.clear();
+    PerftTT::resetAge();
+}
+
+void SearchControl::resizeHash(HashMemory::size_t bytes) {
+    transpositionTable.resize(bytes);
     PerftTT::resetAge();
 }
 

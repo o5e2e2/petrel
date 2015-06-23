@@ -33,8 +33,8 @@ public:
     void wait() { searchThread.waitReady(); }
     void stop() { searchThread.commandStop(searchSequence); wait(); }
 
-    HashMemory& tt() { return transpositionTable; }
     const HashMemory& tt() const { return transpositionTable; }
+    void resizeHash(HashMemory::size_t bytes);
 
     void go(SearchOutput&, const Position&, const SearchLimit&);
 

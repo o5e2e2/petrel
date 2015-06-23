@@ -18,8 +18,9 @@ namespace {
 
 Uci::Uci (std::ostream& out):
     searchControl(),
-    uciOutput(out, colorToMove, searchControl.tt()),
-    searchMoves(rootPosition)
+    chessVariant(Orthodox),
+    searchMoves(rootPosition),
+    uciOutput(out, colorToMove, chessVariant, searchControl.tt())
 {
     ucinewgame();
 }
@@ -67,9 +68,10 @@ void Uci::setoption() {
     if (next("UCI_Chess960")) {
         next("value");
 
-        if (next("true"))  { uciOutput.setChess960(true);  return; }
-        if (next("false")) { uciOutput.setChess960(false); return; }
+        if (next("true"))  { chessVariant = Chess960; return; }
+        if (next("false")) { chessVariant = Orthodox; return; }
 
+        io::fail_rewind(command);
         return;
     }
 
@@ -78,13 +80,18 @@ void Uci::setoption() {
     if (next("Hash")) {
         next("value");
 
-        UciHash::_t mebibytes;
-        if (command >> mebibytes) { uciOutput.resizeHash(mebibytes); }
+        HashMemory::size_t mebibytes;
+        enum { MiB = 1024 * 1024 };
 
+        if (command >> mebibytes) {
+            searchControl.resizeHash(mebibytes * MiB);
+            return;
+        }
+
+        io::fail_rewind(command);
         return;
     }
 
-    io::fail_rewind(command);
 }
 
 void Uci::position() {
