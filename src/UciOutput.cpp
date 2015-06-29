@@ -73,7 +73,7 @@ void UciOutput::uciok() const {
     ob << "id name " << io::app_version << '\n';
     ob << "id author Aleks Peshkov\n";
     ob << "option name UCI_Chess960 type check default " << (chessVariant.is(Chess960)? "true" : "false") << '\n';
-    ob << "option name Hash type spin min 0 max " << toMiB(max) << " default " << toMiB(current) << '\n';
+    ob << "option name Hash type spin min 0 max " << ::toMiB(max) << " default " << ::toMiB(current) << '\n';
     ob << "uciok\n";
 }
 

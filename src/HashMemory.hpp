@@ -1,7 +1,6 @@
 #ifndef HASH_MEMORY_HPP
 #define HASH_MEMORY_HPP
 
-#include "bitops128.hpp"
 #include "HashBucket.hpp"
 #include "Zobrist.hpp"
 
@@ -42,20 +41,7 @@ public:
     size_t getMax()  const { return max; }
     size_t getTotalRecords() const { return getSize() / sizeof(_t); }
 
-    _t* lookup(Zobrist z) const {
-        auto o = reinterpret_cast<char*>(hash) + (static_cast<Zobrist::_t>(z) & mask);
-        _mm_prefetch(o, _MM_HINT_T0);
-
-        if (ClusterSize > 0100) {
-            _mm_prefetch(::xor_ptr<char, 0100>(o, 1), _MM_HINT_T0);
-            if (ClusterSize > 0200) {
-                _mm_prefetch(::xor_ptr<char, 0100>(o, 2), _MM_HINT_T0);
-                _mm_prefetch(::xor_ptr<char, 0100>(o, 3), _MM_HINT_T0);
-            }
-        }
-
-        return reinterpret_cast<_t*>(o);
-    }
+    _t* lookup(Zobrist z) const;
 
 };
 
