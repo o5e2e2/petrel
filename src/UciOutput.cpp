@@ -17,6 +17,16 @@ namespace {
     constexpr HashMemory::size_t toMiB(HashMemory::size_t bytes) { return bytes / MiB; }
 
 /*
+    std::ostream& operator << (std::ostream& out, Zobrist z) {
+        auto flags(out.flags());
+
+        out << std::hex << std::setw(16) << std::setfill('0');
+        out << static_cast<Zobrist::_t>(z);
+
+        out.flags(flags);
+        return out;
+    }
+
     std::ostream& operator << (std::ostream& out, Bb bb) {
         FOR_INDEX(Rank, rank) {
             FOR_INDEX(File, file) {
@@ -167,7 +177,7 @@ void UciOutput::info_fen(const Position& pos) const {
 
     ob << "info fen ";
     PositionFen::write(ob, pos, colorToMove, chessVariant);
-    //ob << " key 0x" << std::hex << pos.getZobrist();
+    //ob << " key 0x" << pos.getZobrist();
     ob << '\n';
 }
 
