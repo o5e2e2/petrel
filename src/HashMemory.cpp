@@ -2,8 +2,8 @@
 #include "bitops.hpp"
 #include "memory.hpp"
 
-void HashMemory::setMax() {
-    this->max = round(::getAvailableMemory());
+HashMemory::size_t HashMemory::getMax() {
+    return round(::getAvailableMemory());
 }
 
 HashMemory::size_t HashMemory::round(size_t bytes) {
@@ -11,67 +11,62 @@ HashMemory::size_t HashMemory::round(size_t bytes) {
 }
 
 void HashMemory::clear() {
-    ::memset(this->hash, 0, this->size);
-}
-
-HashMemory::_t* HashMemory::lookup(Zobrist z) const {
-    auto o = reinterpret_cast<char*>(hash) + (static_cast<Zobrist::_t>(z) & mask);
-    _mm_prefetch(o, _MM_HINT_T0);
-
-    if (ClusterSize > 0100) {
-        _mm_prefetch(::xor_ptr<char, 0100>(o, 1), _MM_HINT_T0);
-        if (ClusterSize > 0200) {
-            _mm_prefetch(::xor_ptr<char, 0100>(o, 2), _MM_HINT_T0);
-            _mm_prefetch(::xor_ptr<char, 0100>(o, 3), _MM_HINT_T0);
-        }
-    }
-
-    return reinterpret_cast<_t*>(o);
+    ::memset(hash, 0, size);
 }
 
 void HashMemory::set(_t* _hash, size_t _size) {
+    assert (_size == round(_size));
+
     ::memset(_hash, 0, _size);
-
-    this->hash = _hash;
-    this->size = _size;
-
-    assert (size == round(size));
-    this->mask = (size-1) ^ (sizeof(_t)-1);
+    hash = _hash;
+    size = _size;
+    mask = (size-1) ^ (BucketSize-1);
 }
 
 void HashMemory::setOne() {
-    set(reinterpret_cast<_t*>(&one), ClusterSize);
+    set(&one, sizeof(one));
+}
+
+void HashMemory::free() {
+    if (size == BucketSize) {
+        clear();
+    }
+    else {
+        auto p = this->hash;
+        setOne();
+
+        ::freeAligned(p);
+    }
 }
 
 void HashMemory::resize(size_t bytes) {
-    bytes = (bytes <= ClusterSize)? ClusterSize : round(bytes);
+    bytes = (bytes <= BucketSize)? BucketSize : round(bytes);
 
-    if (bytes == this->size) {
+    if (bytes == size) {
         clear();
         return;
     }
 
     free();
-    setMax();
 
-    bytes = std::min(bytes, getMax());
-
-    for (; bytes > ClusterSize; bytes >>= 1) {
-        auto p = ::allocateAligned(bytes, ClusterSize);
+    for (bytes = std::min(bytes, getMax()); bytes > BucketSize; bytes >>= 1) {
+        auto p = reinterpret_cast<_t*>(::allocateAligned(bytes, BucketSize));
 
         if (p) {
-            set(reinterpret_cast<_t*>(p), bytes);
+            set(p, bytes);
             return;
         }
     }
 
 }
 
-void HashMemory::free() {
-    if (this->size > ClusterSize) {
-        auto p = this->hash;
-        setOne();
+HashMemory::_t* HashMemory::lookup(Zobrist z) const {
+    auto o = reinterpret_cast<char*>(hash) + (static_cast<Zobrist::_t>(z) & mask);
 
-        ::freeAligned(p);
+    enum { CACHE_PAGES = (BucketSize-1)/64 + 1 };
+    for (index_t i = 0; i < CACHE_PAGES; i++) {
+        _mm_prefetch(o + i, _MM_HINT_T0);
     }
+
+    return reinterpret_cast<_t*>(o);
 }

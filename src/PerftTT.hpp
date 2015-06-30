@@ -40,7 +40,10 @@ class PerftTT {
     union {
         HashBucket h;
         Bucket b;
+        __m128i m[4];
     };
+
+    HashBucket& origin;
 
     static constexpr Zobrist key(Zobrist::_t z, depth_t d) {
         return Zobrist{ (z & ~DepthMask) | ((static_cast<decltype(z)>(static_cast<unsigned>(d)) << DepthShift) & DepthMask) };
@@ -56,11 +59,11 @@ class PerftTT {
         }
         b[i].key = k;
         b[i].perft = perft(n, age);
-        h.save(i);
+        origin.save(i, m[i]);
     }
 
 public:
-    PerftTT(HashBucket::_t* p) : h(p) {}
+    PerftTT(HashBucket* p) : h(*p), origin(*p) {}
 
     node_count_t get(Zobrist z, depth_t d) {
         FOR_INDEX(Index, i) {
@@ -69,7 +72,7 @@ public:
                     ++used;
 
                     b[i].perft = perft(b[i].perft, age);
-                    h.save(i);
+                    origin.save(i, m[i]);
                 }
                 return b[i].getNodes();
             }
