@@ -84,23 +84,27 @@ public:
         Zobrist k = key(z, d);
 
         Index min_i = 0;
-        depth_t min_d = 0xFF;
+        depth_t min_a = 2;
         auto min_n = std::numeric_limits<node_count_t>::max();
 
         FOR_INDEX(Index, i) {
-            if (b[i].key == k) { set(i, k, n); return; }
+            if (b[i].key == k) { min_i = i; break; }
 
-            depth_t i_d{ (b[i].getAge() == age)? b[i].getDepth() : 0 };
+            depth_t i_a{ (b[i].getAge() == age)? 1 : 0 };
+
+            if (min_a < i_a) {
+                continue;
+            }
+
             auto i_n = b[i].getNodes();
 
-            if (min_d >= i_d) {
-                if (min_d == i_d && min_n <= i_n) {
-                    continue;
-                }
-                min_i = i;
-                min_d = i_d;
-                min_n = i_n;
+            if (min_a == i_a && min_n <= i_n) {
+                continue;
             }
+
+            min_i = i;
+            min_a = i_a;
+            min_n = i_n;
         }
 
         set(min_i, k, n);
