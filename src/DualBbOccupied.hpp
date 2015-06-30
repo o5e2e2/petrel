@@ -24,10 +24,7 @@ public:
 
     DualBbOccupied& operator= (DualBbOccupied&& d) { _v = d._v; return *this; }
 
-    DualBbOccupied& swap() {
-        _v = _mm_shuffle_epi32(_v, _MM_SHUFFLE(1, 0, 3, 2));
-        return *this;
-    }
+    void swap() { _v = _mm_shuffle_epi32(_v, _MM_SHUFFLE(1, 0, 3, 2)); }
 
 };
 

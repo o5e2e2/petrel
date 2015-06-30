@@ -43,7 +43,6 @@ public:
     constexpr friend Bb operator << (Bb bb, unsigned offset) { return Bb{static_cast<_t>(bb) << offset}; }
     constexpr friend Bb operator >> (Bb bb, unsigned offset) { return Bb{static_cast<_t>(bb) >> offset}; }
 
-    constexpr static Bb empty() { return {}; }
     constexpr static Bb horizont(Square sq) { return Bb{Rank(sq)} - sq; }
     constexpr static Bb vertical(Square sq) { return Bb{File(sq)} - sq; }
     constexpr static Bb diagonal(Square sq) { return Bb{BB(0x0102040810204080), 8*(Rank(sq) + File(sq) - 7)} - sq; }

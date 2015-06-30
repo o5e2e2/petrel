@@ -5,7 +5,7 @@ constexpr signed Square::x88(signed d_file, signed d_rank) const {
 }
 
 constexpr Bb Square::operator() (signed d_file, signed d_rank) const {
-    return (x88(d_file, d_rank) & 0x88)? Bb::empty() : Bb(static_cast<_t>((x88(d_file, d_rank) + (x88(d_file, d_rank) & 7)) >> 1));
+    return (x88(d_file, d_rank) & 0x88)? Bb{} : Bb{static_cast<_t>((x88(d_file, d_rank) + (x88(d_file, d_rank) & 7)) >> 1)};
 }
 
 PieceTypeAttack::PieceTypeAttack () {

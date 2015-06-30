@@ -13,10 +13,10 @@ class PerftTT {
     static age_t age;
     static used_t used;
 
-    enum {DepthShift = 6, AgeShift = 62};
+    enum {DepthShift = 6, AgeShift = 61};
 
     static const Zobrist::_t DepthMask = static_cast<Zobrist::_t>(0xFF) << DepthShift;
-    static const node_count_t AgeMask = static_cast<node_count_t>(3) << AgeShift;
+    static const node_count_t AgeMask = static_cast<node_count_t>(7) << AgeShift;
 
     struct PerftRecord {
         Zobrist key;
@@ -103,13 +103,13 @@ public:
         set(min_i, k, n);
     }
 
-    static void resetAge() {
-        age = 2;
+    static void clearAge() {
+        age = 4;
         used = 0;
     }
 
     static void nextAge() {
-        age = (age + 1) & 3;
+        age = (age + 1) & 7;
         used = 0;
     }
 

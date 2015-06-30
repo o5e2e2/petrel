@@ -83,6 +83,7 @@ namespace PerftDivide {
 
 namespace PerftRoot {
     bool perftX(const Position& parent, SearchWindow& window) {
+        PerftTT::nextAge();
         bool isAborted = window.searchFn(parent, window);
 
         if (!isAborted) {
@@ -93,14 +94,11 @@ namespace PerftRoot {
     }
 
     bool perft(const Position& parent, SearchWindow& window) {
-        PerftTT::nextAge();
-
         if (window.draft > 0) {
             perftX(parent, window);
         }
         else {
             for (window.draft = 1; !perftX(parent, window); ++window.draft) {
-                PerftTT::nextAge();
             }
         }
 

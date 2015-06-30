@@ -80,11 +80,31 @@ void Uci::setoption() {
     if (next("Hash")) {
         next("value");
 
-        HashMemory::size_t mebibytes;
-        enum { MiB = 1024 * 1024 };
+        HashMemory::size_t quantity = 0;
 
-        if (command >> mebibytes) {
-            searchControl.resizeHash(mebibytes * MiB);
+        if (command >> quantity) {
+            io::char_type u = 'm';
+            command >> u;
+
+            switch (std::tolower(u)) {
+                case 'g':
+                    quantity *= 1024;
+
+                case 'm':
+                    quantity *= 1024;
+
+                case 'k':
+                    quantity *= 1024;
+
+                case 'b':
+                    break;
+
+                default:
+                    io::fail_rewind(command);
+                    return;
+            }
+
+            searchControl.resizeHash(quantity);
             return;
         }
 

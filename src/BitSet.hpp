@@ -33,7 +33,7 @@ public:
     Self& operator ++ () { *this = Self(without_lsb()); return self(); }
 
     constexpr Self begin() const { return self(); }
-    constexpr Self end() const { return self().empty(); }
+    constexpr Self end() const { return Self{}; }
 
     friend bool operator >> (Self& self, Index& i) {
         if (self.none()) { return false; }

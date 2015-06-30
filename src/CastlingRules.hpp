@@ -5,12 +5,12 @@
 #include "BetweenSquares.hpp"
 
 class CastlingRules {
-    struct bb {
+    struct Rules {
         Bb unimpeded;
         Bb unattacked;
     };
 
-    File::static_array< File::static_array<bb> > castlingRules;
+    File::static_array< File::static_array<Rules> > castlingRules;
 
 public:
     CastlingRules () {
@@ -20,8 +20,8 @@ public:
                 Square rook(rookFile, Rank1);
 
                 if (king == rook) {
-                    castlingRules[kingFile][rookFile].unimpeded  = Bb::empty();
-                    castlingRules[kingFile][rookFile].unattacked = Bb::empty();
+                    castlingRules[kingFile][rookFile].unimpeded  = Bb{};
+                    castlingRules[kingFile][rookFile].unattacked = Bb{};
                     continue;
                 }
 

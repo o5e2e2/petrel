@@ -155,7 +155,7 @@ void UciOutput::nps(std::ostream& ob, const SearchInfo& info) const {
         if (used > 0) {
             auto total = hashMemory.getTotalRecords();
             auto hf = (static_cast<HashMemory::size_t>(used)*1000) / total;
-            hf = std::min(hf, static_cast<decltype(hf)>(1000));
+            //hf = std::min(hf, static_cast<decltype(hf)>(1000));
             ob << " hashfull " << hf;
         }
 
