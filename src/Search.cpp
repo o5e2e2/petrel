@@ -21,19 +21,21 @@ namespace Perft {
             return false;
         }
 
-        PerftTT tt(origin);
-        auto n = tt.get(zobrist, window.draft);
+        {
+            PerftTT tt(origin);
+            auto n = tt.get(zobrist, window.draft);
 
-        if (n) {
-            window.control.addPerftNodes(n);
-            return false;
+            if (n) {
+                window.control.addPerftNodes(n);
+                return false;
+            }
         }
 
         CUT ( window.control.checkQuota() );
 
         SearchWindow childWindow(window);
 
-        n = window.control.getPerftNodes();
+        auto n = window.control.getPerftNodes();
         for (Pi pi : pm.side(My).alivePieces()) {
             Square from = pm.side(My).squareOf(pi);
 
@@ -46,8 +48,8 @@ namespace Perft {
             }
         }
 
-        n = window.control.getPerftNodes() - n;
-        tt.set(zobrist, window.draft, n);
+        PerftTT tt(origin);
+        tt.set(zobrist, window.draft, window.control.getPerftNodes() - n);
         return false;
     }
 }

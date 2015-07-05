@@ -2,14 +2,6 @@
 #include "bitops.hpp"
 #include "memory.hpp"
 
-HashMemory::size_t HashMemory::getMax() {
-    return round(::getAvailableMemory());
-}
-
-HashMemory::size_t HashMemory::round(size_t bytes) {
-    return (bytes > 0)? ::singleton<decltype(bytes)>(::bsr(bytes)) : 0;
-}
-
 void HashMemory::clear() {
     ::memset(hash, 0, size);
 }
@@ -17,30 +9,30 @@ void HashMemory::clear() {
 void HashMemory::set(_t* _hash, size_t _size) {
     assert (_size == round(_size));
 
-    ::memset(_hash, 0, _size);
     hash = _hash;
     size = _size;
     mask = (size-1) ^ (BucketSize-1);
+
+    clear();
 }
 
-void HashMemory::setOne() {
-    set(&one, sizeof(one));
+void HashMemory::setDefault() {
+    set(&one, BucketSize);
 }
 
 void HashMemory::free() {
     if (size == BucketSize) {
         clear();
+        return;
     }
-    else {
-        auto p = this->hash;
-        setOne();
 
-        ::freeAligned(p);
-    }
+    auto p = this->hash;
+    setDefault();
+    ::freeAligned(p);
 }
 
 void HashMemory::resize(size_t bytes) {
-    bytes = (bytes <= BucketSize)? BucketSize : round(bytes);
+    bytes = (bytes <= BucketSize)? BucketSize : ::round(bytes);
 
     if (bytes == size) {
         clear();
@@ -48,8 +40,9 @@ void HashMemory::resize(size_t bytes) {
     }
 
     free();
+    max = round(::getAvailableMemory());
 
-    for (bytes = std::min(bytes, getMax()); bytes > BucketSize; bytes >>= 1) {
+    for (bytes = std::min(bytes, max); bytes > BucketSize; bytes >>= 1) {
         auto p = reinterpret_cast<_t*>(::allocateAligned(bytes, BucketSize));
 
         if (p) {

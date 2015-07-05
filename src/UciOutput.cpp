@@ -16,6 +16,9 @@ namespace {
     enum { MiB = 1024 * 1024 };
     constexpr HashMemory::size_t toMiB(HashMemory::size_t bytes) { return bytes / MiB; }
 
+    template <typename T>
+    constexpr T permil(T n, T m) { return (n * 1000 + m / 2) / m; }
+
 /*
     std::ostream& operator << (std::ostream& out, Zobrist z) {
         auto flags(out.flags());
@@ -151,13 +154,17 @@ void UciOutput::nps(std::ostream& ob, const SearchInfo& info) const {
             }
         }
 
-        auto used  = PerftTT::getUsed();
-        if (used > 0) {
-            auto total = hashMemory.getTotalRecords();
-            auto hf = (static_cast<HashMemory::size_t>(used)*1000) / total;
-            //hf = std::min(hf, static_cast<decltype(hf)>(1000));
-            ob << " hashfull " << hf;
+        auto tried = PerftTT::getTried();
+        if (tried > 0) {
+            auto hit  = PerftTT::getHit();
+            auto hh = ::permil(hit, tried);
+            if (hh > 0) { ob << " hashhit " << hh; }
         }
+
+        auto used  = PerftTT::getUsed();
+        auto total = static_cast<decltype(used)>(hashMemory.getTotalRecords());
+        auto hf = ::permil(used, total);
+        if (hf > 0) { ob << " hashfull " << hf; }
 
     }
 }

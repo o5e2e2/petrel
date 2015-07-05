@@ -16,24 +16,24 @@ private:
     enum : size_t { BucketSize = sizeof(_t) };
 
     _t  one;
+
     _t* hash;
+    std::uintptr_t mask;
 
-    size_t mask;
     size_t size;
-
-    static size_t round(size_t bytes);
+    size_t max;
 
     void set(_t*, size_t);
-    void setOne();
+    void setDefault();
     void free();
 
 public:
-    HashMemory () { setOne(); }
+    HashMemory () { setDefault(); }
    ~HashMemory () { free(); }
 
-    static size_t getMax();
+    size_t getMax()  const { return max; }
     size_t getSize() const { return size; }
-    size_t getTotalRecords() const { return (size / BucketSize) * 4; }
+    size_t getTotalRecords() const { return (getSize() / HashBucket::getBucketSize()) * HashBucket::getBucketCount(); }
 
     void resize(size_t bytes);
     void clear();
