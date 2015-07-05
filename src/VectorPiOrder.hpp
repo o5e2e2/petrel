@@ -7,7 +7,16 @@
 
 class VectorPiOrder {
     typedef __m128i _t;
-    static const _t sorted;
+
+    struct Sorted {
+        union {
+            _t _v;
+            char a[16];
+        };
+        constexpr Sorted () : a{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15} {}
+        constexpr operator _t () const { return _v; }
+    };
+    static const Sorted sorted;
 
     VectorPiEnum<Pi::_t> _v;
 

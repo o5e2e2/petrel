@@ -23,7 +23,7 @@ const ZobristKey zobristKey; //3k
 const VectorPiSingle vectorPiSingle; //256
 const BitReverse bit_reverse; //64
 const VectorBitCount bit_count; //48
-const VectorPiOrder::_t VectorPiOrder::sorted = _mm_setr_epi8(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15);
+const VectorPiOrder::Sorted VectorPiOrder::sorted; //16
 const CastlingRules castlingRules; //128
 
 const PieceSquareTable Evaluation::pst; //7*64
