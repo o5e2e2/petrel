@@ -62,10 +62,6 @@ class PerftTT {
         return (n & ~AgeMask) | (static_cast<decltype(n)>(a) << AgeShift);
     }
 
-    void copy(Index from, Index to) {
-        origin.save(to, m[from]);
-    }
-
 public:
     PerftTT(HashBucket* p) : h(*p), origin(*p) {}
 
@@ -87,32 +83,33 @@ public:
     }
 
     void set(Zobrist z, depth_t d, node_count_t n) {
-        Index i = 0;
-        if (n >= b[1].getNodes() || b[1].getAge() != counter.age) {
+        Index i;
+
+        if      (n < b[1].getNodes() && b[1].getAge() == counter.age) {
+            i = 0;
+        }
+        else if (n < b[2].getNodes() && b[2].getAge() == counter.age) {
             i = 1;
+        }
+        else if (n < b[3].getNodes() && b[3].getAge() == counter.age) {
+            i = 2;
+        }
+        else {
+            i = 3;
 
-            if (n >= b[2].getNodes() || b[2].getAge() != counter.age) {
-                if (b[2].getAge() != counter.age) {
-                    ++counter.used;
-                }
-
-                if (n >= b[3].getNodes() || b[3].getAge() != counter.age) {
-                    copy(3, 2);
-                    i = 3;
-                }
-                else {
-                    i = 2;
-                }
-
-            }
-            else if (b[1].getAge() != counter.age) {
+            //backup the previous most valuable entry
+            if (b[2].getAge() != counter.age) {
                 ++counter.used;
             }
+            origin.save(2, m[3]);
+            goto save;
         }
-        else if (b[0].getAge() != counter.age) {
+
+        if (b[i].getAge() != counter.age) {
             ++counter.used;
         }
 
+    save:
         b[i].key = key(z, d);
         b[i].perft = perft(n, counter.age);
         origin.save(i, m[i]);
