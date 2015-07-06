@@ -86,18 +86,20 @@ public:
         Index i;
 
         if (n < b[1].getNodes() && b[1].getAge() == counter.age) {
+            //save the new entry here, as the higher entry is more valuable
             if (b[0].getAge() != counter.age) {
                 ++counter.used;
             }
             i = 0;
         }
         else if (n < b[2].getNodes() && b[2].getAge() == counter.age) {
-            if (b[1].getAge() != counter.age) {
-                ++counter.used;
-            }
-            else if (b[0].getAge() != counter.age) {
+            if (b[0].getAge() != counter.age) {
+                //save the previous entry data at the lower slot if it is still empty
                 ++counter.used;
                 origin.save(0, m[1]);
+            }
+            else if (b[1].getAge() != counter.age) {
+                ++counter.used;
             }
             i = 1;
         }
@@ -106,14 +108,16 @@ public:
             if (b[2].getAge() != counter.age) {
                 ++counter.used;
             }
-            else if (b[1].getAge() != counter.age) {
-                ++counter.used;
-                origin.save(1, m[2]);
-            }
-            else if (b[0].getAge() != counter.age) {
-                ++counter.used;
-                origin.save(0, m[1]);
-                origin.save(1, m[2]);
+            else {
+                if (b[0].getAge() != counter.age) {
+                    ++counter.used;
+                    origin.save(0, m[1]);
+                    origin.save(1, m[2]);
+                }
+                else if (b[1].getAge() != counter.age) {
+                    ++counter.used;
+                    origin.save(1, m[2]);
+                }
             }
 
             if (n < b[3].getNodes() && b[3].getAge() == counter.age) {
