@@ -28,9 +28,7 @@ typedef Index<2, castling_side_t> CastlingSide;
 enum piece_index_t { TheKing };
 typedef Index<16, piece_index_t> Pi; //piece index
 
-enum piece_type_t {
-    Queen, Rook, Bishop, Knight, Pawn, King, SpecialPiece, PinRay
-};
+enum piece_type_t { Queen, Rook, Bishop, Knight, Pawn, King, SpecialPiece, PinRay };
 typedef Index<3, piece_type_t> SliderType;
 typedef Index<4, piece_type_t> PromoType;
 typedef Index<6, piece_type_t> PieceType;
