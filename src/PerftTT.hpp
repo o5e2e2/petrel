@@ -85,31 +85,47 @@ public:
     void set(Zobrist z, depth_t d, node_count_t n) {
         Index i;
 
-        if      (n < b[1].getNodes() && b[1].getAge() == counter.age) {
+        if (n < b[1].getNodes() && b[1].getAge() == counter.age) {
+            if (b[0].getAge() != counter.age) {
+                ++counter.used;
+            }
             i = 0;
         }
         else if (n < b[2].getNodes() && b[2].getAge() == counter.age) {
+            if (b[1].getAge() != counter.age) {
+                ++counter.used;
+            }
+            else if (b[0].getAge() != counter.age) {
+                ++counter.used;
+                origin.save(0, m[1]);
+            }
             i = 1;
         }
-        else if (n < b[3].getNodes() && b[3].getAge() == counter.age) {
-            i = 2;
-        }
         else {
-            i = 3;
-
-            //backup the previous most valuable entry
+            //here we know the second most entry would be overwritten and we backup it if empty slot present
             if (b[2].getAge() != counter.age) {
                 ++counter.used;
             }
-            origin.save(2, m[3]);
-            goto save;
+            else if (b[1].getAge() != counter.age) {
+                ++counter.used;
+                origin.save(1, m[2]);
+            }
+            else if (b[0].getAge() != counter.age) {
+                ++counter.used;
+                origin.save(0, m[1]);
+                origin.save(1, m[2]);
+            }
+
+            if (n < b[3].getNodes() && b[3].getAge() == counter.age) {
+                i = 2;
+            }
+            else {
+                //the topmost entry is always backuped
+                origin.save(2, m[3]);
+                i = 3;
+            }
         }
 
-        if (b[i].getAge() != counter.age) {
-            ++counter.used;
-        }
-
-    save:
         b[i].key = key(z, d);
         b[i].perft = perft(n, counter.age);
         origin.save(i, m[i]);
