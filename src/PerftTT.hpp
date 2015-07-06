@@ -105,19 +105,17 @@ public:
         }
         else {
             //here we know the second most entry would be overwritten and we backup it if empty slot present
-            if (b[2].getAge() != counter.age) {
+            if (b[0].getAge() != counter.age) {
                 ++counter.used;
+                origin.save(0, m[1]);
+                origin.save(1, m[2]);
             }
-            else {
-                if (b[0].getAge() != counter.age) {
-                    ++counter.used;
-                    origin.save(0, m[1]);
-                    origin.save(1, m[2]);
-                }
-                else if (b[1].getAge() != counter.age) {
-                    ++counter.used;
-                    origin.save(1, m[2]);
-                }
+            else if (b[1].getAge() != counter.age) {
+                ++counter.used;
+                origin.save(1, m[2]);
+            }
+            else if (b[2].getAge() != counter.age) {
+                ++counter.used;
             }
 
             if (n < b[3].getNodes() && b[3].getAge() == counter.age) {
