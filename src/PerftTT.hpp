@@ -87,15 +87,31 @@ public:
     }
 
     void set(Zobrist z, depth_t d, node_count_t n) {
-        if (b[3].getAge() != counter.age) {
+        Index i = 0;
+        if (n >= b[1].getNodes() || b[1].getAge() != counter.age) {
+            i = 1;
+
+            if (n >= b[2].getNodes() || b[2].getAge() != counter.age) {
+                if (b[2].getAge() != counter.age) {
+                    ++counter.used;
+                }
+
+                if (n >= b[3].getNodes() || b[3].getAge() != counter.age) {
+                    copy(3, 2);
+                    i = 3;
+                }
+                else {
+                    i = 2;
+                }
+
+            }
+            else if (b[1].getAge() != counter.age) {
+                ++counter.used;
+            }
+        }
+        else if (b[0].getAge() != counter.age) {
             ++counter.used;
         }
-
-        Index i;
-        if      (b[0].getAge() != counter.age || b[0].getNodes() <= n) { copy(2, 3); copy(1, 2); copy(0, 1); i = 0; }
-        else if (b[1].getAge() != counter.age || b[1].getNodes() <= n) { copy(2, 3); copy(1, 2); i = 1; }
-        else if (b[2].getAge() != counter.age || b[2].getNodes() <= n) { copy(2, 3); i = 2; }
-        else { i = 3; }
 
         b[i].key = key(z, d);
         b[i].perft = perft(n, counter.age);
