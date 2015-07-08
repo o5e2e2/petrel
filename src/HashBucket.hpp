@@ -7,24 +7,25 @@
 class CACHE_ALIGN HashBucket {
 public:
     typedef ::Index<4> Index;
+    typedef __m128i _t;
 
 private:
-    typedef __m128i _t;
-    _t record[Index::Size];
+    Index::array<_t> _v;
 
 public:
-    constexpr HashBucket() : record {{0,0}, {0,0}, {0,0}, {0,0}} {}
+    constexpr HashBucket() : _v{0,0, 0,0, 0,0, 0,0} {}
+    constexpr HashBucket(const HashBucket& a) = default;
+    constexpr const _t& operator[] (Index i) const { return _v[i]; }
 
-    constexpr HashBucket(HashBucket* p)
-        : record {
-            reinterpret_cast<_t*>(p)[0],
-            reinterpret_cast<_t*>(p)[1],
-            reinterpret_cast<_t*>(p)[2],
-            reinterpret_cast<_t*>(p)[3]
-        } {}
+    void save(Index i, __m128i m) {
+        _mm_stream_si128(&_v[i], m);
+    }
 
-    void save(Index index, __m128i data) {
-        _mm_stream_si128(&reinterpret_cast<_t*>(this)[index], data);
+    void save(__m128i a[4]) {
+        _mm_stream_si128(&_v[0], a[0]);
+        _mm_stream_si128(&_v[1], a[1]);
+        _mm_stream_si128(&_v[2], a[2]);
+        _mm_stream_si128(&_v[3], a[3]);
     }
 
     constexpr static index_t getBucketCount() { return Index::Size; }

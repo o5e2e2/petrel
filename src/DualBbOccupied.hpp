@@ -19,7 +19,7 @@ public:
 
     DualBbOccupied (Bb my, Bb op) {
         _v = ::combine(my, op);
-        _v += bit_reverse.byte_swap(_v);
+        _v += ::bitReverse.byte_swap(_v);
     }
 
     DualBbOccupied& operator= (DualBbOccupied&& d) { _v = d._v; return *this; }

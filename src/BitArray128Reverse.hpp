@@ -34,6 +34,6 @@ public:
     }
 };
 
-extern const BitReverse bit_reverse;
+extern const BitReverse bitReverse;
 
 #endif
