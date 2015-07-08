@@ -39,6 +39,12 @@ public:
         return *this;
     }
 
+    Index& operator -- () {
+        --_v;
+        assertValid();
+        return *this;
+    }
+
     Index& flip() {
         assertValid();
         _v ^= Mask;
@@ -68,25 +74,11 @@ public:
         return out << i.to_char();
     }
 
-    template <typename T> struct array : std::array<T, Size> {
-        typedef Index index_type;
-
-        typedef std::array<T, Size> Base;
-        using typename Base::size_type;
-        using Base::Base;
-
-#if defined ASSERT_INDEX_CHECK
-        using std::array<T, Size>::at;
-        T& operator[] (Index i) { return at(static_cast<size_type>(i)); };
-        constexpr const T& operator[] (Index i) const { return at(static_cast<size_type>(i)); };
-#else
-        using std::array<T, Size>::operator[];
-        T& operator[] (Index i) { return operator[](static_cast<size_type>(i)); };
-        constexpr const T& operator[] (Index i) const { return operator[](static_cast<size_type>(i)); };
-#endif
-    };
+    template <typename T> using array = std::array<T, Size>;
 
     template <typename T> struct CACHE_ALIGN static_array : array<T> {
+        typedef Index index_type;
+
         static_array () = default;
         static_array (const static_array&) = delete;
         static_array& operator = (const static_array&) = delete;

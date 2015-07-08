@@ -12,7 +12,7 @@ struct SquareOrder {
             return Rank(sq1) < Rank(sq2); //Rank8 < Rank1
         }
         else {
-            constexpr std::array<index_t, 8> order{6, 4, 2, 0, 1, 3, 5, 7};
+            constexpr Rank::array<index_t> order{6, 4, 2, 0, 1, 3, 5, 7};
             return order[File(sq1)] < order[File(sq2)]; //FileD < FileE < FileC < FileF < FileB < FileG < FileA < FileH
         }
     }

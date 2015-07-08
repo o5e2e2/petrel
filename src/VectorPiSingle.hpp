@@ -7,24 +7,41 @@
 
 class VectorPiSingle {
     typedef __m128i _t;
-    Pi::static_array<_t> _v;
+
+    union _u {
+        Pi::array<unsigned char> _a;
+        _t _m;
+    };
+
+    Pi::array<_u> _v;
 
 public:
-    VectorPiSingle () {
-        _t v = _mm_cvtsi32_si128(0xff);
-        FOR_INDEX(Pi, pi) {
-            _v[pi] = v;
-            v = _mm_slli_si128(v, 1);
-        }
-    }
+    constexpr VectorPiSingle () :
+    _v {
+        0xff,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,
+        0,0xff,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,
+        0,0,0xff,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,
+        0,0,0,0xff, 0,0,0,0, 0,0,0,0, 0,0,0,0,
 
-    _t operator[] (Pi pi) const {
-        return _v[pi];
-    }
+        0,0,0,0, 0xff,0,0,0, 0,0,0,0, 0,0,0,0,
+        0,0,0,0, 0,0xff,0,0, 0,0,0,0, 0,0,0,0,
+        0,0,0,0, 0,0,0xff,0, 0,0,0,0, 0,0,0,0,
+        0,0,0,0, 0,0,0,0xff, 0,0,0,0, 0,0,0,0,
 
-    _t except(Pi pi) const {
-        return _v[pi] ^ ::vectorOfAll[0xff];
-    };
+        0,0,0,0, 0,0,0,0, 0xff,0,0,0, 0,0,0,0,
+        0,0,0,0, 0,0,0,0, 0,0xff,0,0, 0,0,0,0,
+        0,0,0,0, 0,0,0,0, 0,0,0xff,0, 0,0,0,0,
+        0,0,0,0, 0,0,0,0, 0,0,0,0xff, 0,0,0,0,
+
+        0,0,0,0, 0,0,0,0, 0,0,0,0, 0xff,0,0,0,
+        0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0xff,0,0,
+        0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0xff,0,
+        0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0xff,
+    }
+    {}
+
+    constexpr const _t& operator[] (Pi pi) const { return _v[pi]._m; }
+    constexpr const _t  except(Pi pi) const { return (*this)[pi] ^ ::vectorOfAll[0xff]; };
 
 };
 
