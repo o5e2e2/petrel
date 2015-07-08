@@ -13,7 +13,7 @@ private:
     Index::array<_t> _v;
 
 public:
-    constexpr HashBucket() : _v{0,0, 0,0, 0,0, 0,0} {}
+    constexpr HashBucket() : _v{{{0,0}, {0,0}, {0,0}, {0,0}}} {}
     constexpr HashBucket(const HashBucket& a) = default;
     constexpr const _t& operator[] (Index i) const { return _v[i]; }
 
