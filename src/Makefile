@@ -24,7 +24,7 @@ OPTIONS += -finline-functions -funroll-all-loops
 OPTIMIZATIONS = -Ofast -flto -fno-rtti -fno-common
 OPTIMIZATIONS += -fno-exceptions
 WARNINGS += -pedantic -Wall -Wextra -Wuninitialized -Wpointer-arith -Wcast-qual -Wcast-align
-WARNINGS += -Wsign-conversion
+#WARNINGS += -Wsign-conversion
 WARNINGS += -Wconversion -Wshadow
 
 CXXFLAGS += $(OPTIONS)

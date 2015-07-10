@@ -19,7 +19,7 @@ class ReverseBb : public BitArray<ReverseBb, __m128i> {
     struct Singleton : Square::static_array<_t> { Singleton (); };
     static const Singleton singleton;
 
-    static _t hyperbola(_t v) { return v ^ bit_reverse(v); }
+    static _t hyperbola(_t v) { return v ^ ::bitReverse(v); }
 
     explicit operator Bb () const { return Bb{ static_cast<Bb::_t>( _mm_cvtsi128_si64(this->_v) ) }; }
 

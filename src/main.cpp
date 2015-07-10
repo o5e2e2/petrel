@@ -21,7 +21,7 @@ const PieceTypeAttack pieceTypeAttack; //3k
 const VectorOf vectorOfAll; //4k
 const ZobristKey zobristKey; //3k
 const VectorPiSingle vectorPiSingle; //256
-const BitReverse bit_reverse; //64
+const BitReverse bitReverse; //64
 const VectorBitCount bit_count; //48
 const VectorPiOrder::Sorted VectorPiOrder::sorted; //16
 const CastlingRules castlingRules; //128
