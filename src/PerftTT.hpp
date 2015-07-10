@@ -22,10 +22,10 @@ class PerftTT {
     static Counter counter;
 
 
-    enum {DepthShift = 6, AgeShift = 61};
+    enum {DepthShift = 6, AgeShift = 62};
 
     static const Zobrist::_t DepthMask = static_cast<Zobrist::_t>(0xFF) << DepthShift;
-    static const node_count_t AgeMask = static_cast<node_count_t>(7) << AgeShift;
+    static const node_count_t AgeMask = static_cast<node_count_t>(3) << AgeShift;
 
     struct PerftRecord {
         Zobrist key;
@@ -86,7 +86,6 @@ public:
         Index i;
 
         if (n < b[1].getNodes() && b[1].getAge() == counter.age) {
-            //save the new entry here, as the higher entry is more valuable
             if (b[0].getAge() != counter.age) {
                 ++counter.used;
             }
@@ -94,7 +93,6 @@ public:
         }
         else if (n < b[2].getNodes() && b[2].getAge() == counter.age) {
             if (b[0].getAge() != counter.age) {
-                //save the previous entry data at the lower slot if it is still empty
                 ++counter.used;
                 origin.save(0, m[1]);
             }
@@ -104,7 +102,6 @@ public:
             i = 1;
         }
         else {
-            //here we know the second most entry would be overwritten and we backup it if empty slot present
             if (b[0].getAge() != counter.age) {
                 ++counter.used;
                 origin.save(0, m[1]);
@@ -135,13 +132,13 @@ public:
 
     static void clearAge() {
         counter = {};
-        counter.age = 4;
+        counter.age = 0;
     }
 
     static void nextAge() {
-        auto a = (counter.age + 1) & 7;
+        auto a = (counter.age + 1) & 3;
         counter = {};
-        counter.age = a;
+        counter.age = a? a : 1;
     }
 
     static node_count_t getUsed()  { return counter.used; }
