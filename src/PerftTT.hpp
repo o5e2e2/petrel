@@ -22,10 +22,10 @@ class PerftTT {
     static Counter counter;
 
 
-    enum {DepthShift = 6, AgeShift = 62};
+    enum {DepthShift = 6, AgeShift = 61};
 
     static const Zobrist::_t DepthMask = static_cast<Zobrist::_t>(0xFF) << DepthShift;
-    static const node_count_t AgeMask = static_cast<node_count_t>(3) << AgeShift;
+    static const node_count_t AgeMask = static_cast<node_count_t>(7) << AgeShift;
 
     struct PerftRecord {
         Zobrist key;
@@ -71,10 +71,7 @@ public:
             if (b[i].key == key(z, d)) {
                 ++counter.hit;
                 if (b[i].getAge() != counter.age) {
-                    ++counter.used;
-
-                    b[i].perft = perft(b[i].perft, counter.age);
-                    origin.save(i, m[i]);
+                    update(i);
                 }
                 return b[i].getNodes();
             }
@@ -82,9 +79,73 @@ public:
         return 0;
     }
 
-    void set(Zobrist z, depth_t d, node_count_t n) {
-        Index i;
+    void update(Index i) {
+        ++counter.used;
+        b[i].perft = perft(b[i].perft, counter.age);
 
+        auto n = b[i].getNodes();
+
+        if (i == 0) {
+            if      (n >= b[3].getNodes() || b[3].getAge() != counter.age) {
+                origin.save(0, m[1]);
+                origin.save(1, m[2]);
+                origin.save(2, m[3]);
+                origin.save(3, m[0]);
+            }
+            else if (n >= b[2].getNodes() || b[2].getAge() != counter.age) {
+                origin.save(0, m[1]);
+                origin.save(1, m[2]);
+                origin.save(2, m[0]);
+            }
+            else if (n >= b[1].getNodes() || b[1].getAge() != counter.age) {
+                origin.save(0, m[1]);
+                origin.save(1, m[0]);
+            }
+            else {
+                origin.save(0, m[0]);
+            }
+        }
+        else if (i == 1) {
+            if      (n >= b[3].getNodes() || b[3].getAge() != counter.age) {
+                origin.save(1, m[2]);
+                origin.save(2, m[3]);
+                origin.save(3, m[1]);
+            }
+            else if (n >= b[2].getNodes() || b[2].getAge() != counter.age) {
+                origin.save(1, m[2]);
+                origin.save(2, m[1]);
+            }
+            else {
+                origin.save(1, m[1]);
+            }
+        }
+        else if (i == 2) {
+            if      (n >= b[3].getNodes() || b[3].getAge() != counter.age) {
+                origin.save(2, m[3]);
+                origin.save(3, m[2]);
+            }
+            else {
+                origin.save(2, m[2]);
+            }
+        }
+        else {
+            origin.save(3, m[3]);
+        }
+    }
+
+    void set(Zobrist z, depth_t d, node_count_t n) {
+        /*
+        FOR_INDEX(Index, i) {
+            if (b[i].key == key(z, d)) {
+                if (b[i].getAge() != counter.age) {
+                    update(i);
+                }
+                return;
+            }
+        }
+        */
+
+        Index i;
         if (n < b[1].getNodes() && b[1].getAge() == counter.age) {
             if (b[0].getAge() != counter.age) {
                 ++counter.used;
@@ -132,11 +193,11 @@ public:
 
     static void clearAge() {
         counter = {};
-        counter.age = 0;
+        counter.age = 1;
     }
 
     static void nextAge() {
-        auto a = (counter.age + 1) & 3;
+        auto a = (counter.age + 1) & 7;
         counter = {};
         counter.age = a? a : 1;
     }
