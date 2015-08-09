@@ -92,7 +92,7 @@ public:
 
         for (Index j = 3; j > i; --j) {
             //seek the new slot for i
-            if (! (n < b[i].getNodes() && b[i].isOk()) ) {
+            if (! (b[i].isOk() && n < b[i].getNodes()) ) {
                 //popup i to j
                 for (Index k = i; k < j; ++k) {
                     origin.save(k, m[k+1]);
@@ -119,43 +119,45 @@ public:
         */
 
         Index i;
-        if (n < b[1].getNodes() && b[1].isOk()) {
-            if (!b[0].isOk()) {
-                ++counter.used;
-            }
-            i = 0;
-        }
-        else if (n < b[2].getNodes() && b[2].isOk()) {
-            if (!b[0].isOk()) {
-                ++counter.used;
-                origin.save(0, m[1]);
-            }
-            else if (!b[1].isOk()) {
-                ++counter.used;
-            }
-            i = 1;
-        }
-        else {
-            if (!b[0].isOk()) {
-                ++counter.used;
-                origin.save(0, m[1]);
-                origin.save(1, m[2]);
-            }
-            else if (!b[1].isOk()) {
-                ++counter.used;
-                origin.save(1, m[2]);
-            }
-            else if (!b[2].isOk()) {
-                ++counter.used;
-            }
+        if (!b[0].isOk()) {
+            ++counter.used;
 
-            if (n < b[3].getNodes() && b[3].isOk()) {
+            if      (b[1].isOk() && n < b[1].getNodes()) {
+                i = 0;
+            }
+            else if (b[2].isOk() && n < b[2].getNodes()) {
+                i = 1;
+                origin.save(0, m[1]);
+            }
+            else if (b[3].isOk() && n < b[3].getNodes()) {
                 i = 2;
+                origin.save(0, m[1]);
+                origin.save(1, m[2]);
             }
             else {
-                //the topmost entry is always backuped
-                origin.save(2, m[3]);
                 i = 3;
+                origin.save(0, m[1]);
+                origin.save(1, m[2]);
+                origin.save(2, m[3]);
+            }
+        }
+        else {
+            if (n < b[2].getNodes()) {
+                if (n < b[1].getNodes()) {
+                    i = 0;
+                }
+                else {
+                    i = 1;
+                }
+            }
+            else {
+                if (n < b[3].getNodes()) {
+                    i = 2;
+                }
+                else {
+                    i = 3;
+                    origin.save(2, m[3]);
+                }
             }
         }
 

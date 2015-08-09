@@ -158,13 +158,15 @@ void UciOutput::nps(std::ostream& ob, const SearchInfo& info) const {
         if (tried > 0) {
             auto hit  = PerftTT::getHit();
             auto hh = ::permil(hit, tried);
-            if (hh > 0) { ob << " hashhit " << hh; }
+            ob << " hashhit " << hh;
         }
 
         auto used  = PerftTT::getUsed();
-        auto total = static_cast<decltype(used)>(hashMemory.getTotalRecords());
-        auto hf = ::permil(used, total);
-        if (hf > 0) { ob << " hashfull " << hf; }
+        if (used > 0) {
+            auto total = static_cast<decltype(used)>(hashMemory.getTotalRecords());
+            auto hf = ::permil(used, total);
+            ob << " hashfull " << hf;
+        }
 
     }
 }
