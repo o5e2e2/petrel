@@ -35,6 +35,10 @@ class PerftTT {
             return static_cast<age_t>(static_cast<std::size_t>(perft) >> AgeShift);
         }
 
+        bool isOk() {
+            return getAge() == counter.age;
+        }
+
         depth_t getDepth() {
             return static_cast<depth_t>(static_cast<std::size_t>(key) >> DepthShift & 0xFF);
         }
@@ -70,75 +74,44 @@ public:
         FOR_INDEX(Index, i) {
             if (b[i].key == key(z, d)) {
                 ++counter.hit;
-                if (b[i].getAge() != counter.age) {
-                    update(i);
+                if (!b[i].isOk()) {
+                    popup(i);
                 }
+
                 return b[i].getNodes();
             }
         }
         return 0;
     }
 
-    void update(Index i) {
+    void popup(Index i) {
         ++counter.used;
         b[i].perft = perft(b[i].perft, counter.age);
 
         auto n = b[i].getNodes();
 
-        if (i == 0) {
-            if      (n >= b[3].getNodes() || b[3].getAge() != counter.age) {
-                origin.save(0, m[1]);
-                origin.save(1, m[2]);
-                origin.save(2, m[3]);
-                origin.save(3, m[0]);
-            }
-            else if (n >= b[2].getNodes() || b[2].getAge() != counter.age) {
-                origin.save(0, m[1]);
-                origin.save(1, m[2]);
-                origin.save(2, m[0]);
-            }
-            else if (n >= b[1].getNodes() || b[1].getAge() != counter.age) {
-                origin.save(0, m[1]);
-                origin.save(1, m[0]);
-            }
-            else {
-                origin.save(0, m[0]);
+        for (Index j = 3; j > i; --j) {
+            //seek the new slot for i
+            if (! (n < b[i].getNodes() && b[i].isOk()) ) {
+                //popup i to j
+                for (Index k = i; k < j; ++k) {
+                    origin.save(k, m[k+1]);
+                }
+                origin.save(j, m[i]);
+                return;
             }
         }
-        else if (i == 1) {
-            if      (n >= b[3].getNodes() || b[3].getAge() != counter.age) {
-                origin.save(1, m[2]);
-                origin.save(2, m[3]);
-                origin.save(3, m[1]);
-            }
-            else if (n >= b[2].getNodes() || b[2].getAge() != counter.age) {
-                origin.save(1, m[2]);
-                origin.save(2, m[1]);
-            }
-            else {
-                origin.save(1, m[1]);
-            }
-        }
-        else if (i == 2) {
-            if      (n >= b[3].getNodes() || b[3].getAge() != counter.age) {
-                origin.save(2, m[3]);
-                origin.save(3, m[2]);
-            }
-            else {
-                origin.save(2, m[2]);
-            }
-        }
-        else {
-            origin.save(3, m[3]);
-        }
+
+        origin.save(i, m[i]);
+        return;
     }
 
     void set(Zobrist z, depth_t d, node_count_t n) {
         /*
         FOR_INDEX(Index, i) {
             if (b[i].key == key(z, d)) {
-                if (b[i].getAge() != counter.age) {
-                    update(i);
+                if (!b[i].isOk()) {
+                    popup(i);
                 }
                 return;
             }
@@ -146,37 +119,37 @@ public:
         */
 
         Index i;
-        if (n < b[1].getNodes() && b[1].getAge() == counter.age) {
-            if (b[0].getAge() != counter.age) {
+        if (n < b[1].getNodes() && b[1].isOk()) {
+            if (!b[0].isOk()) {
                 ++counter.used;
             }
             i = 0;
         }
-        else if (n < b[2].getNodes() && b[2].getAge() == counter.age) {
-            if (b[0].getAge() != counter.age) {
+        else if (n < b[2].getNodes() && b[2].isOk()) {
+            if (!b[0].isOk()) {
                 ++counter.used;
                 origin.save(0, m[1]);
             }
-            else if (b[1].getAge() != counter.age) {
+            else if (!b[1].isOk()) {
                 ++counter.used;
             }
             i = 1;
         }
         else {
-            if (b[0].getAge() != counter.age) {
+            if (!b[0].isOk()) {
                 ++counter.used;
                 origin.save(0, m[1]);
                 origin.save(1, m[2]);
             }
-            else if (b[1].getAge() != counter.age) {
+            else if (!b[1].isOk()) {
                 ++counter.used;
                 origin.save(1, m[2]);
             }
-            else if (b[2].getAge() != counter.age) {
+            else if (!b[2].isOk()) {
                 ++counter.used;
             }
 
-            if (n < b[3].getNodes() && b[3].getAge() == counter.age) {
+            if (n < b[3].getNodes() && b[3].isOk()) {
                 i = 2;
             }
             else {
