@@ -44,6 +44,7 @@ void Uci::operator() (std::istream& in) {
         else if (next("wait"))      { searchControl.wait(); }
         else if (next("echo"))      { echo(); }
         else if (next("call"))      { call(); }
+        else if (next("set"))       { setoption(); }
         else {
             //ignore comment line
             auto peek = command.peek();
