@@ -74,7 +74,9 @@ public:
         FOR_INDEX(Index, i) {
             if (b[i].key == key(z, d)) {
                 ++counter.hit;
+
                 if (!b[i].isOk()) {
+                    //update the age of transpositioned entry
                     popup(i);
                 }
 
@@ -85,6 +87,8 @@ public:
     }
 
     void popup(Index i) {
+        //replace the entry with the given index, reordering the rest
+
         ++counter.used;
         b[i].perft = perft(b[i].perft, counter.age);
 
@@ -108,40 +112,19 @@ public:
 
     void set(Zobrist z, depth_t d, node_count_t n) {
         /*
+        //replace the same entry
         FOR_INDEX(Index, i) {
             if (b[i].key == key(z, d)) {
-                if (!b[i].isOk()) {
-                    popup(i);
-                }
+                b[i].perft = perft(n, counter.age);
+                popup(i);
                 return;
             }
         }
         */
 
         Index i;
-        if (!b[0].isOk()) {
-            ++counter.used;
-
-            if      (b[1].isOk() && n < b[1].getNodes()) {
-                i = 0;
-            }
-            else if (b[2].isOk() && n < b[2].getNodes()) {
-                i = 1;
-                origin.save(0, m[1]);
-            }
-            else if (b[3].isOk() && n < b[3].getNodes()) {
-                i = 2;
-                origin.save(0, m[1]);
-                origin.save(1, m[2]);
-            }
-            else {
-                i = 3;
-                origin.save(0, m[1]);
-                origin.save(1, m[2]);
-                origin.save(2, m[3]);
-            }
-        }
-        else {
+        if (b[0].isOk()) {
+            //replace the nearest similar slot (but not the shallowest!)
             if (n < b[2].getNodes()) {
                 if (n < b[1].getNodes()) {
                     i = 0;
@@ -155,8 +138,27 @@ public:
                     i = 2;
                 }
                 else {
-                    i = 3;
+                    //the previous highest entry is always kept
                     origin.save(2, m[3]);
+                    i = 3;
+                }
+            }
+        }
+        else {
+            //push out the lowest (0-index) entry, keeping the rest
+            ++counter.used;
+
+            i = 0;
+            if (! (b[1].isOk() && n < b[1].getNodes()) ) {
+                origin.save(0, m[1]);
+                i = 1;
+                if (! (b[2].isOk() && n < b[2].getNodes()) ) {
+                    origin.save(1, m[2]);
+                    i = 2;
+                    if (! (b[3].isOk() && n < b[3].getNodes()) ) {
+                        origin.save(2, m[3]);
+                        i = 3;
+                    }
                 }
             }
         }
@@ -172,6 +174,9 @@ public:
     }
 
     static void nextAge() {
+        //there are 7 ages, not 8, because of:
+        //1) need to break 4*n ply transposition pattern
+        //2) make sure that initally clear entry is never hidden
         auto a = (counter.age + 1) & 7;
         counter = {};
         counter.age = a? a : 1;
