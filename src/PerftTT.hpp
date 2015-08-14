@@ -87,7 +87,7 @@ public:
     }
 
     void popup(Index i) {
-        //replace the entry with the given index, reordering the rest
+        //move the i entry to the actual age region, reordering the rest
 
         ++counter.used;
         b[i].perft = perft(b[i].perft, counter.age);
@@ -96,18 +96,28 @@ public:
 
         for (Index j = 3; j > i; --j) {
             //seek the new slot for i
-            if (! (b[i].isOk() && n < b[i].getNodes()) ) {
-                //popup i to j
-                for (Index k = i; k < j; ++k) {
-                    origin.save(k, m[k+1]);
-                }
-                origin.save(j, m[i]);
+            if (! (b[j].isOk() && n < b[j].getNodes()) ) {
+                popup(i, j);
                 return;
             }
         }
 
         origin.save(i, m[i]);
         return;
+    }
+
+    void popup(Index i, Index j) {
+        for (Index k = i; k < j; ++k) {
+            origin.save(k, m[k+1]);
+        }
+        origin.save(j, m[i]);
+    }
+
+    void _out() {
+        FOR_INDEX(Index, k) {
+            if (!b[k].isOk()) { std::cout << '\''; }
+            std::cout << b[k].getNodes() << ' ';
+        }
     }
 
     void set(Zobrist z, depth_t d, node_count_t n) {
@@ -122,33 +132,21 @@ public:
         }
         */
 
-        Index i;
+        Index i = 0;
         if (b[0].isOk()) {
-            //replace the nearest similar slot (but not the shallowest!)
-            if (n < b[2].getNodes()) {
-                if (n < b[1].getNodes()) {
-                    i = 0;
-                }
-                else {
-                    i = 1;
-                }
-            }
-            else {
-                if (n < b[3].getNodes()) {
+            if (! (n < b[1].getNodes()) ) {
+                i = 1;
+                if (! (n < b[2].getNodes()) ) {
                     i = 2;
-                }
-                else {
-                    //the previous highest entry is always kept
-                    origin.save(2, m[3]);
-                    i = 3;
+                    if (! (n < b[3].getNodes()) ) {
+                        origin.save(2, m[3]);
+                        i = 3;
+                    }
                 }
             }
         }
         else {
             //push out the lowest (0-index) entry, keeping the rest
-            ++counter.used;
-
-            i = 0;
             if (! (b[1].isOk() && n < b[1].getNodes()) ) {
                 origin.save(0, m[1]);
                 i = 1;
@@ -161,6 +159,7 @@ public:
                     }
                 }
             }
+            ++counter.used;
         }
 
         b[i].key = key(z, d);
