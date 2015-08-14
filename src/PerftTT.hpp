@@ -134,31 +134,90 @@ public:
 
         Index i = 0;
         if (b[0].isOk()) {
-            if (! (n < b[1].getNodes()) ) {
+            if (n >= b[1].getNodes()) {
                 i = 1;
-                if (! (n < b[2].getNodes()) ) {
+                if (n >= b[2].getNodes()) {
                     i = 2;
-                    if (! (n < b[3].getNodes()) ) {
+                    if (n >= b[3].getNodes()) {
                         origin.save(2, m[3]);
                         i = 3;
                     }
                 }
             }
         }
-        else {
-            //push out the lowest (0-index) entry, keeping the rest
-            if (! (b[1].isOk() && n < b[1].getNodes()) ) {
+        else if (b[1].isOk()) {
+            if (n >= b[1].getNodes()) {
                 origin.save(0, m[1]);
                 i = 1;
-                if (! (b[2].isOk() && n < b[2].getNodes()) ) {
+                if (n >= b[2].getNodes()) {
                     origin.save(1, m[2]);
                     i = 2;
-                    if (! (b[3].isOk() && n < b[3].getNodes()) ) {
+                    if (n >= b[3].getNodes()) {
                         origin.save(2, m[3]);
                         i = 3;
                     }
                 }
             }
+            ++counter.used;
+        }
+        else if (b[2].isOk()) {
+            //shallowest of 2
+            if (b[1].getNodes() >= b[0].getNodes()) {
+                origin.save(0, m[1]);
+            }
+
+            i = 1;
+            if (n >= b[2].getNodes()) {
+                origin.save(1, m[2]);
+                i = 2;
+                if (n >= b[3].getNodes()) {
+                    origin.save(2, m[3]);
+                    i = 3;
+                }
+            }
+            ++counter.used;
+        }
+        else if (b[3].isOk()) {
+            //shallowest of 3
+            if (b[0].getNodes() <= b[2].getNodes()) {
+                if (b[0].getNodes() <= b[1].getNodes()) {
+                    origin.save(0, m[2]);
+                }
+                else {
+                    origin.save(1, m[2]);
+                }
+            }
+            else {
+                if (b[1].getNodes() <= b[2].getNodes()) {
+                    origin.save(1, m[2]);
+                }
+            }
+
+            i = 2;
+            if (n >= b[3].getNodes()) {
+                origin.save(2, m[3]);
+                i = 3;
+            }
+            ++counter.used;
+        }
+        else {
+            //shallowest of 3
+            if (b[0].getNodes() <= b[2].getNodes()) {
+                if (b[0].getNodes() <= b[1].getNodes()) {
+                    origin.save(0, m[2]);
+                }
+                else {
+                    origin.save(1, m[2]);
+                }
+            }
+            else {
+                if (b[1].getNodes() <= b[2].getNodes()) {
+                    origin.save(1, m[2]);
+                }
+            }
+
+            origin.save(2, m[3]);
+            i = 3;
             ++counter.used;
         }
 
