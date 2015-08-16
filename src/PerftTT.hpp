@@ -96,7 +96,7 @@ public:
 
         for (Index j = 3; j > i; --j) {
             //seek the new slot for i
-            if (! (b[j].isOk() && n < b[j].getNodes()) ) {
+            if (!b[j].isOk() || b[j].getNodes() <= n) {
                 popup(i, j);
                 return;
             }
@@ -134,11 +134,11 @@ public:
 
         Index i = 0;
         if (b[0].isOk()) {
-            if (n >= b[1].getNodes()) {
+            if (b[1].getNodes() <= n) {
                 i = 1;
-                if (n >= b[2].getNodes()) {
+                if (b[2].getNodes() <= n) {
                     i = 2;
-                    if (n >= b[3].getNodes()) {
+                    if (b[3].getNodes() <= n) {
                         origin.save(2, m[3]);
                         i = 3;
                     }
@@ -146,13 +146,13 @@ public:
             }
         }
         else if (b[1].isOk()) {
-            if (n >= b[1].getNodes()) {
+            if (b[1].getNodes() <= n) {
                 origin.save(0, m[1]);
                 i = 1;
-                if (n >= b[2].getNodes()) {
+                if (b[2].getNodes() <= n) {
                     origin.save(1, m[2]);
                     i = 2;
-                    if (n >= b[3].getNodes()) {
+                    if (b[3].getNodes() <= n) {
                         origin.save(2, m[3]);
                         i = 3;
                     }
@@ -162,15 +162,15 @@ public:
         }
         else if (b[2].isOk()) {
             //shallowest of 2
-            if (b[1].getNodes() >= b[0].getNodes()) {
+            if (b[0].getNodes() < b[1].getNodes()) {
                 origin.save(0, m[1]);
             }
 
             i = 1;
-            if (n >= b[2].getNodes()) {
+            if (b[2].getNodes() <= n) {
                 origin.save(1, m[2]);
                 i = 2;
-                if (n >= b[3].getNodes()) {
+                if (b[3].getNodes() <= n) {
                     origin.save(2, m[3]);
                     i = 3;
                 }
@@ -179,44 +179,57 @@ public:
         }
         else if (b[3].isOk()) {
             //shallowest of 3
-            if (b[0].getNodes() <= b[2].getNodes()) {
-                if (b[0].getNodes() <= b[1].getNodes()) {
+            if (b[0].getNodes() < b[1].getNodes()) {
+                if (b[0].getNodes() < b[2].getNodes()) {
                     origin.save(0, m[2]);
-                }
-                else {
-                    origin.save(1, m[2]);
                 }
             }
             else {
-                if (b[1].getNodes() <= b[2].getNodes()) {
+                if (b[1].getNodes() < b[2].getNodes()) {
                     origin.save(1, m[2]);
                 }
             }
 
             i = 2;
-            if (n >= b[3].getNodes()) {
+            if (b[3].getNodes() <= n) {
                 origin.save(2, m[3]);
                 i = 3;
             }
             ++counter.used;
         }
         else {
-            //shallowest of 3
-            if (b[0].getNodes() <= b[2].getNodes()) {
-                if (b[0].getNodes() <= b[1].getNodes()) {
-                    origin.save(0, m[2]);
+            //shallowest of 4
+            if (b[0].getNodes() < b[1].getNodes()) {
+                if (b[2].getNodes() < b[3].getNodes()) {
+                    if (b[0].getNodes() < b[2].getNodes()) {
+                        origin.save(0, m[3]);
+                    }
+                    else {
+                        origin.save(2, m[3]);
+                    }
                 }
                 else {
-                    origin.save(1, m[2]);
+                    if (b[0].getNodes() < b[3].getNodes()) {
+                        origin.save(0, m[3]);
+                    }
                 }
             }
             else {
-                if (b[1].getNodes() <= b[2].getNodes()) {
-                    origin.save(1, m[2]);
+                if (b[2].getNodes() < b[3].getNodes()) {
+                    if (b[1].getNodes() < b[2].getNodes()) {
+                        origin.save(1, m[3]);
+                    }
+                    else {
+                        origin.save(2, m[3]);
+                    }
+                }
+                else {
+                    if (b[1].getNodes() < b[3].getNodes()) {
+                        origin.save(1, m[3]);
+                    }
                 }
             }
 
-            origin.save(2, m[3]);
             i = 3;
             ++counter.used;
         }
