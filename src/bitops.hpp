@@ -161,12 +161,6 @@ constexpr T* xor_ptr(T* p, index_t i) {
     }
 #endif
 
-template <typename T>
-T round(T n) {
-    assert (n > 0);
-    return ::singleton<decltype(n)>(::bsr(n));
-}
-
 #if !defined PLATFORM_64
 
     constexpr unsigned __int32 lo(unsigned __int64 b) {

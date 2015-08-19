@@ -2,6 +2,14 @@
 #include "bitops.hpp"
 #include "memory.hpp"
 
+namespace {
+    template <typename T>
+    T round(T n) {
+        assert (n > 0);
+        return ::singleton<decltype(n)>(::bsr(n));
+    }
+}
+
 void HashMemory::clear() {
     ::memset(hash, 0, size);
 }
@@ -32,7 +40,7 @@ void HashMemory::free() {
 }
 
 void HashMemory::resize(size_t bytes) {
-    bytes = (bytes <= BucketSize)? BucketSize : ::round(bytes);
+    bytes = (bytes <= BucketSize)? BucketSize : round(bytes);
 
     if (bytes == size) {
         clear();
