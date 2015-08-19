@@ -19,12 +19,12 @@ const ReverseBb::Direction ReverseBb::direction; //12k
 const ReverseBb::Singleton ReverseBb::singleton; //1k
 const PieceTypeAttack pieceTypeAttack; //3k
 const VectorOf vectorOfAll; //4k
-const ZobristKey zobristKey; //3k
 const VectorPiSingle vectorPiSingle; //256
+const CastlingRules castlingRules; //128
+const ZobristKey zobristKey; //64
 const BitReverse bitReverse; //64
 const VectorBitCount bit_count; //48
 const VectorPiOrder::Sorted VectorPiOrder::sorted; //16
-const CastlingRules castlingRules; //128
 
 const PieceSquareTable Evaluation::pst; //7*64
 
