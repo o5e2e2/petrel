@@ -85,7 +85,7 @@ namespace PerftDivide {
 
 namespace PerftRoot {
     bool perftX(const Position& parent, SearchWindow& window) {
-        PerftTT::nextAge();
+        HashBucket::nextAge();
         bool isAborted = window.searchFn(parent, window);
 
         if (!isAborted) {

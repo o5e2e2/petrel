@@ -9,6 +9,19 @@ public:
     typedef ::Index<4> Index;
     typedef __m128i _t;
 
+    typedef unsigned age_t;
+    typedef node_count_t used_t;
+
+    struct Counter {
+        used_t tried;
+        used_t hit;
+        used_t used;
+        age_t age;
+
+        constexpr Counter () : tried{0}, hit{0}, used{0}, age{0} {}
+    };
+    static Counter counter;
+
 private:
     Index::array<_t> _v;
 
@@ -30,6 +43,29 @@ public:
 
     constexpr static index_t getBucketCount() { return Index::Size; }
     constexpr static index_t getBucketSize()  { return sizeof(HashBucket); }
+
+    static void clearAge() {
+        counter = {};
+        counter.age = 1;
+    }
+
+    static void nextAge() {
+        //there are 7 ages, not 8, because of:
+        //1) need to break 4*n ply transposition pattern
+        //2) make sure that initally clear entry is never hidden
+        auto a = (counter.age + 1) & 7;
+        counter = {};
+        counter.age = a? a : 1;
+    }
+
+    static node_count_t getUsed()  { return counter.used; }
+    static node_count_t getHit()   { return counter.hit; }
+    static node_count_t getTried() { return counter.tried; }
+    static age_t        getAge()   { return counter.age; }
+
+    static void tickUsed()  { ++counter.used; }
+    static void tickHit()   { ++counter.hit; }
+    static void tickTried() { ++counter.tried; }
 
 };
 

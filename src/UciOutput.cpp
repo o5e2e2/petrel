@@ -5,7 +5,7 @@
 #include "PositionFen.hpp"
 #include "SearchControl.hpp"
 #include "SearchInfo.hpp"
-#include "PerftTT.hpp"
+#include "HashBucket.hpp"
 
 namespace {
     std::ostream& operator << (std::ostream& out, Clock::_t duration) {
@@ -154,14 +154,14 @@ void UciOutput::nps(std::ostream& ob, const SearchInfo& info) const {
             }
         }
 
-        auto tried = PerftTT::getTried();
+        auto tried = HashBucket::getTried();
         if (tried > 0) {
-            auto hit  = PerftTT::getHit();
+            auto hit  = HashBucket::getHit();
             auto hh = ::permil(hit, tried);
             ob << " hashhit " << hh;
         }
 
-        auto used  = PerftTT::getUsed();
+        auto used  = HashBucket::getUsed();
         if (used > 0) {
             auto total = static_cast<decltype(used)>(hashMemory.getTotalRecords());
             auto hf = ::permil(used, total);

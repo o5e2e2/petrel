@@ -5,7 +5,7 @@
 #include "BitArray128Reverse.hpp"
 #include "CastlingRules.hpp"
 #include "Evaluation.hpp"
-#include "PerftTT.hpp"
+#include "HashBucket.hpp"
 #include "PieceTypeAttack.hpp"
 #include "Timer.hpp"
 #include "Uci.hpp"
@@ -37,7 +37,7 @@ template <> io::literal Rank::The_string{"87654321"};
 template <> io::literal Pi::The_string{"K123456789abcdef"};
 
 Timer::TimerPool Timer::timerPool;
-PerftTT::Counter PerftTT::counter;
+HashBucket::Counter HashBucket::counter;
 
 int main(int argc, const char* argv[]) {
     //speed tricks
