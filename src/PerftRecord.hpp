@@ -66,6 +66,14 @@ public:
         return out << r.getDepth() << ':' << r.getNodes();
     }
 
+    friend bool operator < (const PerftRecord& a, const PerftRecord& b) {
+        return a.getNodes() < b.getNodes();
+    }
+
+    bool operator <= (node_count_t n) const {
+        return getNodes() <= n;
+    }
+
 };
 
 #endif

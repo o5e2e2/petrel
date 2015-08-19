@@ -31,7 +31,7 @@ public:
     SearchLimit ();
 
     depth_t      getDepth()  const { return depth; }
-    node_count_t getNodes()  const { return nodes;}
+    node_count_t getNodes()  const { return nodes; }
     bool         getDivide() const { return divide; }
 
     Clock::_t getThinkingTime() const;

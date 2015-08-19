@@ -49,7 +49,7 @@ public:
 
         for (Index j = 3; j > i; --j) {
             //seek the new slot for i
-            if (!b[j].isOk() || b[j].getNodes() <= n) {
+            if (!b[j].isOk() || b[j] <= n) {
                 popup(i, j);
                 return;
             }
@@ -87,11 +87,11 @@ public:
 
         Index i = 0;
         if (b[0].isOk()) {
-            if (b[1].getNodes() <= n) {
+            if (b[1] <= n) {
                 i = 1;
-                if (b[2].getNodes() <= n) {
+                if (b[2] <= n) {
                     i = 2;
-                    if (b[3].getNodes() <= n) {
+                    if (b[3] <= n) {
                         origin.save(2, m[3]);
                         i = 3;
                     }
@@ -102,13 +102,13 @@ public:
             HashBucket::tickUsed();
 
             if (b[1].isOk()) {
-                if (b[1].getNodes() <= n) {
+                if (b[1] <= n) {
                     origin.save(0, m[1]);
                     i = 1;
-                    if (b[2].getNodes() <= n) {
+                    if (b[2] <= n) {
                         origin.save(1, m[2]);
                         i = 2;
-                        if (b[3].getNodes() <= n) {
+                        if (b[3] <= n) {
                             origin.save(2, m[3]);
                             i = 3;
                         }
@@ -117,15 +117,15 @@ public:
             }
             else if (b[2].isOk()) {
                 //shallowest of 2
-                if (b[0].getNodes() < b[1].getNodes()) {
+                if (b[0] < b[1]) {
                     origin.save(0, m[1]);
                 }
 
                 i = 1;
-                if (b[2].getNodes() <= n) {
+                if (b[2] <= n) {
                     origin.save(1, m[2]);
                     i = 2;
-                    if (b[3].getNodes() <= n) {
+                    if (b[3] <= n) {
                         origin.save(2, m[3]);
                         i = 3;
                     }
@@ -133,28 +133,28 @@ public:
             }
             else if (b[3].isOk()) {
                 //shallowest of 3
-                if (b[0].getNodes() < b[1].getNodes()) {
-                    if (b[0].getNodes() < b[2].getNodes()) {
+                if (b[0] < b[1]) {
+                    if (b[0] < b[2]) {
                         origin.save(0, m[2]);
                     }
                 }
                 else {
-                    if (b[1].getNodes() < b[2].getNodes()) {
+                    if (b[1] < b[2]) {
                         origin.save(1, m[2]);
                     }
                 }
 
                 i = 2;
-                if (b[3].getNodes() <= n) {
+                if (b[3] <= n) {
                     origin.save(2, m[3]);
                     i = 3;
                 }
             }
             else {
                 //shallowest of 4
-                if (b[0].getNodes() < b[1].getNodes()) {
-                    if (b[2].getNodes() < b[3].getNodes()) {
-                        if (b[0].getNodes() < b[2].getNodes()) {
+                if (b[0] < b[1]) {
+                    if (b[2] < b[3]) {
+                        if (b[0] < b[2]) {
                             origin.save(0, m[3]);
                         }
                         else {
@@ -162,14 +162,14 @@ public:
                         }
                     }
                     else {
-                        if (b[0].getNodes() < b[3].getNodes()) {
+                        if (b[0] < b[3]) {
                             origin.save(0, m[3]);
                         }
                     }
                 }
                 else {
-                    if (b[2].getNodes() < b[3].getNodes()) {
-                        if (b[1].getNodes() < b[2].getNodes()) {
+                    if (b[2] < b[3]) {
+                        if (b[1] < b[2]) {
                             origin.save(1, m[3]);
                         }
                         else {
@@ -177,7 +177,7 @@ public:
                         }
                     }
                     else {
-                        if (b[1].getNodes() < b[3].getNodes()) {
+                        if (b[1] < b[3]) {
                             origin.save(1, m[3]);
                         }
                     }
