@@ -6,6 +6,7 @@
 
 #include "io.hpp"
 #include "bitops.hpp"
+#include "bitops128.hpp"
 #include "typedefs.hpp"
 
 #endif

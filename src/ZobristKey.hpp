@@ -33,6 +33,4 @@ public:
 
 };
 
-extern const ZobristKey zobristKey;
-
 #endif

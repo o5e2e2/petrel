@@ -12,7 +12,7 @@
 #include "VectorOf.hpp"
 #include "VectorPiOrder.hpp"
 #include "VectorPiSingle.hpp"
-#include "ZobristKey.hpp"
+#include "Zobrist.hpp"
 
 const BetweenSquares between; //32k
 const ReverseBb::Direction ReverseBb::direction; //12k
@@ -21,7 +21,7 @@ const PieceTypeAttack pieceTypeAttack; //3k
 const VectorOf vectorOfAll; //4k
 const VectorPiSingle vectorPiSingle; //256
 const CastlingRules castlingRules; //128
-const ZobristKey zobristKey; //64
+const ZobristKey Zobrist::zobristKey; //64
 const BitReverse bitReverse; //64
 const VectorBitCount bit_count; //48
 const VectorPiOrder::Sorted VectorPiOrder::sorted; //16

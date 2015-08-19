@@ -7,6 +7,8 @@
 #include "ZobristKey.hpp"
 
 class Zobrist {
+    static const ZobristKey zobristKey;
+
 public:
     typedef ZobristKey::_t _t;
     typedef Zobrist Arg;
