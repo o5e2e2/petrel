@@ -1,5 +1,6 @@
 #include "Search.hpp"
 #include "PerftTT.hpp"
+#include "PerftRecord.hpp"
 #include "Position.hpp"
 #include "PositionMoves.hpp"
 #include "SearchControl.hpp"
@@ -85,7 +86,7 @@ namespace PerftDivide {
 
 namespace PerftRoot {
     bool perftX(const Position& parent, SearchWindow& window) {
-        HashBucket::nextAge();
+        PerftRecord::nextAge();
         bool isAborted = window.searchFn(parent, window);
 
         if (!isAborted) {

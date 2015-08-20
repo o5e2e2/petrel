@@ -1,6 +1,7 @@
 #include "HashMemory.hpp"
 #include "bitops.hpp"
 #include "memory.hpp"
+#include "PerftRecord.hpp"
 
 namespace {
     template <typename T>
@@ -12,6 +13,7 @@ namespace {
 
 void HashMemory::clear() {
     ::memset(hash, 0, size);
+    PerftRecord::clearAge();
 }
 
 void HashMemory::set(_t* _hash, size_t _size) {

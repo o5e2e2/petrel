@@ -11,12 +11,10 @@ SearchControl::SearchControl () : rootWindow(*this) { clear(); }
 void SearchControl::clear() {
     info.clear();
     transpositionTable.clear();
-    HashBucket::clearAge();
 }
 
 void SearchControl::resizeHash(HashMemory::size_t bytes) {
     transpositionTable.resize(bytes);
-    HashBucket::clearAge();
 }
 
 void SearchControl::go(SearchOutput& output, const Position& pos, const SearchLimit& searchLimit) {

@@ -5,6 +5,7 @@
 #include "Zobrist.hpp"
 #include "HashBucket.hpp"
 #include "PerftRecord.hpp"
+#include "StatCounters.hpp"
 
 class PerftTT {
     typedef HashBucket::Index Index;
@@ -23,10 +24,10 @@ public:
     PerftTT(HashBucket* p) : h(*p), origin(*p) {}
 
     node_count_t get(Zobrist z, depth_t d) {
-        HashBucket::tickTried();
+        stat.inc(TT_Tried);
         FOR_INDEX(Index, i) {
             if (b[i].isKeyMatch(z, d)) {
-                HashBucket::tickHit();
+                stat.inc(TT_Hit);
 
                 if (!b[i].isOk()) {
                     //update the age of transpositioned entry
@@ -42,7 +43,7 @@ public:
     void popup(Index i) {
         //move the i entry to the actual age region, reordering the rest
 
-        HashBucket::tickUsed();
+        stat.inc(TT_Used);
         b[i].updateAge();
 
         auto n = b[i].getNodes();
@@ -99,7 +100,7 @@ public:
             }
         }
         else {
-            HashBucket::tickUsed();
+            stat.inc(TT_Used);
 
             if (b[1].isOk()) {
                 if (b[1] <= n) {
