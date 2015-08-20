@@ -8,6 +8,7 @@
 
 class Zobrist {
     static const ZobristKey zobristKey;
+    typedef ZobristKey::Index Index;
 
 public:
     typedef ZobristKey::_t _t;
@@ -15,8 +16,8 @@ public:
 
 private:
     _t _v;
-    void drop(Index<8> ty, Square to) { _v ^= zobristKey(ty, to); }
-    void clear(Index<8> ty, Square from) { drop(ty, from); }
+    void drop(Index ty, Square to) { _v ^= zobristKey(ty, to); }
+    void clear(Index ty, Square from) { drop(ty, from); }
 
 public:
     constexpr Zobrist () : _v{0} {}
@@ -29,10 +30,10 @@ public:
     Zobrist& flip() { _v = ~::bswap(_v); return *this; }
     Zobrist operator ~ () const { return Zobrist{*this}.flip(); }
 
-    void drop(PieceType::_t ty, Square to) { drop(Index<8>(ty), to); }
+    void drop(PieceType::_t ty, Square to) { drop(Index(ty), to); }
     void clear(PieceType::_t ty, Square from) { drop(ty, from); }
 
-    void setCastling(Square sq) { assert (sq.is(Rank1)); drop(ZobristKey::Castling, sq); }
+    void setCastling(Square sq)  { assert (sq.is(Rank1)); drop(ZobristKey::Castling, sq); }
     void setEnPassant(Square sq) { assert (sq.is(Rank4)); drop(ZobristKey::EnPassant, sq); }
     void setEnPassant(File fileFrom) { setEnPassant(Square(fileFrom, Rank4)); }
 
