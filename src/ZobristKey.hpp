@@ -7,7 +7,9 @@
 class CACHE_ALIGN ZobristKey {
 public:
     typedef std::uint64_t _t;
-    typedef ::Index<8> Index;
+
+    enum { Castling = 6, EnPassant = 7 };
+    typedef ::Index<8, piece_type_t> Index;
 
 private:
     static constexpr _t rol(_t n, Square::_t sq) { return n << sq | n >> (64-sq); }
@@ -29,7 +31,6 @@ private:
     }};
 
 public:
-    enum { Castling = 6, EnPassant = 7 };
     _t operator() (Index i, Square sq) const { return rol(key[i], sq); }
 
 };

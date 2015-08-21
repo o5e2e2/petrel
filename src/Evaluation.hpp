@@ -8,12 +8,14 @@
 
 //http://chessprogramming.wikispaces.com/Simplified+evaluation+function
 class PieceSquareTable {
-public:
-    typedef unsigned char _t;
-    _t pst[PieceTag::Size][Square::Size];
+    typedef ::Index<7, piece_type_t> Index;
 
 public:
-    PieceSquareTable () : pst {
+    typedef unsigned char _t;
+    Index::array< Square::array<_t> > pst;
+
+public:
+    constexpr PieceSquareTable () : pst {{
         {
             E(900,-20),E(900,-10),E(900,-10),E(900, -5),E(900, -5),E(900,-10),E(900,-10),E(900,-20),
             E(900,-10),E(900,  0),E(900,  0),E(900,  0),E(900,  0),E(900,  0),E(900,  0),E(900,-10),
@@ -84,10 +86,10 @@ public:
             E(100,-30),E(100,-30),E(100,  0),E(100,  0),E(100,  0),E(100,  0),E(100,-30),E(100,-30),
             E(100,-50),E(100,-30),E(100,-30),E(100,-30),E(100,-30),E(100,-30),E(100,-30),E(100,-50)
         }
-    }
+    }}
     {}
 
-    const _t& operator() (PieceTag ty, Square sq) const { return pst[ty][sq]; }
+    constexpr const _t& operator() (Index::_t ty, Square sq) const { return pst[ty][sq]; }
 };
 
 class Evaluation {

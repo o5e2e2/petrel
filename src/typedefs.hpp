@@ -28,11 +28,10 @@ typedef Index<2, castling_side_t> CastlingSide;
 enum piece_index_t { TheKing };
 typedef Index<16, piece_index_t> Pi; //piece index
 
-enum piece_type_t { Queen, Rook, Bishop, Knight, Pawn, King, SpecialPiece, PinRay };
+enum piece_type_t { Queen, Rook, Bishop, Knight, Pawn, King };
 typedef Index<3, piece_type_t> SliderType;
 typedef Index<4, piece_type_t> PromoType;
 typedef Index<6, piece_type_t> PieceType;
-typedef Index<7, piece_type_t> PieceTag;
 
 enum chess_variant_t { Orthodox, Chess960 };
 typedef Index<2, chess_variant_t> ChessVariant;
