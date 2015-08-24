@@ -12,7 +12,7 @@ void Position::syncSides() {
 
 template <Side::_t My>
 void Position::updateSliderAttacksKing(VectorPiMask affected) {
-    const Side::_t Op{~My};
+    constexpr Side Op{~My};
 
     syncSides();
 
@@ -22,7 +22,7 @@ void Position::updateSliderAttacksKing(VectorPiMask affected) {
 
 template <Side::_t My>
 void Position::updateSliderAttacks(VectorPiMask affected) {
-    const Side::_t Op{~My};
+    constexpr Side Op{~My};
 
     affected &= MY.sliders();
     MY.updateSliderAttacks(affected, OCCUPIED);
@@ -37,7 +37,7 @@ bool Position::setup() {
 }
 
 bool Position::drop(Side My, PieceType ty, Square to) {
-    const Side::_t Op{~My};
+    const Side Op{~My};
 
     if (OCCUPIED[to]) { return false; }
     if ( ty.is(Pawn) && (to.is(Rank1) || to.is(Rank8)) ) { return false; }
@@ -71,7 +71,7 @@ bool Position::setCastling(Side My, CastlingSide castlingSide) {
 
 template <Side::_t My>
 const Bb& Position::pinRayFrom(Pi pi) const {
-    const Side::_t Op{~My};
+    constexpr Side Op{~My};
     assert (OP.isSlider(pi));
     assert (OP.pinnerCandidates()[pi]);
 
@@ -103,7 +103,7 @@ bool Position::setEnPassant(File epFile) {
 
 template <Side::_t My>
 bool Position::isLegalEnPassant(Pi killer, File epFile) const {
-    const Side::_t Op{~My};
+    constexpr Side Op{~My};
 
     MY.assertValid(killer);
     assert (MY.isPawn(killer));
@@ -142,7 +142,7 @@ Zobrist Position::getZobrist() const {
 
 template <Side::_t My>
 void Position::setLegalEnPassant(Pi victim) {
-    const Side::_t Op{~My};
+    constexpr Side Op{~My};
 
     assert (!MY.hasEnPassant());
     assert (!OP.hasEnPassant());
@@ -172,7 +172,7 @@ void Position::setLegalEnPassant(Pi victim) {
 }
 
 void Position::set(Side My, Pi pi, PieceType ty, Square to) {
-    const Side::_t Op{~My};
+    const Side Op{~My};
 
     assert (!ty.is(King));
 
@@ -188,7 +188,7 @@ void Position::set(Side My, Pi pi, PieceType ty, Square to) {
 
 template <Side::_t My>
 void Position::movePawn(Pi pi, Square from, Square to) {
-    const Side::_t Op{~My};
+    constexpr Side Op{~My};
 
     MY.assertValid(pi);
     assert (MY.squareOf(pi).is(from));
@@ -202,7 +202,7 @@ void Position::movePawn(Pi pi, Square from, Square to) {
 
 template <Side::_t My>
 void Position::move(Pi pi, Square from, Square to) {
-    const Side::_t Op{~My};
+    constexpr Side Op{~My};
 
     MY.assertValid(pi);
     assert (MY.squareOf(pi).is(from));
@@ -219,7 +219,7 @@ void Position::move(Pi pi, Square from, Square to) {
 
 template <Side::_t My>
 void Position::makeKingMove(Square from, Square to) {
-    const Side::_t Op{~My};
+    constexpr Side Op{~My};
 
     Pi pi = TheKing;
 
@@ -247,7 +247,7 @@ void Position::makeKingMove(Square from, Square to) {
 
 template <Side::_t My>
 void Position::makeCastling(Pi rook, Square rookFrom, Square kingFrom) {
-    const Side::_t Op{~My};
+    constexpr Side Op{~My};
 
     Square kingTo = CastlingRules::castlingSide(kingFrom, rookFrom).is(QueenSide)? C1 : G1;
     Square rookTo = CastlingRules::castlingSide(kingFrom, rookFrom).is(QueenSide)? D1 : F1;
@@ -269,7 +269,7 @@ void Position::makeCastling(Pi rook, Square rookFrom, Square kingFrom) {
 
 template <Side::_t My>
 void Position::makePawnMove(Pi pi, Square from, Square to) {
-    const Side::_t Op{~My};
+    constexpr Side Op{~My};
 
     if (from.is(Rank7)) {
         //decoding promotion piece type and destination square
@@ -339,7 +339,7 @@ void Position::makeMove(const Position& parent, Square from, Square to) {
 
 template <Side::_t My>
 void Position::makeMove(Square from, Square to) {
-    const Side::_t Op{~My};
+    constexpr Side Op{~My};
 
     //Assumes that the given move is valid and legal
     //En Passant capture encoded as the pawn captures the pawn
@@ -379,20 +379,6 @@ void Position::makeMove(Square from, Square to) {
             updateSliderAttacks<Op>(OP.attacksTo(~from, ~to));
         }
     }
-}
-
-Move Position::createMove(Side My, Square from, Square to) const {
-    const Side Op{~My};
-
-    if ( MY.isPawn(MY.pieceOn(from)) ) {
-        if ( from.is(Rank7) || (from.is(Rank5) && OP.hasEnPassant() && OP.enPassantFile().is(File(to))) ) {
-            return Move::enPassantMove(from, to);
-        }
-    }
-    else if (MY.kingSquare().is(to)) {
-        return Move::castlingMove(from, to);
-    }
-    return Move(from, to);
 }
 
 #undef MY

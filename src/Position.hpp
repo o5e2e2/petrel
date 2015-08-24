@@ -8,7 +8,6 @@
 #include "PositionFen.hpp"
 
 class Position {
-public:
     friend class PositionMoves;
 
     Side::array<PositionSide> side;
@@ -39,7 +38,8 @@ public:
     Position (const Position& parent, Square from, Square to) { makeMove(parent, from, to); }
 
     friend void PositionFen::write(std::ostream&, const Position&, Color, ChessVariant);
-    Move createMove(Side, Square, Square) const;
+    friend Move::Move(const Position&, Square, Square);
+    friend Move::Move(std::istream& in, const Position&, Color);
 
     Zobrist getZobrist() const;
 

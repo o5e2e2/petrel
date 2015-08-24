@@ -35,8 +35,6 @@ public:
     MatrixPiBb& getMoves() { return moves; }
     const Position& getPos() const { return pos;}
 
-    std::istream& readMove(std::istream&, Move&, Color) const;
-
     void limitMoves(std::istream&, Color);
     static void makeMoves(std::istream&, Position&, Color&);
 };

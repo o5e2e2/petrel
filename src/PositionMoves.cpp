@@ -14,7 +14,7 @@ const PositionSide& PositionMoves::side(Side si) const {
 
 template <Side::_t My>
 void PositionMoves::generateEnPassantMoves() {
-    const Side::_t Op{~My};
+    constexpr Side Op{~My};
 
     assert (MY.hasEnPassant());
     assert (OP.hasEnPassant());
@@ -27,7 +27,7 @@ void PositionMoves::generateEnPassantMoves() {
 
 template <Side::_t My>
 void PositionMoves::generateUnderpromotions() {
-    const Side::_t Op{~My};
+    constexpr Side Op{~My};
 
     //TRICK: promoted piece type encoded inside pawn destination square rank
     VectorPiRank promotions = moves[Rank8] & VectorPiRank{MY.pawns()};
@@ -40,7 +40,7 @@ void PositionMoves::generateUnderpromotions() {
 
 template <Side::_t My>
 void PositionMoves::generateKingMoves(Bb attackedSquares) {
-    const Side::_t Op{~My};
+    constexpr Side Op{~My};
 
     //TRICK: our attacks do not hide under attacked king shadow
     Bb kingMoves = ::pieceTypeAttack(King, MY.kingSquare()) % (MY.occupiedSquares() | attackedSquares);
@@ -49,7 +49,7 @@ void PositionMoves::generateKingMoves(Bb attackedSquares) {
 
 template <Side::_t My>
 void PositionMoves::generateCastlingMoves(Bb attackedSquares) {
-    const Side::_t Op{~My};
+    constexpr Side Op{~My};
 
     for (Pi pi : MY.castlingRooks()) {
         if ( ::castlingRules.isLegal(MY.kingSquare(), MY.squareOf(pi), OCCUPIED, attackedSquares) ) {
@@ -61,7 +61,7 @@ void PositionMoves::generateCastlingMoves(Bb attackedSquares) {
 
 template <Side::_t My>
 void PositionMoves::generatePawnMoves() {
-    const Side::_t Op{~My};
+    constexpr Side Op{~My};
 
     for (Pi pi : MY.pawns()) {
         Square from{ MY.squareOf(pi) };
@@ -85,7 +85,7 @@ void PositionMoves::generatePawnMoves() {
 
 template <Side::_t My>
 void PositionMoves::correctCheckEvasionsByPawns(Bb checkLine, Square checkFrom) {
-    const Side::_t Op{~My};
+    constexpr Side Op{~My};
 
     //after generic move generation
     //we need to correct moves of some pawns
@@ -122,7 +122,7 @@ void PositionMoves::correctCheckEvasionsByPawns(Bb checkLine, Square checkFrom) 
 //exclude illegal moves due pin
 template <Side::_t My>
 void PositionMoves::excludePinnedMoves(VectorPiMask pinnerCandidates) {
-    const Side::_t Op{~My};
+    constexpr Side Op{~My};
 
     for (Pi pi : pinnerCandidates) {
         Square pinFrom{~OP.squareOf(pi)};
@@ -143,7 +143,7 @@ void PositionMoves::excludePinnedMoves(VectorPiMask pinnerCandidates) {
 
 template <Side::_t My>
 void PositionMoves::generateCheckEvasions(Bb attackedSquares) {
-    const Side::_t Op{~My};
+    constexpr Side Op{~My};
 
     VectorPiMask checkers{OP.attacksTo(~MY.kingSquare())};
 
@@ -180,7 +180,7 @@ void PositionMoves::generateCheckEvasions(Bb attackedSquares) {
 //generate all legal moves from the current position for the current side to move
 template <Side::_t My>
 void PositionMoves::generateMoves() {
-    const Side::_t Op{~My};
+    constexpr Side Op{~My};
 
     //squares attacked by opponent pieces
     Bb attackedSquares = ~OP.allAttacks().gather();
@@ -211,84 +211,42 @@ void PositionMoves::generateMoves() {
     generateKingMoves<My>(attackedSquares);
 }
 
-std::istream& PositionMoves::readMove(std::istream& in, Move& move, Color colorToMove) const {
-    auto before_move = in.tellg();
+void PositionMoves::makeMoves(std::istream& in, Position& pos, Color& colorToMove) {
+    PositionMoves pm(pos);
 
-    Square from{Square::Begin};
-    Square to{Square::Begin};
+    while (in) {
+        auto before_move = in.tellg();
 
-    in >> std::ws >> from >> to;
-    if (!in) { goto fail; }
+        Move move{in, pos, colorToMove};
+        if (in) {
+            Square from{ move.from() };
+            Square to{ move.to() } ;
+            Pi pi{ MY.pieceOn(from) };
 
-    if (colorToMove.is(Black)) {
-        from.flip();
-        to.flip();
-    }
-
-    if (MY.isPieceOn(from) && (from != to)) {
-        Pi pi{MY.pieceOn(from)};
-
-        //convert special moves (castling, promotion, ep) to the internal move format
-        if (pi.is(TheKing) && to.is(Rank1)) {
-            if (from.is(E1) && to.is(G1)) {
-                if (MY.isPieceOn(A1) && (MY.castlingRooks() & MY.piecesOn(A1)).any()) {
-                    move = Move::castlingMove(A1, E1);
-                    return in;
-                }
-                else { goto fail; }
+            pm.generateMoves();
+            if (pm.moves.is(pi, to)) {
+                pos.makeMove(pos, from, to);
+                colorToMove.flip();
+                continue;
             }
-            else if (from.is(E1) && to.is(C1)) {
-                if (MY.isPieceOn(H1) && (MY.castlingRooks() & MY.piecesOn(H1)).any()) {
-                    move = Move::castlingMove(H1, E1);
-                    return in;
-                }
-                else { goto fail; }
-            }
-            else if (MY.isPieceOn(to)) { //Chess960 castling encoding
-                if ((MY.castlingRooks() & MY.piecesOn(to)).any()) {
-                    move = Move::castlingMove(to, from);
-                    return in;
-                }
-                else { goto fail; }
-            }
-            //else generic move
-        }
-        else if (MY.isPawn(pi)) {
-            if (from.is(Rank7)) {
-                PromoType promo{PromoType::Begin};
-                if (in >> promo) {
-                    move = Move(from, to, promo);
-                    return in;
-                }
-                else { goto fail; }
-            }
-            else if (from.is(Rank5) && OP.hasEnPassant() && OP.enPassantFile().is(File(to))) {
-                move = Move::enPassantMove(from, Square(File(to), Rank5));
-                return in;
-            }
-            //else generic move
         }
 
-        move = Move(from, to);
-        return in;
+        io::fail_pos(in, before_move);
     }
-
-fail:
-    move = Move::nullMove();
-    return io::fail_pos(in, before_move);
 }
 
-void PositionMoves::limitMoves(std::istream& in, Color color) {
+void PositionMoves::limitMoves(std::istream& in, Color colorToMove) {
     MatrixPiBb searchMoves;
     index_t limit = 0;
 
     while (in) {
         auto before_move = in.tellg();
 
-        Move move;
-        if (readMove(in, move, color)) {
-            Pi pi{ MY.pieceOn(move.from()) };
-            Square to{ move.to() };
+        Move move{in, pos, colorToMove};
+        if (in) {
+            Square from{ move.from() };
+            Square to{ move.to() } ;
+            Pi pi{ MY.pieceOn(from) };
 
             if (moves.is(pi, to) && !searchMoves.is(pi, to)) {
                 searchMoves.set(pi, to);
@@ -309,30 +267,6 @@ void PositionMoves::limitMoves(std::istream& in, Color color) {
 
     if (in.eof()) {
         io::fail_rewind(in);
-    }
-}
-
-void PositionMoves::makeMoves(std::istream& in, Position& pos, Color& colorToMove) {
-    PositionMoves pm(pos);
-
-    while (in) {
-        auto before_move = in.tellg();
-
-        Move move;
-        if (pm.readMove(in, move, colorToMove)) {
-            Square from{ move.from() };
-            Square to{ move.to() } ;
-            Pi pi{ MY.pieceOn(move.from()) };
-
-            pm.generateMoves();
-            if (pm.moves.is(pi, to)) {
-                pos.makeMove(pos, from, to);
-                colorToMove.flip();
-                continue;
-            }
-        }
-
-        io::fail_pos(in, before_move);
     }
 }
 

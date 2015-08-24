@@ -10,7 +10,7 @@ void SearchInfo::clear() {
     perftDivide = 0;
     nodesQuota = 0;
     currmovenumber = 0;
-    bestmove = Move::nullMove();
+    bestmove = {};
 }
 
 void SearchInfo::resetNodesQuota() {
