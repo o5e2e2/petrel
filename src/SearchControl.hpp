@@ -5,7 +5,6 @@
 #include "SearchInfo.hpp"
 #include "SearchThread.hpp"
 #include "SearchWindow.hpp"
-#include "Timer.hpp"
 #include "HashMemory.hpp"
 
 class SearchLimit;

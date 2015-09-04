@@ -28,9 +28,6 @@ public:
         _mm_stream_si128(&_v[3], a[3]);
     }
 
-    constexpr static index_t getBucketCount() { return Index::Size; }
-    constexpr static index_t getBucketSize()  { return sizeof(HashBucket); }
-
 };
 
 #endif

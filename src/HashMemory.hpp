@@ -33,7 +33,7 @@ public:
 
     size_t getMax()  const { return max; }
     size_t getSize() const { return size; }
-    size_t getTotalRecords() const { return (getSize() / HashBucket::getBucketSize()) * HashBucket::getBucketCount(); }
+    size_t getTotalRecords() const { return (size / BucketSize) * _t::Index::Size; }
 
     void resize(size_t bytes);
     void clear();

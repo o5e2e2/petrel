@@ -1,10 +1,6 @@
 #include "SearchControl.hpp"
-
-#include "Search.hpp"
 #include "SearchLimit.hpp"
-#include "SearchOutput.hpp"
-#include "SearchWindow.hpp"
-#include "HashBucket.hpp"
+#include "Timer.hpp"
 
 SearchControl::SearchControl () : rootWindow(*this) { clear(); }
 
