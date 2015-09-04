@@ -20,6 +20,26 @@ class PerftTT {
 
     HashBucket& origin;
 
+    void popup(Index i) {
+        //move the i entry to the actual age region, reordering the rest
+        b[i].updateAge();
+        auto n = b[i].getNodes();
+
+        for (Index j = 3; j > i; --j) {
+            //seek the new slot for i
+            if (!b[j].isOk() || b[j] <= n) {
+                for (Index k = i; k < j; ++k) {
+                    origin.save(k, m[k+1]);
+                }
+                origin.save(j, m[i]);
+                return;
+            }
+        }
+
+        origin.save(i, m[i]);
+        return;
+    }
+
 public:
     PerftTT(HashBucket* p) : h(*p), origin(*p) {}
 
@@ -31,47 +51,14 @@ public:
 
                 if (!b[i].isOk()) {
                     //update the age of transpositioned entry
-                    popup(i, info);
+                    ++info[TT_Used];
+                    popup(i);
                 }
 
                 return b[i].getNodes();
             }
         }
         return 0;
-    }
-
-    void popup(Index i, SearchInfo& info) {
-        //move the i entry to the actual age region, reordering the rest
-
-        ++info[TT_Used];
-        b[i].updateAge();
-
-        auto n = b[i].getNodes();
-
-        for (Index j = 3; j > i; --j) {
-            //seek the new slot for i
-            if (!b[j].isOk() || b[j] <= n) {
-                popup(i, j);
-                return;
-            }
-        }
-
-        origin.save(i, m[i]);
-        return;
-    }
-
-    void popup(Index i, Index j) {
-        for (Index k = i; k < j; ++k) {
-            origin.save(k, m[k+1]);
-        }
-        origin.save(j, m[i]);
-    }
-
-    void _out() {
-        FOR_INDEX(Index, k) {
-            std::cout << b[k] << ' ';
-        }
-        std::cout << '\n';
     }
 
     void set(Zobrist z, depth_t d, node_count_t n, SearchInfo& info) {
