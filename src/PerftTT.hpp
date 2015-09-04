@@ -24,10 +24,10 @@ public:
     PerftTT(HashBucket* p) : h(*p), origin(*p) {}
 
     node_count_t get(Zobrist z, depth_t d, SearchInfo& info) {
-        info.inc(TT_Tried);
+        ++info[TT_Tried];
         FOR_INDEX(Index, i) {
             if (b[i].isKeyMatch(z, d)) {
-                info.inc(TT_Hit);
+                ++info[TT_Hit];
 
                 if (!b[i].isOk()) {
                     //update the age of transpositioned entry
@@ -43,7 +43,7 @@ public:
     void popup(Index i, SearchInfo& info) {
         //move the i entry to the actual age region, reordering the rest
 
-        info.inc(TT_Used);
+        ++info[TT_Used];
         b[i].updateAge();
 
         auto n = b[i].getNodes();
@@ -100,7 +100,7 @@ public:
             }
         }
         else {
-            info.inc(TT_Used);
+            ++info[TT_Used];
 
             if (b[1].isOk()) {
                 if (b[1] <= n) {

@@ -49,8 +49,8 @@ public:
     void report_bestmove();
 
     void clearTT() { _v = {0, 0, 0}; }
-    _t   get(Index i) const { return _v[i]; }
-    void inc(Index i) { ++_v[i]; }
+    const _t&  operator [] (Index i) const { return _v[i]; }
+    _t&        operator [] (Index i)       { return _v[i]; }
 
 };
 
