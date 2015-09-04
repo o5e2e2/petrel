@@ -23,7 +23,7 @@ namespace Perft {
         }
 
         {
-            PerftTT tt(origin);
+            PerftTT tt(origin, window.control.tt().getAge());
             auto n = tt.get(zobrist, window.draft, window.control.info);
 
             if (n) {
@@ -49,7 +49,7 @@ namespace Perft {
             }
         }
 
-        PerftTT tt(origin);
+        PerftTT tt(origin, window.control.tt().getAge());
         tt.set(zobrist, window.draft, window.control.info[PerftNodes] - n, window.control.info);
         return false;
     }
@@ -86,8 +86,8 @@ namespace PerftDivide {
 
 namespace PerftRoot {
     bool perftX(const Position& parent, SearchWindow& window) {
-        PerftRecord::nextAge();
-        window.control.info.clearNodes();
+        window.control.nextIteration();
+
         bool isAborted = window.searchFn(parent, window);
 
         if (!isAborted) {

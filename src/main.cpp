@@ -37,7 +37,6 @@ template <> io::literal Rank::The_string{"87654321"};
 template <> io::literal Pi::The_string{"K123456789abcdef"};
 
 Timer::TimerPool Timer::timerPool;
-PerftRecord::age_t PerftRecord::The_age;
 
 int main(int argc, const char* argv[]) {
     //speed tricks

@@ -40,6 +40,8 @@ public:
     //callbacks from search thread
     bool checkQuota() const { return info.checkQuota(searchThread); }
 
+    void nextIteration();
+
 };
 
 #endif

@@ -14,6 +14,11 @@ void SearchControl::resizeHash(HashMemory::size_t bytes) {
     transpositionTable.resize(bytes);
 }
 
+void SearchControl::nextIteration() {
+    info.clearNodes();
+    transpositionTable.nextAge();
+}
+
 void SearchControl::go(SearchOutput& output, const Position& pos, const SearchLimit& searchLimit) {
     info.clear();
     info.out = &output;

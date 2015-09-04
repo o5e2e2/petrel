@@ -14,18 +14,18 @@ private:
 
 public:
     constexpr HashBucket() : _v{{{0,0}, {0,0}, {0,0}, {0,0}}} {}
-    constexpr HashBucket(const HashBucket& a) = default;
     constexpr const _t& operator[] (Index i) const { return _v[i]; }
 
-    void save(Index i, __m128i m) {
-        _mm_stream_si128(&_v[i], m);
-    }
-
-    void save(__m128i a[4]) {
+    HashBucket& operator = (const HashBucket& a) {
         _mm_stream_si128(&_v[0], a[0]);
         _mm_stream_si128(&_v[1], a[1]);
         _mm_stream_si128(&_v[2], a[2]);
         _mm_stream_si128(&_v[3], a[3]);
+        return *this;
+    }
+
+    void save(Index i, __m128i m) {
+        _mm_stream_si128(&_v[i], m);
     }
 
 };

@@ -2,10 +2,11 @@
 #define PERFT_TT_HPP
 
 #include <limits>
-#include "Zobrist.hpp"
+#include "HashAge.hpp"
 #include "HashBucket.hpp"
 #include "PerftRecord.hpp"
 #include "SearchInfo.hpp"
+#include "Zobrist.hpp"
 
 class PerftTT {
     typedef HashBucket::Index Index;
@@ -19,15 +20,16 @@ class PerftTT {
     };
 
     HashBucket& origin;
+    HashAge age;
 
     void popup(Index i) {
         //move the i entry to the actual age region, reordering the rest
-        b[i].updateAge();
+        b[i].updateAge(age);
         auto n = b[i].getNodes();
 
         for (Index j = 3; j > i; --j) {
             //seek the new slot for i
-            if (!b[j].isOk() || b[j] <= n) {
+            if (!b[j].isOk(age) || b[j] <= n) {
                 for (Index k = i; k < j; ++k) {
                     origin.save(k, m[k+1]);
                 }
@@ -41,7 +43,7 @@ class PerftTT {
     }
 
 public:
-    PerftTT(HashBucket* p) : h(*p), origin(*p) {}
+    PerftTT(HashBucket* p, HashAge a) : h(*p), origin(*p), age(a) {}
 
     node_count_t get(Zobrist z, depth_t d, SearchInfo& info) {
         ++info[TT_Tried];
@@ -49,7 +51,7 @@ public:
             if (b[i].isKeyMatch(z, d)) {
                 ++info[TT_Hit];
 
-                if (!b[i].isOk()) {
+                if (!b[i].isOk(age)) {
                     //update the age of transpositioned entry
                     ++info[TT_Used];
                     popup(i);
@@ -74,7 +76,7 @@ public:
         */
 
         Index i = 0;
-        if (b[0].isOk()) {
+        if (b[0].isOk(age)) {
             if (b[1] <= n) {
                 i = 1;
                 if (b[2] <= n) {
@@ -89,7 +91,7 @@ public:
         else {
             ++info[TT_Used];
 
-            if (b[1].isOk()) {
+            if (b[1].isOk(age)) {
                 if (b[1] <= n) {
                     origin.save(0, m[1]);
                     i = 1;
@@ -103,7 +105,7 @@ public:
                     }
                 }
             }
-            else if (b[2].isOk()) {
+            else if (b[2].isOk(age)) {
                 //shallowest of 2
                 if (b[0] < b[1]) {
                     origin.save(0, m[1]);
@@ -119,7 +121,7 @@ public:
                     }
                 }
             }
-            else if (b[3].isOk()) {
+            else if (b[3].isOk(age)) {
                 //shallowest of 3
                 if (b[0] < b[1]) {
                     if (b[0] < b[2]) {
@@ -175,7 +177,7 @@ public:
             }
         }
 
-        b[i].set(z, d, n);
+        b[i].set(z, d, n, age);
         origin.save(i, m[i]);
     }
 

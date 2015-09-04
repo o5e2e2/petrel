@@ -2,6 +2,7 @@
 #define HASH_MEMORY_HPP
 
 #include "HashBucket.hpp"
+#include "HashAge.hpp"
 #include "Zobrist.hpp"
 
 class HashMemory {
@@ -23,6 +24,8 @@ private:
     size_t size;
     size_t max;
 
+    HashAge age;
+
     void set(_t*, size_t);
     void setDefault();
     void free();
@@ -39,6 +42,9 @@ public:
     void clear();
 
     _t* lookup(Zobrist z) const;
+
+    const HashAge& getAge() const { return age; }
+    void nextAge() { age.next(); }
 
 };
 

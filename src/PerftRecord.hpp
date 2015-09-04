@@ -3,11 +3,11 @@
 
 #include "io.hpp"
 #include "typedefs.hpp"
+#include "HashAge.hpp"
 #include "Zobrist.hpp"
 
 class PerftRecord {
     typedef unsigned age_t;
-    static age_t The_age;
 
     Zobrist key;
     node_count_t perft;
@@ -22,25 +22,25 @@ class PerftRecord {
     }
 
 public:
-    void set(Zobrist::_t z, depth_t d, node_count_t n) {
+    void set(Zobrist::_t z, depth_t d, node_count_t n, HashAge::_t age) {
         key = _key(z, d);
-        setPerft(n);
+        setPerft(n, age);
     }
 
-    void setPerft(node_count_t n) {
-        perft = (n & ~AgeMask) | (static_cast<decltype(perft)>(The_age) << AgeShift);
+    void setPerft(node_count_t n, HashAge::_t age) {
+        perft = (n & ~AgeMask) | (static_cast<decltype(perft)>(age) << AgeShift);
     }
 
-    void updateAge() {
-        setPerft(perft);
+    void updateAge(HashAge::_t age) {
+        setPerft(perft, age);
     }
 
     bool isKeyMatch(Zobrist::_t z, depth_t d) const {
         return key == _key(z, d);
     }
 
-    bool isOk() const {
-        return (static_cast<std::size_t>(perft) >> AgeShift) == The_age;
+    bool isOk(HashAge::_t age) const {
+        return (static_cast<std::size_t>(perft) >> AgeShift) == age;
     }
 
     depth_t getDepth() const {
@@ -51,29 +51,12 @@ public:
         return perft & ~AgeMask;
     }
 
-    friend std::ostream& operator << (std::ostream& out, const PerftRecord& r) {
-        if (!r.isOk()) { out << '\''; }
-        return out << r.getDepth() << ':' << r.getNodes();
-    }
-
     friend bool operator < (const PerftRecord& a, const PerftRecord& b) {
         return a.getNodes() < b.getNodes();
     }
 
     bool operator <= (node_count_t n) const {
         return getNodes() <= n;
-    }
-
-    static void clearAge() {
-        The_age = 1;
-    }
-
-    static void nextAge() {
-        //there are 7 ages, not 8, because of:
-        //1) need to break 4*n ply transposition pattern
-        //2) make sure that initally clear entry is never hidden
-        auto a = (The_age + 1) & 7;
-        The_age = a? a : 1;
     }
 
 };
