@@ -8,7 +8,6 @@
 #include "PerftRecord.hpp"
 #include "PieceTypeAttack.hpp"
 #include "Timer.hpp"
-#include "StatCounters.hpp"
 #include "Uci.hpp"
 #include "VectorOf.hpp"
 #include "VectorPiOrder.hpp"
@@ -38,7 +37,6 @@ template <> io::literal Rank::The_string{"87654321"};
 template <> io::literal Pi::The_string{"K123456789abcdef"};
 
 Timer::TimerPool Timer::timerPool;
-StatCounters stat;
 PerftRecord::age_t PerftRecord::The_age;
 
 int main(int argc, const char* argv[]) {

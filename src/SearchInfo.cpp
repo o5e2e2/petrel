@@ -11,6 +11,7 @@ void SearchInfo::clear() {
     nodesQuota = 0;
     currmovenumber = 0;
     bestmove = {};
+    clearTT();
 }
 
 void SearchInfo::resetNodesQuota() {

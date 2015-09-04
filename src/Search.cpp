@@ -24,7 +24,7 @@ namespace Perft {
 
         {
             PerftTT tt(origin);
-            auto n = tt.get(zobrist, window.draft);
+            auto n = tt.get(zobrist, window.draft, window.control.info);
 
             if (n) {
                 window.control.addPerftNodes(n);
@@ -36,21 +36,21 @@ namespace Perft {
 
         SearchWindow childWindow(window);
 
-        auto n = window.control.getPerftNodes();
+        auto n = window.control.info.perftNodes;
         for (Pi pi : pm.side(My).alivePieces()) {
             Square from = pm.side(My).squareOf(pi);
 
             for (Square to : moves[pi]) {
                 moves.clear(pi, to);
 
-                window.control.decrementQuota();
+                window.control.info.decrementQuota();
                 Position childPos(parent, from, to);
                 CUT (perft(childPos, childWindow));
             }
         }
 
         PerftTT tt(origin);
-        tt.set(zobrist, window.draft, window.control.getPerftNodes() - n);
+        tt.set(zobrist, window.draft, window.control.info.perftNodes - n, window.control.info);
         return false;
     }
 }
@@ -72,11 +72,11 @@ namespace PerftDivide {
 
                 Position childPos{parent, from, to};
 
-                window.control.decrementQuota();
+                window.control.info.decrementQuota();
                 CUT (Perft::perft(childPos, childWindow));
 
                 Move move{parent, from, to};
-                window.control.report_perft_divide(move);
+                window.control.info.report_perft_divide(move);
             }
         }
 
@@ -87,10 +87,11 @@ namespace PerftDivide {
 namespace PerftRoot {
     bool perftX(const Position& parent, SearchWindow& window) {
         PerftRecord::nextAge();
+        window.control.info.clearTT();
         bool isAborted = window.searchFn(parent, window);
 
         if (!isAborted) {
-            window.control.report_perft_depth(window.draft);
+            window.control.info.report_perft_depth(window.draft);
         }
 
         return isAborted;
@@ -105,7 +106,7 @@ namespace PerftRoot {
             }
         }
 
-        window.control.report_bestmove();
+        window.control.info.report_bestmove();
         return true;
     }
 }

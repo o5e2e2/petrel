@@ -5,7 +5,6 @@
 #include "PositionFen.hpp"
 #include "SearchControl.hpp"
 #include "SearchInfo.hpp"
-#include "StatCounters.hpp"
 
 namespace {
     std::ostream& operator << (std::ostream& out, Clock::_t duration) {
@@ -154,14 +153,14 @@ void UciOutput::nps(std::ostream& ob, const SearchInfo& info) const {
             }
         }
 
-        auto tried = stat.get(TT_Tried);
+        auto tried = info.get(TT_Tried);
         if (tried > 0) {
-            auto hit  = stat.get(TT_Hit);
+            auto hit  = info.get(TT_Hit);
             auto hh = ::permil(hit, tried);
             ob << " hashhit " << hh;
         }
 
-        auto used  = stat.get(TT_Used);
+        auto used  = info.get(TT_Used);
         if (used > 0) {
             auto total = static_cast<decltype(used)>(hashMemory.getTotalRecords());
             auto hf = ::permil(used, total);

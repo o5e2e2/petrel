@@ -5,7 +5,7 @@
 #include "Zobrist.hpp"
 #include "HashBucket.hpp"
 #include "PerftRecord.hpp"
-#include "StatCounters.hpp"
+#include "SearchInfo.hpp"
 
 class PerftTT {
     typedef HashBucket::Index Index;
@@ -23,15 +23,15 @@ class PerftTT {
 public:
     PerftTT(HashBucket* p) : h(*p), origin(*p) {}
 
-    node_count_t get(Zobrist z, depth_t d) {
-        stat.inc(TT_Tried);
+    node_count_t get(Zobrist z, depth_t d, SearchInfo& info) {
+        info.inc(TT_Tried);
         FOR_INDEX(Index, i) {
             if (b[i].isKeyMatch(z, d)) {
-                stat.inc(TT_Hit);
+                info.inc(TT_Hit);
 
                 if (!b[i].isOk()) {
                     //update the age of transpositioned entry
-                    popup(i);
+                    popup(i, info);
                 }
 
                 return b[i].getNodes();
@@ -40,10 +40,10 @@ public:
         return 0;
     }
 
-    void popup(Index i) {
+    void popup(Index i, SearchInfo& info) {
         //move the i entry to the actual age region, reordering the rest
 
-        stat.inc(TT_Used);
+        info.inc(TT_Used);
         b[i].updateAge();
 
         auto n = b[i].getNodes();
@@ -74,7 +74,7 @@ public:
         std::cout << '\n';
     }
 
-    void set(Zobrist z, depth_t d, node_count_t n) {
+    void set(Zobrist z, depth_t d, node_count_t n, SearchInfo& info) {
         /*
         //replace the same entry
         FOR_INDEX(Index, i) {
@@ -100,7 +100,7 @@ public:
             }
         }
         else {
-            stat.inc(TT_Used);
+            info.inc(TT_Used);
 
             if (b[1].isOk()) {
                 if (b[1] <= n) {

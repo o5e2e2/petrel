@@ -17,14 +17,14 @@ class SearchControl {
     SearchThread searchThread;
     SearchThread::_t searchSequence;
     SearchWindow rootWindow;
-    mutable SearchInfo info;
-
     HashMemory transpositionTable;
 
     SearchControl (const SearchControl&) = delete;
     SearchControl& operator = (const SearchControl&) = delete;
 
 public:
+    mutable SearchInfo info;
+
     SearchControl ();
     void clear();
 
@@ -39,12 +39,6 @@ public:
 
     //callbacks from search thread
     bool checkQuota() const { return info.checkQuota(searchThread); }
-    void decrementQuota() const { info.decrementQuota(); }
-    void report_bestmove() const { info.report_bestmove(); }
-    void report_perft_depth(depth_t draft) const { info.report_perft_depth(draft); }
-    void report_perft_divide(Move move) const { info.report_perft_divide(move); }
-
-    node_count_t getPerftNodes() const { return info.perftNodes; }
     void addPerftNodes(node_count_t n) const { info.perftNodes += n; }
 
 };

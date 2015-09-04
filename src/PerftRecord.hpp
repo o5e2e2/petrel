@@ -4,8 +4,6 @@
 #include "io.hpp"
 #include "typedefs.hpp"
 #include "Zobrist.hpp"
-#include "HashBucket.hpp"
-#include "StatCounters.hpp"
 
 class PerftRecord {
     typedef unsigned age_t;
@@ -68,7 +66,6 @@ public:
 
     static void clearAge() {
         The_age = 1;
-        stat.clear();
     }
 
     static void nextAge() {
@@ -77,7 +74,6 @@ public:
         //2) make sure that initally clear entry is never hidden
         auto a = (The_age + 1) & 7;
         The_age = a? a : 1;
-        stat.clear();
     }
 
 };

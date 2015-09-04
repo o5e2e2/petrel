@@ -8,9 +8,16 @@
 class SearchOutput;
 class SearchThread;
 
+enum { TT_Tried, TT_Hit, TT_Used, _Total };
+
 class SearchInfo {
     enum { TickLimit = 5000 }; // ~1 msec
     typedef signed node_quota_t;
+
+private:
+    typedef node_count_t _t;
+    typedef ::Index<_Total> Index;
+    Index::array<_t> _v;
 
 public:
     node_quota_t nodesQuota; //number of remaining nodes before checking for terminate
@@ -40,6 +47,11 @@ public:
     void report_perft_divide(Move);
     void report_perft_depth(depth_t);
     void report_bestmove();
+
+    void clearTT() { _v = {0, 0, 0}; }
+    _t   get(Index i) const { return _v[i]; }
+    void inc(Index i) { ++_v[i]; }
+
 };
 
 #endif
