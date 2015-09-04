@@ -39,7 +39,6 @@ public:
 
     //callbacks from search thread
     bool checkQuota() const { return info.checkQuota(searchThread); }
-    void addPerftNodes(node_count_t n) const { info.perftNodes += n; }
 
 };
 

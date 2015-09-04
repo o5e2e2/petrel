@@ -120,7 +120,7 @@ void UciOutput::info_depth(const SearchInfo& info) const {
 
     ob << "info depth " << info.depth;
     nps(ob, info);
-    ob << " string perft " << info.perftNodes << '\n';
+    ob << " string perft " << info[PerftNodes] << '\n';
 }
 
 void UciOutput::info_currmove(const SearchInfo& info) const {
@@ -131,7 +131,7 @@ void UciOutput::info_currmove(const SearchInfo& info) const {
     ob << " currmove "; write(ob, info.currmove);
 
     nps(ob, info);
-    ob << " string perft " << (info.perftNodes - info.perftDivide) << '\n';
+    ob << " string perft " << info[PerftNodes] - info[PerftDivideNodes] << '\n';
 }
 
 void UciOutput::write(std::ostream& ob, const Move& move) const {
@@ -157,14 +157,14 @@ void UciOutput::nps(std::ostream& ob, const SearchInfo& info) const {
         if (tried > 0) {
             auto hit  = info[TT_Hit];
             auto hh = ::permil(hit, tried);
-            ob << " hashhit " << hh;
+            ob << " hashhit " << hit;
         }
 
         auto used  = info[TT_Used];
         if (used > 0) {
             auto total = static_cast<decltype(used)>(hashMemory.getTotalRecords());
             auto hf = ::permil(used, total);
-            ob << " hashfull " << hf;
+            ob << " hashfull " << used;
         }
 
     }

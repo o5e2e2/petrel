@@ -10,7 +10,7 @@ void SearchControl::clear() {
 }
 
 void SearchControl::resizeHash(HashMemory::size_t bytes) {
-    info.clearTT();
+    info.clear();
     transpositionTable.resize(bytes);
 }
 

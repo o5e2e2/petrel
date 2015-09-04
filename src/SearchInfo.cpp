@@ -6,12 +6,10 @@ void SearchInfo::clear() {
     clock.restart();
 
     nodes = 0;
-    perftNodes = 0;
-    perftDivide = 0;
     nodesQuota = 0;
     currmovenumber = 0;
     bestmove = {};
-    clearTT();
+    clearNodes();
 }
 
 void SearchInfo::resetNodesQuota() {
@@ -22,7 +20,7 @@ void SearchInfo::resetNodesQuota() {
 void SearchInfo::acquireNodesQuota() {
     auto remaining = nodesLimit - nodes;
     if (remaining > 0) {
-        auto nextQuota = std::min(remaining, decltype(remaining){TickLimit});
+        auto nextQuota = std::min(remaining, +TickLimit);
         nodesQuota = static_cast<decltype(nodesQuota)>(nextQuota);
         nodes += nodesQuota;
     }
@@ -61,5 +59,5 @@ void SearchInfo::report_perft_divide(Move move) {
     currmove = move;
     currmovenumber++;
     out->info_currmove(*this);
-    perftDivide = perftNodes;
+    _v[PerftDivideNodes] = _v[PerftNodes];
 }

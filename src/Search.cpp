@@ -18,7 +18,7 @@ namespace Perft {
         MatrixPiBb& moves = pm.getMoves();
 
         if (window.draft <= 0) {
-            window.control.addPerftNodes(moves.count());
+            window.control.info[PerftNodes] += moves.count();
             return false;
         }
 
@@ -27,7 +27,7 @@ namespace Perft {
             auto n = tt.get(zobrist, window.draft, window.control.info);
 
             if (n) {
-                window.control.addPerftNodes(n);
+                window.control.info[PerftNodes] += n;
                 return false;
             }
         }
@@ -36,7 +36,7 @@ namespace Perft {
 
         SearchWindow childWindow(window);
 
-        auto n = window.control.info.perftNodes;
+        auto n = window.control.info[PerftNodes];
         for (Pi pi : pm.side(My).alivePieces()) {
             Square from = pm.side(My).squareOf(pi);
 
@@ -50,7 +50,7 @@ namespace Perft {
         }
 
         PerftTT tt(origin);
-        tt.set(zobrist, window.draft, window.control.info.perftNodes - n, window.control.info);
+        tt.set(zobrist, window.draft, window.control.info[PerftNodes] - n, window.control.info);
         return false;
     }
 }
@@ -87,7 +87,7 @@ namespace PerftDivide {
 namespace PerftRoot {
     bool perftX(const Position& parent, SearchWindow& window) {
         PerftRecord::nextAge();
-        window.control.info.clearTT();
+        window.control.info.clearNodes();
         bool isAborted = window.searchFn(parent, window);
 
         if (!isAborted) {
