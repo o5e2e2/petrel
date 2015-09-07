@@ -29,7 +29,7 @@ class PerftTT {
 
         for (Index j = 3; j > i; --j) {
             //seek the new slot for i
-            if (!b[j].isOk(age) || b[j] <= n) {
+            if (!b[j].isOk(age) || b[j] <= n || b[j].getDepth() <= 1) {
                 for (Index k = i; k < j; ++k) {
                     origin.save(k, m[k+1]);
                 }
@@ -77,13 +77,29 @@ public:
 
         Index i = 0;
         if (b[0].isOk(age)) {
-            if (b[1] <= n) {
-                i = 1;
-                if (b[2] <= n) {
-                    i = 2;
-                    if (b[3] <= n) {
-                        origin.save(2, m[3]);
-                        i = 3;
+            if (d <= 1) {
+                if (b[1].getDepth() <= 1) {
+                    origin.save(0, m[1]);
+                    i = 1;
+                    if (b[2].getDepth() <= 1) {
+                        origin.save(1, m[2]);
+                        i = 2;
+                        if (b[3].getDepth() <= 1) {
+                            origin.save(2, m[3]);
+                            i = 3;
+                        }
+                    }
+                }
+            }
+            else {
+                if (b[1] <= n) {
+                    i = 1;
+                    if (b[2] <= n) {
+                        i = 2;
+                        if (b[3] <= n) {
+                            origin.save(2, m[3]);
+                            i = 3;
+                        }
                     }
                 }
             }
