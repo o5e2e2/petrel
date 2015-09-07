@@ -23,7 +23,7 @@ class SearchControl {
     SearchControl& operator = (const SearchControl&) = delete;
 
 public:
-    mutable SearchInfo info;
+    SearchInfo info;
 
     SearchControl ();
     void clear();
@@ -38,7 +38,7 @@ public:
     void go(SearchOutput&, const Position&, const SearchLimit&);
 
     //callbacks from search thread
-    bool checkQuota() const { return info.checkQuota(searchThread); }
+    bool checkQuota() { return info.checkQuota(searchThread); }
 
     void nextIteration();
 

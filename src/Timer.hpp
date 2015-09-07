@@ -9,7 +9,7 @@ class Timer : private ThreadControl {
     typedef Pool<Timer> TimerPool;
     static TimerPool timerPool;
 
-    TimerPool::_t timerSlot;
+    TimerPool::_t timerHandle;
 
     ThreadControl* slaveThread;
     ThreadControl::_t slaveSequence;
@@ -17,16 +17,25 @@ class Timer : private ThreadControl {
 
     void thread_body() override {
         std::this_thread::sleep_for(duration);
+
         slaveThread->commandStop(slaveSequence);
-        timerPool.release(std::move(timerSlot));
+        timerPool.release(std::move(timerHandle));
     }
 
-    void set(Clock::_t d, ThreadControl& thread, ThreadControl::_t seq) {
-        assert (isReady());
-
+    void start(Clock::_t d, ThreadControl& thread, ThreadControl::_t seq) {
         slaveThread = &thread;
         slaveSequence = seq;
         duration = d;
+
+        assert (isReady());
+        commandRun();
+    }
+
+    static Timer& acquire() {
+        TimerPool::_t timerHandle = timerPool.acquire();
+        Timer& timer = TimerPool::fetch(timerHandle);
+        timer.timerHandle = timerHandle;
+        return timer;
     }
 
 public:
@@ -34,13 +43,8 @@ public:
         ThreadControl::_t slaveSequence = slaveThread.commandRun();
 
         //zero duration means no timer
-        if (duration != Clock::_t::zero()) {
-            TimerPool::_t timerSlot = timerPool.acquire();
-            Timer& timer = TimerPool::fetch(timerSlot);
-            timer.timerSlot = timerSlot;
-
-            timer.set(duration, slaveThread, slaveSequence);
-            timer.commandRun();
+        if (slaveSequence && duration != Clock::_t::zero()) {
+            Timer::acquire().start(duration, slaveThread, slaveSequence);
         }
 
         return slaveSequence;

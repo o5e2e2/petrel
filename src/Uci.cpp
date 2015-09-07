@@ -45,13 +45,12 @@ void Uci::operator() (std::istream& in) {
         else if (next("echo"))      { echo(); }
         else if (next("call"))      { call(); }
         else if (next("set"))       { setoption(); }
-        else {
-            //ignore comment line
+        else { //ignore comment line
             auto peek = command.peek();
             if (peek == '#' || peek == ';') { continue; }
         }
 
-        //report error if something not parsed left
+        //error if something left unparsed
         if (!next("")) { uciOutput.error(command); }
     }
 }
@@ -161,12 +160,15 @@ void Uci::go() {
         else if (next("perft"))    { l.perft = true; }
         else if (next("divide"))   { l.divide = true; }
         else if (next("searchmoves")) { searchMoves.limitMoves(command, colorToMove); }
-        else { break; }
+        else if (next(""))         { break; }
+        else {
+            std::string token;
+            command >> token;
+            uciOutput.error(std::string("ignoring token: ") + token);
+        }
     }
 
-    if (next("")) {
-        searchControl.go(uciOutput, rootPosition, searchLimit);
-    }
+    searchControl.go(uciOutput, rootPosition, searchLimit);
 }
 
 void Uci::echo() const {
