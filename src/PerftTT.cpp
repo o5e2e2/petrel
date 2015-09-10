@@ -92,7 +92,6 @@ void PerftTT::set(Zobrist z, depth_t d, node_count_t n, SearchInfo& info) {
 
                 if (b.b[1].getDepth() <= 1) {
                     origin.save(0, m[1]);
-
                     i = 1;
                     if (b.b[2].getDepth() <= 1) {
                         origin.save(1, m[2]);
@@ -108,7 +107,7 @@ void PerftTT::set(Zobrist z, depth_t d, node_count_t n, SearchInfo& info) {
         }
         else {
             if (b.b[1] <= n) {
-
+                origin.save(0, m[1]);
                 i = 1;
                 if (b.b[2] <= n) {
                     origin.save(1, m[2]);
@@ -125,7 +124,6 @@ void PerftTT::set(Zobrist z, depth_t d, node_count_t n, SearchInfo& info) {
 
             if (b.b[1] <= n) {
                 origin.save(0, m[1]);
-
                 i = 1;
                 if (b.b[2] <= n) {
                     origin.save(1, m[2]);
