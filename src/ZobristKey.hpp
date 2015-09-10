@@ -31,7 +31,7 @@ private:
     }};
 
 public:
-    _t operator() (Index i, Square sq) const { return rol(key[i], sq); }
+    constexpr _t operator() (Index i, Square sq) const { return rol(key[i], sq); }
 
 };
 

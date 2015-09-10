@@ -1,7 +1,6 @@
 #ifndef PERFT_RECORD_HPP
 #define PERFT_RECORD_HPP
 
-#include "io.hpp"
 #include "typedefs.hpp"
 #include "HashAge.hpp"
 #include "Zobrist.hpp"
@@ -49,6 +48,10 @@ public:
 
     node_count_t getNodes() const {
         return perft & ~AgeMask;
+    }
+
+    const Zobrist& getZobrist() const {
+        return key;
     }
 
     friend bool operator < (const PerftRecord& a, const PerftRecord& b) {

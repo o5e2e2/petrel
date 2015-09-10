@@ -5,195 +5,191 @@
 #include "HashAge.hpp"
 #include "HashBucket.hpp"
 #include "PerftRecord.hpp"
+#include "PerftRecordDual.hpp"
 #include "SearchInfo.hpp"
 #include "Zobrist.hpp"
 
 class PerftTT {
     typedef HashBucket::Index Index;
 
-    typedef Index::array<PerftRecord> Bucket;
+    typedef ::Index<3>::array<PerftRecord> Bucket;
 
     union {
-        HashBucket h;
-        Bucket b;
-        __m128i m[4];
+        HashBucket m;
+        struct {
+            Bucket b;
+            PerftRecordDual s;
+        } b;
     };
 
     HashBucket& origin;
     HashAge age;
 
-    void popup(Index i) {
-        //move the i entry to the actual age region, reordering the rest
-        b[i].updateAge(age);
-        auto n = b[i].getNodes();
+    void backup(Index i) {
+        if (b.b[i].getDepth() == 1) {
+            b.s.set(b.b[i].getDepth(), b.b[i].getZobrist());
+            origin.save(3, m[3]);
+        }
+    }
 
-        for (Index j = 3; j > i; --j) {
+    void popup(::Index<3> i) {
+        //move the i entry to the actual age region, reordering the rest
+        b.b[i].updateAge(age);
+        auto n = b.b[i].getNodes();
+
+        for (::Index<3> j = ::Index<3>::Size-1; j > i; --j) {
             //seek the new slot for i
-            if (!b[j].isOk(age) || b[j] <= n || b[j].getDepth() <= 1) {
-                for (Index k = i; k < j; ++k) {
-                    origin.save(k, m[k+1]);
+            if (!b.b[j].isOk(age) || b.b[j] <= n || b.b[j].getDepth() <= 1) {
+                for (auto k = i; k < j; ++k) {
+                    origin.save(+k, m[k+1]);
                 }
-                origin.save(j, m[i]);
+                origin.save(+j, m[+i]);
                 return;
             }
         }
 
-        origin.save(i, m[i]);
+        origin.save(+i, m[+i]);
         return;
     }
 
 public:
-    PerftTT(HashBucket* p, HashAge a) : h(*p), origin(*p), age(a) {}
+    PerftTT(HashBucket* p, HashAge a) : m(*p), origin(*p), age(a) {}
 
     node_count_t get(Zobrist z, depth_t d, SearchInfo& info) {
         ++info[TT_Tried];
-        FOR_INDEX(Index, i) {
-            if (b[i].isKeyMatch(z, d)) {
+
+        FOR_INDEX(::Index<3>, i) {
+            if (b.b[i].isKeyMatch(z, d)) {
                 ++info[TT_Hit];
 
-                if (!b[i].isOk(age)) {
+                if (!b.b[i].isOk(age)) {
                     //update the age of transpositioned entry
                     ++info[TT_Used];
                     popup(i);
                 }
 
-                return b[i].getNodes();
+                return b.b[i].getNodes();
             }
         }
+
+        if (d == 1) {
+            FOR_INDEX(PerftRecordDual::Index, i) {
+                if (b.s[i].isKeyMatch(z)) {
+                    ++info[TT_Hit];
+
+                    if (i == 1) {
+                        b.s.swap();
+                        origin.save(3, m[3]);
+                    }
+
+                    return b.s[0].getNodes();
+                }
+            }
+        }
+
         return 0;
     }
 
     void set(Zobrist z, depth_t d, node_count_t n, SearchInfo& info) {
         /*
         //replace the same entry
-        FOR_INDEX(Index, i) {
-            if (b[i].isKeyMatch(z, d)) {
-                b[i].setPerft(n);
+        for (Index i = 1; i.isOk(); ++i) {
+            if (b.b[i].isKeyMatch(z, d)) {
+                b.b[i].setPerft(n);
                 popup(i);
                 return;
+            }
+        }
+
+        if (d == 1) {
+            FOR_INDEX(PerftRecordDual::Index, i) {
+                if (b.s[i].isKeyMatch(z)) {
+                    if (i == 1) { b.s[0].swap(); }
+                    return;
+                }
             }
         }
         */
 
         Index i = 0;
-        if (b[0].isOk(age)) {
-            if (d <= 1) {
-                if (b[1].getDepth() <= 1) {
-                    origin.save(0, m[1]);
-                    i = 1;
-                    if (b[2].getDepth() <= 1) {
-                        origin.save(1, m[2]);
-                        i = 2;
-                        if (b[3].getDepth() <= 1) {
-                            origin.save(2, m[3]);
-                            i = 3;
-                        }
-                    }
+        if (b.b[0].isOk(age)) {
+            if (d == 1 && b.b[0].getDepth() > 1) {
+                b.s.set(z, n);
+                origin.save(3, m[3]);
+                return;
+            }
+
+            if (b.b[1] <= n) {
+                backup(1);
+
+                i = 1;
+                if (b.b[2] <= n) {
+                    origin.save(1, m[2]);
+                    i = 2;
                 }
             }
             else {
-                if (b[1] <= n) {
-                    i = 1;
-                    if (b[2] <= n) {
-                        i = 2;
-                        if (b[3] <= n) {
-                            origin.save(2, m[3]);
-                            i = 3;
-                        }
-                    }
-                }
+                backup(0);
             }
         }
         else {
             ++info[TT_Used];
 
-            if (b[1].isOk(age)) {
-                if (b[1] <= n) {
+            if (b.b[1].isOk(age)) {
+                backup(0);
+                if (b.b[1] <= n) {
                     origin.save(0, m[1]);
+
                     i = 1;
-                    if (b[2] <= n) {
+                    if (b.b[2] <= n) {
+                        backup(1);
                         origin.save(1, m[2]);
                         i = 2;
-                        if (b[3] <= n) {
-                            origin.save(2, m[3]);
-                            i = 3;
-                        }
                     }
                 }
             }
-            else if (b[2].isOk(age)) {
+            else if (b.b[2].isOk(age)) {
                 //shallowest of 2
-                if (b[0] < b[1]) {
+                if (b.b[0] < b.b[1]) {
+                    backup(0);
                     origin.save(0, m[1]);
+                }
+                else {
+                    backup(1);
                 }
 
                 i = 1;
-                if (b[2] <= n) {
+                if (b.b[2] <= n) {
                     origin.save(1, m[2]);
                     i = 2;
-                    if (b[3] <= n) {
-                        origin.save(2, m[3]);
-                        i = 3;
-                    }
                 }
             }
-            else if (b[3].isOk(age)) {
+            else {
                 //shallowest of 3
-                if (b[0] < b[1]) {
-                    if (b[0] < b[2]) {
+                if (b.b[0] < b.b[1]) {
+                    if (b.b[0] < b.b[2]) {
+                        backup(0);
                         origin.save(0, m[2]);
+                    }
+                    else {
+                        backup(2);
                     }
                 }
                 else {
-                    if (b[1] < b[2]) {
+                    if (b.b[1] < b.b[2]) {
+                        backup(1);
                         origin.save(1, m[2]);
+                    }
+                    else {
+                        backup(2);
                     }
                 }
 
                 i = 2;
-                if (b[3] <= n) {
-                    origin.save(2, m[3]);
-                    i = 3;
-                }
-            }
-            else {
-                //shallowest of 4
-                if (b[0] < b[1]) {
-                    if (b[2] < b[3]) {
-                        if (b[0] < b[2]) {
-                            origin.save(0, m[3]);
-                        }
-                        else {
-                            origin.save(2, m[3]);
-                        }
-                    }
-                    else {
-                        if (b[0] < b[3]) {
-                            origin.save(0, m[3]);
-                        }
-                    }
-                }
-                else {
-                    if (b[2] < b[3]) {
-                        if (b[1] < b[2]) {
-                            origin.save(1, m[3]);
-                        }
-                        else {
-                            origin.save(2, m[3]);
-                        }
-                    }
-                    else {
-                        if (b[1] < b[3]) {
-                            origin.save(1, m[3]);
-                        }
-                    }
-                }
-
-                i = 3;
             }
         }
 
-        b[i].set(z, d, n, age);
+        b.b[i].set(z, d, n, age);
         origin.save(i, m[i]);
     }
 
