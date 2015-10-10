@@ -3,7 +3,7 @@
 
 void PerftTT::backup(::Index<3> i) {
     if (b.b[i].getDepth() == 1) {
-        b.s.set(b.b[i].getDepth(), b.b[i].getZobrist());
+        b.s.set(b.b[i].getZobrist(), b.b[i].getNodes());
         origin.save(3, m[3]);
     }
 }
@@ -15,7 +15,7 @@ void PerftTT::popup(::Index<3> i) {
 
     for (::Index<3> j = ::Index<3>::Size-1; j > i; --j) {
         //seek the new slot for i
-        if (!b.b[j].isOk(age) || b.b[j] <= n || b.b[j].getDepth() <= 1) {
+        if (!b.b[j].isOk(age) || b.b[j] <= n || b.b[j].getDepth() == 1) {
             for (auto k = i; k < j; ++k) {
                 origin.save(+k, m[k+1]);
             }
@@ -38,8 +38,8 @@ node_count_t PerftTT::get(Zobrist z, depth_t d, SearchInfo& info) {
             if (!b.b[i].isOk(age)) {
                 //update the age of transpositioned entry
                 ++info[TT_Used];
-                popup(i);
             }
+            popup(i);
 
             return b.b[i].getNodes();
         }
@@ -76,9 +76,9 @@ void PerftTT::set(Zobrist z, depth_t d, node_count_t n, SearchInfo& info) {
 
     if (d == 1) {
         FOR_INDEX(PerftRecordDual::Index, i) {
-            if (b.s[i].isKeyMatch(z)) {
-                if (i == 1) { b.s.swap(); }
-                return;
+            if (i == 1) {
+                b.s.swap();
+                origin.save(3, m[3]);
             }
         }
     }
@@ -86,14 +86,14 @@ void PerftTT::set(Zobrist z, depth_t d, node_count_t n, SearchInfo& info) {
 
     Index i = 0;
     if (b.b[0].isOk(age)) {
-        if (d <= 1) {
-            if (b.b[0].getDepth() <= 1) {
+        if (d == 1) {
+            if (b.b[0].getDepth() == 1) {
                 backup(0);
 
-                if (b.b[1].getDepth() <= 1) {
+                if (b.b[1].getDepth() == 1) {
                     origin.save(0, m[1]);
                     i = 1;
-                    if (b.b[2].getDepth() <= 1) {
+                    if (b.b[2].getDepth() == 1) {
                         origin.save(1, m[2]);
                         i = 2;
                     }
