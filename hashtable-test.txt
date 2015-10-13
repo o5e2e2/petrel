@@ -1,69 +1,69 @@
 128k
-info depth 8 nodes 4448419 time 587 nps 7578226 hashhit 397490 string perft 611402662
-info depth 9 nodes 33699842 time 4542 nps 7419604 hashhit 3408935 string perft 5894226148
-info depth 10 nodes 240053510 time 32042 nps 7491839 hashhit 28194396 string perft 57658060464
+info depth 8 nodes 4496081 time 592 nps 7594731 hashhit 399856 string perft 611402662
+info depth 9 nodes 33339447 time 4396 nps 7584041 hashhit 3279425 string perft 5894226148
+info depth 10 nodes 244520580 time 32262 nps 7579213 hashhit 26896086 string perft 57658060464
 
 256k
-info depth 8 nodes 2520272 time 336 nps 7500809 hashhit 270951 string perft 611402662
-info depth 9 nodes 19388320 time 2640 nps 7344060 hashhit 2005394 string perft 5894226148
-info depth 10 nodes 134342964 time 18019 nps 7455628 hashhit 16683681 string perft 57658060464
+info depth 8 nodes 2547873 time 343 nps 7428201 hashhit 269129 string perft 611402662
+info depth 9 nodes 19370084 time 2579 nps 7510695 hashhit 1901746 string perft 5894226148
+info depth 10 nodes 135895416 time 18042 nps 7532170 hashhit 15679732 string perft 57658060464
 
 512k
-info depth 8 nodes 1575775 time 218 nps 7228325 hashhit 227949 string perft 611402662
-info depth 9 nodes 10557529 time 1501 nps 7033663 hashhit 1182523 string perft 5894226148
-info depth 10 nodes 75005388 time 10133 nps 7402090 hashhit 9237034 string perft 57658060464
+info depth 8 nodes 1593565 time 224 nps 7114129 hashhit 226027 string perft 611402662
+info depth 9 nodes 10601381 time 1432 nps 7403199 hashhit 1114521 string perft 5894226148
+info depth 10 nodes 73867139 time 9897 nps 7463588 hashhit 8481029 string perft 57658060464
 
 1m
-info depth 8 nodes 1172798 time 167 nps 7022742 hashhit 235470 string perft 611402662
-info depth 9 nodes 5960405 time 837 nps 7121152 hashhit 909354 string perft 5894226148
-info depth 10 nodes 41236105 time 5670 nps 7272681 hashhit 5115697 string perft 57658060464
+info depth 8 nodes 1174329 time 167 nps 7031910 hashhit 234182 string perft 611402662
+info depth 9 nodes 6091014 time 848 nps 7182799 hashhit 895199 string perft 5894226148
+info depth 10 nodes 41449286 time 5636 nps 7354380 hashhit 4928893 string perft 57658060464
 
 2m
-info depth 8 nodes 1022824 time 146 nps 7005643 hashhit 241390 string perft 611402662
-info depth 9 nodes 3898820 time 559 nps 6974633 hashhit 817083 string perft 5894226148
-info depth 10 nodes 23247190 time 3221 nps 7217382 hashhit 3142725 string perft 57658060464
+info depth 8 nodes 1023043 time 154 nps 6643136 hashhit 240778 string perft 611402662
+info depth 9 nodes 3932328 time 557 nps 7059834 hashhit 813482 string perft 5894226148
+info depth 10 nodes 24019469 time 3295 nps 7289671 hashhit 3101634 string perft 57658060464
 
 4m
-info depth 8 nodes 985506 time 148 nps 6658824 hashhit 238773 string perft 611402662
-info depth 9 nodes 3185447 time 466 nps 6835723 hashhit 769364 string perft 5894226148
-info depth 10 nodes 14701402 time 2089 nps 7037530 hashhit 2333005 string perft 57658060464
+info depth 8 nodes 985560 time 147 nps 6704489 hashhit 238568 string perft 611402662
+info depth 9 nodes 3191985 time 462 nps 6909058 hashhit 768844 string perft 5894226148
+info depth 10 nodes 14988510 time 2122 nps 7063388 hashhit 2313626 string perft 57658060464
 
 8m
-info depth 8 nodes 975289 time 145 nps 6726131 hashhit 234685 string perft 611402662
-info depth 9 nodes 3003002 time 455 nps 6600004 hashhit 737148 string perft 5894226148
-info depth 10 nodes 10904466 time 1657 nps 6580848 hashhit 2210368 string perft 57658060464
+info depth 8 nodes 975354 time 141 nps 6917404 hashhit 234664 string perft 611402662
+info depth 9 nodes 3003337 time 439 nps 6841314 hashhit 737306 string perft 5894226148
+info depth 10 nodes 11019598 time 1621 nps 6798024 hashhit 2200875 string perft 57658060464
 
 16m
-info depth 8 nodes 971896 time 142 nps 6844338 hashhit 232457 string perft 611402662
-info depth 9 nodes 2952433 time 438 nps 6740714 hashhit 715637 string perft 5894226148
-info depth 10 nodes 9449424 time 1408 nps 6711238 hashhit 2217360 string perft 57658060464
+info depth 8 nodes 971898 time 139 nps 6992071 hashhit 232453 string perft 611402662
+info depth 9 nodes 2952215 time 430 nps 6865616 hashhit 715290 string perft 5894226148
+info depth 10 nodes 9480043 time 1399 nps 6776299 hashhit 2213078 string perft 57658060464
 
 32m
-info depth 8 nodes 970087 time 146 nps 6644431 hashhit 231031 string perft 611402662
-info depth 9 nodes 2934576 time 438 nps 6699945 hashhit 704147 string perft 5894226148
-info depth 10 nodes 9048774 time 1363 nps 6638865 hashhit 2176562 string perft 57658060464
+info depth 8 nodes 970079 time 139 nps 6978985 hashhit 231032 string perft 611402662
+info depth 9 nodes 2934572 time 430 nps 6824586 hashhit 704103 string perft 5894226148
+info depth 10 nodes 9053218 time 1345 nps 6731017 hashhit 2175430 string perft 57658060464
 
 64m
-info depth 8 nodes 969158 time 142 nps 6825056 hashhit 230245 string perft 611402662
-info depth 9 nodes 2925997 time 442 nps 6619902 hashhit 697761 string perft 5894226148
-info depth 10 nodes 8933990 time 1363 nps 6554651 hashhit 2131082 string perft 57658060464
+info depth 8 nodes 969158 time 144 nps 6730263 hashhit 230245 string perft 611402662
+info depth 9 nodes 2926047 time 435 nps 6726544 hashhit 697805 string perft 5894226148
+info depth 10 nodes 8934400 time 1354 nps 6598522 hashhit 2130879 string perft 57658060464
 
 128m
-info depth 8 nodes 968722 time 145 nps 6680841 hashhit 229865 string perft 611402662
-info depth 9 nodes 2921483 time 450 nps 6492184 hashhit 694047 string perft 5894226148
-info depth 10 nodes 8885109 time 1380 nps 6438484 hashhit 2098489 string perft 57658060464
+info depth 8 nodes 968722 time 147 nps 6589945 hashhit 229865 string perft 611402662
+info depth 9 nodes 2921501 time 444 nps 6579957 hashhit 694059 string perft 5894226148
+info depth 10 nodes 8885053 time 1374 nps 6466559 hashhit 2098390 string perft 57658060464
 
 256m
 info depth 8 nodes 968559 time 147 nps 6588836 hashhit 229719 string perft 611402662
-info depth 9 nodes 2919881 time 457 nps 6389236 hashhit 692667 string perft 5894226148
-info depth 10 nodes 8863675 time 1397 nps 6344792 hashhit 2081556 string perft 57658060464
+info depth 9 nodes 2919906 time 454 nps 6431511 hashhit 692685 string perft 5894226148
+info depth 10 nodes 8863700 time 1404 nps 6313176 hashhit 2081559 string perft 57658060464
 
 512m
-info depth 8 nodes 968381 time 153 nps 6329287 hashhit 229559 string perft 611402662
-info depth 9 nodes 2918827 time 471 nps 6197084 hashhit 691749 string perft 5894226148
-info depth 10 nodes 8852397 time 1441 nps 6143231 hashhit 2072015 string perft 57658060464
+info depth 8 nodes 968381 time 158 nps 6128993 hashhit 229559 string perft 611402662
+info depth 9 nodes 2918827 time 477 nps 6119134 hashhit 691749 string perft 5894226148
+info depth 10 nodes 8852411 time 1443 nps 6134726 hashhit 2072022 string perft 57658060464
 
 1g
 info depth 8 nodes 968341 time 164 nps 5904518 hashhit 229523 string perft 611402662
-info depth 9 nodes 2918359 time 522 nps 5590726 hashhit 691331 string perft 5894226148
-info depth 10 nodes 8847031 time 1609 nps 5498465 hashhit 2067362 string perft 57658060464
+info depth 9 nodes 2918359 time 496 nps 5883788 hashhit 691331 string perft 5894226148
+info depth 10 nodes 8847032 time 1568 nps 5642239 hashhit 2067370 string perft 57658060464

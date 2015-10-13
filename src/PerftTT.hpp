@@ -26,7 +26,6 @@ class PerftTT {
     HashBucket& origin;
     HashAge age;
 
-    void backup(::Index<3> i);
     void popup(::Index<3> i);
 
 public:
