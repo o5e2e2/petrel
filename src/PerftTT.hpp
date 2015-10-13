@@ -26,8 +26,6 @@ class PerftTT {
     HashBucket& origin;
     HashAge age;
 
-    void popup(::Index<3> i);
-
 public:
     PerftTT(HashBucket* p, HashAge a) : m(*p), origin(*p), age(a) {}
 
