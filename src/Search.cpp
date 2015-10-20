@@ -37,6 +37,7 @@ namespace Perft {
         CUT ( window.control.checkQuota() );
 
         SearchWindow childWindow(window);
+        Position childPos;
 
         auto n = window.control.info[PerftNodes];
         for (Pi pi : pm.side(My).alivePieces()) {
@@ -46,7 +47,7 @@ namespace Perft {
                 moves.clear(pi, to);
 
                 window.control.info.decrementQuota();
-                Position childPos(parent, from, to);
+                childPos.makeMove(parent, from, to);
                 CUT (perft(childPos, childWindow));
             }
         }
@@ -69,13 +70,15 @@ namespace PerftDivide {
         SearchWindow childWindow(window);
         childWindow.searchFn = Perft::perft;
 
+        Position childPos;
+
         for (Pi pi : pm.side(My).alivePieces()) {
             Square from = pm.side(My).squareOf(pi);
 
             for (Square to : moves[pi]) {
                 moves.clear(pi, to);
 
-                Position childPos{parent, from, to};
+                childPos.makeMove(parent, from, to);
 
                 window.control.info.decrementQuota();
                 CUT (Perft::perft(childPos, childWindow));

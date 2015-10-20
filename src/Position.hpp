@@ -35,7 +35,6 @@ private:
 public:
     Position () {};
     Position (int) : side() {};
-    Position (const Position& parent, Square from, Square to) { makeMove(parent, from, to); }
 
     friend void PositionFen::write(std::ostream&, const Position&, Color, ChessVariant);
     friend Move::Move(const Position&, Square, Square);
