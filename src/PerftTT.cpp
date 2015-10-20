@@ -1,19 +1,15 @@
 #include "PerftTT.hpp"
 #include "SearchInfo.hpp"
 
-node_count_t PerftTT::get(Zobrist z, depth_t d, SearchInfo& info) {
-    ++info[TT_Tried];
-
+node_count_t PerftTT::get(Zobrist z, depth_t d) {
     if (d == 1) {
         if (b.s[0].isKeyMatch(z)) {
             auto n = b.s[0].getNodes();
-            ++info[TT_Hit];
 
             return n;
         }
         if (b.s[1].isKeyMatch(z)) {
             auto n = b.s[1].getNodes();
-            ++info[TT_Hit];
 
             b.s.swap();
             origin.save(3, m[3]);
@@ -23,7 +19,6 @@ node_count_t PerftTT::get(Zobrist z, depth_t d, SearchInfo& info) {
 
     if (b.b[0].isKeyMatch(z, d)) {
         auto n = b.b[0].getNodes();
-        ++info[TT_Hit];
 
         if (!b.b[1].isOk(age) || b.b[1].getDepth() <= d) {
             Index i = 1;
@@ -45,7 +40,6 @@ node_count_t PerftTT::get(Zobrist z, depth_t d, SearchInfo& info) {
 
     if (b.b[1].isKeyMatch(z, d)) {
         auto n = b.b[1].getNodes();
-        ++info[TT_Hit];
 
         if (!b.b[2].isOk(age) || b.b[2].getDepth() <= d) {
             b.b[1].updateAge(age);
@@ -62,7 +56,6 @@ node_count_t PerftTT::get(Zobrist z, depth_t d, SearchInfo& info) {
 
     if (b.b[2].isKeyMatch(z, d)) {
         auto n = b.b[2].getNodes();
-        ++info[TT_Hit];
 
         if (!b.b[2].isOk(age)) {
             b.b[2].updateAge(age);
@@ -74,7 +67,7 @@ node_count_t PerftTT::get(Zobrist z, depth_t d, SearchInfo& info) {
     return 0;
 }
 
-void PerftTT::set(Zobrist z, depth_t d, node_count_t n, SearchInfo&) {
+void PerftTT::set(Zobrist z, depth_t d, node_count_t n) {
     if (d == 1 && b.b[0].isOk(age) && b.b[0].getDepth() > 1) {
         if (!b.s[0].isKeyMatch(z)) {
             b.s.set(z, n);

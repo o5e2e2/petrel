@@ -8,8 +8,6 @@
 #include "PerftRecordDual.hpp"
 #include "Zobrist.hpp"
 
-class SearchInfo;
-
 class PerftTT {
     typedef HashBucket::Index Index;
 
@@ -29,8 +27,8 @@ class PerftTT {
 public:
     PerftTT(HashBucket* p, HashAge a) : m(*p), origin(*p), age(a) {}
 
-    node_count_t get(Zobrist z, depth_t d, SearchInfo& info);
-    void set(Zobrist z, depth_t d, node_count_t n, SearchInfo& info);
+    node_count_t get(Zobrist z, depth_t d);
+    void set(Zobrist z, depth_t d, node_count_t n);
 
 };
 

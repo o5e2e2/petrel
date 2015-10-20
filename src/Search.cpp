@@ -24,9 +24,11 @@ namespace Perft {
 
         {
             PerftTT tt(origin, window.control.tt().getAge());
-            auto n = tt.get(zobrist, window.draft, window.control.info);
+            auto n = tt.get(zobrist, window.draft);
 
+            ++window.control.info[TT_Tried];
             if (n) {
+                ++window.control.info[TT_Hit];
                 window.control.info[PerftNodes] += n;
                 return false;
             }
@@ -49,8 +51,11 @@ namespace Perft {
             }
         }
 
-        PerftTT tt(origin, window.control.tt().getAge());
-        tt.set(zobrist, window.draft, window.control.info[PerftNodes] - n, window.control.info);
+        n = window.control.info[PerftNodes] - n;
+        if (n) {
+            PerftTT tt(origin, window.control.tt().getAge());
+            tt.set(zobrist, window.draft, n);
+        }
         return false;
     }
 }
