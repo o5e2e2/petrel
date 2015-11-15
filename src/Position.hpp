@@ -17,6 +17,7 @@ private:
     void set(Side, Pi, PieceType, Square);
 
     template <Side::_t> const Bb& pinRayFrom(Pi) const;
+    bool zobristIsLegalEnPassant(Pi, File) const;
     template <Side::_t> bool isLegalEnPassant(Pi, File) const;
     template <Side::_t> void setLegalEnPassant(Pi);
 
@@ -43,6 +44,7 @@ public:
     Zobrist getZobrist() const;
 
     void makeMove(const Position& parent, Square from, Square to);
+    Zobrist makeZobrist(Square from, Square to) const;
 
     //initial position setup
     bool drop(Side, PieceType, Square);

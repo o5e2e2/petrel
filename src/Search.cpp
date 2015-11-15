@@ -47,7 +47,9 @@ namespace Perft {
                 moves.clear(pi, to);
 
                 window.control.info.decrementQuota();
+                Zobrist z = parent.makeZobrist(from, to);
                 childPos.makeMove(parent, from, to);
+                assert (z == childPos.getZobrist());
                 CUT (perft(childPos, childWindow));
             }
         }

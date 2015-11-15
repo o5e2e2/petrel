@@ -28,7 +28,6 @@ class PositionSide {
 
     bool setCastling(Pi);
     void clearCastlings();
-    bool isCastling(Pi pi) const { assertValid(pi); return types.isCastling(pi); }
 
 public:
     PositionSide ();
@@ -72,6 +71,7 @@ public:
     bool isSlider(Pi pi) const { assertValid(pi); return types.isSlider(pi); }
 
     VectorPiMask castlingRooks() const { return types.castlingRooks(); }
+    bool isCastling(Pi pi) const { assertValid(pi); return types.isCastling(pi); }
     void castle(Pi rook, Square rookFrom, Square rookTo, Square kingFrom, Square kingTo);
 
     VectorPiMask enPassantPawns() const { return types.enPassantPawns(); }
