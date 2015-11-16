@@ -381,7 +381,7 @@ void Position::makeMove(Square from, Square to) {
     }
 }
 
-bool Position::zobristIsLegalEnPassant(Pi killer, File epFile) const {
+bool Position::isLegalEnPassantBefore(Pi killer, File epFile) const {
     OP.assertValid(killer);
     assert (OP.isPawn(killer));
     Square from{ OP.squareOf(killer) };
@@ -390,22 +390,11 @@ bool Position::zobristIsLegalEnPassant(Pi killer, File epFile) const {
     Square to(epFile, Rank6);
     assert (OP.allAttacks()[killer][to]);
 
-    if (!OP.kingSquare().is(Rank5)) {
-        for (Pi pinner : MY.pinnerCandidates()) {
-            Bb pinRay = pinRayFrom<My>(pinner);
-            if (pinRay[from] && !pinRay[to]) {
-                Bb betweenPieces{(pinRay & ~OCCUPIED) - from};
-                if (betweenPieces.none()) { return false; } //the true diagonal pin
-            }
-        }
-    }
-    else {
-        for (Pi pinner : MY.pinnerCandidates() & MY.piecesOn(Rank4)) {
-            Bb pinRay = pinRayFrom<My>(pinner);
-            if (pinRay[from]) {
-                Bb betweenPieces{(pinRay & ~OCCUPIED) - from /*- victim*/};
-                if (betweenPieces.none()) { return false; } //the true vertical pin
-            }
+    for (Pi pinner : MY.pinnerCandidates()) {
+        Bb pinRay = pinRayFrom<My>(pinner);
+        if (pinRay[from] && !pinRay[to]) {
+            Bb betweenPieces{(pinRay & ~OCCUPIED) - from};
+            if (betweenPieces.none()) { return false; }
         }
     }
     return true;
@@ -438,12 +427,6 @@ Zobrist Position::makeZobrist(Square from, Square to) const {
             }
             return Zobrist{oz, mz};
         }
-        else if (from.is(Rank5) && to.is(Rank5)) {
-            Square _to(File{to}, Rank6);
-            mz.move(Pawn, from, _to);
-            oz.clear(Pawn, ~to);
-            return Zobrist{oz, mz};
-        }
         else if (from.is(Rank2) && to.is(Rank4)) {
             mz.move(ty, from, to);
 
@@ -464,15 +447,29 @@ Zobrist Position::makeZobrist(Square from, Square to) const {
             }
 
             for (Pi killer : killers) {
-                if (zobristIsLegalEnPassant(killer, epFile)) {
+                if (isLegalEnPassantBefore(killer, epFile)) {
                     mz.setEnPassant(epFile);
                     break;
                 }
             }
             return Zobrist{oz, mz};
         }
+        else if (from.is(Rank5) && to.is(Rank5)) {
+            Square _to(File{to}, Rank6);
+            mz.move(Pawn, from, _to);
+            oz.clear(Pawn, ~to);
+            return Zobrist{oz, mz};
+        }
+
+        //the rest of pawns moves (non-promotion, non en passant, non double push)
+    }
+    else if (ty == King) {
+        for (Pi rook : MY.castlingRooks()) {
+            mz.clearCastling(MY.squareOf(rook));
+        }
     }
     else if (MY.kingSquare().is(to)) {
+        //castling move encoded as rook moves over own king's square
         for (Pi rook : MY.castlingRooks()) {
             mz.clearCastling(MY.squareOf(rook));
         }
@@ -486,23 +483,21 @@ Zobrist Position::makeZobrist(Square from, Square to) const {
         mz.move(Rook, rookFrom, rookTo);
         return Zobrist{oz, mz};
     }
-    else if (ty == King) {
-        for (Pi rook : MY.castlingRooks()) {
-            mz.clearCastling(MY.squareOf(rook));
-        }
-    }
     else if (MY.isCastling(pi)) {
+        //move of the rook with castling rights
+        assert (ty == Rook);
         mz.clearCastling(from);
     }
 
     if (OP.isOccupied(~to)) {
         Pi victim {OP.pieceOn(~to)};
+        oz.clear(OP.typeOf(victim), ~to);
 
         if (OP.isCastling(victim)) {
             oz.clearCastling(~to);
         }
-        oz.clear(OP.typeOf(victim), ~to);
     }
+
     mz.move(ty, from, to);
     return Zobrist{oz, mz};
 }
