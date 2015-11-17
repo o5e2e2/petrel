@@ -12,6 +12,7 @@ class Position {
 
     Side::array<PositionSide> side;
     DualBbOccupied occupied; //pieces of both sides
+    Zobrist zobrist;
 
 private:
     void set(Side, Pi, PieceType, Square);
@@ -43,7 +44,7 @@ public:
 
     Zobrist getZobrist() const;
 
-    void makeMove(const Position& parent, Square from, Square to);
+    void makeMove(Zobrist z, const Position& parent, Square from, Square to);
     Zobrist makeZobrist(Square from, Square to) const;
 
     //initial position setup

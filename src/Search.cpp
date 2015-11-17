@@ -48,8 +48,10 @@ namespace Perft {
 
                 window.control.info.decrementQuota();
                 Zobrist z = parent.makeZobrist(from, to);
-                childPos.makeMove(parent, from, to);
-                assert (z == childPos.getZobrist());
+                childPos.makeMove(z, parent, from, to);
+                if (z != childPos.getZobrist()) {
+                    std::cout << from << to << ' ' << std::flush;
+                }
                 CUT (perft(childPos, childWindow));
             }
         }
@@ -80,7 +82,7 @@ namespace PerftDivide {
             for (Square to : moves[pi]) {
                 moves.clear(pi, to);
 
-                childPos.makeMove(parent, from, to);
+                childPos.makeMove(parent.makeZobrist(from, to), parent, from, to);
 
                 window.control.info.decrementQuota();
                 CUT (Perft::perft(childPos, childWindow));

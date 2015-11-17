@@ -31,6 +31,7 @@ void Position::updateSliderAttacks(VectorPiMask affected) {
 }
 
 bool Position::setup() {
+    zobrist = getZobrist();
     updateSliderAttacksKing<Op>(OP.alivePieces());
     updateSliderAttacks<My>(MY.alivePieces());
     return MY.attacksTo(~OP.kingSquare()).none(); //not in check
@@ -324,7 +325,9 @@ void Position::makePawnMove(Pi pi, Square from, Square to) {
     MY.assertValid(pi);
 }
 
-void Position::makeMove(const Position& parent, Square from, Square to) {
+void Position::makeMove(Zobrist z, const Position& parent, Square from, Square to) {
+    zobrist = z;
+
     if (this == &parent) {
         PositionSide::swap(MY, OP);
     }
@@ -401,8 +404,8 @@ bool Position::isLegalEnPassantBefore(Pi killer, File epFile) const {
 }
 
 Zobrist Position::makeZobrist(Square from, Square to) const {
-    Zobrist mz = MY.getZobrist();
-    Zobrist oz = OP.getZobrist();
+    Zobrist mz = {};
+    Zobrist oz = ~zobrist;
 
     if (OP.hasEnPassant()) {
         oz.clearEnPassant(OP.enPassantSquare());

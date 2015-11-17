@@ -225,7 +225,7 @@ void PositionMoves::makeMoves(std::istream& in, Position& pos, Color& colorToMov
 
             pm.generateMoves();
             if (pm.moves.is(pi, to)) {
-                pos.makeMove(pos, from, to);
+                pos.makeMove(pos.makeZobrist(from, to), pos, from, to);
                 colorToMove.flip();
                 continue;
             }
