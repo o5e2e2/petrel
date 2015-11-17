@@ -137,7 +137,13 @@ bool Position::isLegalEnPassant(Pi killer, File epFile) const {
 }
 
 Zobrist Position::getZobrist() const {
-    return Zobrist(MY.getZobrist(), OP.getZobrist());
+    Zobrist oz = OP.getZobrist();
+
+    if (OP.hasEnPassant()) {
+        oz.setEnPassant(OP.enPassantSquare());
+    }
+
+    return Zobrist{MY.getZobrist(), oz};
 }
 
 void Position::setZobrist() {
@@ -170,8 +176,7 @@ void Position::setLegalEnPassant(Pi pi) {
     }
 
     if (OP.hasEnPassant()) {
-        MY.setEnPassant(pi, epFile);
-        //syncZobrist();
+        MY.setEnPassant(pi);
     }
 }
 

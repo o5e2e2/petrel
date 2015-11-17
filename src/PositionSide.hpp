@@ -19,7 +19,6 @@ class PositionSide {
 
     Bb piecesBb; //all pieces of the current side
     Bb pawnsBb; //pawns of the current side
-    Zobrist zobrist; //Zobrist hash key of pieces of the current side
     Evaluation evaluation;
 
     void clear(PieceType, Square);
@@ -27,7 +26,6 @@ class PositionSide {
     void move(PieceType, Square, Square);
 
     bool setCastling(Pi);
-    void clearCastlings();
 
 public:
     PositionSide ();
@@ -80,7 +78,7 @@ public:
     File   enPassantFile()   const { return File{ enPassantSquare() }; }
     void markEnPassant(Pi);
     void unmarkEnPassants();
-    void setEnPassant(Pi, File);
+    void setEnPassant(Pi);
     void clearEnPassant();
 
     const Bb& pinRayFrom(Square) const;
