@@ -289,6 +289,7 @@ namespace PositionFen {
         Board::read(in, pos, colorToMove);
         CastlingRights::read(in, pos, colorToMove);
         EnPassantSquare::read(in, pos, colorToMove);
+        pos.setZobrist();
 
         if (in) {
             unsigned fifty, moves;

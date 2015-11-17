@@ -31,10 +31,13 @@ void Position::updateSliderAttacks(VectorPiMask affected) {
 }
 
 bool Position::setup() {
-    zobrist = getZobrist();
     updateSliderAttacksKing<Op>(OP.alivePieces());
     updateSliderAttacks<My>(MY.alivePieces());
     return MY.attacksTo(~OP.kingSquare()).none(); //not in check
+}
+
+void Position::setZobrist() {
+    zobrist = getZobrist();
 }
 
 bool Position::drop(Side My, PieceType ty, Square to) {
@@ -70,15 +73,6 @@ bool Position::setCastling(Side My, CastlingSide castlingSide) {
     return MY.setCastling(castlingSide);
 }
 
-template <Side::_t My>
-const Bb& Position::pinRayFrom(Pi pi) const {
-    constexpr Side Op{~My};
-    assert (MY.isSlider(pi));
-    assert (MY.pinnerCandidates()[pi]);
-
-    return OP.pinRayFrom(~MY.squareOf(pi));
-}
-
 bool Position::setEnPassant(File epFile) {
     if (OCCUPIED[Square(epFile, Rank7)]) { return false; }
     if (OCCUPIED[Square(epFile, Rank6)]) { return false; }
@@ -100,6 +94,15 @@ bool Position::setEnPassant(File epFile) {
 
     setLegalEnPassant<Op>(victim);
     return true;
+}
+
+template <Side::_t My>
+const Bb& Position::pinRayFrom(Pi pi) const {
+    constexpr Side Op{~My};
+    assert (MY.isSlider(pi));
+    assert (MY.pinnerCandidates()[pi]);
+
+    return OP.pinRayFrom(~MY.squareOf(pi));
 }
 
 template <Side::_t My>

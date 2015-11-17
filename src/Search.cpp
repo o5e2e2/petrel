@@ -39,9 +39,7 @@ namespace Perft {
         }
 
         child.makeMove(zobrist, parent, from, to);
-        if (zobrist != child.getZobrist()) {
-            //std::cout << from << to << ' ' << std::flush;
-        }
+        assert (zobrist == child.getZobrist());
 
         auto n = window.control.info[PerftNodes];
         CUT (perft(child, window));
