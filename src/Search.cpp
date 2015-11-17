@@ -9,18 +9,22 @@
 #define CUT(found) { if (found) { return true; } } ((void)0)
 
 namespace Perft {
-    bool perft(const Position& parent, SearchWindow& window) {
-        Zobrist zobrist = parent.getZobrist();
-        auto origin = window.control.tt().lookup(zobrist);
-
-        PositionMoves pm(parent);
-        pm.generateMoves();
-        MatrixPiBb& moves = pm.getMoves();
-
+    bool _perft(Position& child, SearchWindow& window, const Position& parent, Square from, Square to) {
         if (window.draft <= 0) {
+            child.makeMove({}, parent, from, to);
+
+            PositionMoves pm(child);
+            pm.generateMoves();
+            MatrixPiBb& moves = pm.getMoves();
+
             window.control.info[PerftNodes] += moves.count();
             return false;
         }
+
+        Zobrist zobrist = parent.makeZobrist(from, to);
+        auto origin = window.control.tt().lookup(zobrist);
+
+        CUT ( window.control.checkQuota() );
 
         {
             PerftTT tt(origin, window.control.tt().getAge());
@@ -34,12 +38,31 @@ namespace Perft {
             }
         }
 
-        CUT ( window.control.checkQuota() );
+        child.makeMove(zobrist, parent, from, to);
+        if (zobrist != child.getZobrist()) {
+            //std::cout << from << to << ' ' << std::flush;
+        }
+
+        auto n = window.control.info[PerftNodes];
+        CUT (perft(child, window));
+        n = window.control.info[PerftNodes] - n;
+
+        if (n) {
+            PerftTT tt(origin, window.control.tt().getAge());
+            tt.set(zobrist, window.draft, n);
+        }
+
+        return false;
+    }
+
+    bool perft(const Position& parent, SearchWindow& window) {
+        PositionMoves pm(parent);
+        pm.generateMoves();
+        MatrixPiBb& moves = pm.getMoves();
 
         SearchWindow childWindow(window);
         Position childPos;
 
-        auto n = window.control.info[PerftNodes];
         for (Pi pi : pm.side(My).alivePieces()) {
             Square from = pm.side(My).squareOf(pi);
 
@@ -47,20 +70,10 @@ namespace Perft {
                 moves.clear(pi, to);
 
                 window.control.info.decrementQuota();
-                Zobrist z = parent.makeZobrist(from, to);
-                childPos.makeMove(z, parent, from, to);
-                if (z != childPos.getZobrist()) {
-                    std::cout << from << to << ' ' << std::flush;
-                }
-                CUT (perft(childPos, childWindow));
+                CUT (_perft(childPos, childWindow, parent, from, to));
             }
         }
 
-        n = window.control.info[PerftNodes] - n;
-        if (n) {
-            PerftTT tt(origin, window.control.tt().getAge());
-            tt.set(zobrist, window.draft, n);
-        }
         return false;
     }
 }
