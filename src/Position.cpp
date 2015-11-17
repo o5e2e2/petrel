@@ -36,10 +36,6 @@ bool Position::setup() {
     return MY.attacksTo(~OP.kingSquare()).none(); //not in check
 }
 
-void Position::setZobrist() {
-    zobrist = getZobrist();
-}
-
 bool Position::drop(Side My, PieceType ty, Square to) {
     const Side Op{~My};
 
@@ -142,6 +138,10 @@ bool Position::isLegalEnPassant(Pi killer, File epFile) const {
 
 Zobrist Position::getZobrist() const {
     return Zobrist(MY.getZobrist(), OP.getZobrist());
+}
+
+void Position::setZobrist() {
+    zobrist = getZobrist();
 }
 
 template <Side::_t My>

@@ -26,6 +26,31 @@ PositionSide::PositionSide() : piecesBb{}, pawnsBb{} {
     evaluation.clear();
 }
 
+Zobrist PositionSide::getZobrist() const {
+    Zobrist z = {};
+
+    for (Pi pi : alivePieces()) {
+        PieceType ty = typeOf(pi);
+        Square sq = squareOf(pi);
+        z.drop(ty, sq);
+    }
+
+    for (Pi rook : castlingRooks()) {
+        z.setCastling(squareOf(rook));
+    }
+
+    for (Pi pawn : enPassantPawns()) {
+        Square sq = squareOf(pawn);
+        if (sq.is(Rank4)) {
+            z.setEnPassant(sq);
+        }
+        break;
+    }
+
+    assert (z == zobrist);
+    return z;
+}
+
 void PositionSide::swap(PositionSide& my, PositionSide& op) {
     using std::swap;
     swap(my.attacks, op.attacks);
