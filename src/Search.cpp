@@ -60,8 +60,8 @@ namespace Perft {
         pm.generateMoves();
         MatrixPiBb& moves = pm.getMoves();
 
-        SearchWindow childWindow(window);
         Position childPos;
+        SearchWindow childWindow(window);
 
         for (Pi pi : pm.side(My).alivePieces()) {
             Square from = pm.side(My).squareOf(pi);
@@ -84,10 +84,9 @@ namespace PerftDivide {
         pm.generateMoves();
         MatrixPiBb& moves = pm.getMoves();
 
+        Position childPos;
         SearchWindow childWindow(window);
         childWindow.searchFn = Perft::perft;
-
-        Position childPos;
 
         for (Pi pi : pm.side(My).alivePieces()) {
             Square from = pm.side(My).squareOf(pi);
@@ -95,10 +94,8 @@ namespace PerftDivide {
             for (Square to : moves[pi]) {
                 moves.clear(pi, to);
 
-                childPos.makeMove(parent.makeZobrist(from, to), parent, from, to);
-
                 window.control.info.decrementQuota();
-                CUT (Perft::perft(childPos, childWindow));
+                CUT (Perft::_perft(childPos, childWindow, parent, from, to));
 
                 Move move{parent, from, to};
                 window.control.info.report_perft_divide(move);

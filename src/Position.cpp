@@ -466,11 +466,6 @@ Zobrist Position::makeZobrist(Square from, Square to) const {
 
         //the rest of pawns moves (non-promotion, non en passant, non double push)
     }
-    else if (ty == King) {
-        for (Pi rook : MY.castlingRooks()) {
-            mz.clearCastling(MY.squareOf(rook));
-        }
-    }
     else if (MY.kingSquare().is(to)) {
         //castling move encoded as rook moves over own king's square
         for (Pi rook : MY.castlingRooks()) {
@@ -485,6 +480,11 @@ Zobrist Position::makeZobrist(Square from, Square to) const {
         mz.move(King, kingFrom, kingTo);
         mz.move(Rook, rookFrom, rookTo);
         return Zobrist{oz, mz};
+    }
+    else if (ty == King) {
+        for (Pi rook : MY.castlingRooks()) {
+            mz.clearCastling(MY.squareOf(rook));
+        }
     }
     else if (MY.isCastling(pi)) {
         //move of the rook with castling rights
