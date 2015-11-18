@@ -44,7 +44,12 @@ public:
 
     Zobrist getZobrist() const;
 
-    void makeMove(Zobrist z, const Position& parent, Square from, Square to);
+    void makeMove(const Position& parent, Square from, Square to);
+
+    void makeMove(Zobrist z, const Position& parent, Square from, Square to) {
+        zobrist = z; makeMove(parent, from, to);
+    }
+
     Zobrist makeZobrist(Square from, Square to) const;
 
     //initial position setup

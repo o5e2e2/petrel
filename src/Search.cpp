@@ -11,7 +11,7 @@
 namespace Perft {
     bool _perft(Position& child, SearchWindow& window, const Position& parent, Square from, Square to) {
         if (window.draft <= 0) {
-            child.makeMove({}, parent, from, to);
+            child.makeMove(parent, from, to);
 
             PositionMoves pm(child);
             pm.generateMoves();

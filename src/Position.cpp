@@ -333,9 +333,7 @@ void Position::makePawnMove(Pi pi, Square from, Square to) {
     MY.assertValid(pi);
 }
 
-void Position::makeMove(Zobrist z, const Position& parent, Square from, Square to) {
-    zobrist = z;
-
+void Position::makeMove(const Position& parent, Square from, Square to) {
     if (this == &parent) {
         PositionSide::swap(MY, OP);
     }
