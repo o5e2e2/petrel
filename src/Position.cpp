@@ -1,6 +1,8 @@
 #include "Position.hpp"
 #include <utility>
 #include "CastlingRules.hpp"
+#include "OutsideSquares.hpp"
+#include "PieceTypeAttack.hpp"
 
 #define MY side[My]
 #define OP side[Op]
@@ -390,20 +392,25 @@ void Position::makeMove(Square from, Square to) {
     }
 }
 
-bool Position::isLegalEnPassantBefore(Pi killer, File epFile) const {
+bool Position::isLegalEnPassantBefore(Pi killer, Square to) const {
     OP.assertValid(killer);
     assert (OP.isPawn(killer));
+
     Square from{ OP.squareOf(killer) };
     assert (from.is(Rank5));
+    from = ~from;
 
-    Square to(epFile, Rank6);
     assert (OP.allAttacks()[killer][to]);
 
-    for (Pi pinner : MY.pinnerCandidates()) {
-        Bb pinRay = pinRayFrom<My>(pinner);
-        if (pinRay[from] && !pinRay[to]) {
-            Bb betweenPieces{(pinRay & ~OCCUPIED) - from};
-            if (betweenPieces.none()) { return false; }
+    Square opKingSquare = ~OP.kingSquare();
+
+    Bb pinners = ::outside(opKingSquare, from) & MY.occupiedSquares();
+    if (pinners.any()) {
+        Square pinner = (opKingSquare < from)? pinners.smallestOne() : pinners.largestOne();
+
+        if ((::between(opKingSquare, pinner) & (OCCUPIED - from + ~to)).none()) {
+            Pi pi = MY.pieceOn(pinner);
+            return !MY.pinnerCandidates()[pi];
         }
     }
     return true;
@@ -439,24 +446,23 @@ Zobrist Position::makeZobrist(Square from, Square to) const {
         else if (from.is(Rank2) && to.is(Rank4)) {
             mz.move(ty, from, to);
 
-            File epFile = File{from};
-            auto killers = OP.pawns() & OP.attacksTo(Square(epFile, Rank6));
-            if (killers.none()) {
-                return Zobrist{oz, mz};
-            }
+            Square opKingSquare = ~OP.kingSquare();
+            Bb pinners = ::outside(opKingSquare, from) & MY.occupiedSquares();
+            if (pinners.any()) {
+                Square pinner = (opKingSquare < from)? pinners.smallestOne() : pinners.largestOne();
 
-            for (Pi pinner : MY.pinnerCandidates()) {
-                Bb pinRay = ~pinRayFrom<My>(pinner);
-                if (pinRay[from] && !pinRay[to]) {
-                    Bb betweenPieces{(pinRay & OCCUPIED) - from};
-                    if (betweenPieces.none()) {
-                        return Zobrist{oz, mz};
-                    }
+                if (MY.pinnerCandidates()[MY.pieceOn(pinner)] && (::between(opKingSquare, pinner) & (OCCUPIED - from + to)).none()) {
+                    //discovered check found
+                    return Zobrist{oz, mz};
                 }
             }
 
+            File epFile = File{from};
+            Square _to(epFile, Rank6);
+
+            auto killers = OP.pawns() & OP.attacksTo(_to);
             for (Pi killer : killers) {
-                if (isLegalEnPassantBefore(killer, epFile)) {
+                if (isLegalEnPassantBefore(killer, _to)) {
                     mz.setEnPassant(epFile);
                     break;
                 }

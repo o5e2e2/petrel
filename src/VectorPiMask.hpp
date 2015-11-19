@@ -34,8 +34,8 @@ public:
     bool none() const { return PieceSet{*this}.none(); }
     bool isSingleton() const { return PieceSet{*this}.isSingleton(); }
     Pi index() const { return PieceSet{*this}.index(); }
-    Pi first() const { return PieceSet{*this}.first(); }
-    Pi last() const { return PieceSet{*this}.last(); }
+    Pi smallestOne() const { return PieceSet{*this}.smallestOne(); }
+    Pi largestOne() const { return PieceSet{*this}.largestOne(); }
     Pi seekVacant() const { return PieceSet{*this}.seekVacant(); }
 
     PieceSet begin() const { return *this; }

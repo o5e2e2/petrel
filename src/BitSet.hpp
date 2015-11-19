@@ -24,12 +24,12 @@ public:
     constexpr bool operator [] (Index i) const { return (self() & Self{i}).any(); }
     bool isSingleton() const { assert (self().any()); return without_lsb() == 0; }
 
-    constexpr Index first() const { return static_cast<typename Index::_t>(::bsf(this->_v)); }
-    constexpr Index last()  const { return static_cast<typename Index::_t>(::bsr(this->_v)); }
+    constexpr Index smallestOne() const { return static_cast<typename Index::_t>(::bsf(this->_v)); }
+    constexpr Index largestOne()  const { return static_cast<typename Index::_t>(::bsr(this->_v)); }
 
-    Index index() const { assert (self().any() && self().isSingleton()); return self().first(); }
+    Index index() const { assert (self().any() && self().isSingleton()); return *self(); }
 
-    constexpr Index operator * () const { return self().first(); }
+    constexpr Index operator * () const { return self().smallestOne(); }
     Self& operator ++ () { *this = Self(without_lsb()); return self(); }
 
     constexpr Self begin() const { return self(); }
@@ -44,7 +44,7 @@ public:
 
     friend bool operator << (Index& i, Self& self) {
         if (self.none()) { return false; }
-        i = self.last();
+        i = self.largestOne();
         self -= i;
         return true;
     }
