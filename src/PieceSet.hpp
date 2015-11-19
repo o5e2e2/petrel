@@ -14,6 +14,23 @@ public:
         return PieceSet{x}.index();
     }
 
+    friend std::ostream& operator << (std::ostream& out, PieceSet v) {
+        auto flags(out.flags());
+
+        out << std::hex;
+        FOR_INDEX(Pi, pi) {
+            if (v[pi]) {
+                out << pi;
+            }
+            else {
+                out << ".";
+            }
+        }
+
+        out.flags(flags);
+        return out;
+    }
+
 };
 
 #endif

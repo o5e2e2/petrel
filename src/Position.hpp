@@ -19,7 +19,6 @@ private:
 
     template <Side::_t> const Bb& pinRayFrom(Pi) const;
     template <Side::_t> bool isLegalEnPassant(Pi, File) const;
-    bool isLegalEnPassantBefore(Pi, Square) const;
     template <Side::_t> void setLegalEnPassant(Pi);
 
     template <Side::_t> void move(Pi, Square, Square);

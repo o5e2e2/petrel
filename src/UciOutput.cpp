@@ -18,48 +18,6 @@ namespace {
     template <typename T>
     constexpr T permil(T n, T m) { return (n * 1000 + m / 2) / m; }
 
-/*
-    std::ostream& operator << (std::ostream& out, Zobrist z) {
-        auto flags(out.flags());
-
-        out << std::hex << std::setw(16) << std::setfill('0');
-        out << static_cast<Zobrist::_t>(z);
-
-        out.flags(flags);
-        return out;
-    }
-
-    std::ostream& operator << (std::ostream& out, Bb bb) {
-        FOR_INDEX(Rank, rank) {
-            FOR_INDEX(File, file) {
-                out << (bb[Square(file, rank)]? file : '.');
-            }
-            out << '\n';
-        }
-        return out;
-    }
-
-    std::ostream& operator << (std::ostream& out, PieceSet v) {
-        auto flags(out.flags());
-
-        out << std::hex;
-        FOR_INDEX(Pi, pi) {
-            if (v[pi]) {
-                out << pi;
-            }
-            else {
-                out << ".";
-            }
-        }
-
-        out.flags(flags);
-        return out;
-    }
-
-    std::ostream& operator << (std::ostream& out, VectorPiMask v) {
-        return out << PieceSet{v};
-    }
-*/
 }
 
 UciOutput::UciOutput (std::ostream& o, const Color& c, const ChessVariant& v, const HashMemory& h)

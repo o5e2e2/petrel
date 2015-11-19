@@ -50,6 +50,21 @@ public:
 
     constexpr explicit operator __int64 () const { return static_cast<__int64>(this->_v); }
 
+    friend std::ostream& operator << (std::ostream& out, Bb bb) {
+        FOR_INDEX(Rank, rank) {
+            FOR_INDEX(File, file) {
+                if (bb[Square(file, rank)]) {
+                    out << file;
+                }
+                else {
+                    out << '.';
+                }
+            }
+            out << '\n';
+        }
+        return out;
+    }
+
 };
 
 #endif

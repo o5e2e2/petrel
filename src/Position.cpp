@@ -82,11 +82,13 @@ bool Position::setEnPassant(File epFile) {
     if (!OP.isPawn(victim)) { return false; }
 
     //check against illegal en passant set field like "8/5bk1/8/2Pp4/8/1K6/8/8 w - d6"
-    for (Pi pinner : OP.pinnerCandidates() & OP.attacksTo(victimSquare)) {
-        Bb pinRay = pinRayFrom<Op>(pinner);
-        if (pinRay[~victimSquare]) {
-            Bb betweenPieces{(pinRay & OCCUPIED) - ~victimSquare};
-            if (betweenPieces.none()) { return false; }
+    Square kingSquare = MY.kingSquare();
+    Bb pinners = ::outside(kingSquare, ~victimSquare) & ~OP.occupiedSquares();
+    if (pinners.any()) {
+        Square pinner = (kingSquare < ~victimSquare)? pinners.smallestOne() : pinners.largestOne();
+
+        if (OP.pinnerCandidates()[OP.pieceOn(~pinner)] && (::between(kingSquare, pinner) & (OCCUPIED - ~victimSquare)).none()) {
+            return false;
         }
     }
 
@@ -392,30 +394,6 @@ void Position::makeMove(Square from, Square to) {
     }
 }
 
-bool Position::isLegalEnPassantBefore(Pi killer, Square to) const {
-    OP.assertValid(killer);
-    assert (OP.isPawn(killer));
-
-    Square from{ OP.squareOf(killer) };
-    assert (from.is(Rank5));
-    from = ~from;
-
-    assert (OP.allAttacks()[killer][to]);
-
-    Square opKingSquare = ~OP.kingSquare();
-
-    Bb pinners = ::outside(opKingSquare, from) & MY.occupiedSquares();
-    if (pinners.any()) {
-        Square pinner = (opKingSquare < from)? pinners.smallestOne() : pinners.largestOne();
-
-        if ((::between(opKingSquare, pinner) & (OCCUPIED - from + ~to)).none()) {
-            Pi pi = MY.pieceOn(pinner);
-            return !MY.pinnerCandidates()[pi];
-        }
-    }
-    return true;
-}
-
 Zobrist Position::makeZobrist(Square from, Square to) const {
     Zobrist mz = {};
     Zobrist oz = ~zobrist;
@@ -446,26 +424,38 @@ Zobrist Position::makeZobrist(Square from, Square to) const {
         else if (from.is(Rank2) && to.is(Rank4)) {
             mz.move(ty, from, to);
 
-            Square opKingSquare = ~OP.kingSquare();
-            Bb pinners = ::outside(opKingSquare, from) & MY.occupiedSquares();
-            if (pinners.any()) {
-                Square pinner = (opKingSquare < from)? pinners.smallestOne() : pinners.largestOne();
-
-                if (MY.pinnerCandidates()[MY.pieceOn(pinner)] && (::between(opKingSquare, pinner) & (OCCUPIED - from + to)).none()) {
-                    //discovered check found
-                    return Zobrist{oz, mz};
-                }
-            }
-
             File epFile = File{from};
-            Square _to(epFile, Rank6);
+            Square _to(epFile, Rank3);
 
-            auto killers = OP.pawns() & OP.attacksTo(_to);
-            for (Pi killer : killers) {
-                if (isLegalEnPassantBefore(killer, _to)) {
-                    mz.setEnPassant(epFile);
-                    break;
+            Square opKingSquare = ~OP.kingSquare();
+
+            Bb killers = ~OP.occupiedByPawns() & ::pieceTypeAttack(Pawn, _to);
+            for (Square _from : killers) {
+                assert (_from.is(Rank4));
+
+                Bb pinners = ::outside(opKingSquare, _from) & MY.occupiedSquares();
+                if (pinners.any()) {
+                    Square pinner = (opKingSquare < _from)? pinners.smallestOne() : pinners.largestOne();
+
+
+                    if (MY.pinnerCandidates()[MY.pieceOn(pinner)] && (::between(opKingSquare, pinner) & (OCCUPIED - _from + _to)).none()) {
+                        continue;
+                    }
+
                 }
+
+                pinners = ::outside(opKingSquare, from) & MY.occupiedSquares();
+                if (pinners.any()) {
+                    Square pinner = (opKingSquare < from)? pinners.smallestOne() : pinners.largestOne();
+
+                    if (MY.pinnerCandidates()[MY.pieceOn(pinner)] && (::between(opKingSquare, pinner) & (OCCUPIED - from + to)).none()) {
+                        //discovered check found
+                        return Zobrist{oz, mz};
+                    }
+                }
+
+                mz.setEnPassant(epFile);
+                return Zobrist{oz, mz};
             }
             return Zobrist{oz, mz};
         }
