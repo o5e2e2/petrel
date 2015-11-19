@@ -77,8 +77,8 @@ bool Position::setEnPassant(File epFile) {
 
     Square victimSquare(epFile, Rank4);
     if (!OP.isPieceOn(victimSquare)) { return false; }
-    Pi victim{OP.pieceOn(victimSquare)};
 
+    Pi victim{OP.pieceOn(victimSquare)};
     if (!OP.isPawn(victim)) { return false; }
 
     //check against illegal en passant set field like "8/5bk1/8/2Pp4/8/1K6/8/8 w - d6"
@@ -86,7 +86,6 @@ bool Position::setEnPassant(File epFile) {
     Bb pinners = ::outside(kingSquare, ~victimSquare) & ~OP.occupiedSquares();
     if (pinners.any()) {
         Square pinner = (kingSquare < ~victimSquare)? pinners.smallestOne() : pinners.largestOne();
-
         if (OP.pinnerCandidates()[OP.pieceOn(~pinner)] && (::between(kingSquare, pinner) & (OCCUPIED - ~victimSquare)).none()) {
             return false;
         }
@@ -161,22 +160,52 @@ void Position::setLegalEnPassant(Pi pi) {
     assert (!MY.hasEnPassant());
     assert (!OP.hasEnPassant());
 
-    File epFile = File{MY.squareOf(pi)};
+    Square from = MY.squareOf(pi);
+    File epFile = File{from};
 
-    auto killers = OP.pawns() & OP.attacksTo(Square(epFile, Rank6));
+    Square _to(epFile, Rank3);
 
+    Bb killers = ~OP.occupiedByPawns() & ::pieceTypeAttack(Pawn, _to);
     if (killers.none()) {
         return;
     }
 
-    if ( (MY.attacksTo(~OP.kingSquare()) % pi).any() ) {
-        return; //discovered check
-    }
+    Square opKingSquare = ~OP.kingSquare();
 
-    for (Pi killer : killers) {
-        if (isLegalEnPassant<Op>(killer, epFile)) {
-            OP.markEnPassant(killer);
+    Bb pinners = ::outside(opKingSquare, from) & MY.occupiedSquares();
+    if (pinners.any()) {
+        Square pinner = (opKingSquare < from)? pinners.smallestOne() : pinners.largestOne();
+
+        if (MY.pinnerCandidates()[MY.pieceOn(pinner)] && (::between(opKingSquare, pinner) & (OCCUPIED - from + Square(epFile, Rank4))).none()) {
+            //discovered check found
+            assert ((MY.attacksTo(opKingSquare) % pi).any());
+            return;
         }
+        assert ((MY.attacksTo(opKingSquare) % pi).none());
+    }
+    if ((MY.attacksTo(opKingSquare) % pi).any()) {
+        std::cout << opKingSquare << ' ' << from << '\n';
+        std::cout << ::outside(opKingSquare, from);
+        return;
+    }
+    assert ((MY.attacksTo(opKingSquare) % pi).none());
+
+    for (Square _from : killers) {
+        assert (_from.is(Rank4));
+        Square victim(epFile, Rank4);
+
+        pinners = ::outside(opKingSquare, _from) & (MY.occupiedSquares() - victim);
+        if (pinners.any()) {
+            Square pinner = (opKingSquare < _from)? pinners.smallestOne() : pinners.largestOne();
+            if (MY.pinnerCandidates()[MY.pieceOn(pinner)] && (::between(opKingSquare, pinner) & (OCCUPIED - _from + _to - victim)).none()) {
+                assert (!isLegalEnPassant<Op>(OP.pieceOn(~_from), epFile));
+                continue;
+            }
+            assert (isLegalEnPassant<Op>(OP.pieceOn(~_from), epFile));
+        }
+
+        assert (isLegalEnPassant<Op>(OP.pieceOn(~_from), epFile));
+        OP.markEnPassant(OP.pieceOn(~_from));
     }
 
     if (OP.hasEnPassant()) {

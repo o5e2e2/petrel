@@ -26,6 +26,11 @@ position fen rnbqkb1r/pp1p1ppp/2p5/4P3/2B5/8/PPP1NnPP/RNBQK2R w KQkq - 0 6
 go depth 2
 wait
 
+echo 824064:
+position fen 8/5bk1/8/2Pp4/8/1K6/8/8 w - d6 0 1
+go depth 5
+wait
+
 echo 178633661:
 position fen 8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1
 go depth 6
@@ -35,11 +40,6 @@ wait
 echo 11139762:
 position fen rnbqkb1r/ppppp1pp/7n/4Pp2/8/8/PPPP1PPP/RNBQKBNR w QKqk f6 0 3
 go depth 4
-wait
-
-echo 824064:
-position fen 8/5bk1/8/2Pp4/8/1K6/8/8 w - d6 0 1
-go depth 5
 wait
 
 echo 38633283:
