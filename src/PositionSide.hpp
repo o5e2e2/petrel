@@ -56,7 +56,7 @@ public:
     VectorPiMask piecesOn(Square sq) const { return squares.piecesOn(sq); }
     VectorPiMask piecesOn(Rank rank) const { return squares.piecesOn(rank); }
 
-    bool isTypeOf(Pi pi, PieceType ty) const { assertValid(pi); return types.isTypeOf(pi, ty); }
+    bool is(Pi pi, PieceType ty) const { assertValid(pi); return types.is(pi, ty); }
     VectorPiMask piecesOfType(PieceType ty) const { return types.piecesOfType(ty); }
     PieceType typeOf(Pi pi) const { assertValid(pi); return types.typeOf(pi); }
     PieceType typeOf(Square sq) const { return typeOf(pieceOn(sq)); }

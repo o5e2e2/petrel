@@ -26,14 +26,15 @@ void PositionMoves::generateEnPassantMoves() {
 }
 
 template <Side::_t My>
-void PositionMoves::generateUnderpromotions() {
+void PositionMoves::populateUnderpromotions() {
     constexpr Side Op{~My};
 
+    //add underpromotions for each already generated legal queen promotion
     //TRICK: promoted piece type encoded inside pawn destination square rank
     VectorPiRank promotions = moves[Rank8] & VectorPiRank{MY.pawns()};
 
     static_assert (static_cast<Rank::_t>(Queen) == Rank8, "invalid promotion piece encoding");
-    moves[static_cast<Rank::_t>(Rook)] += promotions;
+    moves[static_cast<Rank::_t>(Rook)]   += promotions;
     moves[static_cast<Rank::_t>(Bishop)] += promotions;
     moves[static_cast<Rank::_t>(Knight)] += promotions;
 }
@@ -110,7 +111,7 @@ void PositionMoves::correctCheckEvasionsByPawns(Bb checkLine, Square checkFrom) 
 
     //pawns double push over check line
     {
-        Bb badPawnsPlaces{ (checkLine<<16) % (Bb{OCCUPIED}<<8) & Bb{Rank2} };
+        Bb badPawnsPlaces{ (checkLine << 16) % (Bb{OCCUPIED} << 8) & Bb{Rank2} };
         for (Square from : MY.occupiedByPawns() & badPawnsPlaces) {
             Pi pi{MY.pieceOn(from)};
             moves.add(pi, Rank4, File{from});
@@ -166,7 +167,7 @@ void PositionMoves::generateCheckEvasions(Bb attackedSquares) {
 
         excludePinnedMoves<My>(OP.pinnerCandidates() % checkers);
 
-        generateUnderpromotions<My>();
+        populateUnderpromotions<My>();
 
         if (MY.hasEnPassant()) {
             assert (OP.enPassantPawns() == checkers);
@@ -201,8 +202,7 @@ void PositionMoves::generateMoves() {
     //TRICK: castling encoded as a rook move, so we implicitly cover the case of pinned castling in Chess960
     excludePinnedMoves<My>(OP.pinnerCandidates());
 
-    //add underpromotions for each already generated legal queen promotion
-    generateUnderpromotions<My>();
+    populateUnderpromotions<My>();
 
     if (MY.hasEnPassant()) {
         generateEnPassantMoves<My>();

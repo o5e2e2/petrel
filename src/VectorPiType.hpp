@@ -45,13 +45,13 @@ public:
     bool isSlider(Pi pi) const { assertValid(pi); return (_v[pi] & SliderMask) != 0; }
 
     VectorPiMask piecesOfType(PieceType ty) const { assert (!ty.is(King)); return _v.anyOf(ty); }
-    bool isTypeOf(Pi pi, PieceType ty) const { assert (!ty.is(King)); assertValid(pi); return _v.is(pi, ty); }
+    bool is(Pi pi, PieceType ty) const { assert (!ty.is(King)); assertValid(pi); return _v.is(pi, ty); }
     PieceType typeOf(Pi pi) const { assertValid(pi); return static_cast<PieceType::_t>( ::bsf(static_cast<unsigned>(_v[pi])) ); }
-    bool isPawn(Pi pi) const { return isTypeOf(pi, Pawn); }
+    bool isPawn(Pi pi) const { return is(pi, Pawn); }
 
     VectorPiMask castlingRooks() const { return _v.allOf(CastlingMask); }
-    bool isCastling(Pi pi) const { return isTypeOf(pi, Rook) && _v.is(pi, static_cast<Index::_t>(SpecialPiece)); }
-    void setCastling(Pi pi) { assert (isTypeOf(pi, Rook)); assert (!isCastling(pi)); _v.set(pi, static_cast<Index::_t>(SpecialPiece)); }
+    bool isCastling(Pi pi) const { return is(pi, Rook) && _v.is(pi, static_cast<Index::_t>(SpecialPiece)); }
+    void setCastling(Pi pi) { assert (is(pi, Rook)); assert (!isCastling(pi)); _v.set(pi, static_cast<Index::_t>(SpecialPiece)); }
     void clearCastling(Pi pi) { assert (isCastling(pi)); _v.clear(pi, static_cast<Index::_t>(SpecialPiece)); }
     void clearCastlings() { _v.clearIf(static_cast<Index::_t>(SpecialPiece), Rook); }
 

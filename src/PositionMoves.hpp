@@ -16,7 +16,7 @@ class PositionMoves {
 
     //legal move generation helpers
     template <Side::_t> void generateEnPassantMoves();
-    template <Side::_t> void generateUnderpromotions();
+    template <Side::_t> void populateUnderpromotions();
     template <Side::_t> void generateCastlingMoves(Bb attackedSquares);
     template <Side::_t> void generateKingMoves(Bb attackedSquares);
     template <Side::_t> void generatePawnMoves();

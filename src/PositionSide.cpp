@@ -218,7 +218,7 @@ bool PositionSide::setCastling(File file) {
 
     if (isPieceOn(rookFrom)) {
         Pi rook { pieceOn(rookFrom) };
-        if (isTypeOf(rook, Rook)) {
+        if (is(rook, Rook)) {
             return setCastling(rook);
         }
     }
