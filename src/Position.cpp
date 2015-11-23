@@ -95,50 +95,6 @@ bool Position::setEnPassant(File epFile) {
     return true;
 }
 
-template <Side::_t My>
-const Bb& Position::pinRayFrom(Pi pi) const {
-    constexpr Side Op{~My};
-    assert (MY.isSlider(pi));
-    assert (MY.pinnerCandidates()[pi]);
-
-    return OP.pinRayFrom(~MY.squareOf(pi));
-}
-
-template <Side::_t My>
-bool Position::isLegalEnPassant(Pi killer, File epFile) const {
-    constexpr Side Op{~My};
-
-    MY.assertValid(killer);
-    assert (MY.isPawn(killer));
-    Square from{ MY.squareOf(killer) };
-    assert (from.is(Rank5));
-
-    Square to(epFile, Rank6);
-    assert (MY.allAttacks()[killer][to]);
-
-    if (!MY.kingSquare().is(Rank5)) {
-        for (Pi pinner : OP.pinnerCandidates() & OP.attacksTo(~from)) {
-            Bb pinRay = pinRayFrom<Op>(pinner);
-            if (pinRay[from] && !pinRay[to]) {
-                Bb betweenPieces{(pinRay & OCCUPIED) - from};
-                if (betweenPieces.none()) { return false; } //the true diagonal pin
-            }
-        }
-    }
-    else {
-        for (Pi pinner : OP.pinnerCandidates() & OP.piecesOn(Rank4)) {
-            Bb pinRay = pinRayFrom<Op>(pinner);
-            if (pinRay[from]) {
-                Square victim(epFile, Rank5);
-                assert (OP.isPawn(OP.pieceOn(~victim)));
-                Bb betweenPieces{(pinRay & OCCUPIED) - from - victim};
-                if (betweenPieces.none()) { return false; } //the true vertical pin
-            }
-        }
-    }
-    return true;
-}
-
 Zobrist Position::getZobrist() const {
     Zobrist oz = OP.getZobrist();
 
@@ -160,9 +116,10 @@ void Position::setLegalEnPassant(Pi pi) {
     assert (!MY.hasEnPassant());
     assert (!OP.hasEnPassant());
 
-    Square from = MY.squareOf(pi);
-    File epFile = File{from};
+    Square to = MY.squareOf(pi);
+    assert (to.is(Rank4));
 
+    File epFile = File{to};
     Square _to(epFile, Rank3);
 
     Bb killers = ~OP.occupiedByPawns() & ::pieceTypeAttack(Pawn, _to);
@@ -171,40 +128,28 @@ void Position::setLegalEnPassant(Pi pi) {
     }
 
     Square opKingSquare = ~OP.kingSquare();
+    Square from(epFile, Rank2);
 
     Bb pinners = ::outside(opKingSquare, from) & MY.occupiedSquares();
     if (pinners.any()) {
         Square pinner = (opKingSquare < from)? pinners.smallestOne() : pinners.largestOne();
-
-        if (MY.pinnerCandidates()[MY.pieceOn(pinner)] && (::between(opKingSquare, pinner) & (OCCUPIED - from + Square(epFile, Rank4))).none()) {
-            //discovered check found
+        if (MY.pinnerCandidates()[MY.pieceOn(pinner)] && (::between(opKingSquare, pinner) & OCCUPIED).none()) {
             assert ((MY.attacksTo(opKingSquare) % pi).any());
-            return;
+            return; //discovered check found
         }
-        assert ((MY.attacksTo(opKingSquare) % pi).none());
-    }
-    if ((MY.attacksTo(opKingSquare) % pi).any()) {
-        std::cout << opKingSquare << ' ' << from << '\n';
-        std::cout << ::outside(opKingSquare, from);
-        return;
     }
     assert ((MY.attacksTo(opKingSquare) % pi).none());
 
     for (Square _from : killers) {
         assert (_from.is(Rank4));
-        Square victim(epFile, Rank4);
 
-        pinners = ::outside(opKingSquare, _from) & (MY.occupiedSquares() - victim);
+        pinners = ::outside(opKingSquare, _from) & (MY.occupiedSquares() - to);
         if (pinners.any()) {
             Square pinner = (opKingSquare < _from)? pinners.smallestOne() : pinners.largestOne();
-            if (MY.pinnerCandidates()[MY.pieceOn(pinner)] && (::between(opKingSquare, pinner) & (OCCUPIED - _from + _to - victim)).none()) {
-                assert (!isLegalEnPassant<Op>(OP.pieceOn(~_from), epFile));
+            if (MY.pinnerCandidates()[MY.pieceOn(pinner)] && (::between(opKingSquare, pinner) & (OCCUPIED - _from + _to - to)).none()) {
                 continue;
             }
-            assert (isLegalEnPassant<Op>(OP.pieceOn(~_from), epFile));
         }
-
-        assert (isLegalEnPassant<Op>(OP.pieceOn(~_from), epFile));
         OP.markEnPassant(OP.pieceOn(~_from));
     }
 
@@ -465,21 +410,16 @@ Zobrist Position::makeZobrist(Square from, Square to) const {
                 Bb pinners = ::outside(opKingSquare, _from) & MY.occupiedSquares();
                 if (pinners.any()) {
                     Square pinner = (opKingSquare < _from)? pinners.smallestOne() : pinners.largestOne();
-
-
                     if (MY.pinnerCandidates()[MY.pieceOn(pinner)] && (::between(opKingSquare, pinner) & (OCCUPIED - _from + _to)).none()) {
                         continue;
                     }
-
                 }
 
                 pinners = ::outside(opKingSquare, from) & MY.occupiedSquares();
                 if (pinners.any()) {
                     Square pinner = (opKingSquare < from)? pinners.smallestOne() : pinners.largestOne();
-
                     if (MY.pinnerCandidates()[MY.pieceOn(pinner)] && (::between(opKingSquare, pinner) & (OCCUPIED - from + to)).none()) {
-                        //discovered check found
-                        return Zobrist{oz, mz};
+                        return Zobrist{oz, mz}; //discovered check found
                     }
                 }
 
