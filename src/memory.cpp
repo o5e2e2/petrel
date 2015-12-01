@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 #include "memory.hpp"
 
 #ifdef _WIN32
@@ -13,20 +15,24 @@ std::size_t getAvailableMemory() {
 }
 
 #else
-
 #include <unistd.h>
 std::size_t getAvailableMemory() {
     auto pages     = ::sysconf(_SC_AVPHYS_PAGES);
     auto page_size = ::sysconf(_SC_PAGE_SIZE);
     return static_cast<std::size_t>(pages) * static_cast<std::size_t>(page_size);
 }
-
 #endif
 
 void* allocateAligned(std::size_t size, std::size_t alignment) {
+#ifdef _ISOC11_SOURCE
+    return ::aligned_alloc(alignment, size);
+#else
+#   if _POSIX_C_SOURCE >= 200112L || _XOPEN_SOURCE >= 600
     void* result = nullptr;
     ::posix_memalign(&result, alignment, size);
     return result;
+#   endif
+#endif
 }
 
 void freeAligned(void* p) {
