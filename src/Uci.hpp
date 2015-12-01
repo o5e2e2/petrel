@@ -30,11 +30,11 @@ class Uci {
     void startpos();
     void position();
     void ucinewgame();
+    void quit() const;
 
     //UCI protocol extensions
     void call();
     void echo() const;
-    void exit() const;
 
 public:
     Uci (std::ostream&);

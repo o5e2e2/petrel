@@ -49,18 +49,16 @@ int main(int argc, const char* argv[]) {
 
     if (argc > 1) {
         std::string option{argv[1]};
-
-        if (option == "--version" || option == "--help") {
-            std::cout << io::app_version << '\n'
-                << "UCI chess engine\n"
-                << "Copyright (C) 2015 Aleks Peshkov, aleks.peshkov@gmail.com\n"
-                << "For terms of use contact author.\n"
-            ;
+        if (option == "--version") {
+            std::cout << io::app_copyright;
+            return 0;
+        }
+        else if (option == "--help") {
+            std::cout << io::app_usage;
             return 0;
         }
 
-        //try to run the script from the given filename
-        uci.call(option);
+        uci.call(option); //try to open the given file and run the script from it
     }
 
     uci(std::cin);

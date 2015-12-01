@@ -38,9 +38,9 @@ void Uci::operator() (std::istream& in) {
         else if (next("setoption")) { setoption(); }
         else if (next("ucinewgame")){ ucinewgame(); }
         else if (next("uci"))       { uciOutput.uciok(); }
-        else if (next("quit"))      { break; }
+        else if (next("quit"))      { quit(); }
         //UCI extensions
-        else if (next("exit"))      { exit(); }
+        else if (next("exit"))      { break; }
         else if (next("wait"))      { searchControl.wait(); }
         else if (next("echo"))      { echo(); }
         else if (next("call"))      { call(); }
@@ -176,7 +176,7 @@ void Uci::echo() const {
     uciOutput.echo(command);
 }
 
-void Uci::exit() const {
+void Uci::quit() const {
     int exit_code = 0;
     command >> exit_code;
     std::exit(exit_code);

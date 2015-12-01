@@ -89,10 +89,37 @@ namespace io {
 
         _t day[] {((__DATE__[4] == ' ')? '0' : __DATE__[4]), __DATE__[5], '\0'};
 
-        return out << "Petrel chess " << year << '-' << month << '-' << day
+        return out << "Petrel chess build " << year << '-' << month << '-' << day
     #ifndef NDEBUG
             << " DEBUG"
     #endif
+        ;
+    }
+
+    std::ostream& app_copyright(std::ostream& out) {
+        return out << io::app_version << '\n'
+            << "UCI chess engine\n"
+            << "Copyright (C) 2015 Aleks Peshkov, aleks.peshkov@gmail.com\n"
+            << "For terms of use contact author.\n"
+        ;
+    }
+
+    std::ostream& app_usage(std::ostream& out) {
+        return out
+            << "Usage: petrel [options]\n"
+            << "Options:\n"
+            << "  --help                   Display this information\n"
+            << "  --version                Display application version information\n"
+            << "  <file>                   The file with UCI commands that would be run before reading stdin stream\n"
+            << "\n"
+            << "UCI protocol extension commands:\n"
+            << "  quit [<status>]          Quit the program as soon as possible with optional status code (default 0)\n"
+            << "  call <file>              Load the file and process UCI commands from it\n"
+            << "  exit                     Exit from the last called file\n"
+            << "  wait                     Wait for the engine to complete the search\n"
+            << "  echo <string>            Display the given string\n"
+            << "\n"
+            << "  UCI option Hash size can be optionally given a suffix: gibibytes [g|G], mebibytes [m|M], kibibytes [k|K] and bytes [b|B]\n"
         ;
     }
 

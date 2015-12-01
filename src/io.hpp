@@ -19,6 +19,8 @@ namespace io {
 
     std::istream& skip_token(std::istream&);
     std::ostream& app_version(std::ostream&);
+    std::ostream& app_copyright(std::ostream&);
+    std::ostream& app_usage(std::ostream&);
 }
 
 #endif
