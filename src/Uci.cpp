@@ -3,6 +3,7 @@
 
 #include "Uci.hpp"
 #include "PositionFen.hpp"
+#include "SearchLimit.hpp"
 
 #define SHOULD_BE_READY  if (!searchControl.isReady()) { io::fail_rewind(command); return; }
 
@@ -18,8 +19,8 @@ namespace {
 
 Uci::Uci (std::ostream& out):
     searchControl(),
-    searchMoves(rootPosition),
-    uciOutput(out, colorToMove, searchControl.tt())
+    uciOutput(out, colorToMove, searchControl.tt()),
+    searchMoves(rootPosition)
 {
     ucinewgame();
 }
@@ -141,33 +142,35 @@ void Uci::go() {
 
     searchMoves.generateMoves();
 
-    auto& l = searchLimit;
-    l.clear();
-    l.perft = true; //DEBUG
+    SearchLimit l;
+    {
+        l.clear();
+        l.perft = true; //DEBUG
 
-    while (command) {
-        if      (next("depth"))    { command >> l.depth; l.depth = std::min(l.depth, l.MaxDepth); }
-        else if (next("wtime"))    { command >> l.time[white]; }
-        else if (next("btime"))    { command >> l.time[black]; }
-        else if (next("winc"))     { command >> l.inc[white]; }
-        else if (next("binc"))     { command >> l.inc[black]; }
-        else if (next("movestogo")){ command >> l.movestogo; }
-        else if (next("nodes"))    { command >> l.nodes; }
-        else if (next("movetime")) { command >> l.movetime; }
-        else if (next("ponder"))   { l.ponder = true; }
-        else if (next("infinite")) { l.infinite = true; }
-        else if (next("perft"))    { l.perft = true; }
-        else if (next("divide"))   { l.divide = true; }
-        else if (next("searchmoves")) { searchMoves.limitMoves(command, colorToMove); }
-        else if (next(""))         { break; }
-        else {
-            std::string token;
-            command >> token;
-            uciOutput.error(std::string("ignoring token: ") + token);
+        while (command) {
+            if      (next("depth"))    { command >> l.depth; l.depth = std::min(l.depth, l.MaxDepth); }
+            else if (next("wtime"))    { command >> l.time[white]; }
+            else if (next("btime"))    { command >> l.time[black]; }
+            else if (next("winc"))     { command >> l.inc[white]; }
+            else if (next("binc"))     { command >> l.inc[black]; }
+            else if (next("movestogo")){ command >> l.movestogo; }
+            else if (next("nodes"))    { command >> l.nodes; }
+            else if (next("movetime")) { command >> l.movetime; }
+            else if (next("ponder"))   { l.ponder = true; }
+            else if (next("infinite")) { l.infinite = true; }
+            else if (next("perft"))    { l.perft = true; }
+            else if (next("divide"))   { l.divide = true; }
+            else if (next("searchmoves")) { searchMoves.limitMoves(command, colorToMove); }
+            else if (next(""))         { break; }
+            else {
+                std::string token;
+                command >> token;
+                uciOutput.error(std::string("ignoring token: ") + token);
+            }
         }
     }
 
-    searchControl.go(uciOutput, rootPosition, searchLimit);
+    searchControl.go(uciOutput, rootPosition, std::move(l));
 }
 
 void Uci::echo() const {

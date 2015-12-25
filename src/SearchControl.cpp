@@ -19,7 +19,9 @@ void SearchControl::nextIteration() {
     transpositionTable.nextAge();
 }
 
-void SearchControl::go(SearchOutput& output, const Position& pos, const SearchLimit& searchLimit) {
+void SearchControl::go(SearchOutput& output, const Position& pos, const SearchLimit& l) {
+    searchLimit = l;
+
     info.clear();
     info.out = &output;
     info.nodesLimit = searchLimit.getNodes();

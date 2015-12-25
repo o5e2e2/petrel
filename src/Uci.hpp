@@ -6,21 +6,19 @@
 #include "Position.hpp"
 #include "PositionMoves.hpp"
 #include "SearchControl.hpp"
-#include "SearchLimit.hpp"
 #include "UciOutput.hpp"
 
 class Uci {
     SearchControl searchControl;
-
-    Position rootPosition; //initial chess position to analyze
-    Color colorToMove; //initial position color for long algebraic format moves output
-
-    PositionMoves searchMoves;
-    SearchLimit searchLimit;
-
     UciOutput uciOutput;
 
+    Position rootPosition; //initial chess position to analyze
+    Color    colorToMove;  //root position color needed for moves input/output
+
+    PositionMoves searchMoves;
+
     mutable std::istringstream command; //current input command line
+
     bool next(io::literal keyword) const { return io::next(command, keyword); }
 
     //UCI command handlers

@@ -3,20 +3,22 @@
 
 #include "Move.hpp"
 #include "SearchInfo.hpp"
+#include "SearchLimit.hpp"
 #include "SearchThread.hpp"
 #include "SearchWindow.hpp"
 #include "HashMemory.hpp"
 
-class SearchLimit;
 class Position;
 
 /**
  * Shared data to all search threads (currently the only one)
  */
 class SearchControl {
-    SearchThread searchThread;
+    SearchLimit      searchLimit;
+    SearchThread     searchThread;
     SearchThread::_t searchSequence;
-    SearchWindow rootWindow;
+    SearchWindow     rootWindow;
+
     HashMemory transpositionTable;
 
     SearchControl (const SearchControl&) = delete;
