@@ -4,7 +4,6 @@
 #include "io.hpp"
 #include "typedefs.hpp"
 #include "Position.hpp"
-#include "PositionMoves.hpp"
 #include "SearchControl.hpp"
 #include "UciOutput.hpp"
 
@@ -14,8 +13,6 @@ class Uci {
 
     Position rootPosition; //initial chess position to analyze
     Color    colorToMove;  //root position color needed for moves input/output
-
-    PositionMoves searchMoves;
 
     mutable std::istringstream command; //current input command line
 

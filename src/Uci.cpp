@@ -3,6 +3,7 @@
 
 #include "Uci.hpp"
 #include "PositionFen.hpp"
+#include "PositionMoves.hpp"
 #include "SearchLimit.hpp"
 
 #define SHOULD_BE_READY  if (!searchControl.isReady()) { io::fail_rewind(command); return; }
@@ -17,11 +18,7 @@ namespace {
     }
 }
 
-Uci::Uci (std::ostream& out):
-    searchControl(),
-    uciOutput(out, colorToMove, searchControl.tt()),
-    searchMoves(rootPosition)
-{
+Uci::Uci (std::ostream& out): searchControl(), uciOutput(out, colorToMove, searchControl.tt()) {
     ucinewgame();
 }
 
@@ -140,6 +137,7 @@ void Uci::go() {
     Side white(colorToMove.is(White)? My : Op);
     Side black(colorToMove.is(Black)? My : Op);
 
+    PositionMoves searchMoves(rootPosition);
     searchMoves.generateMoves();
 
     SearchLimit l;
