@@ -1,8 +1,10 @@
-#include "Position.hpp"
 #include <utility>
+
+#include "Position.hpp"
 #include "CastlingRules.hpp"
-#include "OutsideSquares.hpp"
 #include "PieceTypeAttack.hpp"
+#include "PositionMoves.hpp"
+#include "OutsideSquares.hpp"
 
 #define MY side[My]
 #define OP side[Op]

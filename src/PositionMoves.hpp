@@ -33,10 +33,10 @@ public:
 
     const PositionSide& side(Side) const;
     MatrixPiBb& getMoves() { return moves; }
-    const Position& getPos() const { return pos;}
+
+    bool is(Pi pi, Square to) const { return moves.is(pi, to); }
 
     void limitMoves(std::istream&, Color);
-    static void makeMoves(std::istream&, Position&, Color&);
 };
 
 #endif

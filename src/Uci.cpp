@@ -124,7 +124,7 @@ void Uci::position() {
 
     next("moves");
 
-    PositionMoves::makeMoves(command, rootPosition, colorToMove);
+    rootPosition.makeMoves(command, &colorToMove);
 }
 
 void Uci::startpos() {

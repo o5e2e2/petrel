@@ -42,6 +42,7 @@ public:
     Zobrist getZobrist() const;
 
     void makeMove(const Position& parent, Square from, Square to);
+    void makeMoves(std::istream&, Color* colorToMove);
 
     void makeMove(Zobrist z, const Position& parent, Square from, Square to) {
         zobrist = z; makeMove(parent, from, to);
