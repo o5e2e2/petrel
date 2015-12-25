@@ -20,8 +20,8 @@ namespace {
 
 }
 
-UciOutput::UciOutput (std::ostream& o, const Color& c, const ChessVariant& v, const HashMemory& h)
-    : out(o), colorToMove(c), chessVariant(v), hashMemory(h), isreadyWaiting(false) {}
+UciOutput::UciOutput (std::ostream& o, const Color& c, const HashMemory& h)
+    : out(o), colorToMove(c), chessVariant(Orthodox), hashMemory(h), isreadyWaiting(false) {}
 
 void UciOutput::uciok() const {
     auto current = hashMemory.getSize();

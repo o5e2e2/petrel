@@ -14,7 +14,6 @@ class Uci {
 
     Position rootPosition; //initial chess position to analyze
     Color colorToMove; //initial position color for long algebraic format moves output
-    ChessVariant chessVariant;
 
     PositionMoves searchMoves;
     SearchLimit searchLimit;

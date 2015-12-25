@@ -18,9 +18,8 @@ namespace {
 
 Uci::Uci (std::ostream& out):
     searchControl(),
-    chessVariant(Orthodox),
     searchMoves(rootPosition),
-    uciOutput(out, colorToMove, chessVariant, searchControl.tt())
+    uciOutput(out, colorToMove, searchControl.tt())
 {
     ucinewgame();
 }
@@ -68,8 +67,8 @@ void Uci::setoption() {
     if (next("UCI_Chess960")) {
         next("value");
 
-        if (next("true"))  { chessVariant = Chess960; return; }
-        if (next("false")) { chessVariant = Orthodox; return; }
+        if (next("true"))  { uciOutput.set(Chess960); return; }
+        if (next("false")) { uciOutput.set(Orthodox); return; }
 
         io::fail_rewind(command);
         return;
