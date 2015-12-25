@@ -10,6 +10,11 @@ namespace {
     }
 }
 
+HashMemory::HashMemory () {
+    setDefault();
+    max = round(::getAvailableMemory());
+}
+
 void HashMemory::clear() {
     ::memset(hash, 0, size);
     age = {};

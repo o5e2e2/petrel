@@ -31,7 +31,7 @@ private:
     void free();
 
 public:
-    HashMemory () { setDefault(); }
+    HashMemory ();
    ~HashMemory () { free(); }
 
     size_t getMax()  const { return max; }
