@@ -20,10 +20,11 @@ namespace {
 
 }
 
-UciOutput::UciOutput (std::ostream& o, const Color& c, const HashMemory& h)
-    : out(o), colorToMove(c), chessVariant(Orthodox), hashMemory(h), isreadyWaiting(false) {}
+UciOutput::UciOutput (std::ostream& o, const Color& c)
+    : out(o), colorToMove(c), chessVariant(Orthodox), isreadyWaiting(false) {}
 
-void UciOutput::uciok() const {
+void UciOutput::uciok(const SearchControl& search) const {
+    auto& hashMemory = search.tt();
     auto current = hashMemory.getSize();
     auto max = hashMemory.getMax();
 
@@ -117,14 +118,6 @@ void UciOutput::nps(std::ostream& ob, const SearchInfo& info) const {
             auto hh = ::permil(hit, tried);
             ob << " hashhit " << hit;
         }
-
-        auto used  = info[TT_Used];
-        if (used > 0) {
-            auto total = static_cast<decltype(used)>(hashMemory.getTotalRecords());
-            auto hf = ::permil(used, total);
-            ob << " hashfull " << used;
-        }
-
     }
 }
 

@@ -18,7 +18,7 @@ namespace {
     }
 }
 
-Uci::Uci (std::ostream& out): searchControl(), uciOutput(out, colorToMove, searchControl.tt()) {
+Uci::Uci (std::ostream& out): searchControl(), uciOutput(out, colorToMove) {
     ucinewgame();
 }
 
@@ -34,7 +34,7 @@ void Uci::operator() (std::istream& in) {
         else if (next("isready"))   { uciOutput.isready(searchControl); }
         else if (next("setoption")) { setoption(); }
         else if (next("ucinewgame")){ ucinewgame(); }
-        else if (next("uci"))       { uciOutput.uciok(); }
+        else if (next("uci"))       { uciOutput.uciok(searchControl); }
         else if (next("quit"))      { quit(); }
         //UCI extensions
         else if (next("exit"))      { break; }

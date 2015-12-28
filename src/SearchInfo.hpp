@@ -8,7 +8,7 @@
 class SearchOutput;
 class SearchThread;
 
-enum { PerftNodes, PerftDivideNodes, TT_Tried, TT_Hit, TT_Used, _Total };
+enum { PerftNodes, PerftDivideNodes, TT_Tried, TT_Hit, _Total };
 
 class SearchInfo {
     friend class UciOutput;
@@ -45,7 +45,7 @@ public:
     void report_perft_depth(depth_t);
     void report_bestmove();
 
-    void clearNodes() { _v = {0, 0, 0, 0, 0}; }
+    void clearNodes() { _v = {0, 0, 0, 0}; }
     const _t&  operator [] (Index i) const { return _v[i]; }
     _t&        operator [] (Index i)       { return _v[i]; }
 
