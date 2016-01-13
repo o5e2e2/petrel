@@ -95,7 +95,7 @@ namespace PerftDivide {
                 window.control.info.decrementQuota();
                 CUT (Perft::_perft(childPos, childWindow, parent, from, to));
 
-                Move move{parent, from, to};
+                Move move = parent(from, to);
                 window.control.info.report_perft_divide(move);
             }
         }

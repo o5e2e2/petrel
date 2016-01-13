@@ -4,8 +4,6 @@
 #include "Position.hpp"
 #include "CastlingRules.hpp"
 
-namespace {
-
 struct SquareOrder {
     bool operator () (Square sq1, Square sq2) const {
         if (Rank(sq1) != Rank(sq2)) {
@@ -240,7 +238,6 @@ public:
             }
             io::fail_char(in);
         }
-        //pos.syncZobrist();
         return in;
     }
 
@@ -282,36 +279,31 @@ namespace EnPassantSquare {
     }
 }
 
-} //end of anonymous namespace
+void Position::fen(std::ostream& out, Color colorToMove, ChessVariant chessVariant) const {
+    const PositionSide& white = side[colorToMove.is(White)? My : Op];
+    const PositionSide& black = side[colorToMove.is(Black)? My : Op];
 
-namespace PositionFen {
-    void read(std::istream& in, Position& pos, Color& colorToMove) {
-        Board::read(in, pos, colorToMove);
-        CastlingRights::read(in, pos, colorToMove);
-        EnPassantSquare::read(in, pos, colorToMove);
-        pos.setZobrist();
+    Board::write(out, white, black);
+    out << ' ' << colorToMove;
+    out << ' ' << CastlingRights(white, black, chessVariant);
+    out << ' ';
+    EnPassantSquare::write(out, side[Op], colorToMove);
+}
 
-        if (in) {
-            unsigned fifty, moves;
-            in >> fifty >> moves;
-            in.clear(); //ignore missing optional 'fifty' and 'moves' fen fields
-        }
+void Position::setFen(std::istream& in, Color& colorToMove) {
+    Board::read(in, *this, colorToMove);
+    CastlingRights::read(in, *this, colorToMove);
+    EnPassantSquare::read(in, *this, colorToMove);
+    setZobrist();
+
+    if (in) {
+        unsigned fifty, moves;
+        in >> fifty >> moves;
+        in.clear(); //ignore missing optional 'fifty' and 'moves' fen fields
     }
+}
 
-    void setStartpos(Position& pos, Color& colorToMove) {
-        std::istringstream startpos{"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"};
-        read(startpos, pos, colorToMove);
-    }
-
-    void write(std::ostream& out, const Position& pos, Color colorToMove, ChessVariant chessVariant) {
-        const PositionSide& white = pos.side[colorToMove.is(White)? My : Op];
-        const PositionSide& black = pos.side[colorToMove.is(Black)? My : Op];
-
-        Board::write(out, white, black);
-        out << ' ' << colorToMove;
-        out << ' ' << CastlingRights(white, black, chessVariant);
-        out << ' ';
-        EnPassantSquare::write(out, pos.side[Op], colorToMove);
-    }
-
-} //end of PositionFen namespace
+void Position::setStartpos(Color& colorToMove) {
+    std::istringstream startpos{"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"};
+    setFen(startpos, colorToMove);
+}

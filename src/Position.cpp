@@ -478,6 +478,68 @@ Zobrist Position::makeZobrist(Square from, Square to) const {
     return Zobrist{oz, mz};
 }
 
+Move Position::operator() (Square move_from, Square move_to) const {
+    if ( MY.isPawn(MY.pieceOn(move_from)) ) {
+        if (move_from.is(Rank7)) {
+            return Move::special(move_from, move_to);
+        }
+        if (move_from.is(Rank5) && move_to.is(Rank5)) {
+            return Move::special(move_from, move_to);
+        }
+    }
+    else if (MY.kingSquare().is(move_to)) {
+        return Move::special(move_from, move_to);
+    }
+
+    return Move(move_from, move_to);
+}
+
+Move Position::operator() (std::istream& in, Color colorToMove) const {
+    auto before_move = in.tellg();
+
+    Square move_from{Square::Begin};
+    Square move_to{Square::Begin};
+    if (in >> std::ws >> move_from >> move_to) {
+        if (colorToMove.is(Black)) {
+            move_from.flip();
+            move_to.flip();
+        }
+
+        if (MY.isPieceOn(move_from)) {
+            Pi pi{MY.pieceOn(move_from)};
+
+            //convert special moves (castling, promotion, ep) to the internal move format
+            if (MY.isPawn(pi)) {
+                if (move_from.is(Rank7)) {
+                    PromoType promo{Queen};
+                    in >> promo;
+                    in.clear(); //promotion piece is optional
+                    return Move::promotion(move_from, move_to, promo);
+                }
+                if (move_from.is(Rank5) && OP.hasEnPassant() && OP.enPassantFile().is(File(move_to))) {
+                    return Move::enPassant(move_from, Square{File(move_to), Rank5});
+                }
+            }
+            else if (pi.is(TheKing)) {
+                if (MY.isPieceOn(move_to)) { //Chess960 castling encoding
+                    return Move::castling(move_to, move_from);
+                }
+                if (move_from.is(E1) && move_to.is(G1) && MY.isPieceOn(H1)) {
+                    return Move::castling(H1, E1);
+                }
+                if (move_from.is(E1) && move_to.is(C1) && MY.isPieceOn(A1)) {
+                    return Move::castling(A1, E1);
+                }
+            }
+
+            return Move(move_from, move_to);
+        }
+    }
+
+    io::fail_pos(in, before_move);
+    return Move{};
+}
+
 #undef MY
 #undef OP
 #undef OCCUPIED

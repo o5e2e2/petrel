@@ -2,7 +2,6 @@
 #include <cstdlib>
 
 #include "Uci.hpp"
-#include "PositionFen.hpp"
 #include "PositionMoves.hpp"
 #include "SearchLimit.hpp"
 
@@ -120,15 +119,14 @@ void Uci::position() {
     SHOULD_BE_READY;
 
     if (next("startpos")) { startpos(); }
-    if (next("fen")) { PositionFen::read(command, rootPosition, colorToMove); }
+    if (next("fen")) { rootPosition.setFen(command, colorToMove); }
 
     next("moves");
-
     rootPosition.makeMoves(command, &colorToMove);
 }
 
 void Uci::startpos() {
-    PositionFen::setStartpos(rootPosition, colorToMove);
+    rootPosition.setStartpos(colorToMove);
 }
 
 void Uci::go() {

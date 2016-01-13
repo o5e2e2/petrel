@@ -29,9 +29,7 @@ Zobrist PositionSide::getZobrist() const {
     Zobrist z = {};
 
     for (Pi pi : alivePieces()) {
-        PieceType ty = typeOf(pi);
-        Square sq = squareOf(pi);
-        z.drop(ty, sq);
+        z.drop(typeOf(pi), squareOf(pi));
     }
 
     for (Pi rook : castlingRooks()) {

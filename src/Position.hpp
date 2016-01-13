@@ -2,13 +2,15 @@
 #define POSITION_HPP
 
 #include "io.hpp"
-#include "PositionSide.hpp"
 #include "DualBbOccupied.hpp"
 #include "Move.hpp"
-#include "PositionFen.hpp"
+#include "PositionSide.hpp"
+#include "Zobrist.hpp"
 
 class Position {
     friend class PositionMoves;
+    friend class Board;
+    friend class CastlingRights;
 
     Side::array<PositionSide> side;
     DualBbOccupied occupied; //pieces of both sides
@@ -31,19 +33,19 @@ private:
 
     void syncSides();
 
+    bool drop(Side, PieceType, Square);
+    bool setup();
+    bool setCastling(Side, File);
+    bool setCastling(Side, CastlingSide);
+    void setZobrist();
+
 public:
     Position () {};
     Position (int) : side() {};
 
-    friend void PositionFen::write(std::ostream&, const Position&, Color, ChessVariant);
-    friend Move::Move(const Position&, Square, Square);
-    friend Move::Move(std::istream& in, const Position&, Color);
-
     Zobrist getZobrist() const;
 
     void makeMove(const Position& parent, Square from, Square to);
-    void makeMoves(std::istream&, Color* colorToMove);
-
     void makeMove(Zobrist z, const Position& parent, Square from, Square to) {
         zobrist = z; makeMove(parent, from, to);
     }
@@ -51,12 +53,15 @@ public:
     Zobrist makeZobrist(Square from, Square to) const;
 
     //initial position setup
-    bool drop(Side, PieceType, Square);
-    bool setup();
-    bool setCastling(Side, File);
-    bool setCastling(Side, CastlingSide);
+    void setFen(std::istream& in, Color&);
+    void setStartpos(Color&);
+    void makeMoves(std::istream&, Color* colorToMove);
     bool setEnPassant(File);
-    void setZobrist();
+
+    void fen(std::ostream&, Color, ChessVariant) const;
+    Move operator() (Square, Square) const;
+    Move operator() (std::istream& in, Color) const;
+
 };
 
 #endif

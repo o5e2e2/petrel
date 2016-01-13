@@ -218,7 +218,7 @@ void PositionMoves::limitMoves(std::istream& in, Color colorToMove) {
     while (in) {
         auto before_move = in.tellg();
 
-        Move move{in, pos, colorToMove};
+        Move move = pos(in, colorToMove);
         if (in) {
             Square from{ move.from() };
             Square to{ move.to() } ;
@@ -252,7 +252,7 @@ void Position::makeMoves(std::istream& in, Color* colorToMove) {
     while (in) {
         auto before_move = in.tellg();
 
-        Move m{in, *this, *colorToMove};
+        Move m = (*this)(in, *colorToMove);
         if (in) {
             Square from{ m.from() };
             Square to{ m.to() } ;
