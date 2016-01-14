@@ -592,12 +592,56 @@ std::istream& Position::setCastling(std::istream& in, Color colorToMove) {
     return in;
 }
 
+bool Position::setBoard(FenBoard& board, Color colorToMove) {
+    *this = {0};
+
+    //TRICK: kings should be placed before any opponent's non king pieces
+    FOR_INDEX(Color, color) {
+        if (board.pieces[color][King].empty()) {
+            return false;
+        }
+
+        Side si(color.is(colorToMove)? My : Op);
+
+        auto king = board.pieces[color][King].begin();
+
+        if (drop(si, King, *king)) {
+            board.pieces[color][King].erase(king);
+        }
+        else {
+            return false;
+        }
+
+        assert (board.pieces[color][King].empty());
+    }
+
+    FOR_INDEX(Color, color) {
+        Side si(color.is(colorToMove)? My : Op);
+
+        FOR_INDEX(PieceType, ty) {
+            while (!board.pieces[color][ty].empty()) {
+                auto piece = board.pieces[color][ty].begin();
+
+                if (drop(si, ty, *piece)) {
+                    board.pieces[color][ty].erase(piece);
+                }
+                else {
+                    return false;
+                }
+            }
+
+        }
+    }
+
+    return setup();
+}
+
 std::istream& Position::setBoard(std::istream& in, Color* colorToMove) {
     FenBoard board;
 
     in >> board >> std::ws >> *colorToMove;
 
-    if (in && !board.setPosition(this, *colorToMove)) {
+    if (in && !setBoard(board, *colorToMove)) {
         io::fail_char(in);
     }
     return in;
@@ -631,11 +675,37 @@ void Position::fenEnPassant(std::ostream& out, Color colorToMove) const {
     }
 }
 
+void Position::fenBoard(std::ostream& out, const PositionSide& white, const PositionSide& black) {
+    FOR_INDEX(Rank, rank) {
+        index_t blank_squares = 0;
+
+        FOR_INDEX(File, file) {
+            Square sq(file,rank);
+
+            if (white.isOccupied(sq)) {
+                if (blank_squares != 0) { out << blank_squares; blank_squares = 0; }
+                out << static_cast<io::char_type>(std::toupper( white.typeOf(sq).to_char() ));
+            }
+            else if (black.isOccupied(~sq)) {
+                if (blank_squares != 0) { out << blank_squares; blank_squares = 0; }
+                out << black.typeOf(~sq).to_char();
+            }
+            else {
+                ++blank_squares;
+            }
+
+        }
+
+        if (blank_squares != 0) { out << blank_squares; }
+        if (rank != Rank1) { out << '/'; }
+    }
+}
+
 void Position::fen(std::ostream& out, Color colorToMove, ChessVariant chessVariant) const {
     const PositionSide& white = side[colorToMove.is(White)? My : Op];
     const PositionSide& black = side[colorToMove.is(Black)? My : Op];
 
-    FenBoard::write(out, white, black);
+    fenBoard(out, white, black);
     out << ' ' << colorToMove;
     out << ' ' << FenCastling(white, black, chessVariant);
     out << ' ';

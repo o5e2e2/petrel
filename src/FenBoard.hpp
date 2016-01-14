@@ -6,7 +6,6 @@
 #include "typedefs.hpp"
 #include "Square.hpp"
 
-class Position;
 class PositionSide;
 
 /**
@@ -25,16 +24,16 @@ class FenBoard {
         }
     };
 
+    friend class Position;
+
     typedef std::set<Square, SquareImportance> Squares;
     Color::array< PieceType::array<Squares> > pieces;
 
     bool drop(Color, PieceType, Square);
 
+public:
     friend std::istream& operator >> (std::istream&, FenBoard&);
 
-public:
-    bool setPosition(Position*, Color);
-    static std::ostream& write(std::ostream&, const PositionSide& white, const PositionSide& black);
 };
 
 #endif

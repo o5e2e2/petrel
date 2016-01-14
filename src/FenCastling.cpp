@@ -24,3 +24,15 @@ void FenCastling::insert(const PositionSide& side, Color color, ChessVariant che
         castlingSet.insert(castling_symbol);
     }
 }
+
+std::ostream& operator << (std::ostream& out, const FenCastling& fenCastling) {
+    if (fenCastling.castlingSet.empty()) {
+        return out << '-';
+    }
+
+    for (auto castling_symbol : fenCastling.castlingSet) {
+        out << castling_symbol;
+    }
+
+    return out;
+}

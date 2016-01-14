@@ -7,10 +7,10 @@
 #include "PositionSide.hpp"
 #include "Zobrist.hpp"
 
+class FenBoard;
+
 class Position {
     friend class PositionMoves;
-    friend class FenBoard;
-    friend class FenCastling;
 
     Side::array<PositionSide> side;
     DualBbOccupied occupied; //pieces of both sides
@@ -35,6 +35,7 @@ private:
 
     bool drop(Side, PieceType, Square);
     bool setup();
+    bool setBoard(FenBoard&, Color);
     bool setCastling(Side, File);
     bool setCastling(Side, CastlingSide);
     bool setEnPassant(File);
@@ -44,6 +45,7 @@ private:
     std::istream& setCastling(std::istream&, Color);
     std::istream& setEnPassant(std::istream&, Color);
 
+    static void fenBoard(std::ostream&, const PositionSide& white, const PositionSide& black);
     void fenEnPassant(std::ostream& out, Color colorToMove) const;
 
 public:
@@ -52,9 +54,11 @@ public:
 
     Zobrist getZobrist() const;
 
-    void makeMove(const Position& parent, Square from, Square to);
+    void makeMove(const Position&, Square, Square);
+
     void makeMove(Zobrist z, const Position& parent, Square from, Square to) {
-        zobrist = z; makeMove(parent, from, to);
+        zobrist = z;
+        makeMove(parent, from, to);
     }
 
     Zobrist makeZobrist(Square from, Square to) const;

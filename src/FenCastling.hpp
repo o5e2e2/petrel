@@ -17,15 +17,7 @@ public:
         insert(black, Black, chessVariant);
     }
 
-    friend std::ostream& operator << (std::ostream& out, const FenCastling& fenCastling) {
-        if (fenCastling.castlingSet.empty()) {
-            out << '-';
-        }
-        else {
-            for (auto castling_symbol : fenCastling.castlingSet) { out << castling_symbol; }
-        }
-        return out;
-    }
+    friend std::ostream& operator << (std::ostream& out, const FenCastling&);
 
 };
 
