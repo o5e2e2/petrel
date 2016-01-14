@@ -39,7 +39,6 @@ private:
     bool setCastling(Side, File);
     bool setCastling(Side, CastlingSide);
     bool setEnPassant(File);
-    void setZobrist();
 
     std::istream& setBoard(std::istream&, Color*);
     std::istream& setCastling(std::istream&, Color);

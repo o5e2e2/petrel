@@ -110,10 +110,6 @@ Zobrist Position::getZobrist() const {
     return Zobrist{MY.getZobrist(), oz};
 }
 
-void Position::setZobrist() {
-    zobrist = getZobrist();
-}
-
 template <Side::_t My>
 void Position::setLegalEnPassant(Pi pi) {
     constexpr Side Op{~My};
@@ -384,7 +380,7 @@ Zobrist Position::makeZobrist(Square from, Square to) const {
     Pi pi {MY.pieceOn(from)};
     PieceType ty {MY.typeOf(pi)};
 
-    if (ty == Pawn) {
+    if (ty.is(Pawn)) {
         if (from.is(Rank7)) {
             Square promoted_to = Square(File(to), Rank8);
             mz.clear(Pawn, from);
@@ -457,14 +453,14 @@ Zobrist Position::makeZobrist(Square from, Square to) const {
         mz.move(Rook, rookFrom, rookTo);
         return Zobrist{oz, mz};
     }
-    else if (ty == King) {
+    else if (ty.is(King)) {
         for (Pi rook : MY.castlingRooks()) {
             mz.clearCastling(MY.squareOf(rook));
         }
     }
     else if (MY.isCastling(pi)) {
         //move of the rook with castling rights
-        assert (ty == Rook);
+        assert (ty.is(Rook));
         mz.clearCastling(from);
     }
 
@@ -629,7 +625,6 @@ bool Position::setBoard(FenBoard& board, Color colorToMove) {
                     return false;
                 }
             }
-
         }
     }
 
@@ -651,7 +646,7 @@ void Position::setFen(std::istream& in, Color& colorToMove) {
     setBoard(in, &colorToMove);
     setCastling(in, colorToMove);
     setEnPassant(in, colorToMove);
-    setZobrist();
+    zobrist = getZobrist();
 
     if (in) {
         unsigned fifty, moves;
@@ -668,7 +663,7 @@ void Position::setStartpos(Color& colorToMove) {
 void Position::fenEnPassant(std::ostream& out, Color colorToMove) const {
     if (side[Op].hasEnPassant()) {
         File epFile = side[Op].enPassantFile();
-        out << (colorToMove.is(White)? Square(epFile, Rank6) : Square(epFile, Rank3));
+        out << Square(epFile, colorToMove.is(White)? Rank6 : Rank3);
     }
     else {
         out << '-';
