@@ -9,8 +9,9 @@
 
 class Position {
     friend class PositionMoves;
-    friend class Board;
-    friend class CastlingRights;
+    friend class FenBoard;
+    friend class FenCastling;
+    friend class FenEnPassant;
 
     Side::array<PositionSide> side;
     DualBbOccupied occupied; //pieces of both sides
@@ -37,6 +38,7 @@ private:
     bool setup();
     bool setCastling(Side, File);
     bool setCastling(Side, CastlingSide);
+    bool setEnPassant(File);
     void setZobrist();
 
 public:
@@ -56,7 +58,6 @@ public:
     void setFen(std::istream& in, Color&);
     void setStartpos(Color&);
     void makeMoves(std::istream&, Color* colorToMove);
-    bool setEnPassant(File);
 
     void fen(std::ostream&, Color, ChessVariant) const;
     Move operator() (Square, Square) const;

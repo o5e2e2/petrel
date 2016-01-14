@@ -1,7 +1,11 @@
 #include <utility>
 
 #include "Position.hpp"
+#include "BetweenSquares.hpp"
 #include "CastlingRules.hpp"
+#include "FenBoard.hpp"
+#include "FenCastling.hpp"
+#include "FenEnPassant.hpp"
 #include "PieceTypeAttack.hpp"
 #include "PositionMoves.hpp"
 #include "OutsideSquares.hpp"
@@ -538,6 +542,35 @@ Move Position::operator() (std::istream& in, Color colorToMove) const {
 
     io::fail_pos(in, before_move);
     return Move{};
+}
+
+void Position::fen(std::ostream& out, Color colorToMove, ChessVariant chessVariant) const {
+    const PositionSide& white = side[colorToMove.is(White)? My : Op];
+    const PositionSide& black = side[colorToMove.is(Black)? My : Op];
+
+    FenBoard::write(out, white, black);
+    out << ' ' << colorToMove;
+    out << ' ' << FenCastling(white, black, chessVariant);
+    out << ' ';
+    FenEnPassant::write(out, side[Op], colorToMove);
+}
+
+void Position::setFen(std::istream& in, Color& colorToMove) {
+    FenBoard::read(in, *this, colorToMove);
+    FenCastling::read(in, *this, colorToMove);
+    FenEnPassant::read(in, *this, colorToMove);
+    setZobrist();
+
+    if (in) {
+        unsigned fifty, moves;
+        in >> fifty >> moves;
+        in.clear(); //ignore missing optional 'fifty' and 'moves' fen fields
+    }
+}
+
+void Position::setStartpos(Color& colorToMove) {
+    std::istringstream startpos{"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"};
+    setFen(startpos, colorToMove);
 }
 
 #undef MY
