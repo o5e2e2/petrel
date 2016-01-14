@@ -5,7 +5,6 @@
 #include "CastlingRules.hpp"
 #include "FenBoard.hpp"
 #include "FenCastling.hpp"
-#include "FenEnPassant.hpp"
 #include "PieceTypeAttack.hpp"
 #include "PositionMoves.hpp"
 #include "OutsideSquares.hpp"
@@ -499,7 +498,7 @@ Move Position::operator() (Square move_from, Square move_to) const {
 }
 
 Move Position::operator() (std::istream& in, Color colorToMove) const {
-    auto before_move = in.tellg();
+    auto before = in.tellg();
 
     Square move_from{Square::Begin};
     Square move_to{Square::Begin};
@@ -540,25 +539,74 @@ Move Position::operator() (std::istream& in, Color colorToMove) const {
         }
     }
 
-    io::fail_pos(in, before_move);
+    io::fail_pos(in, before);
     return Move{};
 }
 
-void Position::fen(std::ostream& out, Color colorToMove, ChessVariant chessVariant) const {
-    const PositionSide& white = side[colorToMove.is(White)? My : Op];
-    const PositionSide& black = side[colorToMove.is(Black)? My : Op];
+std::istream& Position::setEnPassant(std::istream& in, Color colorToMove) {
+    in >> std::ws;
+    if (in.peek() == '-') { in.ignore(); return in; }
 
-    FenBoard::write(out, white, black);
-    out << ' ' << colorToMove;
-    out << ' ' << FenCastling(white, black, chessVariant);
-    out << ' ';
-    FenEnPassant::write(out, side[Op], colorToMove);
+    auto before = in.tellg();
+
+    Square ep{Square::Begin};
+    if (in >> ep) {
+        if (ep.is(colorToMove.is(White)? Rank6 : Rank3) && setEnPassant(File{ep})) {
+            return in;
+        }
+        else {
+            io::fail_pos(in, before);
+        }
+    }
+    return in;
+}
+
+std::istream& Position::setCastling(std::istream& in, Color colorToMove) {
+    in >> std::ws;
+    if (in.peek() == '-') { in.ignore(); return in; }
+
+    for (io::char_type c; in.get(c) && !std::isblank(c); ) {
+        if (std::isalpha(c)) {
+            Color color(std::isupper(c)? White : Black);
+            Side si(color.is(colorToMove)? My : Op);
+
+            c = static_cast<io::char_type>(std::tolower(c));
+
+            CastlingSide castlingSide{CastlingSide::Begin};
+            if (castlingSide.from_char(c)) {
+                if (setCastling(si, castlingSide)) {
+                    continue;
+                }
+            }
+            else {
+                File file{File::Begin};
+                if (file.from_char(c)) {
+                    if (setCastling(si, file)) {
+                        continue;
+                    }
+                }
+            }
+        }
+        io::fail_char(in);
+    }
+    return in;
+}
+
+std::istream& Position::setBoard(std::istream& in, Color* colorToMove) {
+    FenBoard board;
+
+    in >> board >> std::ws >> *colorToMove;
+
+    if (in && !board.setPosition(this, *colorToMove)) {
+        io::fail_char(in);
+    }
+    return in;
 }
 
 void Position::setFen(std::istream& in, Color& colorToMove) {
-    FenBoard::read(in, *this, colorToMove);
-    FenCastling::read(in, *this, colorToMove);
-    FenEnPassant::read(in, *this, colorToMove);
+    setBoard(in, &colorToMove);
+    setCastling(in, colorToMove);
+    setEnPassant(in, colorToMove);
     setZobrist();
 
     if (in) {
@@ -571,6 +619,27 @@ void Position::setFen(std::istream& in, Color& colorToMove) {
 void Position::setStartpos(Color& colorToMove) {
     std::istringstream startpos{"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"};
     setFen(startpos, colorToMove);
+}
+
+void Position::fenEnPassant(std::ostream& out, Color colorToMove) const {
+    if (side[Op].hasEnPassant()) {
+        File epFile = side[Op].enPassantFile();
+        out << (colorToMove.is(White)? Square(epFile, Rank6) : Square(epFile, Rank3));
+    }
+    else {
+        out << '-';
+    }
+}
+
+void Position::fen(std::ostream& out, Color colorToMove, ChessVariant chessVariant) const {
+    const PositionSide& white = side[colorToMove.is(White)? My : Op];
+    const PositionSide& black = side[colorToMove.is(Black)? My : Op];
+
+    FenBoard::write(out, white, black);
+    out << ' ' << colorToMove;
+    out << ' ' << FenCastling(white, black, chessVariant);
+    out << ' ';
+    fenEnPassant(out, colorToMove);
 }
 
 #undef MY

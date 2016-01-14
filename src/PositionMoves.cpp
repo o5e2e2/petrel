@@ -216,7 +216,7 @@ void PositionMoves::limitMoves(std::istream& in, Color colorToMove) {
     index_t limit = 0;
 
     while (in) {
-        auto before_move = in.tellg();
+        auto before = in.tellg();
 
         Move move = pos(in, colorToMove);
         if (in) {
@@ -232,7 +232,7 @@ void PositionMoves::limitMoves(std::istream& in, Color colorToMove) {
 
         }
 
-        io::fail_pos(in, before_move);
+        io::fail_pos(in, before);
     }
 
     if (limit > 0) {
@@ -250,7 +250,7 @@ void Position::makeMoves(std::istream& in, Color* colorToMove) {
     PositionMoves moves(*this);
 
     while (in) {
-        auto before_move = in.tellg();
+        auto before = in.tellg();
 
         Move m = (*this)(in, *colorToMove);
         if (in) {
@@ -266,7 +266,7 @@ void Position::makeMoves(std::istream& in, Color* colorToMove) {
             }
         }
 
-        io::fail_pos(in, before_move);
+        io::fail_pos(in, before);
     }
 }
 

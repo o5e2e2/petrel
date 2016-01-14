@@ -41,14 +41,14 @@ struct Square : Index<64, square_t> {
     }
 
     friend std::istream& operator >> (std::istream& in, Square& sq) {
-        auto pos_before = in.tellg();
+        auto before = in.tellg();
         File file{File::Begin}; Rank rank{Rank::Begin};
 
         if (in >> file >> rank) {
             sq = Square{file, rank};
         }
         else {
-            io::fail_pos(in, pos_before);
+            io::fail_pos(in, before);
         }
         return in;
     }

@@ -31,10 +31,9 @@ class FenBoard {
     bool drop(Color, PieceType, Square);
 
     friend std::istream& operator >> (std::istream&, FenBoard&);
-    static bool setPosition(Position&, FenBoard&&, Color);
 
 public:
-    static std::istream& read(std::istream&, Position&, Color&);
+    bool setPosition(Position*, Color);
     static std::ostream& write(std::ostream&, const PositionSide& white, const PositionSide& black);
 };
 

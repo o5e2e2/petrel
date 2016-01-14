@@ -11,7 +11,6 @@ class Position {
     friend class PositionMoves;
     friend class FenBoard;
     friend class FenCastling;
-    friend class FenEnPassant;
 
     Side::array<PositionSide> side;
     DualBbOccupied occupied; //pieces of both sides
@@ -40,6 +39,12 @@ private:
     bool setCastling(Side, CastlingSide);
     bool setEnPassant(File);
     void setZobrist();
+
+    std::istream& setBoard(std::istream&, Color*);
+    std::istream& setCastling(std::istream&, Color);
+    std::istream& setEnPassant(std::istream&, Color);
+
+    void fenEnPassant(std::ostream& out, Color colorToMove) const;
 
 public:
     Position () {};

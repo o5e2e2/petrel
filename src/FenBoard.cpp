@@ -69,8 +69,8 @@ bool FenBoard::drop(Color color, PieceType ty, Square sq) {
     return true;
 }
 
-bool FenBoard::setPosition(Position& pos, FenBoard&& board, Color colorToMove) {
-    auto&& pieces = board.pieces;
+bool FenBoard::setPosition(Position* p, Color colorToMove) {
+    auto& pos = *p;
     pos = Position(0);
 
     //TRICK: kings should be placed before any opponent's non king pieces
@@ -112,17 +112,6 @@ bool FenBoard::setPosition(Position& pos, FenBoard&& board, Color colorToMove) {
     }
 
     return pos.setup();
-}
-
-std::istream& FenBoard::read(std::istream& in, Position& pos, Color& colorToMove) {
-    FenBoard board;
-
-    in >> board >> std::ws >> colorToMove;
-
-    if (in && !FenBoard::setPosition(pos, std::move(board), colorToMove)) {
-        io::fail_char(in);
-    }
-    return in;
 }
 
 std::ostream& FenBoard::write(std::ostream& out, const PositionSide& white, const PositionSide& black) {

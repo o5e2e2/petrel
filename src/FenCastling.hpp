@@ -5,7 +5,6 @@
 #include "io.hpp"
 
 class PositionSide;
-class Position;
 
 class FenCastling {
     std::set<io::char_type> castlingSet;
@@ -17,8 +16,6 @@ public:
         insert(white, White, chessVariant);
         insert(black, Black, chessVariant);
     }
-
-    static std::istream& read(std::istream&, Position&, Color);
 
     friend std::ostream& operator << (std::ostream& out, const FenCastling& fenCastling) {
         if (fenCastling.castlingSet.empty()) {

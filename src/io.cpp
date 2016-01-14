@@ -11,9 +11,9 @@ namespace io {
         return io::fail_here(in);
     }
 
-    std::istream& fail_pos(std::istream& in, std::streampos rewind) {
+    std::istream& fail_pos(std::istream& in, std::streampos before) {
         in.clear();
-        in.seekg(rewind);
+        in.seekg(before);
         return io::fail_here(in);
     }
 
