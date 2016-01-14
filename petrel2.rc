@@ -42,8 +42,10 @@ go depth 5
 wait
 
 echo 11139762:
-position fen rnbqkb1r/ppppp1pp/7n/4Pp2/8/8/PPPP1PPP/RNBQKBNR w QKqk f6 0 3
+position fen rnbqkbnr/pppppppp///4P//PPPP1PPP/RNBQKBNR b qkQK e3 0 1 moves g8h6 e4e5 f7f5
 go depth 4
+echo info fen rnbqkb1r/ppppp1pp/7n/4Pp2/8/8/PPPP1PPP/RNBQKBNR w KQkq f6
+position
 wait
 
 echo 38633283:
