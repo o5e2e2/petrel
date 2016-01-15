@@ -68,38 +68,6 @@ bool Position::drop(Side My, PieceType ty, Square to) {
     return true;
 }
 
-bool Position::setCastling(Side My, File file) {
-    return MY.setCastling(file);
-}
-
-bool Position::setCastling(Side My, CastlingSide castlingSide) {
-    return MY.setCastling(castlingSide);
-}
-
-bool Position::setEnPassant(File epFile) {
-    if (OCCUPIED[Square(epFile, Rank7)]) { return false; }
-    if (OCCUPIED[Square(epFile, Rank6)]) { return false; }
-
-    Square victimSquare(epFile, Rank4);
-    if (!OP.isPieceOn(victimSquare)) { return false; }
-
-    Pi victim{OP.pieceOn(victimSquare)};
-    if (!OP.isPawn(victim)) { return false; }
-
-    //check against illegal en passant set field like "8/5bk1/8/2Pp4/8/1K6/8/8 w - d6"
-    Square kingSquare = MY.kingSquare();
-    Bb pinners = ::outside(kingSquare, ~victimSquare) & ~OP.occupiedSquares();
-    if (pinners.any()) {
-        Square pinner = (kingSquare < ~victimSquare)? pinners.smallestOne() : pinners.largestOne();
-        if (OP.pinnerCandidates()[OP.pieceOn(~pinner)] && (::between(kingSquare, pinner) & (OCCUPIED - ~victimSquare)).none()) {
-            return false;
-        }
-    }
-
-    setLegalEnPassant<Op>(victim);
-    return true;
-}
-
 Zobrist Position::getZobrist() const {
     Zobrist oz = OP.getZobrist();
 
@@ -384,7 +352,7 @@ Zobrist Position::makeZobrist(Square from, Square to) const {
         if (from.is(Rank7)) {
             Square promoted_to = Square(File(to), Rank8);
             mz.clear(Pawn, from);
-            mz.drop(Move::decodePromoType(to), promoted_to);
+            mz.drop(static_cast<PieceType>(Move::decodePromoType(to)), promoted_to);
 
             if (OP.isOccupied(~promoted_to)) {
                 Pi victim {OP.pieceOn(~promoted_to)};
@@ -539,6 +507,31 @@ Move Position::operator() (std::istream& in, Color colorToMove) const {
     return Move{};
 }
 
+bool Position::setEnPassant(File epFile) {
+    if (MY.hasEnPassant() || OP.hasEnPassant()) { return false; }
+    if (OCCUPIED[Square(epFile, Rank7)]) { return false; }
+    if (OCCUPIED[Square(epFile, Rank6)]) { return false; }
+
+    Square victimSquare(epFile, Rank4);
+    if (!OP.isPieceOn(victimSquare)) { return false; }
+
+    Pi victim{OP.pieceOn(victimSquare)};
+    if (!OP.isPawn(victim)) { return false; }
+
+    //check against illegal en passant set field like "8/5bk1/8/2Pp4/8/1K6/8/8 w - d6"
+    Square kingSquare = MY.kingSquare();
+    Bb pinners = ::outside(kingSquare, ~victimSquare) & ~OP.occupiedSquares();
+    if (pinners.any()) {
+        Square pinner = (kingSquare < ~victimSquare)? pinners.smallestOne() : pinners.largestOne();
+        if (OP.pinnerCandidates()[OP.pieceOn(~pinner)] && (::between(kingSquare, pinner) & (OCCUPIED - ~victimSquare)).none()) {
+            return false;
+        }
+    }
+
+    setLegalEnPassant<Op>(victim);
+    return true;
+}
+
 std::istream& Position::setEnPassant(std::istream& in, Color colorToMove) {
     in >> std::ws;
     if (in.peek() == '-') { in.ignore(); return in; }
@@ -555,6 +548,14 @@ std::istream& Position::setEnPassant(std::istream& in, Color colorToMove) {
         }
     }
     return in;
+}
+
+bool Position::setCastling(Side My, File file) {
+    return MY.setCastling(file);
+}
+
+bool Position::setCastling(Side My, CastlingSide castlingSide) {
+    return MY.setCastling(castlingSide);
 }
 
 std::istream& Position::setCastling(std::istream& in, Color colorToMove) {
