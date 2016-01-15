@@ -22,13 +22,10 @@ private:
 public:
     constexpr Zobrist () : _v{0} {}
     constexpr explicit Zobrist (_t z) : _v(z) {}
-    Zobrist (Arg my, Arg op) : _v{ my._v ^ ~::bswap(op._v) } {}
+    Zobrist (Arg my, Arg op) : _v{ my._v ^ ::bswap(op._v) } {}
     constexpr operator const _t& () const { return _v; }
 
     void clear() { *this = {}; }
-
-    Zobrist& flip() { _v = ~::bswap(_v); return *this; }
-    Zobrist operator ~ () const { return Zobrist{*this}.flip(); }
 
     void drop(PieceType::_t ty, Square to) { drop(Index(ty), to); }
     void clear(PieceType::_t ty, Square from) { drop(ty, from); }

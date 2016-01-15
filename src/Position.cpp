@@ -338,8 +338,8 @@ void Position::makeMove(Square from, Square to) {
 }
 
 Zobrist Position::makeZobrist(Square from, Square to) const {
-    Zobrist mz = {};
-    Zobrist oz = ~zobrist;
+    Zobrist mz = zobrist;
+    Zobrist oz = {};
 
     if (OP.hasEnPassant()) {
         oz.clearEnPassant(OP.enPassantSquare());
