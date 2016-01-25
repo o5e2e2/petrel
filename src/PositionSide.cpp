@@ -1,7 +1,7 @@
 #include "PositionSide.hpp"
 #include "BetweenSquares.hpp"
-#include "PieceTypeAttack.hpp"
 #include "CastlingRules.hpp"
+#include "PieceTypeAttack.hpp"
 #include "ReverseBb.hpp"
 
 #ifndef NDEBUG
@@ -14,7 +14,7 @@
 
         assert (!types.isPawn(pi) || pawnsBb[sq]);
         assert (!types.isPawn(pi) || (!sq.is(Rank1) && !sq.is(Rank8)));
-        assert (!types.isEnPassant(pi) || sq.is(Rank4) || sq.is(Rank5));
+        assert (!types.isPawn(pi) || !types.isEnPassant(pi) || sq.is(Rank4) || sq.is(Rank5));
     }
 #endif
 
@@ -97,10 +97,7 @@ void PositionSide::move(Pi pi, PieceType ty, Square from, Square to) {
     assertValid(pi);
     assert (from != to);
 
-    if (isCastling(pi)) {
-        types.clearCastling(pi);
-    }
-
+    types.clearCastling(pi);
     move(ty, from, to);
     squares.move(pi, to);
 
@@ -255,19 +252,9 @@ const Bb& PositionSide::pinRayFrom(Square from) const {
     return ::between(kingSquare(), from);
 }
 
-void PositionSide::updatePinRays(Square opKingSquare, Pi pi) {
-    assert (isSlider(pi));
-
-    if ( ::pieceTypeAttack(typeOf(pi), opKingSquare)[squareOf(pi)] ) {
-        types.setPinRay(pi);
-    }
-    else {
-        types.clearPinRay(pi);
-    }
-}
-
-void PositionSide::updatePinRays(Square opKingSquare) {
-    for (Pi pi : sliders()) {
-        updatePinRays(opKingSquare, pi);
-    }
+bool PositionSide::isPinnable(Square from, Square to) const {
+    Pi pi = pieceOn(from);
+    bool result = ::pieceTypeAttack(typeOf(pi), from)[to];
+    assert (!result || isSlider(pi));
+    return result;
 }

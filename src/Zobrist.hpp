@@ -30,8 +30,8 @@ public:
     void drop(PieceType::_t ty, Square to) { drop(Index(ty), to); }
     void clear(PieceType::_t ty, Square from) { drop(ty, from); }
 
-    void setCastling(Square sq)  { assert (sq.is(Rank1)); drop(static_cast<Index::_t>(ZobristKey::Castling), sq); }
-    void setEnPassant(Square sq) { assert (sq.is(Rank4)); drop(static_cast<Index::_t>(ZobristKey::EnPassant), sq); }
+    void setCastling(Square sq)  { assert (sq.is(Rank1)); drop(Castling, sq); }
+    void setEnPassant(Square sq) { assert (sq.is(Rank4)); drop(EnPassant, sq); }
     void setEnPassant(File fileFrom) { setEnPassant(Square(fileFrom, Rank4)); }
 
     void clearCastling(Square sq) { setCastling(sq); }

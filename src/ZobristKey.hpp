@@ -7,8 +7,6 @@
 class CACHE_ALIGN ZobristKey {
 public:
     typedef std::uint64_t _t;
-
-    enum { Castling = 6, EnPassant = 7 };
     typedef ::Index<8, piece_type_t> Index;
 
 private:

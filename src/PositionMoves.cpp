@@ -127,8 +127,12 @@ void PositionMoves::excludePinnedMoves(VectorPiMask pinnerCandidates) {
 
     for (Pi pi : pinnerCandidates) {
         Square pinFrom{~OP.squareOf(pi)};
-        Bb pinRay = MY.pinRayFrom(pinFrom);
 
+        if (!OP.isPinnable(~pinFrom, ~MY.kingSquare())) {
+            continue;
+        }
+
+        Bb pinRay = MY.pinRayFrom(pinFrom);
         Bb betweenPieces{pinRay & OCCUPIED};
         assert (betweenPieces.any());
 
@@ -165,7 +169,7 @@ void PositionMoves::generateCheckEvasions(Bb attackedSquares) {
         //pawns moves are special case
         correctCheckEvasionsByPawns<My>(checkLine, checkFrom);
 
-        excludePinnedMoves<My>(OP.pinnerCandidates() % checkers);
+        excludePinnedMoves<My>(OP.sliders() % checkers);
 
         populateUnderpromotions<My>();
 
@@ -200,7 +204,7 @@ void PositionMoves::generateMoves() {
     generateCastlingMoves<My>(attackedSquares);
 
     //TRICK: castling encoded as a rook move, so we implicitly cover the case of pinned castling in Chess960
-    excludePinnedMoves<My>(OP.pinnerCandidates());
+    excludePinnedMoves<My>(OP.sliders());
 
     populateUnderpromotions<My>();
 

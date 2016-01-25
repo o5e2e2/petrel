@@ -55,11 +55,6 @@ public:
         this->_v &= exceptSingleVector(_Bit);
     }
 
-    void clearIf(index_type _Bit, index_type _Mask) {
-        _t mask = singleVector(_Mask);
-        this->_v &= _mm_cmpeq_epi8(this->_v & mask, ::vectorOfAll[0]) | exceptSingleVector(_Bit);
-    }
-
     void clear(Pi pi, index_type _Bit) {
         element_type mask{exceptSingle(_Bit)};
         (*this)[pi] &= mask;

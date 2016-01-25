@@ -102,7 +102,7 @@ void Position::setLegalEnPassant(Pi pi) {
     Bb pinners = ::outside(opKingSquare, from) & MY.occupiedSquares();
     if (pinners.any()) {
         Square pinner = (opKingSquare < from)? pinners.smallestOne() : pinners.largestOne();
-        if (MY.pinnerCandidates()[MY.pieceOn(pinner)] && (::between(opKingSquare, pinner) & OCCUPIED).none()) {
+        if (MY.isPinnable(pinner, opKingSquare) && (::between(opKingSquare, pinner) & OCCUPIED).none()) {
             assert ((MY.attacksTo(opKingSquare) % pi).any());
             return; //discovered check found
         }
@@ -115,7 +115,7 @@ void Position::setLegalEnPassant(Pi pi) {
         pinners = ::outside(opKingSquare, _from) & (MY.occupiedSquares() - to);
         if (pinners.any()) {
             Square pinner = (opKingSquare < _from)? pinners.smallestOne() : pinners.largestOne();
-            if (MY.pinnerCandidates()[MY.pieceOn(pinner)] && (::between(opKingSquare, pinner) & (OCCUPIED - _from + _to - to)).none()) {
+            if (MY.isPinnable(pinner, opKingSquare) && (::between(opKingSquare, pinner) & (OCCUPIED - _from + _to - to)).none()) {
                 continue;
             }
         }
@@ -132,12 +132,7 @@ void Position::set(Side My, Pi pi, PieceType ty, Square to) {
 
     assert (!ty.is(King));
 
-    if (MY.isSlider(pi)) {
-        MY.updatePinRays(~OP.kingSquare(), pi);
-
-        //slider attacks updated separately
-    }
-    else {
+    if (!MY.isSlider(pi)) {
         MY.setLeaperAttack(pi, ty, to);
     }
 }
@@ -185,7 +180,6 @@ void Position::makeKingMove(Square from, Square to) {
 
     MY.moveKing(from, to);
     MY.setLeaperAttack(TheKing, King, to);
-    OP.updatePinRays(~to);
 
     MY.assertValid(pi);
 
@@ -210,9 +204,6 @@ void Position::makeCastling(Pi rook, Square rookFrom, Square kingFrom) {
 
     MY.castle(rook, rookFrom, rookTo, kingFrom, kingTo);
     MY.setLeaperAttack(TheKing, King, kingTo);
-
-    MY.updatePinRays(~OP.kingSquare(), rook);
-    OP.updatePinRays(~kingTo);
 
     //TRICK: castling should not affect opponent's sliders, otherwise it is check or pin
     //TRICK: castling rook should attack 'kingFrom' square
@@ -379,7 +370,7 @@ Zobrist Position::makeZobrist(Square from, Square to) const {
                 Bb pinners = ::outside(opKingSquare, _from) & MY.occupiedSquares();
                 if (pinners.any()) {
                     Square pinner = (opKingSquare < _from)? pinners.smallestOne() : pinners.largestOne();
-                    if (MY.pinnerCandidates()[MY.pieceOn(pinner)] && (::between(opKingSquare, pinner) & (OCCUPIED - _from + _to)).none()) {
+                    if (MY.isPinnable(pinner, opKingSquare) && (::between(opKingSquare, pinner) & (OCCUPIED - _from + _to)).none()) {
                         continue;
                     }
                 }
@@ -387,7 +378,7 @@ Zobrist Position::makeZobrist(Square from, Square to) const {
                 pinners = ::outside(opKingSquare, from) & MY.occupiedSquares();
                 if (pinners.any()) {
                     Square pinner = (opKingSquare < from)? pinners.smallestOne() : pinners.largestOne();
-                    if (MY.pinnerCandidates()[MY.pieceOn(pinner)] && (::between(opKingSquare, pinner) & (OCCUPIED - from + to)).none()) {
+                    if (MY.isPinnable(pinner, opKingSquare) && (::between(opKingSquare, pinner) & (OCCUPIED - from + to)).none()) {
                         return Zobrist{oz, mz}; //discovered check found
                     }
                 }
@@ -523,7 +514,7 @@ bool Position::setEnPassant(File epFile) {
     Bb pinners = ::outside(kingSquare, ~victimSquare) & ~OP.occupiedSquares();
     if (pinners.any()) {
         Square pinner = (kingSquare < ~victimSquare)? pinners.smallestOne() : pinners.largestOne();
-        if (OP.pinnerCandidates()[OP.pieceOn(~pinner)] && (::between(kingSquare, pinner) & (OCCUPIED - ~victimSquare)).none()) {
+        if (OP.isPinnable(~pinner, ~kingSquare) && (::between(kingSquare, pinner) & (OCCUPIED - ~victimSquare)).none()) {
             return false;
         }
     }

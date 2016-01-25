@@ -7,10 +7,7 @@
 class VectorPiType {
     //Castling: rooks with castling rights;
     //EnPassant: pawns that can either be legally captured en passant or perform a legal en passant capture (depends on side to move);
-    //PinRay: sliders that would check the enemy king location on the empty board
-    //TRICK: EnPassant and Castling flags unioned into one bit field
 
-    enum { SpecialPiece = King + 1, PinRay };
     typedef ::Index<8, piece_type_t> Index;
 
     struct Value : VectorPiBit<Value, Index> {};
@@ -20,8 +17,8 @@ class VectorPiType {
         SliderMask = ::singleton<_t>(Queen)|::singleton<_t>(Rook)|::singleton<_t>(Bishop),
         LeaperMask = ::singleton<_t>(King)|::singleton<_t>(Knight)|::singleton<_t>(Pawn),
         PieceTypeMask = SliderMask|LeaperMask,
-        CastlingMask  = ::singleton<_t>(SpecialPiece)|::singleton<_t>(Rook),
-        EnPassantMask = ::singleton<_t>(SpecialPiece)|::singleton<_t>(Pawn)
+        CastlingMask  = ::singleton<_t>(Castling),
+        EnPassantMask = ::singleton<_t>(EnPassant)
     };
 
     Value _v;
@@ -35,7 +32,6 @@ public:
     void assertValid(Pi pi) const {
         assert ( !isEmpty(pi) );
         assert ( _v.is(pi, King) || ::is_singleton(_v[pi] & PieceTypeMask) );
-        assert ( !_v.is(pi, PinRay) || ((_v[pi] & SliderMask) != 0) );
         assert ( !_v.is(pi, King) || (pi.is(TheKing) && !_v.is(pi, Rook) && !_v.is(pi, Pawn)) || _v.is(pi, Rook) || _v.is(pi, Pawn) );
     }
 #endif
@@ -50,21 +46,17 @@ public:
     bool isPawn(Pi pi) const { return is(pi, Pawn); }
 
     VectorPiMask castlingRooks() const { return _v.allOf(CastlingMask); }
-    bool isCastling(Pi pi) const { return is(pi, Rook) && _v.is(pi, static_cast<Index::_t>(SpecialPiece)); }
-    void setCastling(Pi pi) { assert (is(pi, Rook)); assert (!isCastling(pi)); _v.set(pi, static_cast<Index::_t>(SpecialPiece)); }
-    void clearCastling(Pi pi) { assert (isCastling(pi)); _v.clear(pi, static_cast<Index::_t>(SpecialPiece)); }
-    void clearCastlings() { _v.clearIf(static_cast<Index::_t>(SpecialPiece), Rook); }
+    bool isCastling(Pi pi) const { return is(pi, Castling); }
+    void setCastling(Pi pi) { assert (is(pi, Rook)); assert (!isCastling(pi)); _v.set(pi, Castling); }
+    void clearCastling(Pi pi) { assert (!isCastling(pi) || is(pi, Rook)); _v.clear(pi, Castling); }
+    void clearCastlings() { _v.clear(Castling); }
 
     VectorPiMask enPassantPawns() const { return _v.allOf(EnPassantMask); }
     Pi   getEnPassant() const { Pi pi{ enPassantPawns().index() }; assert (isPawn(pi)); return pi; }
-    bool isEnPassant(Pi pi) const { return isPawn(pi) && _v.is(pi, SpecialPiece); }
-    void setEnPassant(Pi pi) { assert (isPawn(pi)); assert (!isEnPassant(pi)); _v.set(pi, static_cast<Index::_t>(SpecialPiece)); }
-    void clearEnPassant(Pi pi) { assert (isEnPassant(pi)); _v.clear(pi, static_cast<Index::_t>(SpecialPiece)); }
-    void clearEnPassants() { _v.clearIf(static_cast<Index::_t>(SpecialPiece), Pawn); }
-
-    VectorPiMask pinnerCandidates() const { return _v.anyOf(static_cast<Index::_t>(PinRay)); }
-    void setPinRay(Pi pi) { assert (isSlider(pi)); _v.set(pi, static_cast<Index::_t>(PinRay)); }
-    void clearPinRay(Pi pi) { assert (isSlider(pi)); _v.clear(pi, static_cast<Index::_t>(PinRay)); }
+    bool isEnPassant(Pi pi) const { assert (isPawn(pi)); return _v.is(pi, EnPassant); }
+    void setEnPassant(Pi pi) { assert (!isEnPassant(pi)); _v.set(pi, EnPassant); }
+    void clearEnPassant(Pi pi) { assert (isEnPassant(pi)); _v.clear(pi, EnPassant); }
+    void clearEnPassants() { _v.clear(EnPassant); }
 
     void clear() { _v.clear(); }
     void clear(Pi pi) { assert (!_v.is(pi, King) || _v.is(pi, Rook) || _v.is(pi, Pawn)); _v.clear(pi); }
