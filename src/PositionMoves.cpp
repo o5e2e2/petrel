@@ -125,10 +125,13 @@ template <Side::_t My>
 void PositionMoves::excludePinnedMoves(VectorPiMask pinnerCandidates) {
     constexpr Side Op{~My};
 
+    Square kingSquare = MY.kingSquare();
+
     for (Pi pi : pinnerCandidates) {
         Square pinFrom{~OP.squareOf(pi)};
 
-        if (!OP.isPinnable(~pinFrom, ~MY.kingSquare())) {
+        bool isPinnable = ::pieceTypeAttack(OP.typeOf(pi), pinFrom)[kingSquare];
+        if (!isPinnable) {
             continue;
         }
 
