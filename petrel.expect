@@ -1,0 +1,62 @@
+#!/usr/bin/expect -f
+exp_internal 1
+set timeout -1
+spawn ./release/petrel
+
+send "setoption hash 1\r"
+
+send "uci\r"
+expect "option name Hash type spin min 0 max * default 1\r\n"
+expect "uciok\r\n"
+
+send "position fen 6kr///////6K1 b k\r"
+send "go depth 5\r"
+expect "*perft 325293\r\nbestmove 0000\r\n"
+
+send "position fen 5kr1///////5K2 b k\r"
+send "go depth 5\r"
+expect "*perft 401634\r\nbestmove 0000\r\n"
+
+send "position fen 4kr2///////4K3 b k\r"
+send "go depth 5\r"
+expect "*perft 459256\r\nbestmove 0000\r\n"
+
+send "position fen 3kr3///////3K4 b k\r"
+send "go depth 5\r"
+expect "*perft 539692\r\nbestmove 0000\r\n"
+
+send "position fen rnbqkb1r/pp1p1ppp/2p5/4P3/2B5/8/PPP1NnPP/RNBQK2R w KQkq - 0 6\r"
+send "go depth 2\r"
+expect "*perft 53392\r\nbestmove 0000\r\n"
+
+send "position fen 8/5bk1/8/2Pp4/8/1K6/8/8 w - d6 0 1\r"
+expect "parsing error: d6 0 1\r\n"
+send "go depth 5\r"
+expect "*perft 824064\r\nbestmove 0000\r\n"
+
+send "position fen 8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1\r"
+send "go depth 6\r"
+expect "*perft 178633661\r\nbestmove 0000\r\n"
+
+send "position fen 8/8/8/2rk/2p1p/5R/QP1P2B/2KR w - -\r"
+send "go depth 5\r"
+expect "*perft 102040304\r\nbestmove 0000\r\n"
+
+send "position fen rnbqkbnr/pppppppp///4P//PPPP1PPP/RNBQKBNR b qkQK e3 0 1 moves g8h6 e4e5 f7f5\r"
+send "go depth 4\r"
+send "position\r"
+expect "info fen rnbqkb1r/ppppp1pp/7n/4Pp2/8/8/PPPP1PPP/RNBQKBNR w KQkq f6\r"
+expect "*perft 11139762\r\nbestmove 0000\r\n"
+
+send "position fen r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 25\r"
+send "go depth 4\r"
+expect "*perft 193690690\r\nbestmove 0000\r\n"
+
+send "go depth 5\r"
+expect "*perft 8031647685\r\nbestmove 0000\r\n"
+
+send "isready\r"
+expect "readyok\r\n"
+
+send "quit\r"
+expect eof
