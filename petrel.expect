@@ -10,127 +10,127 @@ expect "uciok\r\n"
 
 send "position fen 6kr///////6K1 b k\r"
 send "go depth 5\r"
-expect "*perft 325293\r\nbestmove 0000\r\n"
+expect "*score 325293\r\nbestmove 0000\r\n"
 
 send "position fen 5kr1///////5K2 b k\r"
 send "go depth 5\r"
-expect "*perft 401634\r\nbestmove 0000\r\n"
+expect "*score 401634\r\nbestmove 0000\r\n"
 
 send "position fen 4kr2///////4K3 b k\r"
 send "go depth 5\r"
-expect "*perft 459256\r\nbestmove 0000\r\n"
+expect "*score 459256\r\nbestmove 0000\r\n"
 
 send "position fen 3kr3///////3K4 b k\r"
 send "go depth 5\r"
-expect "*perft 539692\r\nbestmove 0000\r\n"
+expect "*score 539692\r\nbestmove 0000\r\n"
 
 send "position fen rnbqkb1r/pp1p1ppp/2p5/4P3/2B5/8/PPP1NnPP/RNBQK2R w KQkq - 0 6\r"
 send "go depth 2\r"
-expect "*perft 53392\r\nbestmove 0000\r\n"
+expect "*score 53392\r\nbestmove 0000\r\n"
 
 send "position fen 8/5bk1/8/2Pp4/8/1K6/8/8 w - d6 0 1\r"
 send "go depth 5\r"
 expect "parsing error: d6 0 1\r\n"
-expect "*perft 824064\r\nbestmove 0000\r\n"
+expect "*score 824064\r\nbestmove 0000\r\n"
 
 send "position fen 8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1\r"
 send "go depth 6\r"
-expect "*perft 178633661\r\nbestmove 0000\r\n"
+expect "*score 178633661\r\nbestmove 0000\r\n"
 
 send "position fen 8/8/8/2rk/2p1p/5R/QP1P2B/2KR w - -\r"
 send "go depth 5\r"
-expect "*perft 102040304\r\nbestmove 0000\r\n"
+expect "*score 102040304\r\nbestmove 0000\r\n"
 
 send "position fen rnbqkbnr/pppppppp///4P//PPPP1PPP/RNBQKBNR b qkQK e3 0 1 moves g8h6 e4e5 f7f5\r"
 send "go depth 4\r"
 send "position\r"
 expect "info fen rnbqkb1r/ppppp1pp/7n/4Pp2/8/8/PPPP1PPP/RNBQKBNR w KQkq f6\r"
-expect "*perft 11139762\r\nbestmove 0000\r\n"
+expect "*score 11139762\r\nbestmove 0000\r\n"
 
 send "position fen 8/7p/p5pb/4k3/P1pPn3/8/P5PP/1rB2RK1 b - d3 0 28\r"
 send "go depth 5\r"
-expect "*perft 38633283\r\nbestmove 0000\r\n"
+expect "*score 38633283\r\nbestmove 0000\r\n"
 
 send "position fen 8/PPP4k/8/8/8/8/4Kppp/8 w - - 0 1\r"
 send "go depth 5\r"
-expect "*perft 34336777\r\nbestmove 0000\r\n"
+expect "*score 34336777\r\nbestmove 0000\r\n"
 
 send "position fen 2rkr3/5PP1/8/5Q2/5q2/8/5pp1/2RKR3 w KQkq - 0 1\r"
 send "go depth 4\r"
-expect "*perft 94370149\r\nbestmove 0000\r\n"
+expect "*score 94370149\r\nbestmove 0000\r\n"
 
 send "position fen bnrbnkrq/pppppppp/8/8/8/8/PPPPPPPP/BNRBNKRQ w CGkq - 0 1\r"
 send "go depth 5\r"
-expect "*perft 145999259\r\nbestmove 0000\r\n"
+expect "*score 145999259\r\nbestmove 0000\r\n"
 
 send "position fen rbknqnbr/pppppppp/8/8/8/8/PPPPPPPP/RBKNQNBR w ahKQ - 0 1\r"
 send "go depth 5\r"
-expect "*perft 126480040\r\nbestmove 0000\r\n"
+expect "*score 126480040\r\nbestmove 0000\r\n"
 
 send "position fen qbrnnkbr/pppppppp/8/8/8/8/PPPPPPPP/QBRNNKBR w KQkq - 0 1\r"
 send "go depth 5\r"
-expect "*perft 121613156\r\nbestmove 0000\r\n"
+expect "*score 121613156\r\nbestmove 0000\r\n"
 
 send "position fen nqbnrbkr/pppppppp/8/8/8/8/PPPPPPPP/NQBNRBKR w KQkq - 0 1\r"
 send "go depth 5\r"
-expect "*perft 93888956\r\nbestmove 0000\r\n"
+expect "*score 93888956\r\nbestmove 0000\r\n"
 
 send "position fen nrnkbqrb/pppppppp/8/8/8/8/PPPPPPPP/NRNKBQRB w KQkq - 0 1\r"
 send "go depth 5\r"
-expect "*perft 97044730\r\nbestmove 0000\r\n"
+expect "*score 97044730\r\nbestmove 0000\r\n"
 
 send "position fen rbbknnqr/pppppppp/8/8/8/8/PPPPPPPP/RBBKNNQR w KQkq - 0 1\r"
 send "go depth 5\r"
-expect "*perft 124381396\r\nbestmove 0000\r\n"
+expect "*score 124381396\r\nbestmove 0000\r\n"
 
 send "position fen r1k2r1q/p1ppp1pp/8/8/8/8/P1PPP1PP/R1K2R1Q w KQkq - 0 1\r"
 send "go depth 5\r"
-expect "*perft 418430598\r\nbestmove 0000\r\n"
+expect "*score 418430598\r\nbestmove 0000\r\n"
 
 send "position fen 8/8/8/4B2b/6nN/8/5P2/2R1K2k w Q - 0 1\r"
 send "go depth 5\r"
-expect "*perft 44554839\r\nbestmove 0000\r\n"
+expect "*score 44554839\r\nbestmove 0000\r\n"
 
 send "position fen 2r5/8/8/8/8/8/6PP/k2KR3 w K - 0 1\r"
 send "go depth 6\r"
-expect "*perft 259604208\r\nbestmove 0000\r\n"
+expect "*score 259604208\r\nbestmove 0000\r\n"
 
 send "position fen 4r3/3k4/8/8/8/8/6PP/qR1K1R2 w KQ - 0 1\r"
 send "go depth 5\r"
-expect "*perft 281330710\r\nbestmove 0000\r\n"
+expect "*score 281330710\r\nbestmove 0000\r\n"
 
 send "position fen 8/3K4/2p5/p2b2r1/5k2/8/8/1q6 b - - 1 67\r"
 send "go depth 6\r"
-expect "*perft 493407574\r\nbestmove 0000\r\n"
+expect "*score 493407574\r\nbestmove 0000\r\n"
 
 send "position fen 8/p7/8/1P6/K1k3p1/6P1/7P/8 w - -\r"
 send "go depth 7\r"
-expect "*perft 8103790\r\nbestmove 0000\r\n"
+expect "*score 8103790\r\nbestmove 0000\r\n"
 
 send "position fen r3k2r/p6p/8/B7/1pp1p3/3b4/P6P/R3K2R w KQkq -\r"
 send "go depth 5\r"
-expect "*perft 77054993\r\nbestmove 0000\r\n"
+expect "*score 77054993\r\nbestmove 0000\r\n"
 
 send "position fen 8/5p2/8/2k3P1/p3K3/8/1P6/8 b - -\r"
 send "go depth 7\r"
-expect "*perft 64451405\r\nbestmove 0000\r\n"
+expect "*score 64451405\r\nbestmove 0000\r\n"
 
 send "position fen r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1\r"
 send "go depth 5\r"
-expect "*perft 706045033\r\nbestmove 0000\r\n"
+expect "*score 706045033\r\nbestmove 0000\r\n"
 
 send "position startpos moves e2e4 e7e5 f1c4 g8f6 d2d4 c7c6 d4e5 f6e4 g1e2 e4f2 e5e6 f8e7 e6d7 e8f8\r"
 send "position\r"
 send "go depth 2\r"
 expect "info fen rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ -\r"
-expect "*perft 62379\r\nbestmove 0000\r\n"
+expect "*score 62379\r\nbestmove 0000\r\n"
 
 send "position fen r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 25\r"
 send "go depth 4\r"
-expect "*perft 193690690\r\nbestmove 0000\r\n"
+expect "*score 193690690\r\nbestmove 0000\r\n"
 
 send "go\r"
-expect "*perft 8031647685\r\n"
+expect "*score 8031647685\r\n"
 
 send "isready\r"
 expect "readyok\r\n"

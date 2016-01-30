@@ -78,7 +78,7 @@ void UciOutput::info_depth(const SearchInfo& info) const {
 
     ob << "info depth " << info.depth;
     nps(ob, info);
-    ob << " string perft " << info[PerftNodes] << '\n';
+    ob << " score " << info[PerftNodes] << '\n';
 }
 
 void UciOutput::info_currmove(const SearchInfo& info) const {
@@ -89,7 +89,7 @@ void UciOutput::info_currmove(const SearchInfo& info) const {
     ob << " currmove "; write(ob, info.currmove);
 
     nps(ob, info);
-    ob << " string perft " << info[PerftNodes] - info[PerftDivideNodes] << '\n';
+    ob << " score " << info[PerftNodes] - info[PerftDivideNodes] << '\n';
 }
 
 void UciOutput::write(std::ostream& ob, const Move& move) const {
