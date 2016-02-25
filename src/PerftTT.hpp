@@ -1,7 +1,6 @@
 #ifndef PERFT_TT_HPP
 #define PERFT_TT_HPP
 
-#include <limits>
 #include "HashAge.hpp"
 #include "HashBucket.hpp"
 #include "PerftRecord.hpp"

@@ -7,7 +7,7 @@ SearchLimit::SearchLimit () {
 void SearchLimit::clear() {
     movetime = time[My] = time[Op] = inc[My] = inc[Op] = Clock::_t::zero();
     ponder = infinite = perft = divide = false;
-    nodes = std::numeric_limits<node_count_t>::max();
+    nodes = NODE_COUNT_NONE;
 
     movestogo = 0;
     depth = 0;

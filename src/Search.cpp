@@ -31,7 +31,7 @@ namespace Perft {
             auto n = tt.get(zobrist, window.draft);
 
             ++window.control.info[TT_Tried];
-            if (n) {
+            if (n != NODE_COUNT_NONE) {
                 ++window.control.info[TT_Hit];
                 window.control.info[PerftNodes] += n;
                 return false;
@@ -45,7 +45,7 @@ namespace Perft {
         CUT (perft(child, window));
         n = window.control.info[PerftNodes] - n;
 
-        if (n) {
+        if (n != NODE_COUNT_NONE) {
             PerftTT tt(origin, window.control.tt().getAge());
             tt.set(zobrist, window.draft, n);
         }

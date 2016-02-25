@@ -45,7 +45,7 @@ node_count_t PerftTT::get(Zobrist z, depth_t d) {
         return n;
     }
 
-    return 0;
+    return NODE_COUNT_NONE;
 }
 
 void PerftTT::set(Zobrist z, depth_t d, node_count_t n) {
