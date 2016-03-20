@@ -111,11 +111,10 @@ void UciOutput::nps(std::ostream& ob, const SearchInfo& info) const {
             }
         }
 
-        auto tried = info[TT_Tried];
-        if (tried > 0) {
-            auto hit  = info[TT_Hit];
-            auto hh = ::permil(hit, tried);
-            ob << " hashhit " << hit;
+        if (info[TT_Tried] > 0) {
+            ob << " hashhit " << ::permil(info[TT_Hit], info[TT_Tried]);
+            ob << " hits " << info[TT_Hit];
+            ob << " writes " << info[TT_Written];
         }
     }
 }

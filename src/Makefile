@@ -27,11 +27,8 @@ WARNINGS += -pedantic -Wall -Wextra -Wuninitialized -Wpointer-arith -Wcast-qual 
 #WARNINGS += -Wsign-conversion
 WARNINGS += -Wconversion -Wshadow
 
-CXXFLAGS += $(OPTIONS)
-CXXFLAGS += $(OPTIMIZATIONS)
-CXXFLAGS += $(WARNINGS)
-LDFLAGS += $(LIBS)
-LDFLAGS += $(OPTIMIZATIONS)
+CXXFLAGS += $(OPTIONS) $(OPTIMIZATIONS) $(WARNINGS)
+LDFLAGS += $(LIBS) $(OPTIMIZATIONS) -Wl,--no-as-needed
 
 HEADER = StdAfx.hpp
 PRECOMP := $(builddir)/$(HEADER).gch

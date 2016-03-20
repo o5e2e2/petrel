@@ -27,10 +27,9 @@ namespace Perft {
         CUT ( window.control.checkQuota() );
 
         {
-            PerftTT tt(origin, window.control.tt().getAge());
-            auto n = tt.get(zobrist, window.draft);
-
             ++window.control.info[TT_Tried];
+
+            auto n = PerftTT(origin, window.control.tt().getAge()).get(zobrist, window.draft);
             if (n != NODE_COUNT_NONE) {
                 ++window.control.info[TT_Hit];
                 window.control.info[PerftNodes] += n;
@@ -43,12 +42,11 @@ namespace Perft {
 
         auto n = window.control.info[PerftNodes];
         CUT (perft(child, window));
-        n = window.control.info[PerftNodes] - n;
 
-        if (n != NODE_COUNT_NONE) {
-            PerftTT tt(origin, window.control.tt().getAge());
-            tt.set(zobrist, window.draft, n);
-        }
+        ++window.control.info[TT_Written];
+
+        n = window.control.info[PerftNodes] - n;
+        PerftTT(origin, window.control.tt().getAge()).set(zobrist, window.draft, n);
 
         return false;
     }
