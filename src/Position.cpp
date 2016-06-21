@@ -623,19 +623,21 @@ bool Position::setBoard(FenBoard& board, Color colorToMove) {
     return setup();
 }
 
-std::istream& Position::setBoard(std::istream& in, Color* colorToMove) {
+Color Position::setBoard(std::istream& in) {
+    Color colorToMove;
     FenBoard board;
 
-    in >> board >> std::ws >> *colorToMove;
+    in >> board >> std::ws >> colorToMove;
 
-    if (in && !setBoard(board, *colorToMove)) {
+    if (in && !setBoard(board, colorToMove)) {
         io::fail_char(in);
     }
-    return in;
+
+    return colorToMove;
 }
 
-void Position::setFen(std::istream& in, Color& colorToMove) {
-    setBoard(in, &colorToMove);
+Color Position::setFen(std::istream& in) {
+    Color colorToMove = setBoard(in);
     setCastling(in, colorToMove);
     setEnPassant(in, colorToMove);
     zobrist = getZobrist();
@@ -645,11 +647,13 @@ void Position::setFen(std::istream& in, Color& colorToMove) {
         in >> fifty >> moves;
         in.clear(); //ignore missing optional 'fifty' and 'moves' fen fields
     }
+
+    return colorToMove;
 }
 
-void Position::setStartpos(Color& colorToMove) {
+Color Position::setStartpos() {
     std::istringstream startpos{"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"};
-    setFen(startpos, colorToMove);
+    return setFen(startpos);
 }
 
 void Position::fenEnPassant(std::ostream& out, Color colorToMove) const {

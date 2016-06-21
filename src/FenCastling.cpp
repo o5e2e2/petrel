@@ -8,12 +8,13 @@ void FenCastling::insert(const PositionSide& side, Color color, ChessVariant che
         io::char_type castling_symbol;
 
         switch (chessVariant) {
-            case Orthodox:
-                castling_symbol = CastlingRules::castlingSide(side.kingSquare(), side.squareOf(pi)).to_char();
-                break;
-
             case Chess960:
                 castling_symbol = File{side.squareOf(pi)}.to_char();
+                break;
+
+            case Orthodox:
+            default:
+                castling_symbol = CastlingRules::castlingSide(side.kingSquare(), side.squareOf(pi)).to_char();
                 break;
         }
 

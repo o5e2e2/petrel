@@ -1,8 +1,12 @@
 #ifndef SEARCH_LIMIT_HPP
 #define SEARCH_LIMIT_HPP
 
+#include "io.hpp"
 #include "typedefs.hpp"
 #include "Clock.hpp"
+
+class UciOutput;
+class PositionMoves;
 
 class SearchLimit {
     friend class Uci;
@@ -35,6 +39,8 @@ public:
     bool         getDivide() const { return divide; }
 
     Clock::_t getThinkingTime() const;
+
+    void readUci(std::istream&, UciOutput&, PositionMoves*, Color);
 };
 
 #endif

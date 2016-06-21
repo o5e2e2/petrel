@@ -253,13 +253,13 @@ void PositionMoves::limitMoves(std::istream& in, Color colorToMove) {
     }
 }
 
-void Position::makeMoves(std::istream& in, Color* colorToMove) {
+Color Position::makeMoves(std::istream& in, Color colorToMove) {
     PositionMoves moves(*this);
 
     while (in) {
         auto before = in.tellg();
 
-        Move m = (*this)(in, *colorToMove);
+        Move m = (*this)(in, colorToMove);
         if (in) {
             Square from{ m.from() };
             Square to{ m.to() } ;
@@ -268,13 +268,15 @@ void Position::makeMoves(std::istream& in, Color* colorToMove) {
             moves.generateMoves();
             if (moves.is(pi, to)) {
                 makeMove(makeZobrist(from, to), *this, from, to);
-                colorToMove->flip();
+                colorToMove.flip();
                 continue;
             }
         }
 
         io::fail_pos(in, before);
     }
+
+    return colorToMove;
 }
 
 #undef MY

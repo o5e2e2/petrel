@@ -3,18 +3,17 @@
 
 #include "Move.hpp"
 #include "SearchInfo.hpp"
-#include "SearchLimit.hpp"
 #include "SearchThread.hpp"
 #include "SearchWindow.hpp"
 #include "HashMemory.hpp"
 
-class Position;
+class PositionMoves;
+class SearchLimit;
 
 /**
  * Shared data to all search threads (currently the only one)
  */
 class SearchControl {
-    SearchLimit      searchLimit;
     SearchThread     searchThread;
     SearchThread::_t searchSequence;
     SearchWindow     rootWindow;
@@ -37,7 +36,7 @@ public:
     const HashMemory& tt() const { return transpositionTable; }
     void resizeHash(HashMemory::size_t bytes);
 
-    void go(SearchOutput&, const Position&, const SearchLimit&);
+    void go(SearchOutput&, const PositionMoves&, const SearchLimit&);
 
     //callbacks from search thread
     bool checkQuota() { return info.checkQuota(searchThread); }

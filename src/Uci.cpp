@@ -2,22 +2,11 @@
 #include <cstdlib>
 
 #include "Uci.hpp"
-#include "PositionMoves.hpp"
 #include "SearchLimit.hpp"
 
 #define SHOULD_BE_READY  if (!searchControl.isReady()) { io::fail_rewind(command); return; }
 
-namespace {
-    std::istream& operator >> (std::istream& in, Clock::_t& duration) {
-        long milliseconds;
-        if (in >> milliseconds) {
-            duration = std::chrono::duration_cast<Clock::_t>(std::chrono::milliseconds{milliseconds});
-        }
-        return in;
-    }
-}
-
-Uci::Uci (std::ostream& out): searchControl(), uciOutput(out, colorToMove) {
+Uci::Uci (std::ostream& out): uciOutput(out, colorToMove), searchControl(), rootMoves(rootPosition) {
     ucinewgame();
 }
 
@@ -54,8 +43,9 @@ void Uci::operator() (std::istream& in) {
 void Uci::ucinewgame() {
     SHOULD_BE_READY;
 
-    startpos();
     searchControl.clear();
+
+    startpos();
 }
 
 void Uci::setoption() {
@@ -119,54 +109,22 @@ void Uci::position() {
     SHOULD_BE_READY;
 
     if (next("startpos")) { startpos(); }
-    if (next("fen")) { rootPosition.setFen(command, colorToMove); }
+    if (next("fen")) { colorToMove = rootPosition.setFen(command); }
 
     next("moves");
-    rootPosition.makeMoves(command, &colorToMove);
+    colorToMove = rootPosition.makeMoves(command, colorToMove);
 }
 
 void Uci::startpos() {
-    rootPosition.setStartpos(colorToMove);
+    colorToMove = rootPosition.setStartpos();
 }
 
 void Uci::go() {
     SHOULD_BE_READY;
 
-    Side white(colorToMove.is(White)? My : Op);
-    Side black(colorToMove.is(Black)? My : Op);
-
-    PositionMoves searchMoves(rootPosition);
-    searchMoves.generateMoves();
-
-    SearchLimit l;
-    {
-        l.clear();
-        l.perft = true; //DEBUG
-
-        while (command) {
-            if      (next("depth"))    { command >> l.depth; l.depth = std::min(l.depth, l.MaxDepth); }
-            else if (next("wtime"))    { command >> l.time[white]; }
-            else if (next("btime"))    { command >> l.time[black]; }
-            else if (next("winc"))     { command >> l.inc[white]; }
-            else if (next("binc"))     { command >> l.inc[black]; }
-            else if (next("movestogo")){ command >> l.movestogo; }
-            else if (next("nodes"))    { command >> l.nodes; }
-            else if (next("movetime")) { command >> l.movetime; }
-            else if (next("ponder"))   { l.ponder = true; }
-            else if (next("infinite")) { l.infinite = true; }
-            else if (next("perft"))    { l.perft = true; }
-            else if (next("divide"))   { l.divide = true; }
-            else if (next("searchmoves")) { searchMoves.limitMoves(command, colorToMove); }
-            else if (next(""))         { break; }
-            else {
-                std::string token;
-                command >> token;
-                uciOutput.error(std::string("ignoring token: ") + token);
-            }
-        }
-    }
-
-    searchControl.go(uciOutput, rootPosition, std::move(l));
+    rootMoves.generateMoves();
+    searchLimit.readUci(command, uciOutput, &rootMoves, colorToMove);
+    searchControl.go(uciOutput, rootMoves, searchLimit);
 }
 
 void Uci::echo() const {

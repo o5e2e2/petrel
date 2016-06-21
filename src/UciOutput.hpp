@@ -35,9 +35,10 @@ public:
     void uciok(const SearchControl&) const;
     void info_fen(const Position&) const;
     void echo(std::istream&) const;
-    void error(std::istream&) const;
-    void error(const std::string&) const;
     void set(ChessVariant v) { chessVariant = v; }
+
+    void error(std::istream&) const override;
+    void error(const std::string&) const override;
 
     //called from Search
     void readyok(const SearchInfo&) const override;

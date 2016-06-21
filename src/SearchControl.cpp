@@ -1,5 +1,6 @@
 #include "SearchControl.hpp"
 #include "SearchLimit.hpp"
+#include "PositionMoves.hpp"
 #include "Timer.hpp"
 
 SearchControl::SearchControl () : rootWindow(*this) { clear(); }
@@ -19,9 +20,7 @@ void SearchControl::nextIteration() {
     transpositionTable.nextAge();
 }
 
-void SearchControl::go(SearchOutput& output, const Position& pos, const SearchLimit& l) {
-    searchLimit = l;
-
+void SearchControl::go(SearchOutput& output, const PositionMoves& rootMoves, const SearchLimit& searchLimit) {
     info.clear();
     info.out = &output;
     info.nodesLimit = searchLimit.getNodes();
@@ -29,6 +28,6 @@ void SearchControl::go(SearchOutput& output, const Position& pos, const SearchLi
     rootWindow.draft = searchLimit.getDepth();
     rootWindow.searchFn = searchLimit.getDivide()? PerftDivide::perft : Perft::perft;
 
-    searchThread.set(PerftRoot::perft, pos, rootWindow);
+    searchThread.set(PerftRoot::perft, rootMoves.getPos(), rootWindow);
     searchSequence = Timer::start(searchThread, searchLimit.getThinkingTime());
 }

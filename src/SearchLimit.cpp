@@ -1,4 +1,16 @@
 #include "SearchLimit.hpp"
+#include "PositionMoves.hpp"
+#include "UciOutput.hpp"
+
+namespace {
+    std::istream& operator >> (std::istream& in, Clock::_t& duration) {
+        long milliseconds;
+        if (in >> milliseconds) {
+            duration = std::chrono::duration_cast<Clock::_t>(std::chrono::milliseconds{milliseconds});
+        }
+        return in;
+    }
+}
 
 SearchLimit::SearchLimit () {
     clear();
@@ -21,4 +33,34 @@ Clock::_t SearchLimit::getThinkingTime() const {
     auto average = (time[My] + moves_to_go*inc[My]) / moves_to_go;
 
     return std::min(time[My], average);
+}
+
+void SearchLimit::readUci(std::istream& command, UciOutput& uciOutput, PositionMoves* searchMoves, Color colorToMove) {
+    Side white = colorToMove.is(White)? My : Op;
+    Side black = colorToMove.is(Black)? My : Op;
+
+    clear();
+    perft = true; //DEBUG
+
+    while (command) {
+        if      (io::next(command, "depth"))    { command >> depth; depth = std::min(depth, MaxDepth); }
+        else if (io::next(command, "wtime"))    { command >> time[white]; }
+        else if (io::next(command, "btime"))    { command >> time[black]; }
+        else if (io::next(command, "winc"))     { command >> inc[white]; }
+        else if (io::next(command, "binc"))     { command >> inc[black]; }
+        else if (io::next(command, "movestogo")){ command >> movestogo; }
+        else if (io::next(command, "nodes"))    { command >> nodes; }
+        else if (io::next(command, "movetime")) { command >> movetime; }
+        else if (io::next(command, "ponder"))   { ponder = true; }
+        else if (io::next(command, "infinite")) { infinite = true; }
+        else if (io::next(command, "perft"))    { perft = true; }
+        else if (io::next(command, "divide"))   { divide = true; }
+        else if (io::next(command, "searchmoves")) { searchMoves->limitMoves(command, colorToMove); }
+        else if (io::next(command, ""))         { break; }
+        else {
+            std::string token;
+            command >> token;
+            uciOutput.error(std::string("ignoring token: ") + token);
+        }
+    }
 }

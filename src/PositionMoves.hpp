@@ -34,6 +34,9 @@ public:
     const PositionSide& side(Side) const;
     MatrixPiBb& getMoves() { return moves; }
 
+    const MatrixPiBb& getMoves() const { return moves; }
+    const Position& getPos() const { return pos; }
+
     bool is(Pi pi, Square to) const { return moves.is(pi, to); }
 
     void limitMoves(std::istream&, Color);

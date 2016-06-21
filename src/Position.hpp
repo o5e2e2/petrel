@@ -40,7 +40,7 @@ private:
     bool setCastling(Side, CastlingSide);
     bool setEnPassant(File);
 
-    std::istream& setBoard(std::istream&, Color*);
+    Color setBoard(std::istream&);
     std::istream& setCastling(std::istream&, Color);
     std::istream& setEnPassant(std::istream&, Color);
 
@@ -63,9 +63,9 @@ public:
     Zobrist makeZobrist(Square from, Square to) const;
 
     //initial position setup
-    void setFen(std::istream& in, Color&);
-    void setStartpos(Color&);
-    void makeMoves(std::istream&, Color* colorToMove);
+    Color setStartpos();
+    Color setFen(std::istream&);
+    Color makeMoves(std::istream&, Color);
 
     void fen(std::ostream&, Color, ChessVariant) const;
     Move operator() (Square, Square) const;

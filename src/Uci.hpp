@@ -4,15 +4,21 @@
 #include "io.hpp"
 #include "typedefs.hpp"
 #include "Position.hpp"
+#include "PositionMoves.hpp"
 #include "SearchControl.hpp"
+#include "SearchLimit.hpp"
 #include "UciOutput.hpp"
 
 class Uci {
-    SearchControl searchControl;
     UciOutput uciOutput;
 
+    Color colorToMove;  //root position color needed for moves input/output
+
+    SearchControl searchControl;
+    SearchLimit searchLimit;
+
     Position rootPosition; //initial chess position to analyze
-    Color    colorToMove;  //root position color needed for moves input/output
+    PositionMoves rootMoves; //'go searchmoves'
 
     mutable std::istringstream command; //current input command line
 
