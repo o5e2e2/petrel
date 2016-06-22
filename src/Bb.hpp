@@ -25,9 +25,10 @@ class Bb : public BitSet<Bb, Square, std::uint64_t> {
 
 public:
     constexpr Bb () : BitSet() {}
+    constexpr explicit Bb (_t v) : BitSet{v} {}
+
     constexpr Bb (Square sq) : BitSet(sq) {}
     constexpr Bb (Square::_t sq) : BitSet(sq) {}
-    constexpr explicit Bb (_t v) : BitSet(v) {}
 
     constexpr explicit Bb (File::_t f) : Bb{BB(0x0101010101010101) << f} {}
     constexpr explicit Bb (Rank::_t r) : Bb{BB(0xff) << 8*r} {}

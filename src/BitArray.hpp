@@ -9,7 +9,7 @@ class BitArrayBase {
 protected:
     typedef _ValueType _t;
 
-    constexpr BitArrayBase () : _v(0) {}
+    constexpr BitArrayBase () : _v{} {}
     constexpr explicit BitArrayBase (_t v) : _v(v) {}
     constexpr explicit operator _t () const { return _v; }
 

@@ -6,7 +6,7 @@
 
 #define SHOULD_BE_READY  if (!searchControl.isReady()) { io::fail_rewind(command); return; }
 
-Uci::Uci (std::ostream& out): uciOutput(out, colorToMove), searchControl(), rootMoves(rootPosition) {
+Uci::Uci (std::ostream& out): uciOutput(out, colorToMove), searchControl{}, rootMoves(rootPosition) {
     ucinewgame();
 }
 

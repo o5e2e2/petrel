@@ -20,7 +20,7 @@ namespace {
 }
 
 UciOutput::UciOutput (std::ostream& o, const Color& c)
-    : out(o), colorToMove(c), chessVariant(Orthodox), isreadyWaiting(false) {}
+    : out(o), colorToMove(c), chessVariant{Orthodox}, isreadyWaiting{false} {}
 
 void UciOutput::uciok(const SearchControl& search) const {
     auto& hashMemory = search.tt();

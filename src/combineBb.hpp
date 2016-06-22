@@ -1,5 +1,5 @@
-#ifndef DUAL_BB_HPP
-#define DUAL_BB_HPP
+#ifndef COMBINE_BB_HPP
+#define COMBINE_BB_HPP
 
 #include "bitops128.hpp"
 #include "Bb.hpp"

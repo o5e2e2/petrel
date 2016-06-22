@@ -19,8 +19,8 @@ class VectorPiMask : public BitArray<VectorPiMask, __m128i> {
     }
 
 public:
-    VectorPiMask (_t v) : BitArray(v) { assert (isOk()); }
-    VectorPiMask (Pi pi) : BitArray(::vectorPiSingle[pi]) {}
+    VectorPiMask (_t v) : BitArray{v} { assert (isOk()); }
+    VectorPiMask (Pi pi) : BitArray{::vectorPiSingle[pi]} {}
 
     static VectorPiMask negate(_t v) { return VectorPiMask{ _mm_cmpeq_epi8(v, ::vectorOfAll[0]) }; }
 

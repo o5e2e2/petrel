@@ -14,10 +14,11 @@ protected:
 public:
     using typename Base::_t;
 
-    constexpr BitSet () : Base() {}
-    constexpr explicit BitSet (_t v) : Base(v) {}
-    constexpr BitSet (Index i) : BitSet(::singleton<_t>(i)) {}
-    constexpr BitSet (typename Index::_t i) : BitSet(::singleton<_t>(i)) {}
+    constexpr BitSet () : Base{} {}
+    constexpr explicit BitSet (_t v) : Base{v} {}
+
+    constexpr BitSet (Index i) : BitSet{::singleton<_t>(i)} {}
+    constexpr BitSet (typename Index::_t i) : BitSet{::singleton<_t>(i)} {}
 
     constexpr _t without_lsb() const { return ::without_lsb(this->_v); }
 

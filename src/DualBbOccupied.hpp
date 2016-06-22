@@ -2,7 +2,7 @@
 #define DUAL_BB_OCCUPIED_HPP
 
 #include "typedefs.hpp"
-#include "DualBb.hpp"
+#include "combineBb.hpp"
 #include "BitArray128Reverse.hpp"
 
 class DualBbOccupied {

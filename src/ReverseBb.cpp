@@ -1,5 +1,5 @@
 #include "ReverseBb.hpp"
-#include "DualBb.hpp"
+#include "combineBb.hpp"
 
 ReverseBb::Singleton::Singleton () {
     FOR_INDEX(Square, sq) {

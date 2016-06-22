@@ -24,8 +24,8 @@ class Move {
     typedef index_t _t;
     _t _v;
 
-    constexpr Move (Square f, Square t) : _v(static_cast<_t>(f<<FromShift | t<<ToShift)) {}
-    constexpr Move (Square f, Square t, Type is_special) : _v(static_cast<_t>(f<<FromShift | t<<ToShift | is_special<<SpecialShift)) {}
+    constexpr Move (Square f, Square t) : _v{static_cast<_t>(f<<FromShift | t<<ToShift)} {}
+    constexpr Move (Square f, Square t, Type is_special) : _v{static_cast<_t>(f<<FromShift | t<<ToShift | is_special<<SpecialShift)} {}
 
     constexpr static Move promotion(Square f, Square t, PromoType ty) { return Move{f, Square{File(t), static_cast<Rank::_t>(+ty)}, Special}; }
     constexpr static Move special(Square f, Square t) { return Move{f, t, Special}; }
@@ -38,7 +38,7 @@ class Move {
     constexpr bool isSpecial() const { return (_v & 1<<SpecialShift) != 0; }
 
 public:
-    constexpr Move () : _v(0) {} //null move
+    constexpr Move () : _v{0} {} //null move
 
     constexpr Square from() const { return static_cast<Square::_t>(_v >>FromShift & Square::Mask); }
     constexpr Square to()   const { return static_cast<Square::_t>(_v >>ToShift & Square::Mask); }

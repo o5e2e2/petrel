@@ -10,10 +10,10 @@
 #include "VectorPiSingle.hpp"
 
 struct VectorPiRank : VectorPiBit<VectorPiRank, File> {
-    constexpr VectorPiRank () : VectorPiBit() {}
-    explicit VectorPiRank (BitRank br) : VectorPiBit(::vectorOfAll[br]) {}
-    explicit VectorPiRank (File f) : VectorPiBit(::vectorOfAll[BitRank{f}]) {}
-    VectorPiRank (VectorPiMask m) : VectorPiBit(static_cast<VectorPiMask::_t>(m)) {}
+    constexpr VectorPiRank () : VectorPiBit{} {}
+    explicit VectorPiRank (BitRank br) : VectorPiBit{::vectorOfAll[br]} {}
+    explicit VectorPiRank (File f) : VectorPiBit{::vectorOfAll[BitRank{f}]} {}
+    VectorPiRank (VectorPiMask m) : VectorPiBit{static_cast<VectorPiMask::_t>(m)} {}
 
     BitRank gather() const {
         _t v = this->_v;
