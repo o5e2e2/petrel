@@ -24,7 +24,7 @@ public:
         return *this;
     }
 
-    void save(Index i, __m128i m) {
+    void set(Index i, __m128i m) {
         _mm_stream_si128(&_v[i], m);
     }
 

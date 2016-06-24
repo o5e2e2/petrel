@@ -20,11 +20,11 @@ class PerftTT {
         } b;
     };
 
-    HashBucket& origin;
+    HashBucket* origin;
     HashAge age;
 
 public:
-    PerftTT(HashBucket* p, HashAge a) : m(*p), origin(*p), age(a) {}
+    PerftTT(HashBucket* p, HashAge a) : m(*p), origin(p), age(a) {}
 
     node_count_t get(Zobrist z, depth_t d);
     void set(Zobrist z, depth_t d, node_count_t n);
