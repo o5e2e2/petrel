@@ -19,6 +19,8 @@ class Position {
 private:
     void set(Side, Pi, PieceType, Square);
 
+    template <Side::_t My> bool isPinned(Square, Bb, Bb) const;
+
     template <Side::_t> void setLegalEnPassant(Pi);
 
     template <Side::_t> void move(Pi, Square, Square);

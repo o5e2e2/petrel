@@ -40,6 +40,16 @@ DEPS := $(patsubst %.o, %.d, $(OBJECTS))
 
 -include $(DEPS)
 
+.PHONY: all check clean
+
+all: $(builddir)/$(TARGET)
+
+check: all
+	$(builddir)/$(TARGET) $(checkrc)
+
+clean:
+	$(RM) -r *.o *.gch *.d $(debugdir) $(releasedir)
+
 $(builddir)/$(TARGET): $(PRECOMP) $(OBJECTS)
 	$(CXX) -o $@ $(LDFLAGS) $(OBJECTS)
 
@@ -51,13 +61,3 @@ $(PRECOMP): $(HEADER) | $(builddir)
 
 $(builddir):
 	mkdir -p $@
-
-.PHONY: all check clean
-
-all: $(builddir)/$(TARGET)
-
-check: all
-	$(builddir)/$(TARGET) $(checkrc)
-
-clean:
-	$(RM) -r *.o *.gch *.d $(debugdir) $(releasedir)

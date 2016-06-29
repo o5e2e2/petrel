@@ -68,7 +68,7 @@ public:
     VectorPiMask sliders() const { return types.sliders(); }
     bool isSlider(Pi pi) const { assertValid(pi); return types.isSlider(pi); }
 
-    bool isPinnable(Square from, Square to) const;
+    bool canBeAttacked(Square from, Square to) const;
 
     VectorPiMask castlingRooks() const { return types.castlingRooks(); }
     bool isCastling(Pi pi) const { assertValid(pi); return types.isCastling(pi); }

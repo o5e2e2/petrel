@@ -252,7 +252,7 @@ const Bb& PositionSide::pinRayFrom(Square from) const {
     return ::between(kingSquare(), from);
 }
 
-bool PositionSide::isPinnable(Square from, Square to) const {
+bool PositionSide::canBeAttacked(Square from, Square to) const {
     Pi pi = pieceOn(from);
     bool result = ::pieceTypeAttack(typeOf(pi), from)[to];
     assert (!result || isSlider(pi));
