@@ -16,13 +16,8 @@ public:
 public:
     constexpr const PerftRecordSmall& operator[] (Index i) const { return s[i]; }
 
-    void swap() {
-        m = _mm_swap_epi64(m);
-    }
-
-    void set(Zobrist::_t z, node_count_t n) {
-        swap();
-        s[0].set(z, n);
+    void set(Index i, Zobrist::_t z, node_count_t n) {
+        s[i].set(z, n);
     }
 
 };

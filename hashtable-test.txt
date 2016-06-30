@@ -1,79 +1,79 @@
 128k
-info depth 8 nodes 4496081 time 485 nps 9270270 hashhit 453 hits 399856 writes 482843 score 611402662
-info depth 9 nodes 33339447 time 3585 nps 9299706 hashhit 485 hits 3279425 writes 3488376 score 5894226148
-info depth 10 nodes 244520580 time 26159 nps 9347474 hashhit 508 hits 26896086 writes 26019383 score 57658060464
+info depth 8 nodes 4120581 time 445 nps 9259732 hashhit 358 hits 246401 writes 442073 score 611402662
+info depth 9 nodes 32019506 time 3479 nps 9203652 hashhit 361 hits 1883183 writes 3328155 score 5894226148
+info depth 10 nodes 231854406 time 24879 nps 9319281 hashhit 374 hits 14654981 writes 24566044 score 57658060464
 
 256k
-info depth 8 nodes 2547891 time 302 nps 8436725 hashhit 495 hits 269127 writes 274454 score 611402662
-info depth 9 nodes 19370084 time 2126 nps 9111046 hashhit 488 hits 1901746 writes 1995767 score 5894226148
-info depth 10 nodes 135895416 time 14710 nps 9238301 hashhit 521 hits 15679732 writes 14389999 score 57658060464
+info depth 8 nodes 2330922 time 281 nps 8295096 hashhit 435 hits 193891 writes 251430 score 611402662
+info depth 9 nodes 17674186 time 1962 nps 9008249 hashhit 373 hits 1079411 writes 1811131 score 5894226148
+info depth 10 nodes 127784500 time 13865 nps 9216336 hashhit 406 hits 9193168 writes 13441548 score 57658060464
 
 512k
-info depth 8 nodes 1593786 time 201 nps 7929283 hashhit 566 hits 225891 writes 173138 score 611402662
-info depth 9 nodes 10601388 time 1175 nps 9022457 hashhit 508 hits 1114520 writes 1080641 score 5894226148
-info depth 10 nodes 73867139 time 8070 nps 9153300 hashhit 523 hits 8481029 writes 7731211 score 57658060464
+info depth 8 nodes 1631567 time 211 nps 7732545 hashhit 515 hits 188310 writes 176991 score 611402662
+info depth 9 nodes 10157449 time 1129 nps 8996854 hashhit 425 hits 759698 writes 1027535 score 5894226148
+info depth 10 nodes 68738835 time 7504 nps 9160292 hashhit 425 hits 5271683 writes 7125078 score 57658060464
 
 1m
-info depth 8 nodes 1174674 time 160 nps 7341712 hashhit 644 hits 233081 writes 128771 score 611402662
-info depth 9 nodes 6091244 time 671 nps 9077859 hashhit 591 hits 895170 writes 619028 score 5894226148
-info depth 10 nodes 41449279 time 4586 nps 9038220 hashhit 536 hits 4928894 writes 4270341 score 57658060464
+info depth 8 nodes 1256438 time 169 nps 7434544 hashhit 603 hits 208807 writes 137330 score 611402662
+info depth 9 nodes 6091708 time 675 nps 9024752 hashhit 535 hits 701957 writes 609058 score 5894226148
+info depth 10 nodes 38869466 time 4316 nps 9005900 hashhit 450 hits 3252154 writes 3976045 score 57658060464
 
 2m
-info depth 8 nodes 1022326 time 139 nps 7354863 hashhit 679 hits 238385 writes 112457 score 611402662
-info depth 9 nodes 3935757 time 427 nps 9217229 hashhit 670 hits 812032 writes 399805 score 5894226148
-info depth 10 nodes 24019656 time 2723 nps 8821026 hashhit 559 hits 3101617 writes 2450595 score 57658060464
+info depth 8 nodes 1058611 time 111 nps 9537036 hashhit 658 hits 223535 writes 116299 score 611402662
+info depth 9 nodes 3949132 time 430 nps 9184027 hashhit 637 hits 698594 writes 397629 score 5894226148
+info depth 10 nodes 22039271 time 2458 nps 8966342 hashhit 495 hits 2205596 writes 2247771 score 57658060464
 
 4m
-info depth 8 nodes 982620 time 102 nps 9633529 hashhit 685 hits 235558 writes 108123 score 611402662
-info depth 9 nodes 3203761 time 343 nps 9340411 hashhit 701 hits 763244 writes 325313 score 5894226148
-info depth 10 nodes 14993517 time 1688 nps 8882415 hashhit 602 hits 2312592 writes 1526807 score 57658060464
+info depth 8 nodes 991533 time 137 nps 7237467 hashhit 675 hits 226920 writes 109051 score 611402662
+info depth 9 nodes 3210877 time 346 nps 9279991 hashhit 681 hits 694572 writes 325647 score 5894226148
+info depth 10 nodes 14808173 time 1651 nps 8969214 hashhit 559 hits 1904678 writes 1505003 score 57658060464
 
 8m
-info depth 8 nodes 972399 time 109 nps 8921091 hashhit 684 hits 231974 writes 107012 score 611402662
-info depth 9 nodes 3008289 time 322 nps 9342512 hashhit 706 hits 732217 writes 304613 score 5894226148
-info depth 10 nodes 11040595 time 1246 nps 8860830 hashhit 660 hits 2191482 writes 1128971 score 57658060464
+info depth 8 nodes 973424 time 126 nps 7725587 hashhit 680 hits 227192 writes 107107 score 611402662
+info depth 9 nodes 3000456 time 323 nps 9289337 hashhit 693 hits 686641 writes 303775 score 5894226148
+info depth 10 nodes 11567559 time 1296 nps 8925585 hashhit 623 hits 1945809 writes 1178308 score 57658060464
 
 16m
-info depth 8 nodes 968831 time 109 nps 8888357 hashhit 683 hits 229748 writes 106624 score 611402662
-info depth 9 nodes 2950176 time 315 nps 9365638 hashhit 704 hits 710992 writes 298272 score 5894226148
-info depth 10 nodes 9493534 time 1058 nps 8973094 hashhit 693 hits 2194212 writes 973329 score 57658060464
+info depth 8 nodes 968303 time 134 nps 7226141 hashhit 681 hits 227032 writes 106556 score 611402662
+info depth 9 nodes 2935801 time 316 nps 9290509 hashhit 696 hits 681055 writes 296778 score 5894226148
+info depth 10 nodes 9789835 time 1086 nps 9014581 hashhit 669 hits 2022773 writes 1001771 score 57658060464
 
 32m
-info depth 8 nodes 967086 time 134 nps 7217059 hashhit 682 hits 228387 writes 106442 score 611402662
-info depth 9 nodes 2928432 time 314 nps 9326216 hashhit 702 hits 698263 writes 295903 score 5894226148
-info depth 10 nodes 9032208 time 998 nps 9050308 hashhit 699 hits 2147583 writes 925584 score 57658060464
+info depth 8 nodes 966452 time 133 nps 7266556 hashhit 681 hits 226792 writes 106362 score 611402662
+info depth 9 nodes 2912672 time 313 nps 9305661 hashhit 697 hits 677179 writes 294258 score 5894226148
+info depth 10 nodes 9095161 time 996 nps 9131687 hashhit 686 hits 2039279 writes 931597 score 57658060464
 
 64m
-info depth 8 nodes 966458 time 103 nps 9383087 hashhit 682 hits 227867 writes 106371 score 611402662
-info depth 9 nodes 2916711 time 309 nps 9439194 hashhit 701 hits 689524 writes 294631 score 5894226148
-info depth 10 nodes 8901300 time 974 nps 9138911 hashhit 697 hits 2099986 writes 911493 score 57658060464
+info depth 8 nodes 965718 time 99 nps 9754727 hashhit 681 hits 226738 writes 106284 score 611402662
+info depth 9 nodes 2904281 time 309 nps 9398967 hashhit 697 hits 675267 writes 293335 score 5894226148
+info depth 10 nodes 8892504 time 965 nps 9215030 hashhit 691 hits 2031345 writes 910433 score 57658060464
 
 128m
-info depth 8 nodes 966142 time 111 nps 8703981 hashhit 682 hits 227594 writes 106336 score 611402662
-info depth 9 nodes 2910658 time 309 nps 9419605 hashhit 700 hits 684454 writes 293979 score 5894226148
-info depth 10 nodes 8846450 time 967 nps 9148345 hashhit 695 hits 2063970 writes 905487 score 57658060464
+info depth 8 nodes 965317 time 132 nps 7313007 hashhit 681 hits 226683 writes 106243 score 611402662
+info depth 9 nodes 2900695 time 311 nps 9326993 hashhit 697 hits 674234 writes 292931 score 5894226148
+info depth 10 nodes 8823720 time 956 nps 9229832 hashhit 691 hits 2018946 writes 903009 score 57658060464
 
 256m
-info depth 8 nodes 966016 time 115 nps 8400139 hashhit 681 hits 227482 writes 106322 score 611402662
-info depth 9 nodes 2908191 time 309 nps 9411621 hashhit 699 hits 682281 writes 293711 score 5894226148
-info depth 10 nodes 8824900 time 963 nps 9163966 hashhit 694 hits 2047130 writes 903142 score 57658060464
+info depth 8 nodes 965172 time 131 nps 7367725 hashhit 681 hits 226640 writes 106228 score 611402662
+info depth 9 nodes 2899446 time 309 nps 9383320 hashhit 697 hits 673811 writes 292786 score 5894226148
+info depth 10 nodes 8799693 time 950 nps 9262834 hashhit 691 hits 2013632 writes 900345 score 57658060464
 
 512m
-info depth 8 nodes 965978 time 100 nps 9659780 hashhit 681 hits 227449 writes 106317 score 611402662
-info depth 9 nodes 2906629 time 309 nps 9406566 hashhit 699 hits 680912 writes 293541 score 5894226148
-info depth 10 nodes 8815045 time 961 nps 9172783 hashhit 693 hits 2038855 writes 902052 score 57658060464
+info depth 8 nodes 965099 time 134 nps 7202231 hashhit 681 hits 226647 writes 106221 score 611402662
+info depth 9 nodes 2898619 time 309 nps 9380644 hashhit 697 hits 673491 writes 292693 score 5894226148
+info depth 10 nodes 8788849 time 947 nps 9280727 hashhit 691 hits 2010260 writes 899136 score 57658060464
 
 1g
-info depth 8 nodes 965978 time 124 nps 7790145 hashhit 681 hits 227449 writes 106317 score 611402662
-info depth 9 nodes 2906081 time 309 nps 9404792 hashhit 699 hits 680425 writes 293480 score 5894226148
-info depth 10 nodes 8810068 time 958 nps 9196313 hashhit 693 hits 2034579 writes 901505 score 57658060464
+info depth 8 nodes 965099 time 133 nps 7256383 hashhit 681 hits 226647 writes 106221 score 611402662
+info depth 9 nodes 2898361 time 311 nps 9319488 hashhit 697 hits 673400 writes 292665 score 5894226148
+info depth 10 nodes 8784138 time 958 nps 9169246 hashhit 691 hits 2008697 writes 898617 score 57658060464
 
 2g
-info depth 8 nodes 965978 time 109 nps 8862183 hashhit 681 hits 227449 writes 106317 score 611402662
-info depth 9 nodes 2905784 time 308 nps 9434363 hashhit 699 hits 680162 writes 293446 score 5894226148
-info depth 10 nodes 8808212 time 958 nps 9194375 hashhit 693 hits 2032979 writes 901302 score 57658060464
+info depth 8 nodes 965088 time 132 nps 7311272 hashhit 681 hits 226648 writes 106220 score 611402662
+info depth 9 nodes 2898246 time 310 nps 9349180 hashhit 697 hits 673383 writes 292652 score 5894226148
+info depth 10 nodes 8781559 time 946 nps 9282831 hashhit 691 hits 2008015 writes 898342 score 57658060464
 
 4g
-info depth 8 nodes 965978 time 109 nps 8862183 hashhit 681 hits 227449 writes 106317 score 611402662
-info depth 9 nodes 2905677 time 310 nps 9373151 hashhit 699 hits 680065 writes 293436 score 5894226148
-info depth 10 nodes 8807516 time 962 nps 9155422 hashhit 693 hits 2032360 writes 901225 score 57658060464
+info depth 8 nodes 965088 time 134 nps 7202149 hashhit 681 hits 226648 writes 106220 score 611402662
+info depth 9 nodes 2898214 time 313 nps 9259469 hashhit 697 hits 673372 writes 292648 score 5894226148
+info depth 10 nodes 8780544 time 955 nps 9194286 hashhit 691 hits 2007768 writes 898232 score 57658060464
