@@ -66,7 +66,7 @@ void PositionMoves::generatePawnMoves() {
 
     for (Pi pi : MY.pawns()) {
         Square from{ MY.squareOf(pi) };
-        Rank rankTo{ up(Rank{from}) };
+        Rank rankTo{ ::rankForward(Rank{from}) };
         BitRank fileTo{File{from}};
 
         //push to free square
@@ -101,10 +101,10 @@ void PositionMoves::correctCheckEvasionsByPawns(Bb checkLine, Square checkFrom) 
         for (Square from : MY.occupiedByPawns() & badPawnsPlaces) {
             Pi pi{MY.pieceOn(from)};
 
-            Bb bb{Bb{from.rankUp()} % OCCUPIED & checkLine};
+            Bb bb{Bb{from.rankForward()} % OCCUPIED & checkLine};
             bb += ::pieceTypeAttack(Pawn, from) & checkFrom;
 
-            Rank rank{from.rankUp()};
+            Rank rank = rankForward(Rank(from));
             moves.set(pi, rank, bb[rank]);
         }
     }
