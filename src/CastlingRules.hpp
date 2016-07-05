@@ -25,7 +25,7 @@ public:
                     continue;
                 }
 
-                switch (castlingSide(king, rook)) {
+                switch (::castlingSide(king, rook)) {
                     case QueenSide:
                         castlingRules[kingFile][rookFile].unimpeded  = ((::between(king, C1)+C1) | (::between(rook, D1)+D1)) % (Bb{king} + rook);
                         castlingRules[kingFile][rookFile].unattacked = (::between(king, C1)+C1) | king;
@@ -47,12 +47,6 @@ public:
         return (occupied & castlingRules[File(king)][File(rook)].unimpeded).none() && (attacked & castlingRules[File(king)][File(rook)].unattacked).none();
     }
 
-    static CastlingSide castlingSide(Square king, Square rook) {
-        assert (king.is(Rank1));
-        assert (rook.is(Rank1));
-        assert (king != rook);
-        return (rook < king)? QueenSide : KingSide;
-    }
 };
 
 extern const CastlingRules castlingRules;

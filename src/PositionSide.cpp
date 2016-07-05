@@ -1,6 +1,5 @@
 #include "PositionSide.hpp"
 #include "BetweenSquares.hpp"
-#include "CastlingRules.hpp"
 #include "PieceTypeAttack.hpp"
 #include "ReverseBb.hpp"
 
@@ -196,7 +195,7 @@ bool PositionSide::setCastling(CastlingSide castlingSide) {
     Square outerSquare{ kingSquare() };
 
     for (Pi rook : piecesOfType(Rook) & piecesOn(Rank1)) {
-        if (CastlingRules::castlingSide(outerSquare, squareOf(rook)).is(castlingSide)) {
+        if (::castlingSide(outerSquare, squareOf(rook)).is(castlingSide)) {
             outerSquare = squareOf(rook);
         }
     }

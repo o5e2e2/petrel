@@ -1,5 +1,4 @@
 #include "FenCastling.hpp"
-#include "CastlingRules.hpp"
 #include "Position.hpp"
 #include "PositionSide.hpp"
 
@@ -14,7 +13,7 @@ void FenCastling::insert(const PositionSide& side, Color color, ChessVariant che
 
             case Orthodox:
             default:
-                castling_symbol = CastlingRules::castlingSide(side.kingSquare(), side.squareOf(pi)).to_char();
+                castling_symbol = ::castlingSide(side.kingSquare(), side.squareOf(pi)).to_char();
                 break;
         }
 
