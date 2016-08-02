@@ -111,6 +111,7 @@ public:
     void clear(PieceType::_t ty, Square from) { _v -= pst(ty, from); }
 
     void move(PieceType::_t ty, Square from, Square to) {
+        assert (from != to);
         clear(ty, from);
         drop(ty, to);
     }

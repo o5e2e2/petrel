@@ -27,7 +27,7 @@ public:
 
     void clear() { *this = {}; }
 
-    void drop(PieceType::_t ty, Square to) { drop(Index(ty), to); }
+    void drop(PieceType::_t ty, Square to) { drop(Index{ty}, to); }
     void clear(PieceType::_t ty, Square from) { drop(ty, from); }
 
     void setCastling(Square sq)  { assert (sq.is(Rank1)); drop(Castling, sq); }
@@ -38,6 +38,7 @@ public:
     void clearEnPassant(Square sq) { setEnPassant(sq); }
 
     void move(PieceType ty, Square from, Square to) {
+        assert (from != to);
         clear(ty, from);
         drop(ty, to);
     }

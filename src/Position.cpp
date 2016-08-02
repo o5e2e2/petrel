@@ -406,8 +406,10 @@ Zobrist Position::makeZobrist(Square from, Square to) const {
         Square kingTo = ::castlingSide(kingFrom, rookFrom).is(QueenSide)? C1 : G1;
         Square rookTo = ::castlingSide(kingFrom, rookFrom).is(QueenSide)? D1 : F1;
 
-        mz.move(King, kingFrom, kingTo);
-        mz.move(Rook, rookFrom, rookTo);
+        mz.clear(King, kingFrom);
+        mz.clear(Rook, rookFrom);
+        mz.drop(King, kingTo);
+        mz.drop(Rook, rookTo);
         return Zobrist{oz, mz};
     }
     else if (ty.is(King)) {
