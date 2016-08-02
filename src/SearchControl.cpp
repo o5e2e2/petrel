@@ -29,5 +29,5 @@ void SearchControl::go(SearchOutput& output, const PositionMoves& rootMoves, con
     rootWindow.searchFn = searchLimit.getDivide()? PerftDivide::perft : Perft::perft;
 
     searchThread.set(PerftRoot::perft, rootMoves.getPos(), rootWindow);
-    searchSequence = Timer::start(searchThread, searchLimit.getThinkingTime());
+    searchSequence = Timer::run(timerPool, searchThread, searchLimit.getThinkingTime());
 }

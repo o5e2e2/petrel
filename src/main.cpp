@@ -38,8 +38,6 @@ template <> io::literal File::The_string{"abcdefgh"};
 template <> io::literal Rank::The_string{"87654321"};
 template <> io::literal Pi::The_string{"K123456789abcdef"};
 
-Timer::TimerPool Timer::timerPool;
-
 int main(int argc, const char* argv[]) {
     //speed tricks
     std::ios_base::sync_with_stdio(false);

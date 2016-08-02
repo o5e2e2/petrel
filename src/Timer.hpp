@@ -5,51 +5,46 @@
 #include "Pool.hpp"
 #include "ThreadControl.hpp"
 
-class Timer : private ThreadControl {
-    typedef Pool<Timer> TimerPool;
-    static TimerPool timerPool;
+class Timer : private ThreadControl {  
+public:
+    typedef ::Pool<Timer> Pool;
 
-    TimerPool::_t timerHandle;
-
+private:
+    Pool* timerPool;
+    Pool::_t timerHandle;
     ThreadControl* slaveThread;
     ThreadControl::_t slaveSequence;
     Clock::_t duration;
 
     void thread_body() override {
         std::this_thread::sleep_for(duration);
-
         slaveThread->commandStop(slaveSequence);
-        timerPool.release(std::move(timerHandle));
-    }
 
-    void start(Clock::_t d, ThreadControl& thread, ThreadControl::_t seq) {
-        slaveThread = &thread;
-        slaveSequence = seq;
-        duration = d;
-
-        assert (isReady());
-        commandRun();
-    }
-
-    static Timer& acquire() {
-        TimerPool::_t timerHandle = timerPool.acquire();
-        Timer& timer = TimerPool::fetch(timerHandle);
-        timer.timerHandle = timerHandle;
-        return timer;
+        timerPool->release(std::move(timerHandle));
     }
 
 public:
-    static ThreadControl::_t start(ThreadControl& slaveThread, Clock::_t duration) {
+    static ThreadControl::_t run(Pool& timerPool, ThreadControl& slaveThread, Clock::_t duration) {
+        assert (slaveThread.isReady());
         ThreadControl::_t slaveSequence = slaveThread.commandRun();
 
         //zero duration means no timer
         if (slaveSequence && duration != Clock::_t::zero()) {
-            Timer::acquire().start(duration, slaveThread, slaveSequence);
+            Pool::_t timerHandle = timerPool.acquire();
+            Timer& timer = timerPool.fetch(timerHandle);
+
+            timer.timerPool = &timerPool;
+            timer.timerHandle = timerHandle;
+            timer.slaveThread = &slaveThread;
+            timer.slaveSequence = slaveSequence;
+            timer.duration = duration;
+
+            assert (timer.isReady());
+            timer.commandRun();
         }
 
         return slaveSequence;
     }
-
 };
 
 #endif

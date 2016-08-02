@@ -5,7 +5,9 @@
 #include "SearchInfo.hpp"
 #include "SearchThread.hpp"
 #include "SearchWindow.hpp"
+
 #include "HashMemory.hpp"
+#include "Timer.hpp"
 
 class PositionMoves;
 class SearchLimit;
@@ -19,7 +21,8 @@ class SearchControl {
     SearchWindow     rootWindow;
 
     HashMemory transpositionTable;
-
+    Timer::Pool timerPool;
+    
     SearchControl (const SearchControl&) = delete;
     SearchControl& operator = (const SearchControl&) = delete;
 
