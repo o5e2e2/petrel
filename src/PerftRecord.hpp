@@ -11,10 +11,10 @@ class PerftRecord {
     Zobrist key;
     node_count_t perft;
 
-    enum {DepthShift = 6, AgeShift = 61};
+    enum {DepthShift = 6, AgeShift = 64-HashAge::AgeBits};
 
     static const Zobrist::_t DepthMask = static_cast<Zobrist::_t>(0xff) << DepthShift;
-    static const node_count_t AgeMask = static_cast<node_count_t>(7) << AgeShift;
+    static const node_count_t AgeMask = static_cast<node_count_t>(HashAge::AgeMask) << AgeShift;
 
     static constexpr Zobrist _key(Zobrist::_t z, depth_t d) {
         return Zobrist{ (z & ~DepthMask) | ((static_cast<decltype(z)>(static_cast<unsigned>(d)) << DepthShift) & DepthMask) };

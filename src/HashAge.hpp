@@ -4,6 +4,7 @@
 class HashAge {
 public:
     typedef unsigned _t;
+    enum {AgeBits = 3, AgeMask = (1u << AgeBits)-1};
 
 private:
     _t _v;
@@ -13,10 +14,10 @@ public:
     constexpr operator const _t& () { return _v; }
 
     void next() {
-        //there are 7 ages, not 8, because of:
-        //1) the need to break 4*n ply transposition pattern
+        //there are "AgeMask" ages, not "1 << AgeBits", because of:
+        //1) we want to break 4*n ply transposition pattern
         //2) make sure that initally clear entry is never hidden
-        auto a = (_v + 1) & 7;
+        auto a = (_v + 1) & AgeMask;
         _v = a? a : 1;
     }
 
