@@ -47,11 +47,13 @@ int main(int argc, const char* argv[]) {
 
     if (argc > 1) {
         std::string option{argv[1]};
-        if (option == "--version") {
+
+        if (option == "--version" || option == "-v") {
             std::cout << io::app_copyright;
             return 0;
         }
-        else if (option == "--help") {
+
+        if (option == "--help" || option == "-h") {
             std::cout << io::app_usage;
             return 0;
         }

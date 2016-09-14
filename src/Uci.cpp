@@ -68,33 +68,27 @@ void Uci::setoption() {
 
         HashMemory::size_t quantity = 0;
 
-        if (command >> quantity) {
-            io::char_type u = 'm';
-            command >> u;
-
-            switch (std::tolower(u)) {
-                case 'g':
-                    quantity *= 1024;
-
-                case 'm':
-                    quantity *= 1024;
-
-                case 'k':
-                    quantity *= 1024;
-
-                case 'b':
-                    break;
-
-                default:
-                    io::fail_rewind(command);
-                    return;
-            }
-
-            searchControl.resizeHash(quantity);
+        if (!(command >> quantity)) {
+            io::fail_rewind(command);
             return;
         }
 
-        io::fail_rewind(command);
+        io::char_type u = 'm';
+        command >> u;
+
+        switch (std::tolower(u)) {
+            case 'g': quantity *= 1024;
+            case 'm': quantity *= 1024;
+            case 'k': quantity *= 1024;
+            case 'b': break;
+
+            default: {
+                io::fail_rewind(command);
+                return;
+            }
+        }
+
+        searchControl.resizeHash(quantity);
         return;
     }
 
@@ -142,7 +136,7 @@ void Uci::call(const std::string& filename) {
     std::ifstream file(filename);
 
     if (!file) {
-        uciOutput.error(std::string("error opening file: ") + filename);
+        io::fail_rewind(command);
         return;
     }
 
@@ -154,7 +148,7 @@ void Uci::call() {
     command >> filename;
 
     if (filename.empty() || !next("")) {
-        uciOutput.error(command);
+        io::fail_rewind(command);
         return;
     }
 

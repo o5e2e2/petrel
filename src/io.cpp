@@ -29,30 +29,29 @@ namespace io {
     }
 
     /**
-     * Tries to read the next token and compare it with the given keyword
+     * Tries to read the stream token and match it with the given token parameter
+     * The comparision is case insensitive and all sequential space symbols treated equal to the single space
      * Return:
-     * true  -- next token is equals to keyword, shift stream cursor past the token
-     * false -- failed to read or to match next token with the given keyword, stream state is not changed
+     * true  -- next stream token is matches to the given token, shift stream cursor past the matched token
+     * false -- failed to read stram or failed to match next stream token with the given token, stream state is not changed
      **/
-    bool next(std::istream& in, io::literal keyword) {
-        if (keyword == nullptr) { keyword = ""; }
-
-        using std::isspace;
-        using std::tolower;
+    bool next(std::istream& in, io::literal token) {
+        if (token == nullptr) { token = ""; }
 
         auto pos_before = in.tellg();
         auto state_before = in.rdstate();
 
+        using std::isspace;
         do {
-            while ( isspace(*keyword) ) { ++keyword; }
+            while ( isspace(*token) ) { ++token; }
             in >> std::ws;
 
-            while ( !isspace(*keyword) && tolower(*keyword) == tolower(in.peek()) ) {
-                ++keyword; in.ignore();
+            while ( !isspace(*token) && std::tolower(*token) == std::tolower(in.peek()) ) {
+                ++token; in.ignore();
             }
-        } while ( isspace(*keyword) && isspace(in.peek()) );
+        } while ( isspace(*token) && isspace(in.peek()) );
 
-        if ( *keyword == '\0' && (isspace(in.peek()) || in.eof()) ) {
+        if ( *token == '\0' && (isspace(in.peek()) || in.eof()) ) {
             return true;
         }
 

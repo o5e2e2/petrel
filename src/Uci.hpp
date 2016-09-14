@@ -22,7 +22,7 @@ class Uci {
 
     mutable std::istringstream command; //current input command line
 
-    bool next(io::literal keyword) const { return io::next(command, keyword); }
+    bool next(io::literal token) const { return io::next(command, token); }
 
     //UCI command handlers
     void go();
