@@ -6,17 +6,22 @@
 #include "SearchInfo.hpp"
 
 namespace {
-    std::ostream& operator << (std::ostream& out, Clock::_t duration) {
-        auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
-        return out << milliseconds;
-    }
-
-    enum { MiB = 1024 * 1024 };
-    constexpr HashMemory::size_t toMiB(HashMemory::size_t bytes) { return bytes / MiB; }
+    template <typename T>
+    T mebi(T bytes) { return bytes / (1024 * 1024); }
 
     template <typename T>
     constexpr T permil(T n, T m) { return (n * 1000 + m / 2) / m; }
 
+    template <typename Duration>
+    auto milliseconds(Duration duration)
+        -> decltype(std::chrono::duration_cast<std::chrono::milliseconds>(duration).count()) {
+        return std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
+    }
+
+    template <typename Nodes, typename Duration>
+    Nodes nps(Nodes nodes, Duration duration) {
+        return (nodes * Duration::period::den) / (duration.count() * Duration::period::num);
+    }
 }
 
 UciOutput::UciOutput (std::ostream& o, const Color& c)
@@ -33,7 +38,7 @@ void UciOutput::uciok(const SearchControl& search) const {
     ob << "id name " << io::app_version << '\n';
     ob << "id author Aleks Peshkov\n";
     ob << "option name UCI_Chess960 type check default " << (chessVariant.is(Chess960)? "true" : "false") << '\n';
-    ob << "option name Hash type spin min 0 max " << ::toMiB(max) << " default " << ::toMiB(current) << '\n';
+    ob << "option name Hash type spin min 0 max " << ::mebi(max) << " default " << ::mebi(current) << '\n';
     ob << "uciok\n";
 }
 
@@ -100,14 +105,13 @@ void UciOutput::nps(std::ostream& ob, const SearchInfo& info) const {
     if (info.nodes > 0) {
         ob << " nodes " << info.nodes;
 
-        Clock::_t duration = info.clock.read();
+        auto duration = info.clock.read();
 
-        if (duration > Clock::_t::zero()) {
-            ob << " time " << duration;
+        if (duration >= std::chrono::milliseconds{1}) {
+            ob << " time " << ::milliseconds(duration);
 
             if (duration >= std::chrono::milliseconds{20}) {
-                auto _nps = (info.nodes * Clock::_t::period::den) / (duration.count() * Clock::_t::period::num);
-                ob << " nps " << _nps;
+                ob << " nps " << ::nps(info.nodes, duration);
             }
         }
 
