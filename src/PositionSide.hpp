@@ -34,7 +34,7 @@ public:
 
     static void swap(PositionSide&, PositionSide&);
 
-    Zobrist getZobrist() const; //calculate Zobrist key
+    Zobrist generateZobrist() const; //calculate Zobrist key from scratch
 
     #ifdef NDEBUG
         void assertValid(Pi) const {}

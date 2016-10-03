@@ -86,14 +86,15 @@ bool Position::drop(Side My, PieceType ty, Square to) {
     return true;
 }
 
-Zobrist Position::getZobrist() const {
-    Zobrist oz = OP.getZobrist();
+Zobrist Position::generateZobrist() const {
+    auto mz = MY.generateZobrist();
+    auto oz = OP.generateZobrist();
 
     if (OP.hasEnPassant()) {
         oz.setEnPassant(OP.enPassantSquare());
     }
 
-    return Zobrist{MY.getZobrist(), oz};
+    return Zobrist(mz, oz);
 }
 
 template <Side::_t My>
@@ -635,7 +636,7 @@ Color Position::setFen(std::istream& in) {
     Color colorToMove = setBoard(in);
     setCastling(in, colorToMove);
     setEnPassant(in, colorToMove);
-    zobrist = getZobrist();
+    zobrist = generateZobrist();
 
     if (in) {
         unsigned fifty, moves;

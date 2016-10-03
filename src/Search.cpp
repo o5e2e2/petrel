@@ -9,7 +9,11 @@
 #define CUT(found) { if (found) { return true; } } ((void)0)
 
 namespace Perft {
-    bool _perft(Position& child, SearchWindow& window, const Position& parent, Square from, Square to) {
+    bool makeMove(Position& child, SearchWindow& window, const Position& parent, Square from, Square to) {
+        auto& info = window.control.info;
+
+        info.decrementQuota();
+
         if (window.draft <= 0) {
             child.makeMove(parent, from, to);
 
@@ -17,7 +21,7 @@ namespace Perft {
             pm.generateMoves();
             MatrixPiBb& moves = pm.getMoves();
 
-            window.control.info[PerftNodes] += moves.count();
+            info[PerftNodes] += moves.count();
             return false;
         }
 
@@ -27,25 +31,25 @@ namespace Perft {
         CUT ( window.control.checkQuota() );
 
         {
-            ++window.control.info[TT_Tried];
+            ++info[TT_Tried];
 
             auto n = PerftTT(origin, window.control.tt().getAge()).get(zobrist, window.draft);
             if (n != NODE_COUNT_NONE) {
-                ++window.control.info[TT_Hit];
-                window.control.info[PerftNodes] += n;
+                ++info[TT_Hit];
+                info[PerftNodes] += n;
                 return false;
             }
         }
 
         child.makeMove(zobrist, parent, from, to);
-        assert (zobrist == child.getZobrist());
+        assert (zobrist == child.generateZobrist());
 
-        auto n = window.control.info[PerftNodes];
+        auto n = info[PerftNodes];
         CUT (perft(child, window));
 
-        ++window.control.info[TT_Written];
+        ++info[TT_Written];
 
-        n = window.control.info[PerftNodes] - n;
+        n = info[PerftNodes] - n;
         PerftTT(origin, window.control.tt().getAge()).set(zobrist, window.draft, n);
 
         return false;
@@ -65,8 +69,7 @@ namespace Perft {
             for (Square to : moves[pi]) {
                 moves.clear(pi, to);
 
-                window.control.info.decrementQuota();
-                CUT (_perft(childPos, childWindow, parent, from, to));
+                CUT (makeMove(childPos, childWindow, parent, from, to));
             }
         }
 
@@ -90,8 +93,7 @@ namespace PerftDivide {
             for (Square to : moves[pi]) {
                 moves.clear(pi, to);
 
-                window.control.info.decrementQuota();
-                CUT (Perft::_perft(childPos, childWindow, parent, from, to));
+                CUT (Perft::makeMove(childPos, childWindow, parent, from, to));
 
                 Move move = parent(from, to);
                 window.control.info.report_perft_divide(move);

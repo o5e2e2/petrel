@@ -24,7 +24,7 @@ PositionSide::PositionSide() : piecesBb{}, pawnsBb{} {
     evaluation.clear();
 }
 
-Zobrist PositionSide::getZobrist() const {
+Zobrist PositionSide::generateZobrist() const {
     Zobrist z = {};
 
     for (Pi pi : alivePieces()) {

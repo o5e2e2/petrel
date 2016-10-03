@@ -53,7 +53,7 @@ public:
     Position () {};
     Position (int) : side() {};
 
-    Zobrist getZobrist() const;
+    Zobrist generateZobrist() const;
 
     void makeMove(const Position&, Square, Square);
 
