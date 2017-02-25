@@ -12,17 +12,15 @@
 class Uci {
     UciOutput uciOutput;
 
-    Color colorToMove;  //root position color needed for moves input/output
-
     SearchControl searchControl;
     SearchLimit searchLimit;
 
     Position rootPosition; //initial chess position to analyze
     PositionMoves rootMoves; //'go searchmoves'
 
-    mutable std::istringstream command; //current input command line
+    std::istringstream command; //current input command line
 
-    bool next(io::literal token) const { return io::next(command, token); }
+    bool next(io::literal token) { return io::next(command, token); }
 
     //UCI command handlers
     void go();
@@ -30,14 +28,14 @@ class Uci {
     void startpos();
     void position();
     void ucinewgame();
-    void quit() const;
+    void quit();
 
     //UCI protocol extensions
     void call();
-    void echo() const;
+    void echo();
 
 public:
-    Uci (std::ostream&);
+    Uci (std::ostream&, std::ostream&);
     void operator() (std::istream&);
     void call(const std::string& filename);
 };

@@ -6,7 +6,7 @@
 
 #define SHOULD_BE_READY  if (!searchControl.isReady()) { io::fail_rewind(command); return; }
 
-Uci::Uci (std::ostream& out): uciOutput(out, colorToMove), searchControl{}, rootMoves(rootPosition) {
+Uci::Uci (std::ostream& out, std::ostream& err): uciOutput(out, err), searchControl{}, rootMoves(rootPosition) {
     ucinewgame();
 }
 
@@ -103,30 +103,34 @@ void Uci::position() {
     SHOULD_BE_READY;
 
     if (next("startpos")) { startpos(); }
-    if (next("fen")) { colorToMove = rootPosition.setFen(command); }
+    if (next("fen")) { uciOutput.setColorToMove( rootPosition.setFen(command) ); }
 
     next("moves");
-    colorToMove = rootPosition.makeMoves(command, colorToMove);
+    uciOutput.setColorToMove( rootPosition.makeMoves(command, uciOutput.getColorToMove()) );
 }
 
 void Uci::startpos() {
-    colorToMove = rootPosition.setStartpos();
+    uciOutput.setColorToMove( rootPosition.setStartpos() );
 }
 
 void Uci::go() {
     SHOULD_BE_READY;
 
     rootMoves.generateMoves();
-    searchLimit.readUci(command, uciOutput, &rootMoves, colorToMove);
+    searchLimit.readUci(command, uciOutput.getColorToMove(), &rootMoves);
+
+    //error if something left unparsed
+    if (!next("")) { uciOutput.error(command); }
+
     searchControl.go(uciOutput, rootMoves, searchLimit);
 }
 
-void Uci::echo() const {
+void Uci::echo() {
     command >> std::ws;
     uciOutput.echo(command);
 }
 
-void Uci::quit() const {
+void Uci::quit() {
     int exit_code = 0;
     command >> exit_code;
     std::exit(exit_code);

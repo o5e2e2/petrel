@@ -13,11 +13,12 @@ class SearchInfo;
 
 class UciOutput : public SearchOutput {
     std::ostream& out; //output stream
+    std::ostream& err; //error output stream
 
     mutable std::mutex outputLock;
     typedef std::lock_guard<decltype(outputLock)> Lock;
 
-    const Color& colorToMove; //initial position color for moves long algebraic format output
+    Color colorToMove; //root position color for moves long algebraic format output
     ChessVariant chessVariant; //format of castling moves output
 
     mutable volatile bool isreadyWaiting; //set when got 'isready' command while thinking
@@ -28,7 +29,7 @@ class UciOutput : public SearchOutput {
     void info_nps(std::ostream&, const SearchInfo&) const;
 
 public:
-    UciOutput (std::ostream&, const Color&);
+    UciOutput (std::ostream&, std::ostream& = std::cerr);
 
     //called from Uci
     void isready(const SearchControl&) const;
@@ -36,9 +37,11 @@ public:
     void info_fen(const Position&) const;
     void echo(std::istream&) const;
     void set(ChessVariant v) { chessVariant = v; }
+    void setColorToMove(Color c) { colorToMove = c; }
+    Color getColorToMove() const { return colorToMove; }
 
-    void error(std::istream&) const override;
-    void error(const std::string&) const override;
+    void error(std::istream&) const;
+    void error(const std::string&) const;
 
     //called from Search
     void readyok(const SearchInfo&) const override;

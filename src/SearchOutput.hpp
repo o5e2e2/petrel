@@ -11,9 +11,6 @@ public:
     virtual void info_depth(const SearchInfo&) const {};
     virtual void info_currmove(const SearchInfo&) const {};
 
-    virtual void error(std::istream&) const {};
-    virtual void error(const std::string&) const {};
-
     virtual ~SearchOutput() {}
 };
 

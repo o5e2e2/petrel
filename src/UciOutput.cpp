@@ -24,8 +24,8 @@ namespace {
     }
 }
 
-UciOutput::UciOutput (std::ostream& o, const Color& c)
-    : out(o), colorToMove(c), chessVariant{Orthodox}, isreadyWaiting{false} {}
+UciOutput::UciOutput (std::ostream& o, std::ostream& e)
+    : out(o), err(e), colorToMove{White}, chessVariant{Orthodox}, isreadyWaiting{false} {}
 
 void UciOutput::uciok(const SearchControl& search) const {
     auto& hashMemory = search.tt();
@@ -148,9 +148,9 @@ void UciOutput::echo(std::istream& in) const {
 }
 
 void UciOutput::error(std::istream& in) const {
-    OutputBuffer{std::cerr} << "parsing error: " << in.rdbuf() << '\n';
+    OutputBuffer{err} << "parsing error: " << in.rdbuf() << '\n';
 }
 
 void UciOutput::error(const std::string& str) const {
-    OutputBuffer{std::cerr} << str << '\n';
+    OutputBuffer{err} << str << '\n';
 }

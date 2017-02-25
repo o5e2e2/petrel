@@ -5,7 +5,6 @@
 #include "typedefs.hpp"
 #include "Clock.hpp"
 
-class UciOutput;
 class PositionMoves;
 
 class SearchLimit {
@@ -40,7 +39,7 @@ public:
 
     Clock::_t getThinkingTime() const;
 
-    void readUci(std::istream&, UciOutput&, PositionMoves*, Color);
+    void readUci(std::istream&, Color, PositionMoves*);
 };
 
 #endif

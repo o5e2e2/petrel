@@ -1,6 +1,5 @@
 #include "SearchLimit.hpp"
 #include "PositionMoves.hpp"
-#include "UciOutput.hpp"
 
 namespace {
     std::istream& operator >> (std::istream& in, Clock::_t& duration) {
@@ -35,7 +34,7 @@ Clock::_t SearchLimit::getThinkingTime() const {
     return std::min(time[My], average);
 }
 
-void SearchLimit::readUci(std::istream& command, UciOutput& uciOutput, PositionMoves* searchMoves, Color colorToMove) {
+void SearchLimit::readUci(std::istream& command, Color colorToMove, PositionMoves* searchMoves) {
     Side white = colorToMove.is(White)? My : Op;
     Side black = colorToMove.is(Black)? My : Op;
 
@@ -56,11 +55,6 @@ void SearchLimit::readUci(std::istream& command, UciOutput& uciOutput, PositionM
         else if (io::next(command, "perft"))    { perft = true; }
         else if (io::next(command, "divide"))   { divide = true; }
         else if (io::next(command, "searchmoves")) { searchMoves->limitMoves(command, colorToMove); }
-        else if (io::next(command, ""))         { break; }
-        else {
-            std::string token;
-            command >> token;
-            uciOutput.error(std::string("ignoring token: ") + token);
-        }
+        else { break; }
     }
 }
