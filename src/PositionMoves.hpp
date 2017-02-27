@@ -39,6 +39,7 @@ public:
 
     bool is(Pi pi, Square to) const { return moves.is(pi, to); }
 
+    Color makeMoves(std::istream&, Color);
     void limitMoves(std::istream&, Color);
 };
 

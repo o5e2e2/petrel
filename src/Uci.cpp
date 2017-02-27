@@ -106,7 +106,7 @@ void Uci::position() {
     if (next("fen")) { uciOutput.setColorToMove( rootPosition.setFen(command) ); }
 
     next("moves");
-    uciOutput.setColorToMove( rootPosition.makeMoves(command, uciOutput.getColorToMove()) );
+    uciOutput.setColorToMove( rootMoves.makeMoves(command, uciOutput.getColorToMove()) );
 }
 
 void Uci::startpos() {

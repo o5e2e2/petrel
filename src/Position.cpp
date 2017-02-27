@@ -279,13 +279,17 @@ void Position::makePawnMove(Pi pi, Square from, Square to) {
 }
 
 void Position::makeMove(const Position& parent, Square from, Square to) {
-    if (this == &parent) {
-        PositionSide::swap(MY, OP);
-    }
-    else {
-        MY = parent.OP;
-        OP = parent.MY;
-    }
+    assert (this != &parent);
+    MY = parent.OP;
+    OP = parent.MY;
+
+    //PRE: position just flipped sides, so we make the parent move for the opposite side to move
+    makeMove<Op>(from, to);
+}
+
+void Position::makeMove(Square from, Square to) {
+    zobrist = makeZobrist(from, to);
+    PositionSide::swap(MY, OP);
 
     //PRE: position just flipped sides, so we make the parent move for the opposite side to move
     makeMove<Op>(from, to);
