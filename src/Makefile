@@ -18,7 +18,7 @@ else
 endif
 
 LIBS = -pthread
-OPTIONS  = -std=c++0x -mssse3 -march=native -mtune=native
+OPTIONS  = -std=c++11 -mssse3 -march=native -mtune=native
 OPTIONS += -finline-functions -funroll-all-loops
 
 OPTIMIZATIONS = -Ofast -flto -fno-rtti -fno-common
