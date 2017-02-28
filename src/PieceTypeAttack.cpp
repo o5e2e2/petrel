@@ -17,11 +17,11 @@ PieceTypeAttack::PieceTypeAttack () {
         attack[Pawn][sq] = sq(-1, -1) + sq(+1, -1);
 
         attack[Knight][sq] =
-               sq(-2, -1) + sq(-2, +1) + sq(-1, -2) + sq(-1, +2)
-             + sq(+2, +1) + sq(+2, -1) + sq(+1, +2) + sq(+1, -2);
+              sq(+2, +1) + sq(+2, -1) + sq(+1, +2) + sq(+1, -2)
+            + sq(-2, -1) + sq(-2, +1) + sq(-1, -2) + sq(-1, +2);
 
         attack[King][sq] =
-               sq(-1, -1) + sq(-1, 0) + sq(-1, +1) + sq(0, -1)
-             + sq(+1, +1) + sq(+1, 0) + sq(+1, -1) + sq(0, +1);
+              sq(+1, +1) + sq(+1, 0) + sq(0, +1) + sq(+1, -1)
+            + sq(-1, -1) + sq(-1, 0) + sq(0, -1) + sq(-1, +1);
     }
 }
