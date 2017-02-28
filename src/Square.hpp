@@ -63,6 +63,4 @@ struct Square : Index<64, square_t> {
 
 };
 
-constexpr CastlingSide castlingSide(Square king, Square rook) { return (rook < king)? QueenSide : KingSide; }
-
 #endif

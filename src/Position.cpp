@@ -2,6 +2,7 @@
 
 #include "Position.hpp"
 #include "BetweenSquares.hpp"
+#include "CastlingRules.hpp"
 #include "FenBoard.hpp"
 #include "FenCastling.hpp"
 #include "PieceTypeAttack.hpp"
@@ -206,8 +207,8 @@ template <Side::_t My>
 void Position::makeCastling(Pi rook, Square rookFrom, Square kingFrom) {
     constexpr Side Op{~My};
 
-    Square kingTo = ::castlingSide(kingFrom, rookFrom).is(QueenSide)? C1 : G1;
-    Square rookTo = ::castlingSide(kingFrom, rookFrom).is(QueenSide)? D1 : F1;
+    Square kingTo = CastlingRules::castlingSide(kingFrom, rookFrom).is(QueenSide)? C1 : G1;
+    Square rookTo = CastlingRules::castlingSide(kingFrom, rookFrom).is(QueenSide)? D1 : F1;
 
     MY.castle(rook, rookFrom, rookTo, kingFrom, kingTo);
     MY.setLeaperAttack(TheKing, King, kingTo);
@@ -408,8 +409,8 @@ Zobrist Position::makeZobrist(Square from, Square to) const {
 
         Square kingFrom = to;
         Square rookFrom = from;
-        Square kingTo = ::castlingSide(kingFrom, rookFrom).is(QueenSide)? C1 : G1;
-        Square rookTo = ::castlingSide(kingFrom, rookFrom).is(QueenSide)? D1 : F1;
+        Square kingTo = CastlingRules::castlingSide(kingFrom, rookFrom).is(QueenSide)? C1 : G1;
+        Square rookTo = CastlingRules::castlingSide(kingFrom, rookFrom).is(QueenSide)? D1 : F1;
 
         mz.clear(King, kingFrom);
         mz.clear(Rook, rookFrom);
