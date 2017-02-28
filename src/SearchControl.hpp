@@ -16,6 +16,10 @@ class SearchLimit;
  * Shared data to all search threads (currently the only one)
  */
 class SearchControl {
+public:
+    SearchInfo info;
+
+private:
     SearchThread     searchThread;
     SearchThread::_t searchSequence;
     SearchWindow     rootWindow;
@@ -27,8 +31,6 @@ class SearchControl {
     SearchControl& operator = (const SearchControl&) = delete;
 
 public:
-    SearchInfo info;
-
     SearchControl ();
     void clear();
 

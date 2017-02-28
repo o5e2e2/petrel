@@ -24,26 +24,23 @@ private:
     }
 
 public:
-    static ThreadControl::_t run(Pool& timerPool, ThreadControl& slaveThread, Clock::_t duration) {
-        assert (slaveThread.isReady());
-        ThreadControl::_t slaveSequence = slaveThread.commandRun();
-
+    static void run(Pool& timerPool, Clock::_t duration, ThreadControl& slaveThread, ThreadControl::_t slaveSequence) {
         //zero duration means no timer
-        if (slaveSequence && duration != Clock::_t::zero()) {
-            Pool::_t timerHandle = timerPool.acquire();
-            Timer& timer = timerPool.fetch(timerHandle);
-
-            timer.timerPool = &timerPool;
-            timer.timerHandle = timerHandle;
-            timer.slaveThread = &slaveThread;
-            timer.slaveSequence = slaveSequence;
-            timer.duration = duration;
-
-            assert (timer.isReady());
-            timer.commandRun();
+        if (!slaveSequence || duration == Clock::_t::zero()) {
+            return;
         }
 
-        return slaveSequence;
+        Pool::_t timerHandle = timerPool.acquire();
+        Timer& timer = timerPool.fetch(timerHandle);
+        assert (timer.isReady());
+
+        timer.timerPool = &timerPool;
+        timer.timerHandle = timerHandle;
+        timer.slaveThread = &slaveThread;
+        timer.slaveSequence = slaveSequence;
+        timer.duration = duration;
+
+        timer.commandRun();
     }
 };
 
