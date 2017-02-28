@@ -110,7 +110,8 @@ void Uci::position() {
 }
 
 void Uci::startpos() {
-    uciOutput.setColorToMove( rootPosition.setStartpos() );
+    std::istringstream startpos{"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"};
+    uciOutput.setColorToMove( rootPosition.setFen(startpos) );
 }
 
 void Uci::go() {

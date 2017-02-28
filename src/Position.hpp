@@ -66,12 +66,11 @@ public:
     Zobrist makeZobrist(Square from, Square to) const;
 
     //initial position setup
-    Color setStartpos();
     Color setFen(std::istream&);
 
     void fen(std::ostream&, Color, ChessVariant) const;
-    Move operator() (Square, Square) const;
-    Move operator() (std::istream& in, Color) const;
+    Move createMove(Square, Square) const;
+    Move readMove(std::istream& in, Color) const;
 
 };
 

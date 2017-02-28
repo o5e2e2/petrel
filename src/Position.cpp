@@ -441,7 +441,7 @@ Zobrist Position::makeZobrist(Square from, Square to) const {
     return Zobrist{oz, mz};
 }
 
-Move Position::operator() (Square moveFrom, Square moveTo) const {
+Move Position::createMove(Square moveFrom, Square moveTo) const {
     if ( MY.isPawn(MY.pieceOn(moveFrom)) ) {
         if (moveFrom.is(Rank7)) {
             return Move::special(moveFrom, moveTo);
@@ -457,7 +457,7 @@ Move Position::operator() (Square moveFrom, Square moveTo) const {
     return Move(moveFrom, moveTo);
 }
 
-Move Position::operator() (std::istream& in, Color colorToMove) const {
+Move Position::readMove(std::istream& in, Color colorToMove) const {
     auto before = in.tellg();
 
     Square moveFrom{Square::Begin};
@@ -649,11 +649,6 @@ Color Position::setFen(std::istream& in) {
     }
 
     return colorToMove;
-}
-
-Color Position::setStartpos() {
-    std::istringstream startpos{"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"};
-    return setFen(startpos);
 }
 
 void Position::fenEnPassant(std::ostream& out, Color colorToMove) const {

@@ -95,7 +95,7 @@ namespace PerftDivide {
 
                 CUT (Perft::makeMove(childPos, childWindow, parent, from, to));
 
-                Move move = parent(from, to);
+                Move move = parent.createMove(from, to);
                 window.control.info.report_perft_divide(move);
             }
         }
