@@ -1,160 +1,160 @@
-setoption hash 1
+setoption hash 16
 uci
 
-echo 325293:
 position fen 6kr///////6K1 b k
-go depth 5
-wait
+go
+;* depth 5 * score 325293
+stop
 
-echo 401634:
 position fen 5kr1///////5K2 b k
-go depth 5
-wait
+go
+;* depth 5 * score 401634
+stop
 
-echo 459256:
 position fen 4kr2///////4K3 b k
-go depth 5
-wait
+go
+;* depth 5 * score 459256
+stop
 
-echo 539692:
 position fen 3kr3///////3K4 b k
-go depth 5
-wait
+go
+;* depth 5 * score 539692
+stop
 
-echo 53392:
 position fen rnbqkb1r/pp1p1ppp/2p5/4P3/2B5/8/PPP1NnPP/RNBQK2R w KQkq - 0 6
-go depth 2
-wait
+go
+;* depth 2 * score 53392
+stop
 
-echo 824064:
 position fen 8/5bk1/8/2Pp4/8/1K6/8/8 w - d6 0 1
-go depth 5
-wait
+go
+;* depth 5 * score 824064
+stop
 
-echo 178633661:
 position fen 8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1
-go depth 6
-wait
+go
+;* depth 6 * score 178633661
+stop
 
-echo 102040304:
 position fen 8/8/8/2rk/2p1p/5R/QP1P2B/2KR w - -
-go depth 5
-wait
+go
+;* depth 5 * score 102040304
+stop
 
-echo 11139762:
+echo :
 position fen rnbqkbnr/pppppppp///4P//PPPP1PPP/RNBQKBNR b qkQK e3 0 1 moves g8h6 e4e5 f7f5
-go depth 4
-echo info fen rnbqkb1r/ppppp1pp/7n/4Pp2/8/8/PPPP1PPP/RNBQKBNR w KQkq f6
+go
+;* depth 4 * score 11139762
 position
-wait
+;info fen rnbqkb1r/ppppp1pp/7n/4Pp2/8/8/PPPP1PPP/RNBQKBNR w KQkq f6
+stop
 
-echo 38633283:
 position fen 8/7p/p5pb/4k3/P1pPn3/8/P5PP/1rB2RK1 b - d3 0 28
-go depth 5
-wait
+go
+;* depth 5 * score 38633283
+stop
 
-echo 34336777:
 position fen 8/PPP4k/8/8/8/8/4Kppp/8 w - - 0 1
 go depth 5
-wait
+;info depth 5 * score 34336777
+;bestmove 0000
 
-echo 94370149:
 position fen 2rkr3/5PP1/8/5Q2/5q2/8/5pp1/2RKR3 w KQkq - 0 1
-go depth 4
-wait
+go
+;* depth 4 * score 94370149
+stop
 
-echo 145999259:
 position fen bnrbnkrq/pppppppp/8/8/8/8/PPPPPPPP/BNRBNKRQ w CGkq - 0 1
-go depth 5
-wait
+go
+;* depth 5 * score 145999259
+stop
 
-echo 126480040:
 position fen rbknqnbr/pppppppp/8/8/8/8/PPPPPPPP/RBKNQNBR w ahKQ - 0 1
-go depth 5
-wait
+go
+;* depth 5 * score 126480040
+stop
 
-echo 121613156:
 position fen qbrnnkbr/pppppppp/8/8/8/8/PPPPPPPP/QBRNNKBR w KQkq - 0 1
-go depth 5
-wait
+go
+;* depth 5 * score 121613156
+stop
 
-echo 93888956:
 position fen nqbnrbkr/pppppppp/8/8/8/8/PPPPPPPP/NQBNRBKR w KQkq - 0 1
-go depth 5
-wait
+go
+;* depth 5 * score 93888956
+stop
 
-echo 97044730:
 position fen nrnkbqrb/pppppppp/8/8/8/8/PPPPPPPP/NRNKBQRB w KQkq - 0 1
-go depth 5
-wait
+go
+;* depth 5 * score 97044730
+stop
 
-echo 124381396:
 position fen rbbknnqr/pppppppp/8/8/8/8/PPPPPPPP/RBBKNNQR w KQkq - 0 1
-go depth 5
-wait
+go
+;* depth 5 * score 124381396
+stop
 
-echo 172843489:
 position fen r1k1r2q/p1ppp1pp/8/8/8/8/P1PPP1PP/R1K1R2Q w KQkq -
-go depth 5
-wait
+go
+;* depth 5 * score 172843489
+stop
 
-echo 418430598:
 position fen r1k2r1q/p1ppp1pp/8/8/8/8/P1PPP1PP/R1K2R1Q w KQkq - 0 1
-go depth 5
-wait
+go
+;* depth 5 * score 418430598
+stop
 
-echo 44554839:
 position fen 8/8/8/4B2b/6nN/8/5P2/2R1K2k w Q - 0 1
-go depth 5
-wait
+go
+;* depth 5 * score 44554839
+stop
 
-echo 259604208:
 position fen 2r5/8/8/8/8/8/6PP/k2KR3 w K - 0 1
-go depth 6
-wait
+go
+;* depth 6 * score 259604208
+stop
 
-echo 281330710:
 position fen 4r3/3k4/8/8/8/8/6PP/qR1K1R2 w KQ - 0 1
-go depth 5
-wait
+go
+;* depth 5 * score 281330710
+stop
 
-echo 493407574:
 position fen 8/3K4/2p5/p2b2r1/5k2/8/8/1q6 b - - 1 67
-go depth 6
-wait
+go
+;* depth 6 * score 493407574
+stop
 
-echo 8103790:
 position fen 8/p7/8/1P6/K1k3p1/6P1/7P/8 w - -
-go depth 7
-wait
+go
+;* depth 7 * score 8103790
+stop
 
-echo 77054993:
 position fen r3k2r/p6p/8/B7/1pp1p3/3b4/P6P/R3K2R w KQkq -
-go depth 5
-wait
+go
+;* depth 5 * score 77054993
+stop
 
-echo 64451405:
 position fen 8/5p2/8/2k3P1/p3K3/8/1P6/8 b - -
-go depth 7
-wait
+go
+;* depth 7 * score 64451405
+stop
 
-echo 706045033:
 position fen r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1
-go depth 5
-wait
+go
+;* depth 5 * score 706045033
+stop
 
 position startpos moves e2e4 e7e5 f1c4 g8f6 d2d4 c7c6 d4e5 f6e4 g1e2 e4f2 e5e6 f8e7 e6d7 e8f8
-echo info fen rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ -
 position
-echo 62379:
-go depth 2
-wait
+;info fen rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ -
+go
+;* depth 4 * score 89941194
+stop
 
-echo 193690690:
 position fen r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 25
-go depth 4
-wait
-
-echo 8031647685:
-go depth 5
+go
+;* depth 4 * score 193690690
+;* depth 5 * score 8031647685
 isready
+;readyok
+quit
