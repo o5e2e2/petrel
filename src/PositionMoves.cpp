@@ -253,6 +253,12 @@ void PositionMoves::limitMoves(std::istream& in, Color colorToMove) {
     }
 }
 
+Color PositionMoves::setFen(std::istream& in) {
+    Color colorToMove = const_cast<Position&>(pos).setFen(in);
+    generateMoves<My>();
+    return colorToMove;
+}
+
 Color PositionMoves::makeMoves(std::istream& in, Color colorToMove) {
     while (in) {
         auto before = in.tellg();

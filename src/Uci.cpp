@@ -96,14 +96,14 @@ void Uci::setoption() {
 
 void Uci::position() {
     if (next("")) {
-        uciOutput.info_fen(rootPosition);
+        uciOutput.info_fen( rootMoves.getPos() );
         return;
     }
 
     SHOULD_BE_READY;
 
     if (next("startpos")) { startpos(); }
-    if (next("fen")) { uciOutput.setColorToMove( rootPosition.setFen(command) ); }
+    if (next("fen")) { uciOutput.setColorToMove( rootMoves.setFen(command) ); }
 
     next("moves");
     uciOutput.setColorToMove( rootMoves.makeMoves(command, uciOutput.getColorToMove()) );
@@ -111,13 +111,12 @@ void Uci::position() {
 
 void Uci::startpos() {
     std::istringstream startpos{"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"};
-    uciOutput.setColorToMove( rootPosition.setFen(startpos) );
+    uciOutput.setColorToMove( rootMoves.setFen(startpos) );
 }
 
 void Uci::go() {
     SHOULD_BE_READY;
 
-    rootMoves.generateMoves();
     searchLimit.readUci(command, uciOutput.getColorToMove(), &rootMoves);
 
     //error if something left unparsed
