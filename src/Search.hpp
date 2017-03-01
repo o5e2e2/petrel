@@ -4,10 +4,10 @@
 #include "typedefs.hpp"
 
 class SearchControl;
-class Position;
+class PositionMoves;
 class SearchWindow;
 
-typedef bool SearchFn(const Position&, SearchWindow&);
+typedef bool SearchFn(const PositionMoves&, SearchWindow&);
 
 namespace Perft {
     SearchFn perft;

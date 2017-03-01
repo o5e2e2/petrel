@@ -55,18 +55,13 @@ public:
 
     Zobrist generateZobrist() const;
 
-    void makeMove(const Position&, Square, Square);
-    void makeMove(Square, Square);
-
-    void makeMove(Zobrist z, const Position& parent, Square from, Square to) {
-        zobrist = z;
-        makeMove(parent, from, to);
-    }
+    void makeMove(const Position&, Square, Square, Zobrist = {});
 
     Zobrist makeZobrist(Square from, Square to) const;
 
     //initial position setup
     Color setFen(std::istream&);
+    void makeMove(Square, Square);
 
     void fen(std::ostream&, Color, ChessVariant) const;
     Move createMove(Square, Square) const;

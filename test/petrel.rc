@@ -152,12 +152,13 @@ go
 stop
 
 position fen r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 25
-go movetime 30000
+go movetime 150000
 ;* depth 4 * score 193690690
-;* depth 5 * score 8031647685
 
 isready
 ;readyok
+
+;* depth 5 * score 8031647685
 
 ;bestmove 0000
 quit

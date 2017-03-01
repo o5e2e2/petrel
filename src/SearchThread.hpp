@@ -6,13 +6,13 @@
 
 class SearchThread : public ThreadControl {
     SearchFn* searchFn;
-    const Position* parent;
+    const PositionMoves* parent;
     SearchWindow* window;
 
     void thread_body() override;
 
 public:
-    void set(SearchFn*, const Position&, SearchWindow&);
+    void set(SearchFn*, const PositionMoves&, SearchWindow&);
 };
 
 #endif

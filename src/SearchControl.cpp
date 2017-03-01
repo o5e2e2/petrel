@@ -29,7 +29,7 @@ void SearchControl::go(SearchOutput& output, const PositionMoves& rootMoves, con
     rootWindow.searchFn = searchLimit.getDivide()? PerftDivide::perft : Perft::perft;
 
     assert (searchThread.isReady());
-    searchThread.set(PerftRoot::perft, rootMoves.getPos(), rootWindow);
+    searchThread.set(PerftRoot::perft, rootMoves, rootWindow);
     searchSequence = searchThread.commandRun();
     Timer::run(timerPool, searchLimit.getThinkingTime(), searchThread, searchSequence);
 }

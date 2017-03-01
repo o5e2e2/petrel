@@ -9,19 +9,14 @@
 #define CUT(found) { if (found) { return true; } } ((void)0)
 
 namespace Perft {
-    bool makeMove(Position& child, SearchWindow& window, const Position& parent, Square from, Square to) {
+    bool makeMove(PositionMoves& child, SearchWindow& window, const Position& parent, Square from, Square to) {
         auto& info = window.control.info;
 
         info.decrementQuota();
 
         if (window.draft <= 0) {
             child.makeMove(parent, from, to);
-
-            PositionMoves pm(child);
-            pm.generateMoves();
-            MatrixPiBb& moves = pm.getMoves();
-
-            info[PerftNodes] += moves.count();
+            info[PerftNodes] += child.getMoves().count();
             return false;
         }
 
@@ -41,8 +36,8 @@ namespace Perft {
             }
         }
 
-        child.makeMove(zobrist, parent, from, to);
-        assert (zobrist == child.generateZobrist());
+        child.makeMove(parent, from, to, zobrist);
+        assert (zobrist == child.getPos().generateZobrist());
 
         auto n = info[PerftNodes];
         CUT (perft(child, window));
@@ -55,47 +50,63 @@ namespace Perft {
         return false;
     }
 
-    bool perft(const Position& parent, SearchWindow& window) {
-        PositionMoves pm(parent);
-        pm.generateMoves();
-        MatrixPiBb& moves = pm.getMoves();
+    bool perft(PositionMoves& parent, SearchWindow& window) {
+        MatrixPiBb& moves = parent.getMoves();
 
-        Position childPos;
+        PositionMoves childPosMoves;
         SearchWindow childWindow(window);
 
-        for (Pi pi : pm.side(My).alivePieces()) {
-            Square from = pm.side(My).squareOf(pi);
+        for (Pi pi : parent.side(My).alivePieces()) {
+            Square from = parent.side(My).squareOf(pi);
 
             for (Square to : moves[pi]) {
                 moves.clear(pi, to);
 
-                CUT (makeMove(childPos, childWindow, parent, from, to));
+                CUT (makeMove(childPosMoves, childWindow, parent.getPos(), from, to));
             }
         }
 
         return false;
     }
-}
 
-namespace PerftDivide {
-    bool perft(const Position& parent, SearchWindow& window) {
-        PositionMoves pm(parent);
-        pm.generateMoves();
-        MatrixPiBb& moves = pm.getMoves();
+    bool perft(const PositionMoves& parent, SearchWindow& window) {
+        MatrixPiBb moves = parent.cloneMoves();
 
-        Position childPos;
+        PositionMoves childPosMoves;
         SearchWindow childWindow(window);
-        childWindow.searchFn = Perft::perft;
 
-        for (Pi pi : pm.side(My).alivePieces()) {
-            Square from = pm.side(My).squareOf(pi);
+        for (Pi pi : parent.side(My).alivePieces()) {
+            Square from = parent.side(My).squareOf(pi);
 
             for (Square to : moves[pi]) {
                 moves.clear(pi, to);
 
-                CUT (Perft::makeMove(childPos, childWindow, parent, from, to));
+                CUT (makeMove(childPosMoves, childWindow, parent.getPos(), from, to));
+            }
+        }
 
-                Move move = parent.createMove(from, to);
+        return false;
+    }
+
+}
+
+namespace PerftDivide {
+    bool perft(const PositionMoves& parent, SearchWindow& window) {
+        MatrixPiBb moves = parent.cloneMoves();
+
+        PositionMoves childPosMoves;
+        SearchWindow childWindow(window);
+        childWindow.searchFn = Perft::perft;
+
+        for (Pi pi : parent.side(My).alivePieces()) {
+            Square from = parent.side(My).squareOf(pi);
+
+            for (Square to : moves[pi]) {
+                moves.clear(pi, to);
+
+                CUT (Perft::makeMove(childPosMoves, childWindow, parent.getPos(), from, to));
+
+                Move move = parent.getPos().createMove(from, to);
                 window.control.info.report_perft_divide(move);
             }
         }
@@ -105,7 +116,7 @@ namespace PerftDivide {
 }
 
 namespace PerftRoot {
-    bool perftX(const Position& parent, SearchWindow& window) {
+    bool perftX(const PositionMoves& parent, SearchWindow& window) {
         window.control.nextIteration();
 
         bool isAborted = window.searchFn(parent, window);
@@ -117,7 +128,7 @@ namespace PerftRoot {
         return isAborted;
     }
 
-    bool perft(const Position& parent, SearchWindow& window) {
+    bool perft(const PositionMoves& parent, SearchWindow& window) {
         if (window.draft > 0) {
             perftX(parent, window);
         }

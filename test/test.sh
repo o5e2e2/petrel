@@ -2,7 +2,7 @@
 
 eol=$'\n'
 expect="set timeout -1$eol"
-expect+="spawn ../release/petrel$eol"
+expect+="spawn ../debug/petrel$eol"
 
 filename='petrel.rc'
 exec 4<$filename
@@ -23,5 +23,5 @@ done
 expect+="expect eof$eol"
 expect+="puts \"TEST PASSED\"$eol"
 
-make -C ../src clean && make -C ../src
+make -C ../src clean && make -C ../src debug=yes
 echo "$expect" | expect -

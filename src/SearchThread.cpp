@@ -2,7 +2,7 @@
 #include "Search.hpp"
 #include "SearchWindow.hpp"
 
-void SearchThread::set(SearchFn* s, const Position& p, SearchWindow& w) {
+void SearchThread::set(SearchFn* s, const PositionMoves& p, SearchWindow& w) {
     assert(isReady());
 
     searchFn = s;

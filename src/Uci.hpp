@@ -15,8 +15,7 @@ class Uci {
     SearchControl searchControl;
     SearchLimit searchLimit;
 
-    Position rootPosition; //initial chess position to analyze
-    PositionMoves rootMoves; //'go searchmoves'
+    PositionMoves rootMoves; //initial chess position and moves to analyze
 
     std::istringstream command; //current input command line
 

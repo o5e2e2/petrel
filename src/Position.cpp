@@ -278,12 +278,14 @@ void Position::makePawnMove(Pi pi, Square from, Square to) {
     MY.assertValid(pi);
 }
 
-void Position::makeMove(const Position& parent, Square from, Square to) {
+void Position::makeMove(const Position& parent, Square from, Square to, Zobrist z) {
+    zobrist = z;
+
     assert (this != &parent);
     MY = parent.OP;
     OP = parent.MY;
 
-    //PRE: position just flipped sides, so we make the parent move for the opposite side to move
+    //current position flipped its sides relative to parent, so we make the move inplace for the Op
     makeMove<Op>(from, to);
 }
 
@@ -291,7 +293,7 @@ void Position::makeMove(Square from, Square to) {
     zobrist = makeZobrist(from, to);
     PositionSide::swap(MY, OP);
 
-    //PRE: position just flipped sides, so we make the parent move for the opposite side to move
+    //the position just swapped its sides, so we make the move for the Op
     makeMove<Op>(from, to);
 }
 

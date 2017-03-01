@@ -254,9 +254,14 @@ void PositionMoves::limitMoves(std::istream& in, Color colorToMove) {
 }
 
 Color PositionMoves::setFen(std::istream& in) {
-    Color colorToMove = const_cast<Position&>(pos).setFen(in);
+    Color colorToMove = pos.setFen(in);
     generateMoves<My>();
     return colorToMove;
+}
+
+void PositionMoves::makeMove(const Position& parent, Square from, Square to, Zobrist z) {
+    pos.makeMove(parent, from, to, z);
+    generateMoves<My>();
 }
 
 Color PositionMoves::makeMoves(std::istream& in, Color colorToMove) {
@@ -269,9 +274,9 @@ Color PositionMoves::makeMoves(std::istream& in, Color colorToMove) {
             Square to{ m.to() } ;
             Pi pi{ pos.side[My].pieceOn(from) };
 
-            generateMoves();
             if (is(pi, to)) {
-                const_cast<Position&>(pos).makeMove(from, to);
+                pos.makeMove(from, to);
+                generateMoves<My>();
                 colorToMove.flip();
                 continue;
             }

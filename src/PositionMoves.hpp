@@ -3,6 +3,8 @@
 
 #include "io.hpp"
 #include "MatrixPiBb.hpp"
+#include "Position.hpp"
+#include "Zobrist.hpp"
 
 class PositionSide;
 class Position;
@@ -12,7 +14,7 @@ class PositionMoves {
     //filled and used during move generation
     MatrixPiBb moves; //generated moves from side[My]
 
-    const Position& pos;
+    Position pos;
 
     //legal move generation helpers
     template <Side::_t> void generateEnPassantMoves();
@@ -27,15 +29,15 @@ class PositionMoves {
     template <Side::_t> void generateMoves();
 
 public:
-    PositionMoves (const Position& p) : pos(p) {}
-
-    void generateMoves() { generateMoves<My>(); }
+    void makeMove(const Position&, Square, Square, Zobrist = {});
 
     const PositionSide& side(Side) const;
-    MatrixPiBb& getMoves() { return moves; }
+    const Position& getPos() const { return pos; }
 
     const MatrixPiBb& getMoves() const { return moves; }
-    const Position& getPos() const { return pos; }
+    MatrixPiBb& getMoves() { return moves; }
+
+    MatrixPiBb cloneMoves() const { return MatrixPiBb{moves}; }
 
     bool is(Pi pi, Square to) const { return moves.is(pi, to); }
 
