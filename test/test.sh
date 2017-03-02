@@ -1,11 +1,24 @@
 #!/bin/bash
 
+if [[ $# < 2 ]]
+then
+
+    cat << EOF
+Usage:
+$0 [executable_file] [script_file]
+EOF
+
+exit
+fi
+
+target=$1
+resource=$2
+
 eol=$'\n'
 expect="set timeout -1$eol"
-expect+="spawn ../debug/petrel$eol"
+expect+="spawn $1$eol"
 
-filename='petrel.rc'
-exec 4<$filename
+exec 4<$resource
 while read -r -u4 line || [[ -n $line ]];
 do
     if [[ $line != *[^[:space:]]* ]]
@@ -20,8 +33,8 @@ do
         expect+="expect \"${line:1}\r\n\"$eol"
     fi
 done
+
 expect+="expect eof$eol"
 expect+="puts \"TEST PASSED\"$eol"
 
-make -C ../src clean && make -C ../src debug=yes
 echo "$expect" | expect -

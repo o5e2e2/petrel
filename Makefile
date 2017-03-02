@@ -2,19 +2,17 @@
 
 TARGET = petrel
 
-srcdir ?= .
-debugdir = ../debug
-releasedir = ../release
-configdir = ..
+srcdir ?= ./src
+debugdir = ./debug
+releasedir = ./release
+testdir = ./test
 
 ifeq ($(debug),yes)
 	builddir ?= $(debugdir)
 	CXXFLAGS += -DDEBUG -g
-	checkrc := $(configdir)/$(notdir $(TARGET))2.rc
 else
 	builddir ?= $(releasedir)
 	CXXFLAGS += -DNDEBUG
-	checkrc := $(configdir)/$(notdir $(TARGET)).rc
 endif
 
 LIBS = -pthread
@@ -38,14 +36,12 @@ SOURCES := $(wildcard $(srcdir)/*.cpp)
 OBJECTS := $(patsubst $(srcdir)/%.cpp, $(builddir)/%.o, $(SOURCES))
 DEPS := $(patsubst %.o, %.d, $(OBJECTS))
 
--include $(DEPS)
-
 .PHONY: all check clean
 
 all: $(builddir)/$(TARGET)
 
-check: all
-	$(builddir)/$(TARGET) $(checkrc)
+test: all
+	$(testdir)/test.sh $(builddir)/$(TARGET) $(testdir)/$(TARGET).rc
 
 clean:
 	$(RM) -r *.o *.gch *.d $(debugdir) $(releasedir)
@@ -61,3 +57,5 @@ $(PRECOMP): $(HEADER) | $(builddir)
 
 $(builddir):
 	mkdir -p $@
+
+-include $(DEPS)
