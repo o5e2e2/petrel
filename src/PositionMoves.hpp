@@ -11,10 +11,9 @@ class Position;
 class Move;
 
 class PositionMoves {
-    //filled and used during move generation
-    MatrixPiBb moves; //generated moves from side[My]
-
     Position pos;
+    MatrixPiBb moves; //generated moves from side[My]
+    const PositionMoves& parent;
 
     //legal move generation helpers
     template <Side::_t> void generateEnPassantMoves();
@@ -29,7 +28,11 @@ class PositionMoves {
     template <Side::_t> void generateMoves();
 
 public:
-    void makeMove(const Position&, Square, Square, Zobrist = {});
+    PositionMoves () : parent(*this) {}
+    PositionMoves (const PositionMoves& p) : parent(p) {}
+
+    void makeMove(Square, Square, Zobrist = {});
+    Zobrist makeZobrist(Square from, Square to) const { return parent.pos.makeZobrist(from, to); }
 
     const PositionSide& side(Side) const;
     const Position& getPos() const { return pos; }

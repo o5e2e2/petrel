@@ -259,8 +259,8 @@ Color PositionMoves::setFen(std::istream& in) {
     return colorToMove;
 }
 
-void PositionMoves::makeMove(const Position& parent, Square from, Square to, Zobrist z) {
-    pos.makeMove(parent, from, to, z);
+void PositionMoves::makeMove(Square from, Square to, Zobrist z) {
+    pos.makeMove(parent.getPos(), from, to, z);
     generateMoves<My>();
 }
 
