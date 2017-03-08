@@ -43,6 +43,9 @@ all: $(builddir)/$(TARGET)
 test: all
 	$(testdir)/test.sh $(builddir)/$(TARGET) $(testdir)/$(TARGET).rc
 
+test-hash: all
+	$(testdir)/test.sh $(builddir)/$(TARGET) $(testdir)/hashtable-test.rc
+
 clean:
 	$(RM) -r *.o *.gch *.d $(debugdir) $(releasedir)
 

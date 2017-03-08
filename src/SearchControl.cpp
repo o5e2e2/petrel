@@ -16,7 +16,6 @@ void SearchControl::resizeHash(HashMemory::size_t bytes) {
 }
 
 void SearchControl::nextIteration() {
-    info.clearNodes();
     transpositionTable.nextAge();
 }
 
