@@ -5,22 +5,23 @@ then
 
     cat << EOF
 Usage:
-$0 [executable_file] [script_file]
+$0 [engine] [script]
 EOF
 
 exit
 fi
 
-target=$1
-resource=$2
-
+engine=$1
+script=$2
 eol=$'\n'
-expect="set timeout -1$eol"
-expect+="spawn $1$eol"
 
-exec 4<$resource
+expect="set timeout -1$eol"
+expect+="spawn $engine$eol"
+
+exec 4<$script
 while read -r -u4 line || [[ -n $line ]];
 do
+    #skip blank lines
     if [[ $line != *[^[:space:]]* ]]
     then
         continue
