@@ -1,7 +1,6 @@
 #include "Search.hpp"
 #include "PerftTT.hpp"
 #include "PerftRecord.hpp"
-#include "Position.hpp"
 #include "PositionMoves.hpp"
 #include "SearchControl.hpp"
 #include "SearchWindow.hpp"
@@ -52,7 +51,7 @@ namespace Perft {
     bool perft(PositionMoves& parent, SearchWindow& window) {
         MatrixPiBb& moves = parent.getMoves();
 
-        PositionMoves childPosMoves(parent);
+        PositionMoves childPosMoves(parent, 0);
         SearchWindow childWindow(window);
 
         for (Pi pi : parent.side(My).alivePieces()) {
@@ -71,7 +70,7 @@ namespace Perft {
     bool perft(const PositionMoves& parent, SearchWindow& window) {
         MatrixPiBb moves = parent.cloneMoves();
 
-        PositionMoves childPosMoves(parent);
+        PositionMoves childPosMoves(parent, 0);
         SearchWindow childWindow(window);
 
         for (Pi pi : parent.side(My).alivePieces()) {
@@ -93,7 +92,7 @@ namespace PerftDivide {
     bool perft(const PositionMoves& parent, SearchWindow& window) {
         MatrixPiBb moves = parent.cloneMoves();
 
-        PositionMoves childPosMoves(parent);
+        PositionMoves childPosMoves(parent, 0);
         SearchWindow childWindow(window);
         childWindow.searchFn = Perft::perft;
 

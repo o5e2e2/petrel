@@ -7,22 +7,20 @@
 
 class DualBbOccupied {
     typedef __m128i _t;
-
-    union {
-        _t _v;
-        Side::array<Bb> occupied;
-    };
+    _t _v;
 
 public:
-    constexpr DualBbOccupied () : _v{0, 0} {}
-    constexpr const Bb& operator [] (Side si) const { return occupied[si]; }
+    constexpr DualBbOccupied () : _v{0, 0} {};
+    constexpr DualBbOccupied (const DualBbOccupied& o) = default;
 
     DualBbOccupied (Bb my, Bb op) {
         _v = ::combine(my, op);
         _v += ::bitReverse.byte_swap(_v);
     }
 
-    DualBbOccupied& operator= (DualBbOccupied&& d) { _v = d._v; return *this; }
+    constexpr const Bb& operator [] (Side si) const {
+        return reinterpret_cast<const Side::array<Bb>&>(*this)[si];
+    }
 
     void swap() { _v = _mm_swap_epi64(_v); }
 

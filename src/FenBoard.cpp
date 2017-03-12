@@ -1,5 +1,4 @@
 #include "FenBoard.hpp"
-#include "Position.hpp"
 
 std::istream& operator >> (std::istream& in, FenBoard& board) {
     in >> std::ws;

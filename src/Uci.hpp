@@ -3,18 +3,13 @@
 
 #include "io.hpp"
 #include "typedefs.hpp"
-#include "Position.hpp"
 #include "PositionMoves.hpp"
 #include "SearchControl.hpp"
-#include "SearchLimit.hpp"
 #include "UciOutput.hpp"
 
 class Uci {
     UciOutput uciOutput;
-
     SearchControl searchControl;
-    SearchLimit searchLimit;
-
     PositionMoves rootMoves; //initial chess position and moves to analyze
 
     std::istringstream command; //current input command line

@@ -1,5 +1,4 @@
 #include "PositionMoves.hpp"
-#include "Position.hpp"
 
 #include "CastlingRules.hpp"
 #include "PieceTypeAttack.hpp"

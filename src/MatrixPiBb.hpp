@@ -11,6 +11,8 @@ class MatrixPiBb {
 
 public:
     MatrixPiBb () { clear(); }
+    MatrixPiBb (int) {}
+
     MatrixPiBb (const MatrixPiBb& from) {
         FOR_INDEX(Rank, rank) {
             matrix[rank] = from.matrix[rank];

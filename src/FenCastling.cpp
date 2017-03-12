@@ -1,6 +1,5 @@
 #include "FenCastling.hpp"
 #include "CastlingRules.hpp"
-#include "Position.hpp"
 #include "PositionSide.hpp"
 
 void FenCastling::insert(const PositionSide& side, Color color, ChessVariant chessVariant) {

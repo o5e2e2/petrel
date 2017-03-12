@@ -7,7 +7,6 @@
 #include "Zobrist.hpp"
 
 class PositionSide;
-class Position;
 class Move;
 
 class PositionMoves {
@@ -28,8 +27,9 @@ class PositionMoves {
     template <Side::_t> void generateMoves();
 
 public:
-    PositionMoves () : parent(*this) {}
-    PositionMoves (const PositionMoves& p) : parent(p) {}
+    PositionMoves (int) : pos(0), moves(0), parent(*this) {}
+    PositionMoves (const PositionMoves& p, int) : pos(0), moves(0), parent(p) {}
+    PositionMoves (const PositionMoves&) = default;
 
     void makeMove(Square, Square, Zobrist = {});
     Zobrist makeZobrist(Square from, Square to) const { return parent.pos.makeZobrist(from, to); }

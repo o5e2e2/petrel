@@ -50,8 +50,8 @@ private:
     void fenEnPassant(std::ostream& out, Color colorToMove) const;
 
 public:
-    Position () {};
-    Position (int) : side() {};
+    Position (const Position&) = default;
+    Position (int) {};
 
     Zobrist generateZobrist() const;
 
