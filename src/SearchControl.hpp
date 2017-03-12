@@ -26,7 +26,7 @@ private:
 
     HashMemory transpositionTable;
     Timer::Pool timerPool;
-    
+
     SearchControl (const SearchControl&) = delete;
     SearchControl& operator = (const SearchControl&) = delete;
 
@@ -35,8 +35,7 @@ public:
     void clear();
 
     bool isReady() const { return searchThread.isReady(); }
-    void wait() { searchThread.waitReady(); }
-    void stop() { searchThread.commandStop(searchSequence); wait(); }
+    void stop() { searchThread.commandStop(searchSequence); searchThread.waitReady(); }
 
     const HashMemory& tt() const { return transpositionTable; }
     void resizeHash(HashMemory::size_t bytes);

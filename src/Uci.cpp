@@ -16,20 +16,15 @@ void Uci::operator() (std::istream& in) {
         command.str(std::move(commandLine));
         command >> std::ws;
 
-        if      (next("position"))  { position(); }
-        else if (next("go"))        { go(); }
+        if      (next("go"))        { go(); }
+        else if (next("position"))  { position(); }
         else if (next("stop"))      { searchControl.stop(); }
         else if (next("isready"))   { uciOutput.isready(searchControl); }
         else if (next("setoption")) { setoption(); }
+        else if (next("set"))       { setoption(); }
         else if (next("ucinewgame")){ ucinewgame(); }
         else if (next("uci"))       { uciOutput.uciok(searchControl); }
-        else if (next("quit"))      { quit(); }
-        //UCI extensions
-        else if (next("exit"))      { break; }
-        else if (next("wait"))      { searchControl.wait(); }
-        else if (next("echo"))      { echo(); }
-        else if (next("call"))      { call(); }
-        else if (next("set"))       { setoption(); }
+        else if (next("quit"))      { break; }
         else { //ignore comment line
             auto peek = command.peek();
             if (peek == '#' || peek == ';') { continue; }
@@ -118,45 +113,7 @@ void Uci::go() {
     SHOULD_BE_READY;
 
     searchLimit.readUci(command, uciOutput.getColorToMove(), &rootMoves);
-
-    //error if something left unparsed
-    if (!next("")) { uciOutput.error(command); }
-
     searchControl.go(uciOutput, rootMoves, searchLimit);
-}
-
-void Uci::echo() {
-    command >> std::ws;
-    uciOutput.echo(command);
-}
-
-void Uci::quit() {
-    int exit_code = 0;
-    command >> exit_code;
-    std::exit(exit_code);
-}
-
-void Uci::call(const std::string& filename) {
-    std::ifstream file(filename);
-
-    if (!file) {
-        io::fail_rewind(command);
-        return;
-    }
-
-    operator()(file);
-}
-
-void Uci::call() {
-    std::string filename;
-    command >> filename;
-
-    if (filename.empty() || !next("")) {
-        io::fail_rewind(command);
-        return;
-    }
-
-    call(filename);
 }
 
 #undef SHOULD_BE_READY

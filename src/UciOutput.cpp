@@ -142,11 +142,6 @@ void UciOutput::info_fen(const Position& pos) const {
     ob << '\n';
 }
 
-void UciOutput::echo(std::istream& in) const {
-    Lock lock(outputLock);
-    OutputBuffer{out} << in.rdbuf() << '\n';
-}
-
 void UciOutput::error(std::istream& in) const {
     OutputBuffer{err} << "parsing error: " << in.rdbuf() << '\n';
 }

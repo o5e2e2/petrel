@@ -35,7 +35,6 @@ public:
     void isready(const SearchControl&) const;
     void uciok(const SearchControl&) const;
     void info_fen(const Position&) const;
-    void echo(std::istream&) const;
     void set(ChessVariant v) { chessVariant = v; }
     void setColorToMove(Color c) { colorToMove = c; }
     Color getColorToMove() const { return colorToMove; }

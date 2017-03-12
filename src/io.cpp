@@ -115,8 +115,6 @@ namespace io {
             << "  quit [<status>]          Quit the program as soon as possible with optional status code (default 0)\n"
             << "  call <file>              Load the file and process UCI commands from it\n"
             << "  exit                     Exit from the last called file\n"
-            << "  wait                     Wait for the engine to complete the search\n"
-            << "  echo <string>            Display the given string\n"
             << "\n"
             << "  UCI option Hash size can be optionally given a suffix: gibibytes [g|G], mebibytes [m|M], kibibytes [k|K] and bytes [b|B]\n"
         ;

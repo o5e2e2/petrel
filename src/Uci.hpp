@@ -29,14 +29,9 @@ class Uci {
     void ucinewgame();
     void quit();
 
-    //UCI protocol extensions
-    void call();
-    void echo();
-
 public:
     Uci (std::ostream&, std::ostream&);
     void operator() (std::istream&);
-    void call(const std::string& filename);
 };
 
 #endif

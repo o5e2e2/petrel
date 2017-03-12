@@ -57,8 +57,6 @@ int main(int argc, const char* argv[]) {
             std::cout << io::app_usage;
             return 0;
         }
-
-        uci.call(option); //try to open the given file and run the script from it
     }
 
     uci(std::cin);

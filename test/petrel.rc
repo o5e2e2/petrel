@@ -41,7 +41,6 @@ go
 ;* depth 5 * score 102040304
 stop
 
-echo :
 position fen rnbqkbnr/pppppppp///4P//PPPP1PPP/RNBQKBNR b qkQK e3 0 1 moves g8h6 e4e5 f7f5
 go
 ;* depth 4 * score 11139762
