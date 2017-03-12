@@ -10,7 +10,7 @@ namespace {
     T mebi(T bytes) { return bytes / (1024 * 1024); }
 
     template <typename T>
-    constexpr T permil(T n, T m) { return (n * 1000 + m / 2) / m; }
+    constexpr T permil(T n, T m) { return (n * 1000) / m; }
 
     template <typename Duration>
     auto milliseconds(Duration duration)
@@ -116,9 +116,10 @@ void UciOutput::nps(std::ostream& ob, const SearchInfo& info) const {
         }
 
         if (info[TT_Tried] > 0) {
-            ob << " hashhit " << ::permil(info[TT_Hit], info[TT_Tried]);
-            ob << " hits " << info[TT_Hit];
-            ob << " writes " << info[TT_Written];
+            ob << " hhits " << info[TT_Hit];
+            ob << " hreads " << info[TT_Tried];
+            ob << " hhitratio " << ::permil(info[TT_Hit], info[TT_Tried]);
+            ob << " hwrites " << info[TT_Written];
         }
     }
 }
