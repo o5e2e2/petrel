@@ -24,7 +24,7 @@ class SearchInfo {
     _t nodes;
     _t nodesLimit; //search limit
 
-    SearchOutput* out;
+    SearchOutput& out;
     Clock clock;
     depth_t depth; //current search depth
 
@@ -37,6 +37,8 @@ private:
     void acquireNodesQuota();
 
 public:
+    SearchInfo (SearchOutput& o) : out{o} { clear(); }
+
     void decrementQuota() { --nodesQuota; }
     bool checkQuota(const SearchThread&);
 

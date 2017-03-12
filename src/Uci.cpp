@@ -6,7 +6,7 @@
 
 #define SHOULD_BE_READY  if (!searchControl.isReady()) { io::fail_rewind(command); return; }
 
-Uci::Uci (std::ostream& out, std::ostream& err): uciOutput(out, err), searchControl{}, rootMoves(0) {
+Uci::Uci (std::ostream& out, std::ostream& err): uciOutput(out, err), searchControl(uciOutput), rootMoves(0) {
     ucinewgame();
 }
 
@@ -114,7 +114,7 @@ void Uci::go() {
 
     SearchLimit searchLimit;
     searchLimit.readUci(command, uciOutput.getColorToMove(), &rootMoves);
-    searchControl.go(uciOutput, rootMoves, searchLimit);
+    searchControl.go(rootMoves, searchLimit);
 }
 
 #undef SHOULD_BE_READY

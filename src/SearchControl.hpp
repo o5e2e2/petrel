@@ -31,7 +31,7 @@ private:
     SearchControl& operator = (const SearchControl&) = delete;
 
 public:
-    SearchControl ();
+    SearchControl (SearchOutput&);
     void clear();
 
     bool isReady() const { return searchThread.isReady(); }
@@ -40,11 +40,10 @@ public:
     const HashMemory& tt() const { return transpositionTable; }
     void resizeHash(HashMemory::size_t bytes);
 
-    void go(SearchOutput&, const PositionMoves&, const SearchLimit&);
+    void go(const PositionMoves&, const SearchLimit&);
 
     //callbacks from search thread
     bool checkQuota() { return info.checkQuota(searchThread); }
-
     void nextIteration();
 
 };

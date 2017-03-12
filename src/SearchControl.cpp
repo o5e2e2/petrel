@@ -3,7 +3,7 @@
 #include "PositionMoves.hpp"
 #include "Timer.hpp"
 
-SearchControl::SearchControl () : rootWindow(*this) { clear(); }
+SearchControl::SearchControl (SearchOutput& out) : info(out), rootWindow(*this) { clear(); }
 
 void SearchControl::clear() {
     info.clear();
@@ -19,9 +19,8 @@ void SearchControl::nextIteration() {
     transpositionTable.nextAge();
 }
 
-void SearchControl::go(SearchOutput& output, const PositionMoves& rootMoves, const SearchLimit& searchLimit) {
+void SearchControl::go(const PositionMoves& rootMoves, const SearchLimit& searchLimit) {
     info.clear();
-    info.out = &output;
     info.nodesLimit = searchLimit.getNodes();
 
     rootWindow.draft = searchLimit.getDepth();

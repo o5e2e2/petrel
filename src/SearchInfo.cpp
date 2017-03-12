@@ -32,7 +32,7 @@ bool SearchInfo::checkQuota(const SearchThread& searchThread) {
         if (!searchThread.isStopped()) {
             resetNodesQuota();
             acquireNodesQuota();
-            out->readyok(*this);
+            out.readyok(*this);
         }
     }
     return nodesQuota <= 0;
@@ -41,7 +41,7 @@ bool SearchInfo::checkQuota(const SearchThread& searchThread) {
 void SearchInfo::report_bestmove() {
     resetNodesQuota();
 
-    out->bestmove(*this);
+    out.bestmove(*this);
     clear();
 }
 
@@ -49,7 +49,7 @@ void SearchInfo::report_perft_depth(depth_t draft) {
     resetNodesQuota();
 
     depth = draft;
-    out->info_depth(*this);
+    out.info_depth(*this);
     clear();
 }
 
@@ -58,6 +58,6 @@ void SearchInfo::report_perft_divide(Move move) {
 
     currmove = move;
     currmovenumber++;
-    out->info_currmove(*this);
+    out.info_currmove(*this);
     _v[PerftDivideNodes] = _v[PerftNodes];
 }
