@@ -11,14 +11,9 @@ typedef bool SearchFn(const PositionMoves&, SearchWindow&);
 
 namespace Perft {
     SearchFn perft;
-}
-
-namespace PerftDivide {
-    SearchFn perft;
-}
-
-namespace PerftRoot {
-    SearchFn perft;
+    SearchFn divide;
+    SearchFn perftRoot;
+    SearchFn perftId;
 }
 
 #endif

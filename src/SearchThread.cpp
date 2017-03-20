@@ -3,7 +3,7 @@
 #include "SearchWindow.hpp"
 
 void SearchThread::set(SearchFn* s, const PositionMoves& p, SearchWindow& w) {
-    assert(isReady());
+    assert( isReady() );
 
     searchFn = s;
     parent = &p;

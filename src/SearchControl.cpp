@@ -24,10 +24,11 @@ void SearchControl::go(const PositionMoves& rootMoves, const SearchLimit& search
     info.nodesLimit = searchLimit.getNodes();
 
     rootWindow.draft = searchLimit.getDepth();
-    rootWindow.searchFn = searchLimit.getDivide()? PerftDivide::perft : Perft::perft;
+    auto rootSearch = (rootWindow.draft > 0)? Perft::perftRoot : Perft::perftId;
+    rootWindow.searchFn = searchLimit.getDivide()? Perft::divide : Perft::perft;
 
-    assert (searchThread.isReady());
-    searchThread.set(PerftRoot::perft, rootMoves, rootWindow);
+    searchThread.set(rootSearch, rootMoves, rootWindow);
     searchSequence = searchThread.commandRun();
+
     Timer::run(timerPool, searchLimit.getThinkingTime(), searchThread, searchSequence);
 }

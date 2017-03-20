@@ -10,8 +10,6 @@ class PositionMoves;
 class SearchLimit {
     friend class Uci;
 
-    static const depth_t MaxDepth = 1000;
-
     Side::array<Clock::_t> time;
     Side::array<Clock::_t> inc;
 
@@ -31,6 +29,8 @@ class SearchLimit {
     void clear();
 
 public:
+    static const depth_t MaxDepth = 1000;
+
     SearchLimit ();
 
     depth_t      getDepth()  const { return depth; }
