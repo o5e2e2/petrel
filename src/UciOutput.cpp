@@ -102,8 +102,9 @@ void UciOutput::write(std::ostream& ob, const Move& move) const {
 }
 
 void UciOutput::nps(std::ostream& ob, const SearchInfo& info) const {
-    if (info.nodes > 0) {
-        ob << " nodes " << info.nodes;
+    auto nodes = info.getNodes();
+    if (nodes > 0) {
+        ob << " nodes " << nodes;
 
         auto duration = info.clock.read();
 
@@ -111,7 +112,7 @@ void UciOutput::nps(std::ostream& ob, const SearchInfo& info) const {
             ob << " time " << ::milliseconds(duration);
 
             if (duration >= std::chrono::milliseconds{20}) {
-                ob << " nps " << ::nps(info.nodes, duration);
+                ob << " nps " << ::nps(nodes, duration);
             }
         }
 

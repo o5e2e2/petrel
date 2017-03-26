@@ -12,50 +12,47 @@ void SearchInfo::clear() {
     clearNodes();
 }
 
-void SearchInfo::resetNodesQuota() {
-    nodes -= nodesQuota;
-    nodesQuota = 0;
-}
-
-void SearchInfo::acquireNodesQuota() {
-    auto remaining = nodesLimit - nodes;
-    if (remaining > 0) {
-        auto nextQuota = std::min(remaining, +TickLimit);
-        nodesQuota = static_cast<decltype(nodesQuota)>(nextQuota);
-        nodes += nodesQuota;
-    }
-}
-
 //callbacks from search thread
 bool SearchInfo::checkQuota(const SearchThread& searchThread) {
-    if (nodesQuota <= 0) {
-        if (!searchThread.isStopped()) {
-            resetNodesQuota();
-            acquireNodesQuota();
-            out.readyok(*this);
-        }
+    if (nodesQuota > 0) {
+        return false;
     }
-    return nodesQuota <= 0;
+
+    assert (nodesQuota == 0);
+
+    out.readyok(*this);
+
+    if (searchThread.isStopped()) {
+        return true;
+    }
+
+    if (nodesLimit >= nodes + TickLimit) {
+        nodesQuota = TickLimit;
+        nodes += nodesQuota;
+        return false;
+    }
+
+    if (nodesLimit > nodes) {
+        nodesQuota = static_cast<quota_t>(nodesLimit - nodes);
+        nodes += nodesQuota;
+        return false;
+    }
+
+    return true;
 }
 
 void SearchInfo::report_bestmove() {
-    resetNodesQuota();
-
     out.bestmove(*this);
-    clear();
 }
 
 void SearchInfo::report_perft_depth(depth_t draft) {
-    resetNodesQuota();
-
     depth = draft;
     out.info_depth(*this);
-    clear();
+    currmovenumber = 0;
+    clearNodes();
 }
 
 void SearchInfo::report_perft_divide(Move move) {
-    resetNodesQuota();
-
     currmove = move;
     currmovenumber++;
     out.info_currmove(*this);

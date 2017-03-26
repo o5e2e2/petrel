@@ -14,6 +14,7 @@ namespace Perft {
     bool makeMove(PositionMoves& child, SearchWindow& window, Square from, Square to) {
         auto& info = window.control.info;
 
+        CUT ( window.control.checkQuota() );
         info.decrementQuota();
 
         if (window.draft <= 0) {
@@ -24,8 +25,6 @@ namespace Perft {
 
         Zobrist zobrist = child.makeZobrist(from, to);
         auto origin = window.control.tt().lookup(zobrist);
-
-        CUT ( window.control.checkQuota() );
 
         {
             ++info[TT_Tried];
@@ -98,21 +97,20 @@ namespace Perft {
     }
 
     bool perftRoot(const PositionMoves& parent, SearchWindow& window) {
-        CUT (window.searchFn(parent, window));
+        window.searchFn(parent, window);
+
         window.control.info.report_bestmove();
         return false;
     }
 
     bool perftId(const PositionMoves& parent, SearchWindow& window) {
-        auto id = [](const PositionMoves& parent, SearchWindow& window) {
-            for (window.draft = 1; window.draft < SearchLimit::MaxDepth; ++window.draft) {
-                CUT (window.searchFn(parent, window));
-                window.control.nextIteration();
+        for (window.draft = 1; window.draft < SearchLimit::MaxDepth; ++window.draft) {
+            if (window.searchFn(parent, window)) {
+                break;
             }
-            return false;
-        };
+            window.control.nextIteration();
+        }
 
-        id(parent, window);
         window.control.info.report_bestmove();
         return false;
     }
