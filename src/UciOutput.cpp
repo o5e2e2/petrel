@@ -24,8 +24,14 @@ namespace {
     }
 }
 
-UciOutput::UciOutput (std::ostream& o, std::ostream& e)
-    : out(o), err(e), colorToMove{White}, chessVariant{Orthodox}, isreadyWaiting{false} {}
+UciOutput::UciOutput (std::ostream& o, std::ostream& e) :
+    out(o),
+    err(e),
+    colorToMove{White},
+    chessVariant{Orthodox},
+    isreadyWaiting{false},
+    lastInfoNodes{0}
+{}
 
 void UciOutput::uciok(const SearchControl& search) const {
     auto& hashMemory = search.tt();
@@ -56,16 +62,16 @@ void UciOutput::isready(const SearchControl& search) const {
 }
 
 void UciOutput::readyok(const SearchInfo& info) const {
-    if (outputLock.try_lock()) {
-        if (isreadyWaiting) {
+    if (isreadyWaiting) {
+        if (outputLock.try_lock()) {
             isreadyWaiting = false;
 
             OutputBuffer ob{out};
             info_nps(ob, info);
             ob << "readyok\n";
-        }
 
-        outputLock.unlock();
+            outputLock.unlock();
+        }
     }
 }
 
@@ -75,6 +81,7 @@ void UciOutput::bestmove(const SearchInfo& info) const {
 
     info_nps(ob, info);
     ob << "bestmove "; write(ob, info.bestmove); ob << '\n';
+    lastInfoNodes = 0;
 }
 
 void UciOutput::info_depth(const SearchInfo& info) const {
@@ -103,11 +110,12 @@ void UciOutput::write(std::ostream& ob, const Move& move) const {
 
 void UciOutput::nps(std::ostream& ob, const SearchInfo& info) const {
     auto nodes = info.getNodes();
-    if (nodes > 0) {
+    if (nodes > 0 && lastInfoNodes != nodes) {
+        lastInfoNodes = nodes;
+
         ob << " nodes " << nodes;
 
         auto duration = info.clock.read();
-
         if (duration >= std::chrono::milliseconds{1}) {
             ob << " time " << ::milliseconds(duration);
 

@@ -19,12 +19,7 @@ public:
 
         out << std::hex;
         FOR_INDEX(Pi, pi) {
-            if (v[pi]) {
-                out << pi;
-            }
-            else {
-                out << ".";
-            }
+            out << (v[pi]? pi : '.');
         }
 
         out.flags(flags);

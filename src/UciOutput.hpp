@@ -22,6 +22,7 @@ class UciOutput : public SearchOutput {
     ChessVariant chessVariant; //format of castling moves output
 
     mutable volatile bool isreadyWaiting; //set when got 'isready' command while thinking
+    mutable node_count_t lastInfoNodes;
 
     void write(std::ostream&, const Move&) const;
     void hashfull(std::ostream&) const;

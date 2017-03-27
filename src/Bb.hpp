@@ -54,12 +54,7 @@ public:
     friend std::ostream& operator << (std::ostream& out, Bb bb) {
         FOR_INDEX(Rank, rank) {
             FOR_INDEX(File, file) {
-                if (bb[Square(file, rank)]) {
-                    out << file;
-                }
-                else {
-                    out << '.';
-                }
+                out << (bb[Square(file, rank)] ? file : '.');
             }
             out << '\n';
         }
