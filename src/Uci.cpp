@@ -1,6 +1,3 @@
-#include <fstream>
-#include <cstdlib>
-
 #include "Uci.hpp"
 #include "SearchLimit.hpp"
 
@@ -25,10 +22,6 @@ void Uci::operator() (std::istream& in) {
         else if (next("ucinewgame")){ ucinewgame(); }
         else if (next("uci"))       { uciOutput.uciok(searchControl); }
         else if (next("quit"))      { break; }
-        else { //ignore comment line
-            auto peek = command.peek();
-            if (peek == '#' || peek == ';') { continue; }
-        }
 
         //error if something left unparsed
         if (!next("")) { uciOutput.error(command); }

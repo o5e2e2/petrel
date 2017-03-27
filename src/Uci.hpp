@@ -2,7 +2,6 @@
 #define UCI_HPP
 
 #include "io.hpp"
-#include "typedefs.hpp"
 #include "PositionMoves.hpp"
 #include "SearchControl.hpp"
 #include "UciOutput.hpp"

@@ -2,6 +2,10 @@
 
 TARGET = petrel
 
+GIT_DATE := $(shell git log -1 --date=short --pretty=format:%cd)
+GIT_HASH := $(shell git log -1 --date=short --pretty=format:%h)
+GIT_ORIGIN := $(shell git remote get-url origin)
+
 srcdir ?= ./src
 debugdir = ./debug
 releasedir = ./release
@@ -26,6 +30,7 @@ WARNINGS += -pedantic -Wall -Wextra -Wuninitialized -Wpointer-arith -Wcast-qual 
 WARNINGS += -Wconversion -Wshadow
 
 CXXFLAGS += $(OPTIONS) $(OPTIMIZATIONS) $(WARNINGS)
+CXXFLAGS += -DGIT_DATE=\"$(GIT_DATE)\" -DGIT_HASH=\"$(GIT_HASH)\" -DGIT_ORIGIN=\"$(GIT_ORIGIN)\"
 LDFLAGS += $(LIBS) $(OPTIMIZATIONS) -Wl,--no-as-needed
 
 HEADER = StdAfx.hpp
@@ -36,7 +41,7 @@ SOURCES := $(wildcard $(srcdir)/*.cpp)
 OBJECTS := $(patsubst $(srcdir)/%.cpp, $(builddir)/%.o, $(SOURCES))
 DEPS := $(patsubst %.o, %.d, $(OBJECTS))
 
-.PHONY: all check clean
+.PHONY: all test test-hash clean
 
 all: $(builddir)/$(TARGET)
 
