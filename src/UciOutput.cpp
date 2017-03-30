@@ -1,8 +1,8 @@
 #include "UciOutput.hpp"
-#include "OutputBuffer.hpp"
+#include "HashMemory.hpp"
 #include "Move.hpp"
+#include "OutputBuffer.hpp"
 #include "Position.hpp"
-#include "SearchControl.hpp"
 #include "SearchInfo.hpp"
 
 #define OUTPUT(ob) OutputBuffer<decltype(outLock)> ob(out, outLock)
@@ -35,8 +35,7 @@ UciOutput::UciOutput (std::ostream& o, std::ostream& e) :
     lastInfoNodes{0}
 {}
 
-void UciOutput::uciok(const SearchControl& search) const {
-    auto& hashMemory = search.tt();
+void UciOutput::uciok(const HashMemory& hashMemory) const {
     auto current = hashMemory.getSize();
     auto max = hashMemory.getMax();
 
@@ -48,8 +47,8 @@ void UciOutput::uciok(const SearchControl& search) const {
     ob << "uciok\n";
 }
 
-void UciOutput::isready(const SearchControl& search) const {
-    if (search.isReady()) {
+void UciOutput::isready(bool searchIsReady) const {
+    if (searchIsReady) {
         isreadyWaiting = false;
 
         OutputBuffer<decltype(outLock)>(out, outLock) << "readyok\n";

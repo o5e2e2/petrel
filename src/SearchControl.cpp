@@ -10,32 +10,6 @@ void SearchControl::clear() {
     transpositionTable.clear();
 }
 
-void SearchControl::uciSetHash(std::istream& command) {
-
-    HashMemory::size_t quantity = 0;
-    if (!(command >> quantity)) {
-        io::fail_rewind(command);
-        return;
-    }
-
-    io::char_type u = 'm';
-    command >> u;
-
-    switch (std::tolower(u)) {
-        case 'g': quantity *= 1024;
-        case 'm': quantity *= 1024;
-        case 'k': quantity *= 1024;
-        case 'b': break;
-
-        default: {
-            io::fail_rewind(command);
-            return;
-        }
-    }
-
-    transpositionTable.resize(quantity);
-}
-
 void SearchControl::nextIteration() {
     transpositionTable.nextAge();
 }

@@ -6,9 +6,9 @@
 #include "SearchOutput.hpp"
 #include "SpinLock.hpp"
 
+class HashMemory;
 class Move;
 class Position;
-class SearchControl;
 class SearchInfo;
 
 class UciOutput : public SearchOutput {
@@ -31,8 +31,8 @@ public:
     UciOutput (std::ostream&, std::ostream& = std::cerr);
 
     //called from Uci
-    void isready(const SearchControl&) const;
-    void uciok(const SearchControl&) const;
+    void isready(bool) const;
+    void uciok(const HashMemory&) const;
     void info_fen(const Position&) const;
     void set(ChessVariant v) { chessVariant = v; }
     void setColorToMove(Color c) { colorToMove = c; }
