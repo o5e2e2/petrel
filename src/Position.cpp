@@ -56,6 +56,9 @@ void Position::updateSliderAttacks(VectorPiMask affected) {
 }
 
 bool Position::setup() {
+    MY.evaluation.setEndgame( OP.isEndgame(), MY.kingSquare() );
+    OP.evaluation.setEndgame( MY.isEndgame(), OP.kingSquare() );
+
     updateSliderAttacksKing<Op>(OP.alivePieces());
     updateSliderAttacks<My>(MY.alivePieces());
     return MY.attacksTo(~OP.kingSquare()).none(); //not in check
@@ -192,7 +195,7 @@ void Position::makeKingMove(Square from, Square to) {
 
     if (OP.isOccupied(~to)) {
         //capture
-        OP.capture(~to);
+        capture<Op>(~to);
         updateSliderAttacksKing<My>(MY.attacksTo(from));
     }
     else {
@@ -232,9 +235,10 @@ void Position::makePawnMove(Pi pi, Square from, Square to) {
 
         MY.promote(pi, ty, from, promotedTo);
         set(My, pi, static_cast<PieceType>(ty), promotedTo);
+        OP.evaluation.setEndgame( MY.isEndgame(), OP.kingSquare() );
 
         if (OP.isOccupied(~promotedTo)) {
-            OP.capture(~promotedTo);
+            capture<Op>(~promotedTo);
 
             updateSliderAttacksKing<My>(MY.attacksTo(from) | pi);
             updateSliderAttacks<Op>(OP.attacksTo(~from));
@@ -246,7 +250,7 @@ void Position::makePawnMove(Pi pi, Square from, Square to) {
 
     }
     else if (OP.isOccupied(~to)) {
-        OP.capture(~to);
+        capture<Op>(~to);
 
         if (from.is(Rank5) && to.is(Rank5)) {
             //en passant move
@@ -276,6 +280,14 @@ void Position::makePawnMove(Pi pi, Square from, Square to) {
     }
 
     MY.assertValid(pi);
+}
+
+template <Side::_t My>
+void Position::capture(Square from) {
+    constexpr Side Op{~My};
+
+    MY.capture(from);
+    OP.evaluation.setEndgame( MY.isEndgame(), OP.kingSquare() );
 }
 
 void Position::makeMove(const Position& parent, Square from, Square to, Zobrist z) {
@@ -323,7 +335,7 @@ void Position::makeMove(Square from, Square to) {
     }
     else if (OP.isOccupied(~to)) {
         //simple non-pawn capture
-        OP.capture(~to);
+        capture<Op>(~to);
         move<My>(pi, from, to);
         updateSliderAttacksKing<My>(MY.attacksTo(from) | pi);
         updateSliderAttacks<Op>(OP.attacksTo(~from));

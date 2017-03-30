@@ -38,6 +38,8 @@ public:
     Pi largestOne() const { return PieceSet{*this}.largestOne(); }
     Pi seekVacant() const { return PieceSet{*this}.seekVacant(); }
 
+    index_t count() const { return PieceSet{*this}.count(); }
+
     PieceSet begin() const { return *this; }
     PieceSet end() const { return {}; }
 

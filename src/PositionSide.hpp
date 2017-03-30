@@ -13,6 +13,8 @@
 
 //TRICK: all squares are relative to the own side (so king piece is initially on E1 square regardless color)
 class PositionSide {
+    friend class Position;
+
     MatrixPiBb attacks; //squares attacked by a piece and pieces attacking to a square
     VectorPiType types; //type of each alive piece, rooks with castling rights, pawns affected by en passant
     VectorPiSquare squares; //onboard square locations of the alive pieces or 'NoSquare' special value
@@ -90,6 +92,8 @@ public:
     VectorPiMask attacksTo(Square a) const { return attacks[a]; }
     VectorPiMask attacksTo(Square a, Square b) const { return attacks[a] | attacks[b]; }
     VectorPiMask attacksTo(Square a, Square b, Square c) const { return attacks[a] | attacks[b] | attacks[c]; }
+
+    bool isEndgame() const; //returns whether material for endgame or not
 
     void capture(Square);
     void move(Pi, PieceType, Square, Square);

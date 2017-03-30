@@ -16,6 +16,7 @@ class VectorPiType {
     enum {
         SliderMask = ::singleton<_t>(Queen)|::singleton<_t>(Rook)|::singleton<_t>(Bishop),
         LeaperMask = ::singleton<_t>(King)|::singleton<_t>(Knight)|::singleton<_t>(Pawn),
+        MinorMask = ::singleton<_t>(Bishop)|::singleton<_t>(Knight),
         PieceTypeMask = SliderMask|LeaperMask,
         CastlingMask  = ::singleton<_t>(Castling),
         EnPassantMask = ::singleton<_t>(EnPassant)
@@ -38,6 +39,7 @@ public:
 
     VectorPiMask alivePieces() const { return _v.notEmpty(); }
     VectorPiMask sliders() const { return _v.anyOf(SliderMask); }
+    VectorPiMask minors() const { return _v.anyOf(MinorMask); }
     bool isSlider(Pi pi) const { assertValid(pi); return (_v[pi] & SliderMask) != 0; }
 
     VectorPiMask piecesOfType(PieceType ty) const { assert (!ty.is(King)); return _v.anyOf(ty); }

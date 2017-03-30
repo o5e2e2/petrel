@@ -28,7 +28,7 @@ const BitReverse bitReverse; //64
 const VectorBitCount bit_count; //48
 const VectorPiOrder::Sorted VectorPiOrder::sorted; //16
 
-const PieceSquareTable Evaluation::pst; //7*64
+const PieceSquareTable Evaluation::pieceSquareTable; //7*64
 
 template <> io::literal PieceType::The_string{"qrbnpk"};
 template <> io::literal PromoType::The_string{"qrbn"};

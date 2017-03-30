@@ -14,6 +14,14 @@ public:
         return PieceSet{x}.index();
     }
 
+    index_t count() const {
+        int total = 0;
+        for (_t x = this->_v; x; x &= x - 1) {
+            total++;
+        }
+        return total;
+    }
+
     friend std::ostream& operator << (std::ostream& out, PieceSet v) {
         auto flags(out.flags());
 

@@ -32,6 +32,7 @@ private:
     template <Side::_t> void makePawnMove(Pi, Square, Square);
     template <Side::_t> void makeCastling(Pi, Square, Square);
     template <Side::_t> void makeMove(Square, Square);
+    template <Side::_t> void capture(Square);
 
     void syncSides();
 
