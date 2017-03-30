@@ -3,12 +3,13 @@
 
 #include "io.hpp"
 
+template<typename Lock>
 class OutputBuffer : public std::ostringstream {
     std::ostream& out;
+    Lock& outLock;
 public:
-    OutputBuffer (std::ostream& o) : std::ostringstream{}, out(o) {}
-    OutputBuffer (std::ostream* o) : OutputBuffer(*o) {}
-   ~OutputBuffer () { out << str() << std::flush; }
+    OutputBuffer (std::ostream& o, Lock& l) : std::ostringstream{}, out(o), outLock(l) {}
+   ~OutputBuffer () { outLock.lock(); out << str() << std::flush; outLock.unlock(); }
 };
 
 #endif

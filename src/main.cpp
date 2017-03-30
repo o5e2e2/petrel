@@ -2,10 +2,10 @@
 * Startup constant initialization
 */
 #include "BetweenSquares.hpp"
-#include "OutsideSquares.hpp"
 #include "BitArray128Reverse.hpp"
 #include "CastlingRules.hpp"
 #include "Evaluation.hpp"
+#include "OutsideSquares.hpp"
 #include "PerftRecord.hpp"
 #include "PieceTypeAttack.hpp"
 #include "Timer.hpp"

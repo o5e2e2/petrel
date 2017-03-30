@@ -1,10 +1,10 @@
 #ifndef UCI_OUTPUT_HPP
 #define UCI_OUTPUT_HPP
 
-#include <mutex>
 #include "io.hpp"
 #include "typedefs.hpp"
 #include "SearchOutput.hpp"
+#include "SpinLock.hpp"
 
 class Move;
 class Position;
@@ -15,12 +15,10 @@ class UciOutput : public SearchOutput {
     std::ostream& out; //output stream
     std::ostream& err; //error output stream
 
-    mutable std::mutex outputLock;
-    typedef std::lock_guard<decltype(outputLock)> Lock;
-
     Color colorToMove; //root position color for moves long algebraic format output
     ChessVariant chessVariant; //format of castling moves output
 
+    mutable SpinLock outLock;
     mutable volatile bool isreadyWaiting; //set when got 'isready' command while thinking
     mutable node_count_t lastInfoNodes;
 
