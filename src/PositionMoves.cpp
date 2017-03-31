@@ -30,12 +30,10 @@ void PositionMoves::populateUnderpromotions() {
 
     //add underpromotions for each already generated legal queen promotion
     //TRICK: promoted piece type encoded inside pawn destination square rank
-    VectorPiRank promotions = moves[Rank8] & VectorPiRank{MY.pawns()};
-
-    static_assert (static_cast<Rank::_t>(Queen) == Rank8, "invalid promotion piece encoding");
-    moves[static_cast<Rank::_t>(Rook)]   += promotions;
-    moves[static_cast<Rank::_t>(Bishop)] += promotions;
-    moves[static_cast<Rank::_t>(Knight)] += promotions;
+    VectorPiRank promotions = moves[::rankOf(Queen)] & VectorPiRank{MY.pawns()};
+    moves[::rankOf(Rook)]   += promotions;
+    moves[::rankOf(Bishop)] += promotions;
+    moves[::rankOf(Knight)] += promotions;
 }
 
 template <Side::_t My>
@@ -65,6 +63,7 @@ void PositionMoves::generatePawnMoves() {
 
     for (Pi pi : MY.pawns()) {
         Square from{ MY.squareOf(pi) };
+
         Rank rankTo{ ::rankForward(Rank{from}) };
         BitRank fileTo{File{from}};
 
@@ -99,18 +98,16 @@ void PositionMoves::correctCheckEvasionsByPawns(Bb checkLine, Square checkFrom) 
 
         for (Square from : MY.occupiedByPawns() & badPawnsPlaces) {
             Pi pi{MY.pieceOn(from)};
+            Rank rankTo = ::rankForward(Rank(from));
 
-            Bb bb{Bb{from.rankForward()} % OCCUPIED & checkLine};
-            bb += ::pieceTypeAttack(Pawn, from) & checkFrom;
-
-            Rank rank = rankForward(Rank(from));
-            moves.set(pi, rank, bb[rank]);
+            Bb bb = (Bb{from.rankForward()} & checkLine) + (::pieceTypeAttack(Pawn, from) & checkFrom);
+            moves.set(pi, rankTo, bb[rankTo]);
         }
     }
 
     //pawns double push over check line
     {
-        Bb badPawnsPlaces{ (checkLine << 16) % (Bb{OCCUPIED} << 8) & Bb{Rank2} };
+        Bb badPawnsPlaces{ Bb{Rank2} & (checkLine << 16) % (Bb{OCCUPIED} << 8)  };
         for (Square from : MY.occupiedByPawns() & badPawnsPlaces) {
             Pi pi{MY.pieceOn(from)};
             moves.add(pi, Rank4, File{from});

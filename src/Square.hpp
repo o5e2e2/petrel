@@ -3,14 +3,6 @@
 
 #include "Index.hpp"
 
-enum file_t { FileA, FileB, FileC, FileD, FileE, FileF, FileG, FileH };
-typedef Index<8, file_t> File;
-
-enum rank_t { Rank8, Rank7, Rank6, Rank5, Rank4, Rank3, Rank2, Rank1 };
-typedef Index<8, rank_t> Rank;
-
-constexpr Rank::_t rankForward(Rank rank) { return static_cast<Rank::_t>(rank-1); }
-
 enum square_t {
     A8, B8, C8, D8, E8, F8, G8, H8,
     A7, B7, C7, D7, E7, F7, G7, H7,
@@ -24,7 +16,7 @@ enum square_t {
 
 class Bb;
 struct Square : Index<64, square_t> {
-    enum { RankShift = 3, RankOffset = (1 << RankShift), RankMask = (Rank::Mask << RankShift) };
+    enum { RankShift = 3, RankMask = (Rank::Mask << RankShift) };
 
     using Index::Index;
     constexpr Square (File f, Rank r) : Index{static_cast<_t>(f + (r << RankShift))} {}
@@ -34,7 +26,7 @@ struct Square : Index<64, square_t> {
 
     Square& flip() { this->_v = static_cast<_t>(this->_v ^ RankMask); return *this; }
     constexpr Square operator ~ () const { return static_cast<_t>(this->_v ^ RankMask); }
-    constexpr Square rankForward() const { return static_cast<_t>(this->_v - RankOffset); }
+    constexpr Square rankForward() const { return static_cast<_t>(this->_v - A7 + A8); }
 
     using Index::is;
     constexpr bool is(Rank rank) const { return (this->_v & RankMask) == (rank << RankShift); }
