@@ -26,9 +26,10 @@ namespace {
     }
 }
 
-UciOutput::UciOutput (std::ostream& o, std::ostream& e) :
+UciOutput::UciOutput (const SearchInfo& i, std::ostream& o, std::ostream& e) :
     out(o),
     err(e),
+    info(i),
     colorToMove{White},
     chessVariant{Orthodox},
     isreadyWaiting{false},
@@ -58,13 +59,13 @@ void UciOutput::isready(bool searchIsReady) const {
     }
 }
 
-void UciOutput::readyok(const SearchInfo& info) const {
+void UciOutput::readyok() const {
     if (isreadyWaiting) {
         if (outLock.try_lock()) {
             isreadyWaiting = false;
 
             std::ostringstream ob;
-            info_nps(ob, info);
+            info_nps(ob);
             ob << "readyok\n";
             out << ob.str() << std::flush;
             outLock.unlock();
@@ -72,25 +73,25 @@ void UciOutput::readyok(const SearchInfo& info) const {
     }
 }
 
-void UciOutput::bestmove(const SearchInfo& info) const {
+void UciOutput::bestmove() const {
     OUTPUT(ob);
-    info_nps(ob, info);
+    info_nps(ob);
     ob << "bestmove "; write(ob, info.bestmove); ob << '\n';
     lastInfoNodes = 0;
 }
 
-void UciOutput::info_depth(const SearchInfo& info) const {
+void UciOutput::info_depth() const {
     OUTPUT(ob);
     ob << "info depth " << info.depth;
-    nps(ob, info);
+    nps(ob);
     ob << " score " << info[PerftNodes] << '\n';
 }
 
-void UciOutput::info_currmove(const SearchInfo& info) const {
+void UciOutput::info_currmove() const {
     OUTPUT(ob);
     ob << "info currmovenumber " << info.currmovenumber;
     ob << " currmove "; write(ob, info.currmove);
-    nps(ob, info);
+    nps(ob);
     ob << " score " << info[PerftNodes] - info[PerftDivideNodes] << '\n';
 }
 
@@ -98,19 +99,19 @@ void UciOutput::write(std::ostream& ob, const Move& move) const {
     Move::write(ob, move, colorToMove, chessVariant);
 }
 
-void UciOutput::nps(std::ostream& ob, const SearchInfo& info) const {
-    auto nodes = info.getNodes();
-    if (nodes > 0 && lastInfoNodes != nodes) {
-        lastInfoNodes = nodes;
+void UciOutput::nps(std::ostream& ob) const {
+    auto _nodes = info.getNodes();
+    if (_nodes > 0 && lastInfoNodes != _nodes) {
+        lastInfoNodes = _nodes;
 
-        ob << " nodes " << nodes;
+        ob << " nodes " << _nodes;
 
         auto duration = info.clock.read();
         if (duration >= std::chrono::milliseconds{1}) {
             ob << " time " << ::milliseconds(duration);
 
             if (duration >= std::chrono::milliseconds{20}) {
-                ob << " nps " << ::nps(nodes, duration);
+                ob << " nps " << ::nps(_nodes, duration);
             }
         }
 
@@ -123,9 +124,9 @@ void UciOutput::nps(std::ostream& ob, const SearchInfo& info) const {
     }
 }
 
-void UciOutput::info_nps(std::ostream& ob, const SearchInfo& info) const {
+void UciOutput::info_nps(std::ostream& ob) const {
     std::ostringstream buffer;
-    nps(buffer, info);
+    nps(buffer);
 
     if (!buffer.str().empty()) {
         ob << "info" << buffer.str() << '\n';

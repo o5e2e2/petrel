@@ -34,7 +34,7 @@ public:
     void clear();
 
     bool isReady() const { return searchThread.isReady(); }
-    void stop() { searchThread.commandStop(searchSequence); searchThread.waitReady(); }
+    void stop() { searchThread.stop(searchSequence); }
 
     const HashMemory& tt() const { return transpositionTable; }
     HashMemory& tt() { return transpositionTable; }

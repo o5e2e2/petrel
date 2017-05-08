@@ -43,8 +43,6 @@ int main(int argc, const char* argv[]) {
     std::ios_base::sync_with_stdio(false);
     std::cin.tie(nullptr);
 
-    Uci uci(std::cout, std::cerr);
-
     if (argc > 1) {
         std::string option{argv[1]};
 
@@ -59,5 +57,6 @@ int main(int argc, const char* argv[]) {
         }
     }
 
+    Uci uci(std::cout, std::cerr);
     uci(std::cin);
 }

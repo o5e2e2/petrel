@@ -34,7 +34,7 @@ void setHashUci(std::istream& command, HashMemory& hash) {
 
 } //end of anonymouas namespace
 
-Uci::Uci (std::ostream& out, std::ostream& err): uciOutput(out, err), searchControl(uciOutput), rootMoves(0) {
+Uci::Uci (std::ostream& out, std::ostream& err): searchControl(uciOutput), uciOutput(searchControl.info, out, err), rootMoves(0) {
     ucinewgame();
 }
 

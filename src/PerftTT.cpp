@@ -1,5 +1,4 @@
 #include "PerftTT.hpp"
-#include "SearchInfo.hpp"
 
 node_count_t PerftTT::get(Zobrist z, depth_t d) {
     if (d == 1 && b.s[0].isKeyMatch(z)) {

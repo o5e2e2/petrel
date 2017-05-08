@@ -20,7 +20,7 @@ bool SearchInfo::checkQuota(const SearchThread& searchThread) {
 
     assert (nodesQuota == 0);
 
-    out.readyok(*this);
+    out.readyok();
 
     if (searchThread.isStopped()) {
         return true;
@@ -42,12 +42,12 @@ bool SearchInfo::checkQuota(const SearchThread& searchThread) {
 }
 
 void SearchInfo::report_bestmove() {
-    out.bestmove(*this);
+    out.bestmove();
 }
 
 void SearchInfo::report_perft_depth(depth_t draft) {
     depth = draft;
-    out.info_depth(*this);
+    out.info_depth();
     currmovenumber = 0;
     _v[PerftDivideNodes] = 0;
     _v[PerftNodes] = 0;
@@ -56,6 +56,6 @@ void SearchInfo::report_perft_depth(depth_t draft) {
 void SearchInfo::report_perft_divide(Move move) {
     currmove = move;
     currmovenumber++;
-    out.info_currmove(*this);
+    out.info_currmove();
     _v[PerftDivideNodes] = _v[PerftNodes];
 }

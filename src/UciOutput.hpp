@@ -15,6 +15,8 @@ class UciOutput : public SearchOutput {
     std::ostream& out; //output stream
     std::ostream& err; //error output stream
 
+    const SearchInfo& info;
+
     Color colorToMove; //root position color for moves long algebraic format output
     ChessVariant chessVariant; //format of castling moves output
 
@@ -24,11 +26,11 @@ class UciOutput : public SearchOutput {
 
     void write(std::ostream&, const Move&) const;
     void hashfull(std::ostream&) const;
-    void nps(std::ostream&, const SearchInfo&) const;
-    void info_nps(std::ostream&, const SearchInfo&) const;
+    void nps(std::ostream&) const;
+    void info_nps(std::ostream&) const;
 
 public:
-    UciOutput (std::ostream&, std::ostream& = std::cerr);
+    UciOutput (const SearchInfo&, std::ostream&, std::ostream& = std::cerr);
 
     //called from Uci
     void isready(bool) const;
@@ -42,10 +44,10 @@ public:
     void error(const std::string&) const;
 
     //called from Search
-    void readyok(const SearchInfo&) const override;
-    void bestmove(const SearchInfo&) const override;
-    void info_depth(const SearchInfo&) const override;
-    void info_currmove(const SearchInfo&) const override;
+    void readyok() const override;
+    void bestmove() const override;
+    void info_depth() const override;
+    void info_currmove() const override;
 
 };
 

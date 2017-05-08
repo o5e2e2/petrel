@@ -44,7 +44,7 @@ public:
     void commandStop() { signal(Run, Abort); }
     void commandStop(_t seq) { signal(seq, Run, Abort); }
 
-    void waitReady() { wait(Ready); }
+    void stop(_t seq) { commandStop(seq); wait(Ready); }
 };
 
 #endif
