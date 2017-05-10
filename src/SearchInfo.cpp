@@ -41,10 +41,6 @@ bool SearchInfo::checkQuota(const SearchThread& searchThread) {
     return true;
 }
 
-void SearchInfo::report_bestmove() {
-    this->bestmove();
-}
-
 void SearchInfo::report_perft_depth(depth_t draft) {
     depth = draft;
     this->info_depth();

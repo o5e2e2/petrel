@@ -39,13 +39,13 @@ public:
     bool checkQuota(const SearchThread&);
 
     void clear();
+    void clearNodes() { _v = {0, 0, 0, 0, 0}; }
+
     void report_perft_divide(Move);
     void report_perft_depth(depth_t);
-    void report_bestmove();
 
-    void clearNodes() { _v = {0, 0, 0, 0, 0}; }
-    const node_count_t&  operator [] (Index i) const { return _v[i]; }
-    node_count_t&        operator [] (Index i)       { return _v[i]; }
+    node_count_t get(Index i) const { return _v[i]; }
+    void inc(Index i, node_count_t n = 1) { _v[i] += n; }
 
 };
 

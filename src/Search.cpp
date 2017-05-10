@@ -20,7 +20,8 @@ namespace Perft {
 
         if (window.draft <= 0) {
             child.makeMove(from, to);
-            info[PerftNodes] += child.getMoves().count();
+            auto n = child.getMoves().count();
+            info.inc(PerftNodes, n);
             return false;
         }
 
@@ -28,12 +29,12 @@ namespace Perft {
         auto origin = window.control.tt().lookup(zobrist);
 
         {
-            ++info[TT_Tried];
-
             auto n = PerftTT(origin, window.control.tt().getAge()).get(zobrist, window.draft);
+            info.inc(TT_Tried);
+
             if (n != NODE_COUNT_NONE) {
-                ++info[TT_Hit];
-                info[PerftNodes] += n;
+                info.inc(TT_Hit);
+                info.inc(PerftNodes, n);
                 return false;
             }
         }
@@ -41,12 +42,12 @@ namespace Perft {
         child.makeMove(from, to, zobrist);
         assert (zobrist == child.getPos().generateZobrist());
 
-        auto n = info[PerftNodes];
+        auto n = info.get(PerftNodes);
         CUT (_perft(child, window));
-        n = info[PerftNodes] - n;
+        n = info.get(PerftNodes) - n;
 
-        ++info[TT_Written];
         PerftTT(origin, window.control.tt().getAge()).set(zobrist, window.draft, n);
+        info.inc(TT_Written);
 
         return false;
     }
@@ -100,7 +101,7 @@ namespace Perft {
     bool perftRoot(const PositionMoves& parent, SearchWindow& window) {
         window.searchFn(parent, window);
 
-        window.control.info.report_bestmove();
+        window.control.info.bestmove();
         return false;
     }
 
@@ -112,7 +113,7 @@ namespace Perft {
             window.control.nextIteration();
         }
 
-        window.control.info.report_bestmove();
+        window.control.info.bestmove();
         return false;
     }
 

@@ -82,7 +82,7 @@ void UciOutput::info_depth() const {
     OUTPUT(ob);
     ob << "info depth " << depth;
     nps(ob);
-    ob << " score " << (*this)[PerftNodes] << '\n';
+    ob << " score " << get(PerftNodes) << '\n';
 }
 
 void UciOutput::info_currmove() const {
@@ -90,7 +90,7 @@ void UciOutput::info_currmove() const {
     ob << "info currmovenumber " << currmovenumber;
     ob << " currmove "; write(ob, currmove);
     nps(ob);
-    ob << " score " << (*this)[PerftNodes] - (*this)[PerftDivideNodes] << '\n';
+    ob << " score " << get(PerftNodes) - get(PerftDivideNodes) << '\n';
 }
 
 void UciOutput::write(std::ostream& ob, const Move& move) const {
@@ -113,11 +113,11 @@ void UciOutput::nps(std::ostream& ob) const {
             }
         }
 
-        if ((*this)[TT_Tried] > 0) {
-            ob << " hhits " << (*this)[TT_Hit];
-            ob << " hreads " << (*this)[TT_Tried];
-            ob << " hhitratio " << ::permil((*this)[TT_Hit], (*this)[TT_Tried]);
-            ob << " hwrites " << (*this)[TT_Written];
+        if (get(TT_Tried) > 0) {
+            ob << " hhits " << get(TT_Hit);
+            ob << " hreads " << get(TT_Tried);
+            ob << " hhitratio " << ::permil(get(TT_Hit), get(TT_Tried));
+            ob << " hwrites " << get(TT_Written);
         }
     }
 }
