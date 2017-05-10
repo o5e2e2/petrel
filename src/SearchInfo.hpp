@@ -11,9 +11,7 @@ class SearchThread;
 enum { PerftNodes, PerftDivideNodes, TT_Tried, TT_Hit, TT_Written, _Total };
 
 class SearchInfo : public SearchOutput {
-    friend class UciOutput;
-    friend class SearchControl;
-
+protected:
     typedef ::Index<_Total> Index;
     Index::array<node_count_t> _v;
 
@@ -35,6 +33,7 @@ public:
     SearchInfo () { clear(); }
 
     node_count_t getNodes() const { return nodes - nodesQuota; }
+    void setNodesLimit(node_count_t n) { nodesLimit = n; }
 
     void decrementQuota() { --nodesQuota; }
     bool checkQuota(const SearchThread&);

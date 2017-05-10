@@ -19,7 +19,7 @@ bool SearchControl::checkQuota() {
 
 void SearchControl::go(const PositionMoves& rootMoves, const SearchLimit& searchLimit) {
     info.clear();
-    info.nodesLimit = searchLimit.getNodes();
+    info.setNodesLimit( searchLimit.getNodes() );
 
     rootWindow.draft = searchLimit.getDepth();
     auto rootSearch = (rootWindow.draft > 0)? Perft::perftRoot : Perft::perftId;

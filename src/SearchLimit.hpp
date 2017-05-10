@@ -8,8 +8,6 @@
 class PositionMoves;
 
 class SearchLimit {
-    friend class Uci;
-
     Side::array<Clock::_t> time;
     Side::array<Clock::_t> inc;
 
