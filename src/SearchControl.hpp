@@ -1,13 +1,13 @@
 #ifndef SEARCH_CONTROL_HPP
 #define SEARCH_CONTROL_HPP
 
-#include "SearchInfo.hpp"
 #include "SearchThread.hpp"
 #include "SearchWindow.hpp"
 
 #include "HashMemory.hpp"
 #include "Timer.hpp"
 
+class SearchInfo;
 class PositionMoves;
 class SearchLimit;
 
@@ -16,7 +16,7 @@ class SearchLimit;
  */
 class SearchControl {
 public:
-    SearchInfo info;
+    SearchInfo& info; //virtual
 
 private:
     SearchThread     searchThread;
@@ -30,7 +30,7 @@ private:
     SearchControl& operator = (const SearchControl&) = delete;
 
 public:
-    SearchControl (SearchOutput&);
+    SearchControl (SearchInfo&);
     void clear();
 
     bool isReady() const { return searchThread.isReady(); }
@@ -42,7 +42,7 @@ public:
     void go(const PositionMoves&, const SearchLimit&);
 
     //callbacks from search thread
-    bool checkQuota() { return info.checkQuota(searchThread); }
+    bool checkQuota();
     void nextIteration();
 
 };

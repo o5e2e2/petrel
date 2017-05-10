@@ -8,7 +8,7 @@ void SearchInfo::clear() {
     nodes = 0;
     nodesQuota = 0;
     currmovenumber = 0;
-    bestmove = {};
+    _bestmove = {};
     clearNodes();
 }
 
@@ -20,7 +20,7 @@ bool SearchInfo::checkQuota(const SearchThread& searchThread) {
 
     assert (nodesQuota == 0);
 
-    out.readyok();
+    this->readyok();
 
     if (searchThread.isStopped()) {
         return true;
@@ -42,12 +42,12 @@ bool SearchInfo::checkQuota(const SearchThread& searchThread) {
 }
 
 void SearchInfo::report_bestmove() {
-    out.bestmove();
+    this->bestmove();
 }
 
 void SearchInfo::report_perft_depth(depth_t draft) {
     depth = draft;
-    out.info_depth();
+    this->info_depth();
     currmovenumber = 0;
     _v[PerftDivideNodes] = 0;
     _v[PerftNodes] = 0;
@@ -56,6 +56,7 @@ void SearchInfo::report_perft_depth(depth_t draft) {
 void SearchInfo::report_perft_divide(Move move) {
     currmove = move;
     currmovenumber++;
-    out.info_currmove();
     _v[PerftDivideNodes] = _v[PerftNodes];
+
+    this->info_currmove();
 }

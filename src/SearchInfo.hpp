@@ -4,13 +4,13 @@
 #include "typedefs.hpp"
 #include "Clock.hpp"
 #include "Move.hpp"
+#include "SearchOutput.hpp"
 
-class SearchOutput;
 class SearchThread;
 
 enum { PerftNodes, PerftDivideNodes, TT_Tried, TT_Hit, TT_Written, _Total };
 
-class SearchInfo {
+class SearchInfo : public SearchOutput {
     friend class UciOutput;
     friend class SearchControl;
 
@@ -24,16 +24,15 @@ class SearchInfo {
     enum { TickLimit = 5000 }; // ~1 msec
     quota_t nodesQuota; //number of remaining nodes before checking for terminate
 
-    SearchOutput& out;
     Clock clock;
     depth_t depth; //current search depth
 
-    Move bestmove;
+    Move _bestmove;
     Move currmove;
     index_t currmovenumber;
 
 public:
-    SearchInfo (SearchOutput& o) : out{o} { clear(); }
+    SearchInfo () { clear(); }
 
     node_count_t getNodes() const { return nodes - nodesQuota; }
 

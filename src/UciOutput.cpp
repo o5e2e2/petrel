@@ -3,7 +3,6 @@
 #include "Move.hpp"
 #include "OutputBuffer.hpp"
 #include "Position.hpp"
-#include "SearchInfo.hpp"
 
 #define OUTPUT(ob) OutputBuffer<decltype(outLock)> ob(out, outLock)
 
@@ -26,10 +25,9 @@ namespace {
     }
 }
 
-UciOutput::UciOutput (const SearchInfo& i, std::ostream& o, std::ostream& e) :
+UciOutput::UciOutput (std::ostream& o, std::ostream& e) :
     out(o),
     err(e),
-    info(i),
     colorToMove{White},
     chessVariant{Orthodox},
     isreadyWaiting{false},
@@ -76,23 +74,23 @@ void UciOutput::readyok() const {
 void UciOutput::bestmove() const {
     OUTPUT(ob);
     info_nps(ob);
-    ob << "bestmove "; write(ob, info.bestmove); ob << '\n';
+    ob << "bestmove "; write(ob, _bestmove); ob << '\n';
     lastInfoNodes = 0;
 }
 
 void UciOutput::info_depth() const {
     OUTPUT(ob);
-    ob << "info depth " << info.depth;
+    ob << "info depth " << depth;
     nps(ob);
-    ob << " score " << info[PerftNodes] << '\n';
+    ob << " score " << (*this)[PerftNodes] << '\n';
 }
 
 void UciOutput::info_currmove() const {
     OUTPUT(ob);
-    ob << "info currmovenumber " << info.currmovenumber;
-    ob << " currmove "; write(ob, info.currmove);
+    ob << "info currmovenumber " << currmovenumber;
+    ob << " currmove "; write(ob, currmove);
     nps(ob);
-    ob << " score " << info[PerftNodes] - info[PerftDivideNodes] << '\n';
+    ob << " score " << (*this)[PerftNodes] - (*this)[PerftDivideNodes] << '\n';
 }
 
 void UciOutput::write(std::ostream& ob, const Move& move) const {
@@ -100,13 +98,13 @@ void UciOutput::write(std::ostream& ob, const Move& move) const {
 }
 
 void UciOutput::nps(std::ostream& ob) const {
-    auto _nodes = info.getNodes();
+    auto _nodes = getNodes();
     if (_nodes > 0 && lastInfoNodes != _nodes) {
         lastInfoNodes = _nodes;
 
         ob << " nodes " << _nodes;
 
-        auto duration = info.clock.read();
+        auto duration = clock.read();
         if (duration >= std::chrono::milliseconds{1}) {
             ob << " time " << ::milliseconds(duration);
 
@@ -115,11 +113,11 @@ void UciOutput::nps(std::ostream& ob) const {
             }
         }
 
-        if (info[TT_Tried] > 0) {
-            ob << " hhits " << info[TT_Hit];
-            ob << " hreads " << info[TT_Tried];
-            ob << " hhitratio " << ::permil(info[TT_Hit], info[TT_Tried]);
-            ob << " hwrites " << info[TT_Written];
+        if ((*this)[TT_Tried] > 0) {
+            ob << " hhits " << (*this)[TT_Hit];
+            ob << " hreads " << (*this)[TT_Tried];
+            ob << " hhitratio " << ::permil((*this)[TT_Hit], (*this)[TT_Tried]);
+            ob << " hwrites " << (*this)[TT_Written];
         }
     }
 }

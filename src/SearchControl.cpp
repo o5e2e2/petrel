@@ -1,9 +1,8 @@
 #include "SearchControl.hpp"
+#include "SearchInfo.hpp"
 #include "SearchLimit.hpp"
-#include "PositionMoves.hpp"
-#include "Timer.hpp"
 
-SearchControl::SearchControl (SearchOutput& out) : info(out), rootWindow(*this) { clear(); }
+SearchControl::SearchControl (SearchInfo& i) : info(i), rootWindow(*this) { clear(); }
 
 void SearchControl::clear() {
     info.clear();
@@ -12,6 +11,10 @@ void SearchControl::clear() {
 
 void SearchControl::nextIteration() {
     transpositionTable.nextAge();
+}
+
+bool SearchControl::checkQuota() {
+    return info.checkQuota(searchThread);
 }
 
 void SearchControl::go(const PositionMoves& rootMoves, const SearchLimit& searchLimit) {

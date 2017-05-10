@@ -3,19 +3,16 @@
 
 #include "io.hpp"
 #include "typedefs.hpp"
-#include "SearchOutput.hpp"
+#include "SearchInfo.hpp"
 #include "SpinLock.hpp"
 
 class HashMemory;
 class Move;
 class Position;
-class SearchInfo;
 
-class UciOutput : public SearchOutput {
+class UciOutput : public SearchInfo {
     std::ostream& out; //output stream
     std::ostream& err; //error output stream
-
-    const SearchInfo& info;
 
     Color colorToMove; //root position color for moves long algebraic format output
     ChessVariant chessVariant; //format of castling moves output
@@ -30,7 +27,7 @@ class UciOutput : public SearchOutput {
     void info_nps(std::ostream&) const;
 
 public:
-    UciOutput (const SearchInfo&, std::ostream&, std::ostream& = std::cerr);
+    UciOutput (std::ostream&, std::ostream& = std::cerr);
 
     //called from Uci
     void isready(bool) const;

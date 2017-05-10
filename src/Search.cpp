@@ -3,6 +3,7 @@
 #include "PerftRecord.hpp"
 #include "PositionMoves.hpp"
 #include "SearchControl.hpp"
+#include "SearchInfo.hpp"
 #include "SearchLimit.hpp"
 #include "SearchWindow.hpp"
 
@@ -85,9 +86,9 @@ namespace Perft {
     bool divide(const PositionMoves& parent, SearchWindow& window) {
         MatrixPiBb moves = parent.cloneMoves();
 
-        auto divideMove = [](const PositionMoves& parent, SearchWindow& window, Square from, Square to) {
-            Move move = parent.getPos().createMove(from, to);
-            window.control.info.report_perft_divide(move);
+        auto divideMove = [](const PositionMoves& _parent, SearchWindow& _window, Square from, Square to) {
+            Move move = _parent.getPos().createMove(from, to);
+            _window.control.info.report_perft_divide(move);
         };
 
         CUT (_perft(parent, window, moves, divideMove));
