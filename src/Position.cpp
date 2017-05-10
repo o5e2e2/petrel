@@ -594,56 +594,13 @@ std::istream& Position::setCastling(std::istream& in, Color colorToMove) {
     return in;
 }
 
-bool Position::setBoard(FenBoard& board, Color colorToMove) {
-    *this = {0};
-
-    //TRICK: kings should be placed before any opponent's non king pieces
-    FOR_INDEX(Color, color) {
-        if (board.pieces[color][King].empty()) {
-            return false;
-        }
-
-        Side si(color.is(colorToMove)? My : Op);
-
-        auto king = board.pieces[color][King].begin();
-
-        if (drop(si, King, *king)) {
-            board.pieces[color][King].erase(king);
-        }
-        else {
-            return false;
-        }
-
-        assert (board.pieces[color][King].empty());
-    }
-
-    FOR_INDEX(Color, color) {
-        Side si(color.is(colorToMove)? My : Op);
-
-        FOR_INDEX(PieceType, ty) {
-            while (!board.pieces[color][ty].empty()) {
-                auto piece = board.pieces[color][ty].begin();
-
-                if (drop(si, ty, *piece)) {
-                    board.pieces[color][ty].erase(piece);
-                }
-                else {
-                    return false;
-                }
-            }
-        }
-    }
-
-    return setup();
-}
-
 Color Position::setBoard(std::istream& in) {
     Color colorToMove;
     FenBoard board;
 
     in >> board >> std::ws >> colorToMove;
 
-    if (in && !setBoard(board, colorToMove)) {
+    if (in && !board.setPosition(*this, colorToMove)) {
         io::fail_char(in);
     }
 

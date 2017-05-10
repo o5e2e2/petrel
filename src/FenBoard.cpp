@@ -1,4 +1,5 @@
 #include "FenBoard.hpp"
+#include "Position.hpp"
 
 std::istream& operator >> (std::istream& in, FenBoard& board) {
     in >> std::ws;
@@ -65,5 +66,50 @@ bool FenBoard::drop(Color color, PieceType ty, Square sq) {
     }
 
     pieces[color][ty].insert(color.is(White)? sq : ~sq);
+    return true;
+}
+
+bool FenBoard::setPosition(Position& position, Color colorToMove) {
+    Position pos = {0};
+
+    //TRICK: kings should be placed before any opponent's non king pieces
+    FOR_INDEX(Color, color) {
+        if (pieces[color][King].empty()) {
+            return false;
+        }
+
+        Side si(color.is(colorToMove)? My : Op);
+
+        auto king = pieces[color][King].begin();
+        if (!pos.drop(si, King, *king)) {
+            return false;
+        }
+
+        pieces[color][King].erase(king);
+
+        assert (pieces[color][King].empty());
+    }
+
+    FOR_INDEX(Color, color) {
+        Side si(color.is(colorToMove)? My : Op);
+
+        FOR_INDEX(PieceType, ty) {
+            while (!pieces[color][ty].empty()) {
+                auto piece = pieces[color][ty].begin();
+
+                if (!pos.drop(si, ty, *piece)) {
+                    return false;
+                }
+
+                pieces[color][ty].erase(piece);
+            }
+        }
+    }
+
+    if (!pos.setup()) {
+        return false;
+    }
+
+    position = pos;
     return true;
 }

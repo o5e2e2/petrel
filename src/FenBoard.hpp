@@ -6,7 +6,7 @@
 #include "typedefs.hpp"
 #include "Square.hpp"
 
-class PositionSide;
+class Position;
 
 /**
  * Setup a chess position from a FEN string with chess legality validation
@@ -24,8 +24,6 @@ class FenBoard {
         }
     };
 
-    friend class Position;
-
     typedef std::set<Square, SquareImportance> Squares;
     Color::array< PieceType::array<Squares> > pieces;
 
@@ -33,7 +31,7 @@ class FenBoard {
 
 public:
     friend std::istream& operator >> (std::istream&, FenBoard&);
-
+    bool setPosition(Position& pos, Color colorToMove);
 };
 
 #endif

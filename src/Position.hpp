@@ -2,12 +2,10 @@
 #define POSITION_HPP
 
 #include "io.hpp"
-#include "DualBbOccupied.hpp"
-#include "Move.hpp"
 #include "PositionSide.hpp"
+#include "DualBbOccupied.hpp"
 #include "Zobrist.hpp"
-
-class FenBoard;
+#include "Move.hpp"
 
 class Position {
     friend class PositionMoves;
@@ -36,9 +34,6 @@ private:
 
     void syncSides();
 
-    bool drop(Side, PieceType, Square);
-    bool setup();
-    bool setBoard(FenBoard&, Color);
     bool setCastling(Side, File);
     bool setCastling(Side, CastlingSide);
     bool setEnPassant(File);
@@ -62,6 +57,8 @@ public:
 
     //initial position setup
     Color setFen(std::istream&);
+    bool drop(Side, PieceType, Square);
+    bool setup();
     void makeMove(Square, Square);
 
     void fen(std::ostream&, Color, ChessVariant) const;
