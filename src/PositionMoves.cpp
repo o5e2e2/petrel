@@ -3,13 +3,9 @@
 #include "CastlingRules.hpp"
 #include "PieceTypeAttack.hpp"
 
-#define MY pos.side[My]
-#define OP pos.side[Op]
-#define OCCUPIED pos.occupied[My]
-
-const PositionSide& PositionMoves::side(Side si) const {
-    return pos.side[si];
-}
+#define MY side[My]
+#define OP side[Op]
+#define OCCUPIED occupied[My]
 
 template <Side::_t My>
 void PositionMoves::generateEnPassantMoves() {
@@ -221,10 +217,10 @@ void PositionMoves::limitMoves(std::istream& in, Color colorToMove) {
     while (in) {
         auto before = in.tellg();
 
-        Move move = pos.readMove(in, colorToMove);
+        Move m = readMove(in, colorToMove);
         if (in) {
-            Square from{ move.from() };
-            Square to{ move.to() } ;
+            Square from{ m.from() };
+            Square to{ m.to() } ;
             Pi pi{ MY.pieceOn(from) };
 
             if (moves.is(pi, to) && !searchMoves.is(pi, to)) {
@@ -250,13 +246,13 @@ void PositionMoves::limitMoves(std::istream& in, Color colorToMove) {
 }
 
 Color PositionMoves::setFen(std::istream& in) {
-    Color colorToMove = pos.setFen(in);
+    Color colorToMove = Position::setFen(in);
     generateMoves<My>();
     return colorToMove;
 }
 
-void PositionMoves::makeMove(Square from, Square to, Zobrist z) {
-    pos.makeMove(parent.getPos(), from, to, z);
+void PositionMoves::makeMove(const Position& parent, Square from, Square to, Zobrist z) {
+    Position::makeMove(parent, from, to, z);
     generateMoves<My>();
 }
 
@@ -264,14 +260,14 @@ Color PositionMoves::makeMoves(std::istream& in, Color colorToMove) {
     while (in) {
         auto before = in.tellg();
 
-        Move m = pos.readMove(in, colorToMove);
+        Move m = readMove(in, colorToMove);
         if (in) {
             Square from{ m.from() };
             Square to{ m.to() } ;
-            Pi pi{ pos.side[My].pieceOn(from) };
+            Pi pi{ side[My].pieceOn(from) };
 
             if (is(pi, to)) {
-                pos.makeMove(from, to);
+                Position::makeMove(from, to);
                 generateMoves<My>();
                 colorToMove.flip();
                 continue;

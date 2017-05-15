@@ -9,7 +9,7 @@
 class Uci {
     UciOutput uciOutput;
     SearchControl searchControl;
-    PositionMoves rootMoves; //initial chess position and moves to analyze
+    PositionMoves rootPosition; //initial chess position and moves to analyze
 
     std::istringstream command; //current input command line
 

@@ -10,22 +10,22 @@
 #define CUT(found) { if (found) { return true; } } ((void)0)
 
 namespace Perft {
-    bool _perft(PositionMoves& parent, SearchWindow& window);
+    bool makeMoves(PositionMoves& parent, SearchWindow& window);
 
-    bool makeMove(PositionMoves& child, SearchWindow& window, Square from, Square to) {
+    bool makeMove(const Position& parent, PositionMoves& child, SearchWindow& window, Square from, Square to) {
         auto& info = window.control.info;
 
         CUT ( window.control.checkQuota() );
         info.decrementQuota();
 
         if (window.draft <= 0) {
-            child.makeMove(from, to);
+            child.makeMove(parent, from, to);
             auto n = child.getMoves().count();
             info.inc(PerftNodes, n);
             return false;
         }
 
-        Zobrist zobrist = child.makeZobrist(from, to);
+        Zobrist zobrist = parent.makeZobrist(from, to);
         auto origin = window.control.tt().lookup(zobrist);
 
         {
@@ -39,11 +39,11 @@ namespace Perft {
             }
         }
 
-        child.makeMove(from, to, zobrist);
-        assert (zobrist == child.getPos().generateZobrist());
+        child.makeMove(parent, from, to, zobrist);
+        assert (zobrist == child.generateZobrist());
 
         auto n = info.get(PerftNodes);
-        CUT (_perft(child, window));
+        CUT (makeMoves(child, window));
         n = info.get(PerftNodes) - n;
 
         PerftTT(origin, window.control.tt().getAge()).set(zobrist, window.draft, n);
@@ -53,17 +53,17 @@ namespace Perft {
     }
 
     template <typename InfoMove>
-    bool _perft(const PositionMoves& parent, SearchWindow& window, MatrixPiBb& moves, InfoMove infoMove) {
-        PositionMoves childPosMoves(parent, 0);
+    bool makeMoves(const Position& parent, SearchWindow& window, MatrixPiBb& moves, InfoMove infoMove) {
+        PositionMoves childPosMoves(0);
         SearchWindow childWindow(window);
 
-        for (Pi pi : parent.side(My).alivePieces()) {
-            Square from = parent.side(My).squareOf(pi);
+        for (Pi pi : parent.alivePieces()) {
+            Square from = parent.squareOf(pi);
 
             for (Square to : moves[pi]) {
                 moves.clear(pi, to);
 
-                CUT (makeMove(childPosMoves, childWindow, from, to));
+                CUT (makeMove(parent, childPosMoves, childWindow, from, to));
                 infoMove(parent, window, from, to);
             }
         }
@@ -71,28 +71,27 @@ namespace Perft {
         return false;
     }
 
-    bool _perft(PositionMoves& parent, SearchWindow& window) {
-        return _perft(parent, window, parent.getMoves(), [](const PositionMoves&, SearchWindow&, Square, Square) {});
+    bool makeMoves(PositionMoves& parent, SearchWindow& window) {
+        return makeMoves(parent, window, parent.getMoves(), [](const Position&, SearchWindow&, Square, Square) {});
     }
 
     bool perft(const PositionMoves& parent, SearchWindow& window) {
         MatrixPiBb moves = parent.cloneMoves();
 
-        CUT (_perft(parent, window, moves, [](const PositionMoves&, SearchWindow&, Square, Square) {}));
+        CUT (makeMoves(parent, window, moves, [](const Position&, SearchWindow&, Square, Square) {}));
 
         window.control.info.report_perft_depth(window.draft);
         return false;
     }
 
     bool divide(const PositionMoves& parent, SearchWindow& window) {
-        MatrixPiBb moves = parent.cloneMoves();
-
-        auto divideMove = [](const PositionMoves& _parent, SearchWindow& _window, Square from, Square to) {
-            Move move = _parent.getPos().createMove(from, to);
+        auto divideMove = [](const Position& _parent, SearchWindow& _window, Square from, Square to) {
+            Move move = _parent.createMove(from, to);
             _window.control.info.report_perft_divide(move);
         };
 
-        CUT (_perft(parent, window, moves, divideMove));
+        MatrixPiBb moves = parent.cloneMoves();
+        CUT (makeMoves(parent, window, moves, divideMove));
 
         window.control.info.report_perft_depth(window.draft);
         return false;

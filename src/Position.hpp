@@ -8,24 +8,19 @@
 #include "Move.hpp"
 
 class Position {
-    friend class PositionMoves;
 
+protected:
     Side::array<PositionSide> side;
     DualBbOccupied occupied; //pieces of both sides
     Zobrist zobrist;
 
 private:
-    void set(Side, Pi, PieceType, Square);
-
-    template <Side::_t My> bool isPinned(Square, Bb, Bb) const;
-
-    template <Side::_t> void setLegalEnPassant(Pi);
-
+    template <Side::_t> bool isPinned(Square, Bb, Bb) const;
     template <Side::_t> void move(Pi, Square, Square);
     template <Side::_t> void movePawn(Pi, Square, Square);
     template <Side::_t> void updateSliderAttacks(VectorPiMask);
     template <Side::_t> void updateSliderAttacksKing(VectorPiMask); //remove king to avoid hiding it under its own shadow when in check
-
+    template <Side::_t> void setLegalEnPassant(Pi);
     template <Side::_t> void makeKingMove(Square, Square);
     template <Side::_t> void makePawnMove(Pi, Square, Square);
     template <Side::_t> void makeCastling(Pi, Square, Square);
@@ -33,21 +28,24 @@ private:
     template <Side::_t> void capture(Square);
 
     void syncSides();
+    void set(Side, Pi, PieceType, Square);
+    Color setBoard(std::istream&);
+    static void fenBoard(std::ostream&, const PositionSide& white, const PositionSide& black);
 
     bool setCastling(Side, File);
     bool setCastling(Side, CastlingSide);
-    bool setEnPassant(File);
-
-    Color setBoard(std::istream&);
     std::istream& setCastling(std::istream&, Color);
-    std::istream& setEnPassant(std::istream&, Color);
 
-    static void fenBoard(std::ostream&, const PositionSide& white, const PositionSide& black);
+    bool setEnPassant(File);
+    std::istream& setEnPassant(std::istream&, Color);
     void fenEnPassant(std::ostream& out, Color colorToMove) const;
 
 public:
     Position (const Position&) = default;
     Position (int) {};
+
+    VectorPiMask alivePieces() const { return side[My].squares.alivePieces(); }
+    Square squareOf(Pi pi) const { return side[My].squares.squareOf(pi); }
 
     Zobrist generateZobrist() const;
 

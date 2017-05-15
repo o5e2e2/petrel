@@ -37,7 +37,7 @@ void setHashUci(std::istream& command, HashMemory& hash) {
 Uci::Uci (std::ostream& out, std::ostream& err):
     uciOutput(out, err),
     searchControl(uciOutput),
-    rootMoves(0)
+    rootPosition(0)
 {
     ucinewgame();
 }
@@ -96,30 +96,30 @@ void Uci::setoption() {
 
 void Uci::position() {
     if (next("")) {
-        uciOutput.info_fen( rootMoves.getPos() );
+        uciOutput.info_fen(rootPosition);
         return;
     }
 
     SHOULD_BE_READY;
 
     if (next("startpos")) { startpos(); }
-    if (next("fen")) { uciOutput.setColorToMove( rootMoves.setFen(command) ); }
+    if (next("fen")) { uciOutput.setColorToMove( rootPosition.setFen(command) ); }
 
     next("moves");
-    uciOutput.setColorToMove( rootMoves.makeMoves(command, uciOutput.getColorToMove()) );
+    uciOutput.setColorToMove( rootPosition.makeMoves(command, uciOutput.getColorToMove()) );
 }
 
 void Uci::startpos() {
     std::istringstream startpos{"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"};
-    uciOutput.setColorToMove( rootMoves.setFen(startpos) );
+    uciOutput.setColorToMove( rootPosition.setFen(startpos) );
 }
 
 void Uci::go() {
     SHOULD_BE_READY;
 
     SearchLimit searchLimit;
-    searchLimit.readUci(command, uciOutput.getColorToMove(), &rootMoves);
-    searchControl.go(rootMoves, searchLimit);
+    searchLimit.readUci(command, uciOutput.getColorToMove(), &rootPosition);
+    searchControl.go(rootPosition, searchLimit);
 }
 
 #undef SHOULD_BE_READY
