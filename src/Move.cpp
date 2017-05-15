@@ -18,10 +18,8 @@ std::ostream& Move::write(std::ostream& out, Move move, Color colorToMove, Chess
 
     if (move.from().is(Rank7)) {
         //the type of a promoted pawn piece encoded in place of to's rank
-        PromoType promo = Move::decodePromoType(move.to());
-
         Square promoted_to(File(move_to), colorToMove.is(White)? Rank8 : Rank1);
-        return out << move_from << promoted_to << promo;
+        return out << move_from << promoted_to << move.promoType();
     }
     if (move.from().is(Rank5)) {
         //en passant capture move internally encoded as pawn captures pawn

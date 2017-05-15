@@ -230,7 +230,7 @@ void Position::makePawnMove(Pi pi, Square from, Square to) {
 
     if (from.is(Rank7)) {
         //decoding promotion piece type and destination square
-        PromoType ty = Move::decodePromoType(to);
+        PromoType ty{to};
         Square promotedTo = Square(File(to), Rank8);
 
         MY.promote(pi, ty, from, promotedTo);
@@ -368,7 +368,7 @@ Zobrist Position::makeZobrist(Square from, Square to) const {
         if (from.is(Rank7)) {
             Square promotedTo = Square(File(to), Rank8);
             mz.clear(Pawn, from);
-            mz.drop(static_cast<PieceType>(Move::decodePromoType(to)), promotedTo);
+            mz.drop(static_cast<PieceType>(PromoType{to}), promotedTo);
 
             if (OP.isOccupied(~promotedTo)) {
                 Pi victim {OP.pieceOn(~promotedTo)};
@@ -458,14 +458,14 @@ Zobrist Position::makeZobrist(Square from, Square to) const {
 Move Position::createMove(Square moveFrom, Square moveTo) const {
     if ( MY.isPawn(MY.pieceOn(moveFrom)) ) {
         if (moveFrom.is(Rank7)) {
-            return Move::special(moveFrom, moveTo);
+            return Move::promotion(moveFrom, moveTo);
         }
         if (moveFrom.is(Rank5) && moveTo.is(Rank5)) {
-            return Move::special(moveFrom, moveTo);
+            return Move::enPassant(moveFrom, moveTo);
         }
     }
     else if (MY.kingSquare().is(moveTo)) {
-        return Move::special(moveFrom, moveTo);
+        return Move::castling(moveFrom, moveTo);
     }
 
     return Move(moveFrom, moveTo);

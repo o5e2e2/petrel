@@ -23,6 +23,7 @@ struct Square : Index<64, square_t> {
 
     constexpr explicit operator File() const { return static_cast<File::_t>(this->_v & File::Mask); }
     constexpr explicit operator Rank() const { return static_cast<Rank::_t>(static_cast<unsigned>(this->_v) >> RankShift); }
+    constexpr explicit operator PromoType() const { return static_cast<PromoType::_t>(+Rank(*this)); }
 
     Square& flip() { this->_v = static_cast<_t>(this->_v ^ RankMask); return *this; }
     constexpr Square operator ~ () const { return static_cast<_t>(this->_v ^ RankMask); }
