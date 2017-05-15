@@ -23,18 +23,38 @@ class PositionSide {
     Bb pawnsBb; //pawns of the current side
     Evaluation evaluation;
 
+    static void swap(PositionSide&, PositionSide&);
+
     void clear(PieceType, Square);
     void drop(PieceType, Square);
     void move(PieceType, Square, Square);
 
     bool setCastling(Pi);
+    void castle(Pi rook, Square rookFrom, Square rookTo, Square kingFrom, Square kingTo);
+
+    void markEnPassant(Pi);
+    void unmarkEnPassants();
+    void setEnPassant(Pi);
+    void clearEnPassant();
+
+    void capture(Square);
+    void move(Pi, PieceType, Square, Square);
+    void movePawn(Pi, Square, Square);
+    void moveKing(Square, Square);
+    void promote(Pi, PromoType, Square, Square);
+
+    void setLeaperAttack(Pi, PieceType, Square);
+    void updateSliderAttacks(VectorPiMask, Bb occupied);
+
+    //used only during initial position setup
+    void drop(Pi, PieceType, Square);
+    bool setCastling(File);
+    bool setCastling(CastlingSide);
 
 public:
     PositionSide ();
     PositionSide (const PositionSide&) = delete;
     PositionSide& operator = (const PositionSide&) = default;
-
-    static void swap(PositionSide&, PositionSide&);
 
     Zobrist generateZobrist() const; //calculate Zobrist key from scratch
 
@@ -47,8 +67,6 @@ public:
     const Bb& occupiedSquares() const { return piecesBb; }
     bool isOccupied(Square sq) const { return piecesBb[sq]; }
     VectorPiMask alivePieces() const { assert (squares.alivePieces() == types.alivePieces()); return squares.alivePieces(); }
-
-    const MatrixPiBb& allAttacks() const { return attacks; }
 
     Square squareOf(Pi pi) const { assertValid(pi); return squares.squareOf(pi); }
     Square kingSquare() const { return squareOf(TheKing); }
@@ -70,41 +88,23 @@ public:
     VectorPiMask sliders() const { return types.sliders(); }
     bool isSlider(Pi pi) const { assertValid(pi); return types.isSlider(pi); }
 
-    bool canBeAttacked(Square from, Square to) const;
-
     VectorPiMask castlingRooks() const { return types.castlingRooks(); }
     bool isCastling(Pi pi) const { assertValid(pi); return types.isCastling(pi); }
-    void castle(Pi rook, Square rookFrom, Square rookTo, Square kingFrom, Square kingTo);
 
     VectorPiMask enPassantPawns() const { return types.enPassantPawns(); }
     bool hasEnPassant() const { return enPassantPawns().any(); }
     Square enPassantSquare() const { Square ep = squareOf(types.getEnPassant()); assert (ep.is(Rank4)); return ep; }
     File   enPassantFile()   const { return File{ enPassantSquare() }; }
-    void markEnPassant(Pi);
-    void unmarkEnPassants();
-    void setEnPassant(Pi);
-    void clearEnPassant();
 
     const Bb& pinRayFrom(Square) const;
+    bool canBeAttacked(Square from, Square to) const;
 
-    void setLeaperAttack(Pi, PieceType, Square);
-    void updateSliderAttacks(VectorPiMask, Bb occupied);
+    const MatrixPiBb& allAttacks() const { return attacks; }
     VectorPiMask attacksTo(Square a) const { return attacks[a]; }
     VectorPiMask attacksTo(Square a, Square b) const { return attacks[a] | attacks[b]; }
     VectorPiMask attacksTo(Square a, Square b, Square c) const { return attacks[a] | attacks[b] | attacks[c]; }
 
     bool isEndgame() const; //returns whether material for endgame or not
-
-    void capture(Square);
-    void move(Pi, PieceType, Square, Square);
-    void movePawn(Pi, Square, Square);
-    void moveKing(Square, Square);
-    void promote(Pi, PromoType, Square, Square);
-
-    //used only during initial position setup
-    void drop(Pi, PieceType, Square);
-    bool setCastling(File);
-    bool setCastling(CastlingSide);
 
 };
 
