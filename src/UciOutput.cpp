@@ -47,10 +47,10 @@ void UciOutput::uciok(const HashMemory& hashMemory) const {
 }
 
 void UciOutput::isready(bool searchIsReady) const {
+    OUTPUT(ob);
     if (searchIsReady) {
         isreadyWaiting = false;
-
-        OutputBuffer<decltype(outLock)>(out, outLock) << "readyok\n";
+        ob << "readyok\n";
     }
     else {
         isreadyWaiting = true;

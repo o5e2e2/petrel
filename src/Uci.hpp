@@ -8,8 +8,8 @@
 
 class Uci {
     UciOutput uciOutput;
-    SearchControl searchControl;
     PositionMoves rootPosition; //initial chess position and moves to analyze
+    SearchControl searchControl;
 
     std::istringstream command; //current input command line
 

@@ -1,43 +1,12 @@
 #include "Uci.hpp"
-#include "HashMemory.hpp"
 #include "SearchLimit.hpp"
 
 #define SHOULD_BE_READY  if (!searchControl.isReady()) { io::fail_rewind(command); return; }
 
-namespace {
-
-void setHashUci(std::istream& command, HashMemory& hash) {
-
-    HashMemory::size_t quantity = 0;
-    if (!(command >> quantity)) {
-        io::fail_rewind(command);
-        return;
-    }
-
-    io::char_type u = 'm';
-    command >> u;
-
-    switch (std::tolower(u)) {
-        case 'g': quantity *= 1024;
-        case 'm': quantity *= 1024;
-        case 'k': quantity *= 1024;
-        case 'b': break;
-
-        default: {
-            io::fail_rewind(command);
-            return;
-        }
-    }
-
-    hash.resize(quantity);
-}
-
-} //end of anonymouas namespace
-
 Uci::Uci (std::ostream& out, std::ostream& err):
     uciOutput(out, err),
-    searchControl(uciOutput),
-    rootPosition(0)
+    rootPosition(0),
+    searchControl(uciOutput)
 {
     ucinewgame();
 }
@@ -88,7 +57,7 @@ void Uci::setoption() {
 
     if (next("Hash")) {
         next("value");
-        setHashUci(command, searchControl.tt());
+        searchControl.readUciHash(command);
         return;
     }
 
