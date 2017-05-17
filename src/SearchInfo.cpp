@@ -1,5 +1,4 @@
 #include "SearchInfo.hpp"
-#include "SearchOutput.hpp"
 #include "SearchThread.hpp"
 
 void SearchInfo::clear() {

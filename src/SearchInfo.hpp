@@ -4,13 +4,12 @@
 #include "typedefs.hpp"
 #include "Clock.hpp"
 #include "Move.hpp"
-#include "SearchOutput.hpp"
 
 class SearchThread;
 
 enum { PerftNodes, PerftDivideNodes, TT_Tried, TT_Hit, TT_Written, _Total };
 
-class SearchInfo : public SearchOutput {
+class SearchInfo {
 protected:
     typedef ::Index<_Total> Index;
     Index::array<node_count_t> _v;
@@ -47,6 +46,12 @@ public:
     node_count_t get(Index i) const { return _v[i]; }
     void inc(Index i, node_count_t n = 1) { _v[i] += n; }
 
+    //do nothing by default
+    virtual void bestmove() const {};
+    virtual void readyok() const {};
+    virtual void info_depth() const {};
+    virtual void info_currmove() const {};
+    virtual ~SearchInfo() {}
 };
 
 #endif
