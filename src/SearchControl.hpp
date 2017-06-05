@@ -1,7 +1,6 @@
 #ifndef SEARCH_CONTROL_HPP
 #define SEARCH_CONTROL_HPP
 
-#include "io.hpp"
 #include "SearchThread.hpp"
 #include "SearchWindow.hpp"
 
@@ -36,8 +35,6 @@ public:
 
     bool isReady() const { return searchThread.isReady(); }
     void stop() { searchThread.stop(searchSequence); }
-
-    void readUciHash(std::istream&);
 
     const HashMemory& tt() const { return transpositionTable; }
     HashMemory& tt() { return transpositionTable; }

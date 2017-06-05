@@ -612,13 +612,6 @@ Color Position::setFen(std::istream& in) {
     setCastling(in, colorToMove);
     setEnPassant(in, colorToMove);
     zobrist = generateZobrist();
-
-    if (in) {
-        unsigned fifty, moves;
-        in >> fifty >> moves;
-        in.clear(); //ignore missing optional 'fifty' and 'moves' fen fields
-    }
-
     return colorToMove;
 }
 

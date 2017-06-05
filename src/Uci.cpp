@@ -1,12 +1,12 @@
 #include "Uci.hpp"
 #include "SearchLimit.hpp"
 
-#define SHOULD_BE_READY  if (!searchControl.isReady()) { io::fail_rewind(command); return; }
+#define SHOULD_BE_READY  if (!uciControl.isReady()) { io::fail_rewind(command); return; }
 
 Uci::Uci (std::ostream& out, std::ostream& err):
     uciOutput(out, err),
     rootPosition(0),
-    searchControl(uciOutput)
+    uciControl(uciOutput)
 {
     ucinewgame();
 }
@@ -19,12 +19,12 @@ void Uci::operator() (std::istream& in) {
 
         if      (next("go"))        { go(); }
         else if (next("position"))  { position(); }
-        else if (next("stop"))      { searchControl.stop(); }
-        else if (next("isready"))   { uciOutput.isready(searchControl.isReady()); }
+        else if (next("stop"))      { uciControl.stop(); }
+        else if (next("isready"))   { uciControl.readyok(); }
         else if (next("setoption")) { setoption(); }
         else if (next("set"))       { setoption(); }
         else if (next("ucinewgame")){ ucinewgame(); }
-        else if (next("uci"))       { uciOutput.uciok(searchControl.tt()); }
+        else if (next("uci"))       { uciControl.uciok(); }
         else if (next("quit"))      { break; }
 
         //error if something left unparsed
@@ -35,7 +35,7 @@ void Uci::operator() (std::istream& in) {
 void Uci::ucinewgame() {
     SHOULD_BE_READY;
 
-    searchControl.clear();
+    uciControl.clear();
 
     startpos();
 }
@@ -57,7 +57,7 @@ void Uci::setoption() {
 
     if (next("Hash")) {
         next("value");
-        searchControl.readUciHash(command);
+        uciControl.readUciHash(command);
         return;
     }
 
@@ -74,6 +74,12 @@ void Uci::position() {
     if (next("startpos")) { startpos(); }
     if (next("fen")) { uciOutput.setColorToMove( rootPosition.setFen(command) ); }
 
+    if (command) {
+        unsigned fifty, moves;
+        command >> fifty >> moves;
+        command.clear(); //ignore missing optional 'fifty' and 'moves' fen fields
+    }
+
     next("moves");
     uciOutput.setColorToMove( rootPosition.makeMoves(command, uciOutput.getColorToMove()) );
 }
@@ -88,7 +94,7 @@ void Uci::go() {
 
     SearchLimit searchLimit;
     searchLimit.readUci(command, uciOutput.getColorToMove(), &rootPosition);
-    searchControl.go(rootPosition, searchLimit);
+    uciControl.go(rootPosition, searchLimit);
 }
 
 #undef SHOULD_BE_READY
