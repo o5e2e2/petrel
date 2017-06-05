@@ -21,49 +21,34 @@ void ThreadControl::wait(Condition condition) {
 
 template <typename Condition>
 void ThreadControl::signal(Status to, Condition condition) {
-    if (condition()) {
-        bool isChanged{false};
-
-        {
-            Lock lock(statusLock);
-
-            if (condition()) {
-                status = to;
-                isChanged = true;
-            }
-        }
-
-        if (isChanged) {
-            statusChanged.notify_all();
-        }
+    statusLock.lock();
+    if (!condition()) {
+        statusLock.unlock();
+        return;
     }
+
+    status = to;
+
+    statusLock.unlock();
+    statusChanged.notify_all();
 }
 
 template <typename Condition>
 ThreadControl::_t ThreadControl::signalSequence(Status to, Condition condition) {
-    if (condition()) {
-        bool isChanged{false};
-        ThreadControl::_t result;
-
-        {
-            Lock lock(statusLock);
-
-            if (condition()) {
-                ++sequence;
-                if (sequence == 0) { sequence = 1; } //wrap around
-                result = sequence;
-
-                status = to;
-                isChanged = true;
-            }
-        }
-
-        if (isChanged) {
-            statusChanged.notify_all();
-            return result;
-        }
+    statusLock.lock();
+    if (!condition()) {
+        statusLock.unlock();
+        return 0;
     }
-    return 0;
+
+    ++sequence;
+    if (sequence == 0) { sequence = 1; } //wrap around
+    auto result = sequence;
+    status = to;
+
+    statusLock.unlock();
+    statusChanged.notify_all();
+    return result;
 }
 
 void ThreadControl::signal(Status to) {

@@ -11,7 +11,6 @@ public:
 
 private:
     SpinLock statusLock;
-    typedef SpinLock::Guard Lock;
 
     std::condition_variable_any statusChanged;
 
