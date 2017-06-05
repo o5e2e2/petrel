@@ -24,7 +24,7 @@ private:
     SearchWindow     rootWindow;
 
     HashMemory transpositionTable;
-    Timer::Pool timerPool;
+    Timer::TimerPool timerPool;
 
     SearchControl (const SearchControl&) = delete;
     SearchControl& operator = (const SearchControl&) = delete;

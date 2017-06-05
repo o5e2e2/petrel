@@ -5,13 +5,13 @@
 #include "Pool.hpp"
 #include "ThreadControl.hpp"
 
-class Timer : private ThreadControl {  
+class Timer : private ThreadControl {
 public:
-    typedef ::Pool<Timer> Pool;
+    typedef Pool<Timer> TimerPool;
 
 private:
-    Pool* timerPool;
-    Pool::_t timerHandle;
+    TimerPool* timerPool;
+    TimerPool::_t timerHandle;
     ThreadControl* slaveThread;
     ThreadControl::_t slaveSequence;
     Clock::_t duration;
@@ -24,13 +24,13 @@ private:
     }
 
 public:
-    static void run(Pool& timerPool, Clock::_t duration, ThreadControl& slaveThread, ThreadControl::_t slaveSequence) {
+    static void run(TimerPool& timerPool, Clock::_t duration, ThreadControl& slaveThread, ThreadControl::_t slaveSequence) {
         //zero duration means no timer
         if (!slaveSequence || duration == Clock::_t::zero()) {
             return;
         }
 
-        Pool::_t timerHandle = timerPool.acquire();
+        TimerPool::_t timerHandle = timerPool.acquire();
         Timer& timer = timerPool.fetch(timerHandle);
         assert (timer.isReady());
 
