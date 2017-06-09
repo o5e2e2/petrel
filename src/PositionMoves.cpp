@@ -5,7 +5,7 @@
 
 #define MY side[My]
 #define OP side[Op]
-#define OCCUPIED occupied[My]
+#define OCCUPIED side[My].occupied()
 
 template <Side::_t My>
 void PositionMoves::generateEnPassantMoves() {

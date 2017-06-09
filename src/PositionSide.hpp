@@ -19,6 +19,7 @@ class PositionSide {
     VectorPiType types; //type of each alive piece, rooks with castling rights, pawns affected by en passant
     VectorPiSquare squares; //onboard square locations of the alive pieces or 'NoSquare' special value
 
+    Bb occupiedBb; //all occupied squares by both sides
     Bb piecesBb; //all pieces of the current side
     Bb pawnsBb; //pawns of the current side
     Evaluation evaluation;
@@ -64,6 +65,7 @@ public:
         void assertValid(Pi) const;
     #endif
 
+    const Bb& occupied() const { return occupiedBb; }
     const Bb& occupiedSquares() const { return piecesBb; }
     bool isOccupied(Square sq) const { return piecesBb[sq]; }
     VectorPiMask alivePieces() const { assert (squares.alivePieces() == types.alivePieces()); return squares.alivePieces(); }

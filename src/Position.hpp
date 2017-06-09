@@ -3,7 +3,6 @@
 
 #include "io.hpp"
 #include "PositionSide.hpp"
-#include "DualBbOccupied.hpp"
 #include "Zobrist.hpp"
 #include "Move.hpp"
 
@@ -11,7 +10,6 @@ class Position {
 
 protected:
     Side::array<PositionSide> side;
-    DualBbOccupied occupied; //pieces of both sides
     Zobrist zobrist;
 
 private:
@@ -27,7 +25,6 @@ private:
     template <Side::_t> void makeMove(Square, Square);
     template <Side::_t> void capture(Square);
 
-    void syncSides();
     void set(Side, Pi, PieceType, Square);
     Color setBoard(std::istream&);
     static void fenBoard(std::ostream&, const PositionSide& white, const PositionSide& black);

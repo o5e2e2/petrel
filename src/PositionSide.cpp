@@ -18,7 +18,7 @@
     }
 #endif
 
-PositionSide::PositionSide() : piecesBb{}, pawnsBb{} {
+PositionSide::PositionSide() : occupiedBb{}, piecesBb{}, pawnsBb{} {
     attacks.clear();
     types.clear();
     squares.clear();
@@ -44,6 +44,7 @@ void PositionSide::swap(PositionSide& my, PositionSide& op) {
     swap(my.attacks, op.attacks);
     swap(my.types, op.types);
     swap(my.squares, op.squares);
+    swap(my.occupiedBb, op.occupiedBb);
     swap(my.piecesBb, op.piecesBb);
     swap(my.pawnsBb, op.pawnsBb);
     swap(my.evaluation, op.evaluation);

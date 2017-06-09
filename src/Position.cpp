@@ -10,7 +10,7 @@
 
 #define MY side[My]
 #define OP side[Op]
-#define OCCUPIED occupied[My]
+#define OCCUPIED side[My].occupiedBb
 
 template <Side::_t My>
 bool Position::isPinned(Square opPinned, Bb myOccupied, Bb allOccupied) const {
@@ -31,15 +31,13 @@ bool Position::isPinned(Square opPinned, Bb myOccupied, Bb allOccupied) const {
     return false;
 }
 
-void Position::syncSides() {
-    occupied = DualBbOccupied(MY.occupiedSquares(), OP.occupiedSquares());
-}
-
 template <Side::_t My>
 void Position::updateSliderAttacksKing(VectorPiMask affected) {
     constexpr Side Op{~My};
 
-    syncSides();
+    //sync occupiedBb between sides
+    MY.occupiedBb = MY.occupiedSquares() + ~OP.occupiedSquares();
+    OP.occupiedBb = ~MY.occupiedBb;
 
     affected &= MY.sliders();
     MY.updateSliderAttacks(affected, OCCUPIED - ~OP.kingSquare());
@@ -529,7 +527,7 @@ bool Position::setEnPassant(File file) {
     if (!OP.isPawn(victim)) { return false; }
 
     //check against illegal en passant set field like "8/5bk1/8/2Pp4/8/1K6/8/8 w - d6"
-    if (isPinned<Op>(victimSquare, OP.occupiedSquares(), occupied[Op])) {
+    if (isPinned<Op>(victimSquare, OP.occupiedSquares(), OP.occupiedBb)) {
         return false;
     }
 
