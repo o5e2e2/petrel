@@ -176,7 +176,7 @@ void PositionSide::setLeaperAttack(Pi pi, PieceType ty, Square to) {
     attacks.set(pi, ::pieceTypeAttack(ty, to));
 }
 
-void PositionSide::updateSliderAttacks(VectorPiMask affectedSliders, Bb occupied) {
+void PositionSide::setSliderAttacks(VectorPiMask affectedSliders, Bb occupied) {
     if (affectedSliders.any()) {
         ReverseBb blockers{ occupied };
         for (Pi pi : affectedSliders) {

@@ -40,15 +40,17 @@ void Position::updateSliderAttacksKing(VectorPiMask affected) {
     OP.occupiedBb = ~MY.occupiedBb;
 
     affected &= MY.sliders();
-    MY.updateSliderAttacks(affected, OCCUPIED - ~OP.kingSquare());
+
+    //TRICK: attacks calculated without opponent's king for implicit out of check king's moves generation
+    MY.setSliderAttacks(affected, OCCUPIED - ~OP.kingSquare());
 }
 
 template <Side::_t My>
-void Position::updateSliderAttacks(VectorPiMask affected) {
+void Position::setSliderAttacks(VectorPiMask affected) {
     constexpr Side Op{~My};
 
     affected &= MY.sliders();
-    MY.updateSliderAttacks(affected, OCCUPIED);
+    MY.setSliderAttacks(affected, OCCUPIED);
 
     assert (MY.attacksTo(~OP.kingSquare()).none());
 }
@@ -58,7 +60,7 @@ bool Position::setup() {
     OP.evaluation.setEndgame( MY.isEndgame(), OP.kingSquare() );
 
     updateSliderAttacksKing<Op>(OP.alivePieces());
-    updateSliderAttacks<My>(MY.alivePieces());
+    setSliderAttacks<My>(MY.alivePieces());
     return MY.attacksTo(~OP.kingSquare()).none(); //not in check
 }
 
@@ -236,14 +238,14 @@ void Position::makePawnMove(Pi pi, Square from, Square to) {
         OP.evaluation.setEndgame( MY.isEndgame(), OP.kingSquare() );
 
         if (OP.isOccupied(~promotedTo)) {
+            //promotion with capture
             capture<Op>(~promotedTo);
-
             updateSliderAttacksKing<My>(MY.attacksTo(from) | pi);
-            updateSliderAttacks<Op>(OP.attacksTo(~from));
+            setSliderAttacks<Op>(OP.attacksTo(~from));
         }
         else {
             updateSliderAttacksKing<My>(MY.attacksTo(from, promotedTo) | pi);
-            updateSliderAttacks<Op>(OP.attacksTo(~from, ~promotedTo));
+            setSliderAttacks<Op>(OP.attacksTo(~from, ~promotedTo));
         }
 
     }
@@ -255,13 +257,13 @@ void Position::makePawnMove(Pi pi, Square from, Square to) {
             Square ep(File{to}, Rank6);
             movePawn<My>(pi, from, ep);
             updateSliderAttacksKing<My>(MY.attacksTo(from, to, ep));
-            updateSliderAttacks<Op>(OP.attacksTo(~from, ~to, ~ep));
+            setSliderAttacks<Op>(OP.attacksTo(~from, ~to, ~ep));
         }
         else {
             //simple pawn capture
             movePawn<My>(pi, from, to);
             updateSliderAttacksKing<My>(MY.attacksTo(from));
-            updateSliderAttacks<Op>(OP.attacksTo(~from));
+            setSliderAttacks<Op>(OP.attacksTo(~from));
         }
     }
     else {
@@ -269,7 +271,7 @@ void Position::makePawnMove(Pi pi, Square from, Square to) {
         movePawn<My>(pi, from, to);
 
         updateSliderAttacksKing<My>(MY.attacksTo(from, to));
-        updateSliderAttacks<Op>(OP.attacksTo(~from, ~to));
+        setSliderAttacks<Op>(OP.attacksTo(~from, ~to));
 
         if (from.is(Rank2) && to.is(Rank4)) {
             setLegalEnPassant<My>(pi);
@@ -336,7 +338,7 @@ void Position::makeMove(Square from, Square to) {
         capture<Op>(~to);
         move<My>(pi, from, to);
         updateSliderAttacksKing<My>(MY.attacksTo(from) | pi);
-        updateSliderAttacks<Op>(OP.attacksTo(~from));
+        setSliderAttacks<Op>(OP.attacksTo(~from));
     }
     else {
         if (MY.kingSquare().is(to)) {
@@ -346,7 +348,7 @@ void Position::makeMove(Square from, Square to) {
             //simple non-pawn move
             move<My>(pi, from, to);
             updateSliderAttacksKing<My>(MY.attacksTo(from, to));
-            updateSliderAttacks<Op>(OP.attacksTo(~from, ~to));
+            setSliderAttacks<Op>(OP.attacksTo(~from, ~to));
         }
     }
 }

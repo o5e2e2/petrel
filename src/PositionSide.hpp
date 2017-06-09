@@ -19,9 +19,10 @@ class PositionSide {
     VectorPiType types; //type of each alive piece, rooks with castling rights, pawns affected by en passant
     VectorPiSquare squares; //onboard square locations of the alive pieces or 'NoSquare' special value
 
-    Bb occupiedBb; //all occupied squares by both sides
-    Bb piecesBb; //all pieces of the current side
-    Bb pawnsBb; //pawns of the current side
+    Bb occupiedBb; //all occupied squares by both sides, updated from piecesBb of both sides
+    Bb piecesBb; //all pieces of the current side, incrementally updated
+    Bb pawnsBb; //pawns of the current side, incrementally updated
+
     Evaluation evaluation;
 
     static void swap(PositionSide&, PositionSide&);
@@ -45,7 +46,7 @@ class PositionSide {
     void promote(Pi, PromoType, Square, Square);
 
     void setLeaperAttack(Pi, PieceType, Square);
-    void updateSliderAttacks(VectorPiMask, Bb occupied);
+    void setSliderAttacks(VectorPiMask, Bb occupied);
 
     //used only during initial position setup
     void drop(Pi, PieceType, Square);
