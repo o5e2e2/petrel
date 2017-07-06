@@ -72,7 +72,7 @@ HashMemory::_t* HashMemory::lookup(Zobrist z) const {
 
     enum { CACHE_PAGES = (BucketSize-1)/64 + 1 };
     for (index_t i = 0; i < CACHE_PAGES; i++) {
-        _mm_prefetch(o + i, _MM_HINT_T0);
+        _mm_prefetch(o + i, _MM_HINT_NTA);
     }
 
     return reinterpret_cast<_t*>(o);
