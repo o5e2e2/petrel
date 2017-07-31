@@ -8,14 +8,12 @@
 
 class HashMemory;
 class Move;
-class Position;
+class UciPosition;
 
 class UciOutput : public SearchInfo {
     std::ostream& out; //output stream
     std::ostream& err; //error output stream
-
-    Color colorToMove; //root position color for moves long algebraic format output
-    ChessVariant chessVariant; //format of castling moves output
+    const UciPosition& pos;
 
     mutable SpinLock outLock;
     mutable volatile bool isreadyWaiting; //set when got 'isready' command while thinking
@@ -27,15 +25,12 @@ class UciOutput : public SearchInfo {
     void info_nps(std::ostream&) const;
 
 public:
-    UciOutput (std::ostream&, std::ostream& = std::cerr);
+    UciOutput (const UciPosition&, std::ostream&, std::ostream& = std::cerr);
 
     //called from Uci
     void isready(bool) const;
     void uciok(const HashMemory&) const;
-    void info_fen(const Position&) const;
-    void set(ChessVariant v) { chessVariant = v; }
-    void setColorToMove(Color c) { colorToMove = c; }
-    Color getColorToMove() const { return colorToMove; }
+    void info_fen() const;
 
     void error(std::istream&) const;
     void error(const std::string&) const;

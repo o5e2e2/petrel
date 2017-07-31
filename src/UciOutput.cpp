@@ -2,7 +2,7 @@
 #include "HashMemory.hpp"
 #include "Move.hpp"
 #include "OutputBuffer.hpp"
-#include "Position.hpp"
+#include "UciPosition.hpp"
 
 #define OUTPUT(ob) OutputBuffer<decltype(outLock)> ob(out, outLock)
 
@@ -25,11 +25,10 @@ namespace {
     }
 }
 
-UciOutput::UciOutput (std::ostream& o, std::ostream& e) :
+UciOutput::UciOutput (const UciPosition& p, std::ostream& o, std::ostream& e) :
     out(o),
     err(e),
-    colorToMove{White},
-    chessVariant{Orthodox},
+    pos(p),
     isreadyWaiting{false},
     lastInfoNodes{0}
 {}
@@ -37,11 +36,12 @@ UciOutput::UciOutput (std::ostream& o, std::ostream& e) :
 void UciOutput::uciok(const HashMemory& hashMemory) const {
     auto current = hashMemory.getSize();
     auto max = hashMemory.getMax();
+    bool isChess960 = pos.getVariant().is(Chess960);
 
     OUTPUT(ob);
     ob << "id name " << io::app_version << '\n';
     ob << "id author Aleks Peshkov\n";
-    ob << "option name UCI_Chess960 type check default " << (chessVariant.is(Chess960)? "true" : "false") << '\n';
+    ob << "option name UCI_Chess960 type check default " << (isChess960? "true" : "false") << '\n';
     ob << "option name Hash type spin min 0 max " << ::mebi(max) << " default " << ::mebi(current) << '\n';
     ob << "uciok\n";
 }
@@ -94,7 +94,7 @@ void UciOutput::info_currmove() const {
 }
 
 void UciOutput::write(std::ostream& ob, const Move& move) const {
-    Move::write(ob, move, colorToMove, chessVariant);
+    Move::write(ob, move, pos.getColorToMove(), pos.getVariant());
 }
 
 void UciOutput::nps(std::ostream& ob) const {
@@ -131,10 +131,9 @@ void UciOutput::info_nps(std::ostream& ob) const {
     }
 }
 
-void UciOutput::info_fen(const Position& pos) const {
+void UciOutput::info_fen() const {
     OUTPUT(ob);
-    ob << "info fen ";
-    pos.fen(ob, colorToMove, chessVariant);
+    ob << "info fen " << pos;
     //ob << " key 0x" << pos.getZobrist();
     ob << '\n';
 }

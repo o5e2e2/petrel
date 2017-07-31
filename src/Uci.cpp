@@ -4,8 +4,8 @@
 #define SHOULD_BE_READY  if (!uciControl.isReady()) { io::fail_rewind(command); return; }
 
 Uci::Uci (std::ostream& out, std::ostream& err):
-    uciOutput(out, err),
-    rootPosition(0),
+    uciPosition(),
+    uciOutput(uciPosition, out, err),
     uciControl(uciOutput)
 {
     ucinewgame();
@@ -46,8 +46,8 @@ void Uci::setoption() {
     if (next("UCI_Chess960")) {
         next("value");
 
-        if (next("true"))  { uciOutput.set(Chess960); return; }
-        if (next("false")) { uciOutput.set(Orthodox); return; }
+        if (next("true"))  { uciPosition.setVariant(Chess960); return; }
+        if (next("false")) { uciPosition.setVariant(Orthodox); return; }
 
         io::fail_rewind(command);
         return;
@@ -65,14 +65,14 @@ void Uci::setoption() {
 
 void Uci::position() {
     if (next("")) {
-        uciOutput.info_fen(rootPosition);
+        uciOutput.info_fen();
         return;
     }
 
     SHOULD_BE_READY;
 
     if (next("startpos")) { startpos(); }
-    if (next("fen")) { uciOutput.setColorToMove( rootPosition.setFen(command) ); }
+    if (next("fen")) { uciPosition.setFen(command); }
 
     if (command) {
         unsigned fifty, moves;
@@ -81,20 +81,20 @@ void Uci::position() {
     }
 
     next("moves");
-    uciOutput.setColorToMove( rootPosition.makeMoves(command, uciOutput.getColorToMove()) );
+    uciPosition.makeMoves(command);
 }
 
 void Uci::startpos() {
     std::istringstream startpos{"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"};
-    uciOutput.setColorToMove( rootPosition.setFen(startpos) );
+    uciPosition.setFen(startpos);
 }
 
 void Uci::go() {
     SHOULD_BE_READY;
 
     SearchLimit searchLimit;
-    searchLimit.readUci(command, uciOutput.getColorToMove(), &rootPosition);
-    uciControl.go(rootPosition, searchLimit);
+    searchLimit.readUci(command, &uciPosition);
+    uciControl.go(uciPosition, searchLimit);
 }
 
 #undef SHOULD_BE_READY
