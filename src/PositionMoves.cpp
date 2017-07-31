@@ -210,74 +210,9 @@ void PositionMoves::generateMoves() {
     generateKingMoves<My>(attackedSquares);
 }
 
-void PositionMoves::limitMoves(std::istream& in, Color colorToMove) {
-    MatrixPiBb searchMoves;
-    index_t limit = 0;
-
-    while (in) {
-        auto before = in.tellg();
-
-        Move m = readMove(in, colorToMove);
-        if (in) {
-            Square from{ m.from() };
-            Square to{ m.to() } ;
-            Pi pi{ MY.pieceOn(from) };
-
-            if (moves.is(pi, to) && !searchMoves.is(pi, to)) {
-                searchMoves.set(pi, to);
-                ++limit;
-                continue;
-            }
-
-        }
-
-        io::fail_pos(in, before);
-    }
-
-    if (limit > 0) {
-        moves = searchMoves;
-        in.clear();
-        return;
-    }
-
-    if (in.eof()) {
-        io::fail_rewind(in);
-    }
-}
-
-Color PositionMoves::setFen(std::istream& in) {
-    Color colorToMove = Position::setFen(in);
-    generateMoves<My>();
-    return colorToMove;
-}
-
 void PositionMoves::makeMove(const Position& parent, Square from, Square to, Zobrist z) {
     Position::makeMove(parent, from, to, z);
     generateMoves<My>();
-}
-
-Color PositionMoves::makeMoves(std::istream& in, Color colorToMove) {
-    while (in) {
-        auto before = in.tellg();
-
-        Move m = readMove(in, colorToMove);
-        if (in) {
-            Square from{ m.from() };
-            Square to{ m.to() } ;
-            Pi pi{ side[My].pieceOn(from) };
-
-            if (is(pi, to)) {
-                Position::makeMove(from, to);
-                generateMoves<My>();
-                colorToMove.flip();
-                continue;
-            }
-        }
-
-        io::fail_pos(in, before);
-    }
-
-    return colorToMove;
 }
 
 #undef MY

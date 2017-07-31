@@ -49,16 +49,14 @@ public:
     void makeMove(const Position&, Square, Square, Zobrist = {});
 
     Zobrist makeZobrist(Square from, Square to) const;
+    void fen(std::ostream&, Color, ChessVariant) const;
+    Move createMove(Square, Square) const;
 
     //initial position setup
     Color setFen(std::istream&);
     bool drop(Side, PieceType, Square);
     bool setup();
     void makeMove(Square, Square);
-
-    void fen(std::ostream&, Color, ChessVariant) const;
-    Move createMove(Square, Square) const;
-    Move readMove(std::istream& in, Color) const;
 
 };
 
