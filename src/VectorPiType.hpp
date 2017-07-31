@@ -56,7 +56,7 @@ public:
     VectorPiMask enPassantPawns() const { return _v.allOf(EnPassantMask); }
     Pi   getEnPassant() const { Pi pi{ enPassantPawns().index() }; assert (isPawn(pi)); return pi; }
     bool isEnPassant(Pi pi) const { assert (isPawn(pi)); return _v.is(pi, EnPassant); }
-    void setEnPassant(Pi pi) { assert (!isEnPassant(pi)); _v.set(pi, EnPassant); }
+    void setEnPassant(Pi pi) { _v.set(pi, EnPassant); }
     void clearEnPassant(Pi pi) { assert (isEnPassant(pi)); _v.clear(pi, EnPassant); }
     void clearEnPassants() { _v.clear(EnPassant); }
 

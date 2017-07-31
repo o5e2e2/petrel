@@ -27,7 +27,6 @@ private:
     template <Side::_t> void setStage(); //recalculate game stage for position evaluation
 
     Color setBoard(std::istream&);
-    static void fenBoard(std::ostream&, const PositionSide& white, const PositionSide& black);
 
     bool setCastling(Side, File);
     bool setCastling(Side, CastlingSide);
@@ -35,7 +34,6 @@ private:
 
     bool setEnPassant(File);
     std::istream& setEnPassant(std::istream&, Color);
-    void fenEnPassant(std::ostream& out, Color colorToMove) const;
 
 public:
     Position (const Position&) = default;
@@ -45,18 +43,16 @@ public:
     Square squareOf(Pi pi) const { return side[My].squareOf(pi); }
 
     Zobrist generateZobrist() const;
+    Zobrist makeZobrist(Square from, Square to) const;
 
     void makeMove(const Position&, Square, Square, Zobrist = {});
-
-    Zobrist makeZobrist(Square from, Square to) const;
-    void fen(std::ostream&, Color, ChessVariant) const;
     Move createMove(Square, Square) const;
 
     //initial position setup
-    Color setFen(std::istream&);
+    Color setupFromFen(std::istream&);
     bool drop(Side, PieceType, Square);
     bool setup();
-    void makeMove(Square, Square);
+    void playMove(Square, Square);
 
 };
 

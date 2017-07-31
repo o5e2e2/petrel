@@ -72,21 +72,15 @@ void Uci::position() {
     SHOULD_BE_READY;
 
     if (next("startpos")) { startpos(); }
-    if (next("fen")) { uciPosition.setFen(command); }
-
-    if (command) {
-        unsigned fifty, moves;
-        command >> fifty >> moves;
-        command.clear(); //ignore missing optional 'fifty' and 'moves' fen fields
-    }
+    if (next("fen")) { command >> uciPosition; }
 
     next("moves");
-    uciPosition.makeMoves(command);
+    uciPosition.playMoves(command);
 }
 
 void Uci::startpos() {
     std::istringstream startpos{"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"};
-    uciPosition.setFen(startpos);
+    startpos >> uciPosition;
 }
 
 void Uci::go() {

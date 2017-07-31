@@ -4,53 +4,12 @@
 #include "BetweenSquares.hpp"
 #include "CastlingRules.hpp"
 #include "FenBoard.hpp"
-#include "FenCastling.hpp"
 #include "PieceTypeAttack.hpp"
 #include "OutsideSquares.hpp"
 
 #define MY side[My]
 #define OP side[Op]
 #define OCCUPIED side[My].occupied()
-
-template <Side::_t My>
-bool Position::isPinned(Square opPinned, Bb myOccupied, Bb allOccupied) const {
-    constexpr Side Op{~My};
-
-    Square opKingSquare = ~OP.kingSquare();
-
-    Bb pinners = ::outside(opKingSquare, opPinned) & myOccupied;
-    if (pinners.none()) {
-        return false;
-    }
-
-    Square pinner = (opKingSquare < opPinned)? pinners.smallestOne() : pinners.largestOne();
-    return MY.canBeAttacked(pinner, opKingSquare)
-        && (::between(opKingSquare, pinner) & (allOccupied - opPinned)).none();
-}
-
-template <Side::_t My>
-void Position::updateSliderAttacksKing(VectorPiMask affected) {
-    constexpr Side Op{~My};
-
-    //sync occupiedBb between sides
-    MY.setOccupied(MY.occupiedSquares() + ~OP.occupiedSquares());
-    OP.setOccupied(~OCCUPIED);
-
-    affected &= MY.sliders();
-
-    //TRICK: attacks calculated without opponent's king for implicit out of check king's moves generation
-    MY.setSliderAttacks(affected, OCCUPIED - ~OP.kingSquare());
-}
-
-template <Side::_t My>
-void Position::setSliderAttacks(VectorPiMask affected) {
-    constexpr Side Op{~My};
-
-    affected &= MY.sliders();
-    MY.setSliderAttacks(affected, OCCUPIED);
-
-    assert (MY.attacksTo(~OP.kingSquare()).none());
-}
 
 bool Position::setup() {
     setStage<My>();
@@ -80,15 +39,42 @@ bool Position::drop(Side My, PieceType ty, Square to) {
     return true;
 }
 
-Zobrist Position::generateZobrist() const {
-    auto mz = MY.generateZobrist();
-    auto oz = OP.generateZobrist();
+template <Side::_t My>
+bool Position::isPinned(Square opPinned, Bb myOccupied, Bb allOccupied) const {
+    constexpr Side Op{~My};
 
-    if (OP.hasEnPassant()) {
-        oz.setEnPassant(OP.enPassantSquare());
+    Square opKingSquare = ~OP.kingSquare();
+
+    Bb pinners = ::outside(opKingSquare, opPinned) & myOccupied;
+    if (pinners.none()) {
+        return false;
     }
 
-    return Zobrist(mz, oz);
+    Square pinner = (opKingSquare < opPinned)? pinners.smallestOne() : pinners.largestOne();
+    return MY.canBeAttacked(pinner, opKingSquare)
+        && (::between(opKingSquare, pinner) & (allOccupied - opPinned)).none();
+}
+
+template <Side::_t My>
+void Position::updateSliderAttacksKing(VectorPiMask affected) {
+    constexpr Side Op{~My};
+
+    //sync occupiedBb between sides
+    MY.setOccupied(MY.occupiedSquares() + ~OP.occupiedSquares());
+    OP.setOccupied(~OCCUPIED);
+
+    //TRICK: attacks calculated without opponent's king for implicit out of check king's moves generation
+    MY.setSliderAttacks(affected & MY.sliders(), OCCUPIED - ~OP.kingSquare());
+}
+
+template <Side::_t My>
+void Position::setSliderAttacks(VectorPiMask affected) {
+    constexpr Side Op{~My};
+
+    MY.setSliderAttacks(affected & MY.sliders(), OCCUPIED);
+
+    //king cannot be in check
+    assert (MY.attacksTo(~OP.kingSquare()).none());
 }
 
 template <Side::_t My>
@@ -126,11 +112,8 @@ void Position::setLegalEnPassant(Pi pi) {
 
         if (!isPinned<My>(killer, MY.occupiedSquares() - to, OCCUPIED + ep - to)) {
             OP.markEnPassant(OP.pieceOn(~killer));
+            MY.setEnPassant(pi);
         }
-    }
-
-    if (OP.hasEnPassant()) {
-        MY.setEnPassant(pi);
     }
 }
 
@@ -182,12 +165,11 @@ void Position::makeKingMove(Square from, Square to) {
         //capture
         capture<Op>(~to);
         updateSliderAttacksKing<My>(MY.attacksTo(from));
-    }
-    else {
-        //non-capture
-        updateSliderAttacksKing<My>(MY.attacksTo(from, to));
+        return;
     }
 
+    //non-capture
+    updateSliderAttacksKing<My>(MY.attacksTo(from, to));
 }
 
 template <Side::_t My>
@@ -225,14 +207,16 @@ void Position::makePawnMove(Pi pi, Square from, Square to) {
             capture<Op>(~promotedTo);
             updateSliderAttacksKing<My>(MY.attacksTo(from) | pi);
             setSliderAttacks<Op>(OP.attacksTo(~from));
-        }
-        else {
-            updateSliderAttacksKing<My>(MY.attacksTo(from, promotedTo) | pi);
-            setSliderAttacks<Op>(OP.attacksTo(~from, ~promotedTo));
+            return;
         }
 
+        //promotion withoout capture
+        updateSliderAttacksKing<My>(MY.attacksTo(from, promotedTo) | pi);
+        setSliderAttacks<Op>(OP.attacksTo(~from, ~promotedTo));
+        return;
     }
-    else if (OP.isOccupied(~to)) {
+
+    if (OP.isOccupied(~to)) {
         capture<Op>(~to);
 
         if (from.is(Rank5) && to.is(Rank5)) {
@@ -241,39 +225,25 @@ void Position::makePawnMove(Pi pi, Square from, Square to) {
             movePawn<My>(pi, from, ep);
             updateSliderAttacksKing<My>(MY.attacksTo(from, to, ep));
             setSliderAttacks<Op>(OP.attacksTo(~from, ~to, ~ep));
+            return;
         }
-        else {
-            //simple pawn capture
-            movePawn<My>(pi, from, to);
-            updateSliderAttacksKing<My>(MY.attacksTo(from));
-            setSliderAttacks<Op>(OP.attacksTo(~from));
-        }
-    }
-    else {
-        //simple pawn move
+
+        //simple pawn capture
         movePawn<My>(pi, from, to);
-
-        updateSliderAttacksKing<My>(MY.attacksTo(from, to));
-        setSliderAttacks<Op>(OP.attacksTo(~from, ~to));
-
-        if (from.is(Rank2) && to.is(Rank4)) {
-            setLegalEnPassant<My>(pi);
-        }
-
+        updateSliderAttacksKing<My>(MY.attacksTo(from));
+        setSliderAttacks<Op>(OP.attacksTo(~from));
+        return;
     }
 
-    MY.assertValid(pi);
-}
+    //simple pawn move
+    movePawn<My>(pi, from, to);
 
-void Position::makeMove(const Position& parent, Square from, Square to, Zobrist z) {
-    zobrist = z;
+    updateSliderAttacksKing<My>(MY.attacksTo(from, to));
+    setSliderAttacks<Op>(OP.attacksTo(~from, ~to));
 
-    assert (this != &parent);
-    MY = parent.OP;
-    OP = parent.MY;
-
-    //current position flipped its sides relative to parent, so we make the move inplace for the Op
-    makeMove<Op>(from, to);
+    if (from.is(Rank2) && to.is(Rank4)) {
+        setLegalEnPassant<My>(pi);
+    }
 }
 
 template <Side::_t My>
@@ -319,6 +289,35 @@ void Position::makeMove(Square from, Square to) {
         }
     }
 }
+void Position::makeMove(const Position& parent, Square from, Square to, Zobrist z) {
+    zobrist = z;
+
+    assert (this != &parent);
+    MY = parent.OP;
+    OP = parent.MY;
+
+    //current position flipped its sides relative to parent, so we make the move inplace for the Op
+    makeMove<Op>(from, to);
+}
+
+void Position::playMove(Square from, Square to) {
+    zobrist = makeZobrist(from, to);
+    PositionSide::swap(MY, OP);
+
+    //the position just swapped its sides, so we make the move for the Op
+    makeMove<Op>(from, to);
+}
+
+Zobrist Position::generateZobrist() const {
+    auto mz = MY.generateZobrist();
+    auto oz = OP.generateZobrist();
+
+    if (OP.hasEnPassant()) {
+        oz.setEnPassant(OP.enPassantSquare());
+    }
+
+    return Zobrist(mz, oz);
+}
 
 Zobrist Position::makeZobrist(Square from, Square to) const {
     Zobrist mz = zobrist;
@@ -347,7 +346,8 @@ Zobrist Position::makeZobrist(Square from, Square to) const {
             }
             return Zobrist{oz, mz};
         }
-        else if (from.is(Rank2) && to.is(Rank4)) {
+
+        if (from.is(Rank2) && to.is(Rank4)) {
             mz.move(ty, from, to);
 
             File file = File{from};
@@ -372,7 +372,8 @@ Zobrist Position::makeZobrist(Square from, Square to) const {
             }
             return Zobrist{oz, mz};
         }
-        else if (from.is(Rank5) && to.is(Rank5)) {
+
+        if (from.is(Rank5) && to.is(Rank5)) {
             Square ep(File{to}, Rank6);
             mz.move(Pawn, from, ep);
             oz.clear(Pawn, ~to);
@@ -422,15 +423,11 @@ Zobrist Position::makeZobrist(Square from, Square to) const {
     return Zobrist{oz, mz};
 }
 
-void Position::makeMove(Square from, Square to) {
-    zobrist = makeZobrist(from, to);
-    PositionSide::swap(MY, OP);
-
-    //the position just swapped its sides, so we make the move for the Op
-    makeMove<Op>(from, to);
-}
-
 Move Position::createMove(Square moveFrom, Square moveTo) const {
+    if (MY.kingSquare().is(moveTo)) {
+        return Move::castling(moveFrom, moveTo);
+    }
+
     if ( MY.isPawn(MY.pieceOn(moveFrom)) ) {
         if (moveFrom.is(Rank7)) {
             return Move::promotion(moveFrom, moveTo);
@@ -439,10 +436,6 @@ Move Position::createMove(Square moveFrom, Square moveTo) const {
             return Move::enPassant(moveFrom, moveTo);
         }
     }
-    else if (MY.kingSquare().is(moveTo)) {
-        return Move::castling(moveFrom, moveTo);
-    }
-
     return Move(moveFrom, moveTo);
 }
 
@@ -474,22 +467,11 @@ std::istream& Position::setEnPassant(std::istream& in, Color colorToMove) {
 
     Square ep{Square::Begin};
     if (in >> ep) {
-        if (ep.is(colorToMove.is(White)? Rank6 : Rank3) && setEnPassant(File{ep})) {
-            return in;
-        }
-        else {
+        if (!ep.is(colorToMove.is(White)? Rank6 : Rank3) || !setEnPassant(File{ep})) {
             io::fail_pos(in, before);
         }
     }
     return in;
-}
-
-bool Position::setCastling(Side My, File file) {
-    return MY.setCastling(file);
-}
-
-bool Position::setCastling(Side My, CastlingSide castlingSide) {
-    return MY.setCastling(castlingSide);
 }
 
 std::istream& Position::setCastling(std::istream& in, Color colorToMove) {
@@ -505,14 +487,14 @@ std::istream& Position::setCastling(std::istream& in, Color colorToMove) {
 
             CastlingSide castlingSide{CastlingSide::Begin};
             if (castlingSide.from_char(c)) {
-                if (setCastling(si, castlingSide)) {
+                if (side[si].setCastling(castlingSide)) {
                     continue;
                 }
             }
             else {
                 File file{File::Begin};
                 if (file.from_char(c)) {
-                    if (setCastling(si, file)) {
+                    if (side[si].setCastling(file)) {
                         continue;
                     }
                 }
@@ -536,58 +518,12 @@ Color Position::setBoard(std::istream& in) {
     return colorToMove;
 }
 
-Color Position::setFen(std::istream& in) {
+Color Position::setupFromFen(std::istream& in) {
     Color colorToMove = setBoard(in);
     setCastling(in, colorToMove);
     setEnPassant(in, colorToMove);
     zobrist = generateZobrist();
     return colorToMove;
-}
-
-void Position::fenEnPassant(std::ostream& out, Color colorToMove) const {
-    if (side[Op].hasEnPassant()) {
-        out << Square(side[Op].enPassantFile(), colorToMove.is(White)? Rank6 : Rank3);
-    }
-    else {
-        out << '-';
-    }
-}
-
-void Position::fenBoard(std::ostream& out, const PositionSide& white, const PositionSide& black) {
-    FOR_INDEX(Rank, rank) {
-        index_t blank_squares = 0;
-
-        FOR_INDEX(File, file) {
-            Square sq(file,rank);
-
-            if (white.isOccupied(sq)) {
-                if (blank_squares != 0) { out << blank_squares; blank_squares = 0; }
-                out << static_cast<io::char_type>(std::toupper( white.typeOf(sq).to_char() ));
-            }
-            else if (black.isOccupied(~sq)) {
-                if (blank_squares != 0) { out << blank_squares; blank_squares = 0; }
-                out << black.typeOf(~sq).to_char();
-            }
-            else {
-                ++blank_squares;
-            }
-
-        }
-
-        if (blank_squares != 0) { out << blank_squares; }
-        if (rank != Rank1) { out << '/'; }
-    }
-}
-
-void Position::fen(std::ostream& out, Color colorToMove, ChessVariant chessVariant) const {
-    const PositionSide& white = side[colorToMove.is(White)? My : Op];
-    const PositionSide& black = side[colorToMove.is(Black)? My : Op];
-
-    fenBoard(out, white, black);
-    out << ' ' << colorToMove;
-    out << ' ' << FenCastling(white, black, chessVariant);
-    out << ' ';
-    fenEnPassant(out, colorToMove);
 }
 
 #undef MY

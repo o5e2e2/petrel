@@ -243,7 +243,6 @@ bool PositionSide::setCastling(File file) {
 
 void PositionSide::setEnPassant(Pi pi) {
     assert (isPawn(pi));
-    assert (!hasEnPassant());
     assert (squareOf(pi).is(Rank4));
     types.setEnPassant(pi);
 }
