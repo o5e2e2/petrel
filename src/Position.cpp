@@ -67,24 +67,19 @@ bool Position::drop(Side My, PieceType ty, Square to) {
     const Side Op{~My};
 
     if (OCCUPIED[to]) { return false; }
-    if ( ty.is(Pawn) && (to.is(Rank1) || to.is(Rank8)) ) { return false; }
 
-    if (!ty.is(King)) {
-        Pi pi{ (MY.alivePieces() | Pi{TheKing}).seekVacant() };
-
-        MY.drop(pi, ty, to);
-        set(My, pi, ty, to);
-
-        MY.assertValid(pi);
-        assert (MY.squareOf(pi).is(to));
-        assert (MY.typeOf(pi).is(ty));
-    }
-    else {
+    if (ty.is(King)) {
         //TRICK: king should be dropped before any opponents non-king pieces
         MY.drop(TheKing, King, to);
-        MY.setLeaperAttack(TheKing, King, to);
-        MY.assertValid(TheKing);
+        return true;
     }
+
+    if (ty.is(Pawn) && (to.is(Rank1) || to.is(Rank8))) {
+        return false;
+    }
+
+    Pi pi{ (MY.alivePieces() | Pi{TheKing}).seekVacant() };
+    MY.drop(pi, ty, to);
     return true;
 }
 
@@ -142,16 +137,6 @@ void Position::setLegalEnPassant(Pi pi) {
     }
 }
 
-void Position::set(Side My, Pi pi, PieceType ty, Square to) {
-    const Side Op{~My};
-
-    assert (!ty.is(King));
-
-    if (!MY.isSlider(pi)) {
-        MY.setLeaperAttack(pi, ty, to);
-    }
-}
-
 template <Side::_t My>
 void Position::capture(Square from) {
     constexpr Side Op{~My};
@@ -168,9 +153,6 @@ void Position::movePawn(Pi pi, Square from, Square to) {
     assert (MY.isPawn(pi));
 
     MY.movePawn(pi, from, to);
-    MY.setLeaperAttack(pi, Pawn, to);
-
-    MY.assertValid(pi);
 }
 
 template <Side::_t My>
@@ -185,9 +167,6 @@ void Position::move(Pi pi, Square from, Square to) {
     assert (!ty.is(King));
 
     MY.move(pi, ty, from, to);
-    set(My, pi, ty, to);
-
-    MY.assertValid(pi);
 }
 
 template <Side::_t My>
@@ -201,9 +180,6 @@ void Position::makeKingMove(Square from, Square to) {
     assert (MY.typeOf(pi).is(King));
 
     MY.moveKing(from, to);
-    MY.setLeaperAttack(TheKing, King, to);
-
-    MY.assertValid(pi);
 
     if (OP.isOccupied(~to)) {
         //capture
@@ -225,7 +201,6 @@ void Position::makeCastling(Pi rook, Square rookFrom, Square kingFrom) {
     Square rookTo = CastlingRules::castlingSide(kingFrom, rookFrom).is(QueenSide)? D1 : F1;
 
     MY.castle(rook, rookFrom, rookTo, kingFrom, kingTo);
-    MY.setLeaperAttack(TheKing, King, kingTo);
 
     //TRICK: castling should not affect opponent's sliders, otherwise it is check or pin
     //TRICK: castling rook should attack 'kingFrom' square
@@ -246,7 +221,6 @@ void Position::makePawnMove(Pi pi, Square from, Square to) {
         Square promotedTo = Square(File(to), Rank8);
 
         MY.promote(pi, ty, from, promotedTo);
-        set(My, pi, static_cast<PieceType>(ty), promotedTo);
         setStage<Op>();
 
         if (OP.isOccupied(~promotedTo)) {

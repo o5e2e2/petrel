@@ -67,10 +67,15 @@ void PositionSide::move(PieceType ty, Square from, Square to) {
 
 void PositionSide::drop(Pi pi, PieceType ty, Square to) {
     drop(ty, to);
-    if (ty.is(Pawn)) { pawnsBb += to; }
-
     types.drop(pi, ty);
     squares.drop(pi, to);
+
+    if (isLeaper(ty)) {
+        if (ty.is(Pawn)) {
+            pawnsBb += to;
+        }
+        setLeaperAttack(pi, ty, to);
+    }
 
     assertValid(pi);
 }
@@ -98,9 +103,12 @@ void PositionSide::move(Pi pi, PieceType ty, Square from, Square to) {
     assertValid(pi);
     assert (from != to);
 
-    types.clearCastling(pi);
     move(ty, from, to);
     squares.move(pi, to);
+    if (isLeaper(ty)) {
+        setLeaperAttack(pi, ty, to);
+    }
+    types.clearCastling(pi);
 
     assertValid(pi);
 }
@@ -113,6 +121,7 @@ void PositionSide::movePawn(Pi pi, Square from, Square to) {
     pawnsBb.move(from, to);
     move(Pawn, from, to);
     squares.move(pi, to);
+    setLeaperAttack(pi, Pawn, to);
 
     assertValid(pi);
 }
@@ -121,10 +130,10 @@ void PositionSide::moveKing(Square from, Square to) {
     assertValid(TheKing);
     assert (from != to);
 
-    types.clearCastlings();
-
     move(King, from, to);
     squares.move(TheKing, to);
+    setLeaperAttack(TheKing, King, to);
+    types.clearCastlings();
 
     assertValid(TheKing);
 }
@@ -135,14 +144,14 @@ void PositionSide::castle(Pi rook, Square rookFrom, Square rookTo, Square kingFr
     assert (kingSquare().is(kingFrom) && kingFrom.is(Rank1));
     assert (squareOf(rook).is(rookFrom) && rookFrom.is(Rank1));
 
-    types.clearCastlings();
-
     clear(Rook, rookFrom);
     clear(King, kingFrom);
     drop(King, kingTo);
     drop(Rook, rookTo);
 
     squares.castle(rook, rookTo, TheKing, kingTo);
+    setLeaperAttack(TheKing, King, kingTo);
+    types.clearCastlings();
 
     assertValid(TheKing);
     assertValid(rook);
@@ -164,8 +173,12 @@ void PositionSide::promote(Pi pi, PromoType ty, Square from, Square to) {
 
     squares.move(pi, to);
     types.promote(pi, ty);
-
     evaluation.promote(from, to, ty);
+
+    if (isLeaper(ty)) {
+        assert (ty.is(Knight));
+        setLeaperAttack(pi, static_cast<PieceType>(ty), to);
+    }
 
     assertValid(pi);
 }

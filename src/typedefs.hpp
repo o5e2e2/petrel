@@ -34,6 +34,7 @@ typedef Index<3, piece_type_t> SliderType;
 typedef Index<4, piece_type_t> PromoType;
 typedef Index<6, piece_type_t> PieceType;
 typedef Index<7, piece_type_t> PieceEvalType;
+constexpr bool isLeaper(PromoType::_t ty) { return ty >= Knight; }
 
 //encoding of the promoted piece type inside 12-bit move
 constexpr Rank::_t rankOf(PromoType::_t ty) { return static_cast<Rank::_t>(ty); }
