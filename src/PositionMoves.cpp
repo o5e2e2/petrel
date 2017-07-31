@@ -210,8 +210,8 @@ void PositionMoves::generateMoves() {
     generateKingMoves<My>(attackedSquares);
 }
 
-void PositionMoves::makeMove(const Position& parent, Square from, Square to, Zobrist z) {
-    Position::makeMove(parent, from, to, z);
+void PositionMoves::playMove(const Position& parent, Square from, Square to, Zobrist z) {
+    Position::playMove(parent, from, to, z);
     generateMoves<My>();
 }
 

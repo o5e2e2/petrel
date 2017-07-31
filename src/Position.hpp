@@ -14,17 +14,18 @@ protected:
 
 private:
     template <Side::_t> bool isPinned(Square, Bb, Bb) const;
-    template <Side::_t> void move(Pi, Square, Square);
+    template <Side::_t> void movePiece(Pi, Square, Square);
     template <Side::_t> void movePawn(Pi, Square, Square);
     template <Side::_t> void setSliderAttacks(VectorPiMask);
     template <Side::_t> void updateSliderAttacksKing(VectorPiMask); //remove king to avoid hiding it under its own shadow when in check
     template <Side::_t> void setLegalEnPassant(Pi);
-    template <Side::_t> void makeKingMove(Square, Square);
-    template <Side::_t> void makePawnMove(Pi, Square, Square);
-    template <Side::_t> void makeCastling(Pi, Square, Square);
-    template <Side::_t> void makeMove(Square, Square);
     template <Side::_t> void capture(Square);
     template <Side::_t> void setStage(); //recalculate game stage for position evaluation
+
+    template <Side::_t> void playKingMove(Square, Square);
+    template <Side::_t> void playPawnMove(Pi, Square, Square);
+    template <Side::_t> void playCastling(Pi, Square, Square);
+    template <Side::_t> void playMove(Square, Square);
 
     Color setBoard(std::istream&);
 
@@ -45,7 +46,7 @@ public:
     Zobrist generateZobrist() const;
     Zobrist makeZobrist(Square from, Square to) const;
 
-    void makeMove(const Position&, Square, Square, Zobrist = {});
+    void playMove(const Position&, Square, Square, Zobrist = {});
     Move createMove(Square, Square) const;
 
     //initial position setup

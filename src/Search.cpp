@@ -10,7 +10,7 @@
 #define CUT(found) { if (found) { return true; } } ((void)0)
 
 namespace Perft {
-    bool makeMoves(PositionMoves& parent, SearchWindow& window);
+    bool searchMoves(PositionMoves& parent, SearchWindow& window);
 
     bool makeMove(const Position& parent, PositionMoves& child, SearchWindow& window, Square from, Square to) {
         auto& info = window.control.info;
@@ -19,7 +19,7 @@ namespace Perft {
         info.decrementQuota();
 
         if (window.draft <= 0) {
-            child.makeMove(parent, from, to);
+            child.playMove(parent, from, to);
             auto n = child.getMoves().count();
             info.inc(PerftNodes, n);
             return false;
@@ -39,11 +39,11 @@ namespace Perft {
             }
         }
 
-        child.makeMove(parent, from, to, zobrist);
+        child.playMove(parent, from, to, zobrist);
         assert (zobrist == child.generateZobrist());
 
         auto n = info.get(PerftNodes);
-        CUT (makeMoves(child, window));
+        CUT (searchMoves(child, window));
         n = info.get(PerftNodes) - n;
 
         PerftTT(origin, window.control.tt().getAge()).set(zobrist, window.draft, n);
@@ -53,7 +53,7 @@ namespace Perft {
     }
 
     template <typename InfoMove>
-    bool makeMoves(const Position& parent, SearchWindow& window, MatrixPiBb& moves, InfoMove infoMove) {
+    bool searchMoves(const Position& parent, SearchWindow& window, MatrixPiBb& moves, InfoMove infoMove) {
         PositionMoves childPosMoves(0);
         SearchWindow childWindow(window);
 
@@ -71,14 +71,14 @@ namespace Perft {
         return false;
     }
 
-    bool makeMoves(PositionMoves& parent, SearchWindow& window) {
-        return makeMoves(parent, window, parent.getMoves(), [](const Position&, SearchWindow&, Square, Square) {});
+    bool searchMoves(PositionMoves& parent, SearchWindow& window) {
+        return searchMoves(parent, window, parent.getMoves(), [](const Position&, SearchWindow&, Square, Square) {});
     }
 
     bool perft(const PositionMoves& parent, SearchWindow& window) {
         MatrixPiBb moves = parent.cloneMoves();
 
-        CUT (makeMoves(parent, window, moves, [](const Position&, SearchWindow&, Square, Square) {}));
+        CUT (searchMoves(parent, window, moves, [](const Position&, SearchWindow&, Square, Square) {}));
 
         window.control.info.report_perft_depth(window.draft);
         return false;
@@ -91,7 +91,7 @@ namespace Perft {
         };
 
         MatrixPiBb moves = parent.cloneMoves();
-        CUT (makeMoves(parent, window, moves, divideMove));
+        CUT (searchMoves(parent, window, moves, divideMove));
 
         window.control.info.report_perft_depth(window.draft);
         return false;

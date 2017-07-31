@@ -136,7 +136,7 @@ void Position::movePawn(Pi pi, Square from, Square to) {
 }
 
 template <Side::_t My>
-void Position::move(Pi pi, Square from, Square to) {
+void Position::movePiece(Pi pi, Square from, Square to) {
     constexpr Side Op{~My};
 
     MY.assertValid(pi);
@@ -150,30 +150,7 @@ void Position::move(Pi pi, Square from, Square to) {
 }
 
 template <Side::_t My>
-void Position::makeKingMove(Square from, Square to) {
-    constexpr Side Op{~My};
-
-    Pi pi = TheKing;
-
-    MY.assertValid(pi);
-    assert (MY.squareOf(pi).is(from));
-    assert (MY.typeOf(pi).is(King));
-
-    MY.moveKing(from, to);
-
-    if (OP.isOccupied(~to)) {
-        //capture
-        capture<Op>(~to);
-        updateSliderAttacksKing<My>(MY.attacksTo(from));
-        return;
-    }
-
-    //non-capture
-    updateSliderAttacksKing<My>(MY.attacksTo(from, to));
-}
-
-template <Side::_t My>
-void Position::makeCastling(Pi rook, Square rookFrom, Square kingFrom) {
+void Position::playCastling(Pi rook, Square rookFrom, Square kingFrom) {
     constexpr Side Op{~My};
 
     Square kingTo = CastlingRules::castlingSide(kingFrom, rookFrom).is(QueenSide)? C1 : G1;
@@ -191,7 +168,7 @@ void Position::makeCastling(Pi rook, Square rookFrom, Square kingFrom) {
 }
 
 template <Side::_t My>
-void Position::makePawnMove(Pi pi, Square from, Square to) {
+void Position::playPawnMove(Pi pi, Square from, Square to) {
     constexpr Side Op{~My};
 
     if (from.is(Rank7)) {
@@ -247,7 +224,30 @@ void Position::makePawnMove(Pi pi, Square from, Square to) {
 }
 
 template <Side::_t My>
-void Position::makeMove(Square from, Square to) {
+void Position::playKingMove(Square from, Square to) {
+    constexpr Side Op{~My};
+
+    Pi pi = TheKing;
+
+    MY.assertValid(pi);
+    assert (MY.squareOf(pi).is(from));
+    assert (MY.typeOf(pi).is(King));
+
+    MY.moveKing(from, to);
+
+    if (OP.isOccupied(~to)) {
+        //capture
+        capture<Op>(~to);
+        updateSliderAttacksKing<My>(MY.attacksTo(from));
+        return;
+    }
+
+    //non-capture
+    updateSliderAttacksKing<My>(MY.attacksTo(from, to));
+}
+
+template <Side::_t My>
+void Position::playMove(Square from, Square to) {
     constexpr Side Op{~My};
 
     //Assumes that the given move is valid and legal
@@ -265,31 +265,35 @@ void Position::makeMove(Square from, Square to) {
     Pi pi{MY.pieceOn(from)};
 
     if (MY.isPawn(pi)) {
-        makePawnMove<My>(pi, from, to);
+        playPawnMove<My>(pi, from, to);
+        return;
     }
-    else if (MY.kingSquare().is(from)) {
-        makeKingMove<My>(from, to);
+
+    if (MY.kingSquare().is(from)) {
+        playKingMove<My>(from, to);
+        return;
     }
-    else if (OP.isOccupied(~to)) {
+
+    if (OP.isOccupied(~to)) {
         //simple non-pawn capture
         capture<Op>(~to);
-        move<My>(pi, from, to);
+        movePiece<My>(pi, from, to);
         updateSliderAttacksKing<My>(MY.attacksTo(from) | pi);
         setSliderAttacks<Op>(OP.attacksTo(~from));
     }
     else {
         if (MY.kingSquare().is(to)) {
-            makeCastling<My>(pi, from, to);
+            playCastling<My>(pi, from, to);
+            return;
         }
-        else {
-            //simple non-pawn move
-            move<My>(pi, from, to);
-            updateSliderAttacksKing<My>(MY.attacksTo(from, to));
-            setSliderAttacks<Op>(OP.attacksTo(~from, ~to));
-        }
+
+        //simple non-pawn move
+        movePiece<My>(pi, from, to);
+        updateSliderAttacksKing<My>(MY.attacksTo(from, to));
+        setSliderAttacks<Op>(OP.attacksTo(~from, ~to));
     }
 }
-void Position::makeMove(const Position& parent, Square from, Square to, Zobrist z) {
+void Position::playMove(const Position& parent, Square from, Square to, Zobrist z) {
     zobrist = z;
 
     assert (this != &parent);
@@ -297,7 +301,7 @@ void Position::makeMove(const Position& parent, Square from, Square to, Zobrist 
     OP = parent.MY;
 
     //current position flipped its sides relative to parent, so we make the move inplace for the Op
-    makeMove<Op>(from, to);
+    playMove<Op>(from, to);
 }
 
 void Position::playMove(Square from, Square to) {
@@ -305,7 +309,7 @@ void Position::playMove(Square from, Square to) {
     PositionSide::swap(MY, OP);
 
     //the position just swapped its sides, so we make the move for the Op
-    makeMove<Op>(from, to);
+    playMove<Op>(from, to);
 }
 
 Zobrist Position::generateZobrist() const {
