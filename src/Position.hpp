@@ -24,6 +24,7 @@ private:
     template <Side::_t> void makeCastling(Pi, Square, Square);
     template <Side::_t> void makeMove(Square, Square);
     template <Side::_t> void capture(Square);
+    template <Side::_t> void setStage(); //recalculate game stage for position evaluation
 
     void set(Side, Pi, PieceType, Square);
     Color setBoard(std::istream&);

@@ -56,9 +56,8 @@ void Position::setSliderAttacks(VectorPiMask affected) {
 }
 
 bool Position::setup() {
-    MY.evaluation.setEndgame( OP.isEndgame(), MY.kingSquare() );
-    OP.evaluation.setEndgame( MY.isEndgame(), OP.kingSquare() );
-
+    setStage<My>();
+    setStage<Op>();
     updateSliderAttacksKing<Op>(OP.alivePieces());
     setSliderAttacks<My>(MY.alivePieces());
     return MY.attacksTo(~OP.kingSquare()).none(); //not in check
@@ -98,6 +97,12 @@ Zobrist Position::generateZobrist() const {
     }
 
     return Zobrist(mz, oz);
+}
+
+template <Side::_t My>
+void Position::setStage() {
+    constexpr Side Op{~My};
+    MY.evaluation.setStage( OP.getStage(), MY.kingSquare() );
 }
 
 template <Side::_t My>
@@ -145,6 +150,13 @@ void Position::set(Side My, Pi pi, PieceType ty, Square to) {
     if (!MY.isSlider(pi)) {
         MY.setLeaperAttack(pi, ty, to);
     }
+}
+
+template <Side::_t My>
+void Position::capture(Square from) {
+    constexpr Side Op{~My};
+    MY.capture(from);
+    setStage<Op>();
 }
 
 template <Side::_t My>
@@ -235,7 +247,7 @@ void Position::makePawnMove(Pi pi, Square from, Square to) {
 
         MY.promote(pi, ty, from, promotedTo);
         set(My, pi, static_cast<PieceType>(ty), promotedTo);
-        OP.evaluation.setEndgame( MY.isEndgame(), OP.kingSquare() );
+        setStage<Op>();
 
         if (OP.isOccupied(~promotedTo)) {
             //promotion with capture
@@ -282,14 +294,6 @@ void Position::makePawnMove(Pi pi, Square from, Square to) {
     MY.assertValid(pi);
 }
 
-template <Side::_t My>
-void Position::capture(Square from) {
-    constexpr Side Op{~My};
-
-    MY.capture(from);
-    OP.evaluation.setEndgame( MY.isEndgame(), OP.kingSquare() );
-}
-
 void Position::makeMove(const Position& parent, Square from, Square to, Zobrist z) {
     zobrist = z;
 
@@ -298,14 +302,6 @@ void Position::makeMove(const Position& parent, Square from, Square to, Zobrist 
     OP = parent.MY;
 
     //current position flipped its sides relative to parent, so we make the move inplace for the Op
-    makeMove<Op>(from, to);
-}
-
-void Position::makeMove(Square from, Square to) {
-    zobrist = makeZobrist(from, to);
-    PositionSide::swap(MY, OP);
-
-    //the position just swapped its sides, so we make the move for the Op
     makeMove<Op>(from, to);
 }
 
@@ -453,6 +449,14 @@ Zobrist Position::makeZobrist(Square from, Square to) const {
 
     mz.move(ty, from, to);
     return Zobrist{oz, mz};
+}
+
+void Position::makeMove(Square from, Square to) {
+    zobrist = makeZobrist(from, to);
+    PositionSide::swap(MY, OP);
+
+    //the position just swapped its sides, so we make the move for the Op
+    makeMove<Op>(from, to);
 }
 
 Move Position::createMove(Square moveFrom, Square moveTo) const {

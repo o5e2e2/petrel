@@ -148,10 +148,10 @@ void PositionSide::castle(Pi rook, Square rookFrom, Square rookTo, Square kingFr
     assertValid(rook);
 }
 
-bool PositionSide::isEndgame() const {
+EvalStage PositionSide::getStage() const {
     auto queensCount = piecesOfType(Queen).count();
     bool isEndgame = (queensCount == 0) || (queensCount == 1 && types.minors().count() <= 1);
-    return isEndgame;
+    return isEndgame ? Endgame : Middlegame;
 }
 
 void PositionSide::promote(Pi pi, PromoType ty, Square from, Square to) {

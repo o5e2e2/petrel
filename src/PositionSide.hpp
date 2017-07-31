@@ -107,7 +107,7 @@ public:
     VectorPiMask attacksTo(Square a, Square b) const { return attacks[a] | attacks[b]; }
     VectorPiMask attacksTo(Square a, Square b, Square c) const { return attacks[a] | attacks[b] | attacks[c]; }
 
-    bool isEndgame() const; //returns whether material for endgame or not
+    EvalStage getStage() const; //returns whether material for endgame or middlegame
 
 };
 
