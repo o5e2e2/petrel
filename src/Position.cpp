@@ -19,16 +19,13 @@ bool Position::isPinned(Square opPinned, Bb myOccupied, Bb allOccupied) const {
     Square opKingSquare = ~OP.kingSquare();
 
     Bb pinners = ::outside(opKingSquare, opPinned) & myOccupied;
-    if (pinners.any()) {
-        Square pinner = (opKingSquare < opPinned)? pinners.smallestOne() : pinners.largestOne();
-        if (
-            MY.canBeAttacked(pinner, opKingSquare)
-            && (::between(opKingSquare, pinner) & (allOccupied - opPinned)).none()
-        ) {
-            return true;
-        }
+    if (pinners.none()) {
+        return false;
     }
-    return false;
+
+    Square pinner = (opKingSquare < opPinned)? pinners.smallestOne() : pinners.largestOne();
+    return MY.canBeAttacked(pinner, opKingSquare)
+        && (::between(opKingSquare, pinner) & (allOccupied - opPinned)).none();
 }
 
 template <Side::_t My>
