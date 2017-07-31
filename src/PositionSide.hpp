@@ -13,8 +13,6 @@
 
 //TRICK: all squares are relative to the own side (so king piece is initially on E1 square regardless color)
 class PositionSide {
-    friend class Position;
-
     MatrixPiBb attacks; //squares attacked by a piece and pieces attacking to a square
     VectorPiType types; //type of each alive piece, rooks with castling rights, pawns affected by en passant
     VectorPiSquare squares; //onboard square locations of the alive pieces or 'NoSquare' special value
@@ -25,28 +23,31 @@ class PositionSide {
 
     Evaluation evaluation;
 
-    static void swap(PositionSide&, PositionSide&);
-
     void clear(PieceType, Square);
     void drop(PieceType, Square);
     void move(PieceType, Square, Square);
-
     bool setCastling(Pi);
-    void castle(Pi rook, Square rookFrom, Square rookTo, Square kingFrom, Square kingTo);
+    void setLeaperAttack(Pi, PieceType, Square);
 
-    void markEnPassant(Pi);
-    void unmarkEnPassants();
-    void setEnPassant(Pi);
-    void clearEnPassant();
+friend class Position;
+    static void swap(PositionSide&, PositionSide&);
 
-    void capture(Square);
     void move(Pi, PieceType, Square, Square);
     void movePawn(Pi, Square, Square);
     void moveKing(Square, Square);
+    void castle(Pi rook, Square rookFrom, Square rookTo, Square kingFrom, Square kingTo);
     void promote(Pi, PromoType, Square, Square);
+    void capture(Square);
 
-    void setLeaperAttack(Pi, PieceType, Square);
+    //set/clear for just played pawn jump, mark/unmark for legal attacker to ep pawn
+    void setEnPassant(Pi);
+    void markEnPassant(Pi);
+    void clearEnPassant();
+    void unmarkEnPassants();
+
+    void setOccupied(const Bb& occupied) { occupiedBb = occupied; }
     void setSliderAttacks(VectorPiMask, Bb occupied);
+    void setStage(EvalStage opStage) { evaluation.setStage(opStage, kingSquare()); }
 
     //used only during initial position setup
     void drop(Pi, PieceType, Square);

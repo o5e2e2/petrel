@@ -10,7 +10,7 @@
 
 #define MY side[My]
 #define OP side[Op]
-#define OCCUPIED side[My].occupiedBb
+#define OCCUPIED side[My].occupied()
 
 template <Side::_t My>
 bool Position::isPinned(Square opPinned, Bb myOccupied, Bb allOccupied) const {
@@ -36,8 +36,8 @@ void Position::updateSliderAttacksKing(VectorPiMask affected) {
     constexpr Side Op{~My};
 
     //sync occupiedBb between sides
-    MY.occupiedBb = MY.occupiedSquares() + ~OP.occupiedSquares();
-    OP.occupiedBb = ~MY.occupiedBb;
+    MY.setOccupied(MY.occupiedSquares() + ~OP.occupiedSquares());
+    OP.setOccupied(~OCCUPIED);
 
     affected &= MY.sliders();
 
@@ -97,7 +97,7 @@ Zobrist Position::generateZobrist() const {
 template <Side::_t My>
 void Position::setStage() {
     constexpr Side Op{~My};
-    MY.evaluation.setStage( OP.getStage(), MY.kingSquare() );
+    MY.setStage(OP.getStage());
 }
 
 template <Side::_t My>
@@ -507,7 +507,7 @@ bool Position::setEnPassant(File file) {
     if (!OP.isPawn(victim)) { return false; }
 
     //check against illegal en passant set field like "8/5bk1/8/2Pp4/8/1K6/8/8 w - d6"
-    if (isPinned<Op>(victimSquare, OP.occupiedSquares(), OP.occupiedBb)) {
+    if (isPinned<Op>(victimSquare, OP.occupiedSquares(), OP.occupied())) {
         return false;
     }
 

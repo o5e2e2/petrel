@@ -241,18 +241,6 @@ bool PositionSide::setCastling(File file) {
     return false;
 }
 
-void PositionSide::markEnPassant(Pi pi) {
-    assert (isPawn(pi));
-    assert (squareOf(pi).is(Rank5));
-    types.setEnPassant(pi);
-}
-
-void PositionSide::unmarkEnPassants() {
-    assert (hasEnPassant());
-    assert (types.enPassantPawns() <= squares.piecesOn(Rank5));
-    types.clearEnPassants();
-}
-
 void PositionSide::setEnPassant(Pi pi) {
     assert (isPawn(pi));
     assert (!hasEnPassant());
@@ -260,11 +248,22 @@ void PositionSide::setEnPassant(Pi pi) {
     types.setEnPassant(pi);
 }
 
+void PositionSide::markEnPassant(Pi pi) {
+    assert (isPawn(pi));
+    assert (squareOf(pi).is(Rank5));
+    types.setEnPassant(pi);
+}
+
 void PositionSide::clearEnPassant() {
     assert (hasEnPassant());
     assert (types.enPassantPawns().isSingleton());
     assert (types.enPassantPawns() <= squares.piecesOn(Rank4));
+    types.clearEnPassants();
+}
 
+void PositionSide::unmarkEnPassants() {
+    assert (hasEnPassant());
+    assert (types.enPassantPawns() <= squares.piecesOn(Rank5));
     types.clearEnPassants();
 }
 

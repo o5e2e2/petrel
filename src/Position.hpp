@@ -41,8 +41,8 @@ public:
     Position (const Position&) = default;
     Position (int) {};
 
-    VectorPiMask alivePieces() const { return side[My].squares.alivePieces(); }
-    Square squareOf(Pi pi) const { return side[My].squares.squareOf(pi); }
+    VectorPiMask alivePieces() const { return side[My].alivePieces(); }
+    Square squareOf(Pi pi) const { return side[My].squareOf(pi); }
 
     Zobrist generateZobrist() const;
 
