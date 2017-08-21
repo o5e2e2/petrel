@@ -3,7 +3,6 @@
 #include "Position.hpp"
 #include "BetweenSquares.hpp"
 #include "CastlingRules.hpp"
-#include "FenBoard.hpp"
 #include "PieceTypeAttack.hpp"
 #include "OutsideSquares.hpp"
 
@@ -80,41 +79,8 @@ void Position::setSliderAttacks(VectorPiMask affected) {
 template <Side::_t My>
 void Position::setStage() {
     constexpr Side Op{~My};
+    //game stage (middlegane or endgame) depends on opponents pieces count
     MY.setStage(OP.getStage());
-}
-
-template <Side::_t My>
-void Position::setLegalEnPassant(Pi pi) {
-    constexpr Side Op{~My};
-
-    assert (!MY.hasEnPassant());
-    assert (!OP.hasEnPassant());
-
-    Square to{MY.squareOf(pi)};
-    Square from(File{to}, Rank2);
-    Square ep(File{to}, Rank3);
-
-    assert (to.is(Rank4));
-
-    Bb killers = ~OP.occupiedByPawns() & ::pieceTypeAttack(Pawn, ep);
-    if (killers.none()) {
-        return;
-    }
-
-    if (isPinned<My>(from, MY.occupiedSquares(), OCCUPIED + from)) {
-        assert ((MY.attacksTo(~OP.kingSquare()) % pi).any());
-        return; //discovered check found
-    }
-    assert ((MY.attacksTo(~OP.kingSquare()) % pi).none());
-
-    for (Square killer : killers) {
-        assert (killer.is(Rank4));
-
-        if (!isPinned<My>(killer, MY.occupiedSquares() - to, OCCUPIED + ep - to)) {
-            OP.markEnPassant(OP.pieceOn(~killer));
-            MY.setEnPassant(pi);
-        }
-    }
 }
 
 template <Side::_t My>
@@ -165,6 +131,40 @@ void Position::playCastling(Pi rook, Square rookFrom, Square kingFrom) {
 
     MY.assertValid(TheKing);
     MY.assertValid(rook);
+}
+
+template <Side::_t My>
+void Position::setLegalEnPassant(Pi pi) {
+    constexpr Side Op{~My};
+
+    assert (!MY.hasEnPassant());
+    assert (!OP.hasEnPassant());
+
+    Square to{MY.squareOf(pi)};
+    Square from(File{to}, Rank2);
+    Square ep(File{to}, Rank3);
+
+    assert (to.is(Rank4));
+
+    Bb killers = ~OP.occupiedByPawns() & ::pieceTypeAttack(Pawn, ep);
+    if (killers.none()) {
+        return;
+    }
+
+    if (isPinned<My>(from, MY.occupiedSquares(), OCCUPIED + from)) {
+        assert ((MY.attacksTo(~OP.kingSquare()) % pi).any());
+        return; //discovered check found
+    }
+    assert ((MY.attacksTo(~OP.kingSquare()) % pi).none());
+
+    for (Square killer : killers) {
+        assert (killer.is(Rank4));
+
+        if (!isPinned<My>(killer, MY.occupiedSquares() - to, OCCUPIED + ep - to)) {
+            OP.markEnPassant(OP.pieceOn(~killer));
+            MY.setEnPassant(pi);
+        }
+    }
 }
 
 template <Side::_t My>
@@ -461,73 +461,6 @@ bool Position::setEnPassant(File file) {
 
     setLegalEnPassant<Op>(victim);
     return true;
-}
-
-std::istream& Position::setEnPassant(std::istream& in, Color colorToMove) {
-    in >> std::ws;
-    if (in.peek() == '-') { in.ignore(); return in; }
-
-    auto before = in.tellg();
-
-    Square ep{Square::Begin};
-    if (in >> ep) {
-        if (!ep.is(colorToMove.is(White)? Rank6 : Rank3) || !setEnPassant(File{ep})) {
-            io::fail_pos(in, before);
-        }
-    }
-    return in;
-}
-
-std::istream& Position::setCastling(std::istream& in, Color colorToMove) {
-    in >> std::ws;
-    if (in.peek() == '-') { in.ignore(); return in; }
-
-    for (io::char_type c; in.get(c) && !std::isblank(c); ) {
-        if (std::isalpha(c)) {
-            Color color(std::isupper(c)? White : Black);
-            Side si(color.is(colorToMove)? My : Op);
-
-            c = static_cast<io::char_type>(std::tolower(c));
-
-            CastlingSide castlingSide{CastlingSide::Begin};
-            if (castlingSide.from_char(c)) {
-                if (side[si].setCastling(castlingSide)) {
-                    continue;
-                }
-            }
-            else {
-                File file{File::Begin};
-                if (file.from_char(c)) {
-                    if (side[si].setCastling(file)) {
-                        continue;
-                    }
-                }
-            }
-        }
-        io::fail_char(in);
-    }
-    return in;
-}
-
-Color Position::setBoard(std::istream& in) {
-    Color colorToMove;
-    FenBoard board;
-
-    in >> board >> std::ws >> colorToMove;
-
-    if (in && !board.setPosition(*this, colorToMove)) {
-        io::fail_char(in);
-    }
-
-    return colorToMove;
-}
-
-Color Position::setupFromFen(std::istream& in) {
-    Color colorToMove = setBoard(in);
-    setCastling(in, colorToMove);
-    setEnPassant(in, colorToMove);
-    zobrist = generateZobrist();
-    return colorToMove;
 }
 
 #undef MY

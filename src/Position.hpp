@@ -1,7 +1,6 @@
 #ifndef POSITION_HPP
 #define POSITION_HPP
 
-#include "io.hpp"
 #include "PositionSide.hpp"
 #include "Zobrist.hpp"
 #include "Move.hpp"
@@ -27,15 +26,6 @@ private:
     template <Side::_t> void playCastling(Pi, Square, Square);
     template <Side::_t> void playMove(Square, Square);
 
-    Color setBoard(std::istream&);
-
-    bool setCastling(Side, File);
-    bool setCastling(Side, CastlingSide);
-    std::istream& setCastling(std::istream&, Color);
-
-    bool setEnPassant(File);
-    std::istream& setEnPassant(std::istream&, Color);
-
 public:
     Position (const Position&) = default;
     Position (int) {};
@@ -50,9 +40,12 @@ public:
     Move createMove(Square, Square) const;
 
     //initial position setup
-    Color setupFromFen(std::istream&);
     bool drop(Side, PieceType, Square);
+    bool setCastling(Side si, File fi) { return side[si].setCastling(fi); }
+    bool setCastling(Side si, CastlingSide cs) { return side[si].setCastling(cs); }
+    bool setEnPassant(File);
     bool setup();
+
     void playMove(Square, Square);
 
 };

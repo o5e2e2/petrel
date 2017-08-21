@@ -15,6 +15,11 @@ class UciPosition : public PositionMoves {
     Move readMove(std::istream&) const;
     void fenEnPassant(std::ostream&) const;
 
+    void setBoard(std::istream&);
+    std::istream& setCastling(std::istream&);
+    std::istream& setEnPassant(std::istream&);
+    void setupFromFen(std::istream&);
+
 public:
     UciPosition() : PositionMoves(0), colorToMove{White}, chessVariant{Orthodox} {}
 
@@ -22,6 +27,7 @@ public:
     Color getColorToMove() const { return colorToMove; }
 
     void setVariant(ChessVariant v) { chessVariant = v; }
+
     void playMoves(std::istream&);
     void limitMoves(std::istream&);
 

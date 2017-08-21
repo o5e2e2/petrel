@@ -1,5 +1,7 @@
-#include "UciPosition.hpp"
 #include <set>
+
+#include "UciPosition.hpp"
+#include "FenBoard.hpp"
 #include "CastlingRules.hpp"
 
 #define MY side[My]
@@ -85,20 +87,6 @@ void UciPosition::limitMoves(std::istream& in) {
     if (in.eof()) {
         io::fail_rewind(in);
     }
-}
-
-std::istream& operator >> (std::istream& in, UciPosition& pos) {
-    pos.colorToMove = pos.setupFromFen(in);
-    pos.generateMoves<My>();
-
-    if (in) {
-        unsigned _fifty;
-        unsigned _moves;
-        in >> _fifty >> _moves;
-        in.clear(); //ignore missing optional 'fifty' and 'moves' fen fields
-    }
-
-    return in;
 }
 
 void UciPosition::playMoves(std::istream& in) {
@@ -226,6 +214,83 @@ std::ostream& operator << (std::ostream& out, const UciPosition& pos) {
         << ' ';
     pos.fenEnPassant(out);
     return out;
+}
+
+std::istream& UciPosition::setEnPassant(std::istream& in) {
+    in >> std::ws;
+    if (in.peek() == '-') { in.ignore(); return in; }
+
+    auto before = in.tellg();
+
+    Square ep{Square::Begin};
+    if (in >> ep) {
+        if (!ep.is(colorToMove.is(White)? Rank6 : Rank3) || !Position::setEnPassant(File{ep})) {
+            io::fail_pos(in, before);
+        }
+    }
+    return in;
+}
+
+std::istream& UciPosition::setCastling(std::istream& in) {
+    in >> std::ws;
+    if (in.peek() == '-') { in.ignore(); return in; }
+
+    for (io::char_type c; in.get(c) && !std::isblank(c); ) {
+        if (std::isalpha(c)) {
+            Color color(std::isupper(c)? White : Black);
+            Side si(color.is(colorToMove)? My : Op);
+
+            c = static_cast<io::char_type>(std::tolower(c));
+
+            CastlingSide castlingSide{CastlingSide::Begin};
+            if (castlingSide.from_char(c)) {
+                if (Position::setCastling(si, castlingSide)) {
+                    continue;
+                }
+            }
+            else {
+                File file{File::Begin};
+                if (file.from_char(c)) {
+                    if (Position::setCastling(si, file)) {
+                        continue;
+                    }
+                }
+            }
+        }
+        io::fail_char(in);
+    }
+    return in;
+}
+
+void UciPosition::setBoard(std::istream& in) {
+    FenBoard board;
+
+    in >> board >> std::ws >> colorToMove;
+
+    if (in && !board.setPosition(*this, colorToMove)) {
+        io::fail_char(in);
+    }
+}
+
+void UciPosition::setupFromFen(std::istream& in) {
+    setBoard(in);
+    setCastling(in);
+    setEnPassant(in);
+    zobrist = generateZobrist();
+}
+
+std::istream& operator >> (std::istream& in, UciPosition& pos) {
+    pos.setupFromFen(in);
+    pos.generateMoves<My>();
+
+    if (in) {
+        unsigned _fifty;
+        unsigned _moves;
+        in >> _fifty >> _moves;
+        in.clear(); //ignore missing optional 'fifty' and 'moves' fen fields
+    }
+
+    return in;
 }
 
 #undef MY
