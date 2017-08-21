@@ -6,7 +6,6 @@
 #include "Move.hpp"
 
 class Position {
-
 protected:
     Side::array<PositionSide> side;
     Zobrist zobrist;
@@ -32,12 +31,14 @@ public:
 
     VectorPiMask alivePieces() const { return side[My].alivePieces(); }
     Square squareOf(Pi pi) const { return side[My].squareOf(pi); }
+    Move createMove(Square from, Square to) const { return Move::create(side[My], from, to); }
 
     Zobrist generateZobrist() const;
-    Zobrist makeZobrist(Square from, Square to) const;
+    Zobrist makeZobrist(Square, Square) const;
 
-    void playMove(const Position&, Square, Square, Zobrist = {});
-    Move createMove(Square, Square) const;
+    void playMove(const Position&, Square, Square, Zobrist);
+    void playMove(const Position& parent, Square from, Square to) { playMove(parent, from, to, makeZobrist(from, to)); }
+    void playMove(Square, Square);
 
     //initial position setup
     bool drop(Side, PieceType, Square);
@@ -45,9 +46,6 @@ public:
     bool setCastling(Side si, CastlingSide cs) { return side[si].setCastling(cs); }
     bool setEnPassant(File);
     bool setup();
-
-    void playMove(Square, Square);
-
 };
 
 #endif

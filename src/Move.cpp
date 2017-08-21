@@ -1,4 +1,21 @@
 #include "Move.hpp"
+#include "PositionSide.hpp"
+
+Move Move::create(const PositionSide& side, Square moveFrom, Square moveTo) {
+    if (side.kingSquare().is(moveTo)) {
+        return Move::castling(moveFrom, moveTo);
+    }
+
+    if (side.isPawn(side.pieceOn(moveFrom))) {
+        if (moveFrom.is(Rank7)) {
+            return Move::promotion(moveFrom, moveTo);
+        }
+        if (moveFrom.is(Rank5) && moveTo.is(Rank5)) {
+            return Move::enPassant(moveFrom, moveTo);
+        }
+    }
+    return Move(moveFrom, moveTo);
+}
 
 //convert internal move to long algebraic format
 std::ostream& Move::write(std::ostream& out, Move move, Color colorToMove, ChessVariant chessVariant) {

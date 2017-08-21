@@ -293,6 +293,7 @@ void Position::playMove(Square from, Square to) {
         setSliderAttacks<Op>(OP.attacksTo(~from, ~to));
     }
 }
+
 void Position::playMove(const Position& parent, Square from, Square to, Zobrist z) {
     zobrist = z;
 
@@ -425,22 +426,6 @@ Zobrist Position::makeZobrist(Square from, Square to) const {
 
     mz.move(ty, from, to);
     return Zobrist{oz, mz};
-}
-
-Move Position::createMove(Square moveFrom, Square moveTo) const {
-    if (MY.kingSquare().is(moveTo)) {
-        return Move::castling(moveFrom, moveTo);
-    }
-
-    if ( MY.isPawn(MY.pieceOn(moveFrom)) ) {
-        if (moveFrom.is(Rank7)) {
-            return Move::promotion(moveFrom, moveTo);
-        }
-        if (moveFrom.is(Rank5) && moveTo.is(Rank5)) {
-            return Move::enPassant(moveFrom, moveTo);
-        }
-    }
-    return Move(moveFrom, moveTo);
 }
 
 bool Position::setEnPassant(File file) {
