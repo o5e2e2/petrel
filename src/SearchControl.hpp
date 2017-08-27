@@ -2,7 +2,6 @@
 #define SEARCH_CONTROL_HPP
 
 #include "SearchThread.hpp"
-#include "SearchWindow.hpp"
 
 #include "HashMemory.hpp"
 #include "Timer.hpp"
@@ -10,6 +9,8 @@
 class SearchInfo;
 class PositionMoves;
 class SearchLimit;
+class NodeRoot;
+class NodePerft;
 
 /**
  * Shared data to all search threads (currently the only one)
@@ -21,7 +22,9 @@ public:
 private:
     SearchThread     searchThread;
     SearchThread::_t searchSequence;
-    SearchWindow     rootWindow;
+
+    NodeRoot* root;
+    NodePerft* child;
 
     HashMemory transpositionTable;
     Timer::TimerPool timerPool;

@@ -1,17 +1,17 @@
 #include "SearchThread.hpp"
-#include "Search.hpp"
-#include "SearchWindow.hpp"
+#include "Node.hpp"
 
-void SearchThread::set(SearchFn* s, const PositionMoves& p, SearchWindow& w) {
+void SearchThread::set(Node* p, Node* c) {
     assert( isReady() );
 
-    searchFn = s;
-    parent = &p;
-    window = &w;
+    if (isReady()) {
+        parent = p;
+        child = c;
+    }
 }
 
 void SearchThread::thread_body() {
-    if (searchFn != nullptr) {
-        (*searchFn)(*parent, *window);
+    if (parent && child) {
+        parent->visitChildren(*child);
     }
 }

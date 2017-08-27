@@ -2,17 +2,18 @@
 #define SEARCH_THREAD_HPP
 
 #include "ThreadControl.hpp"
-#include "Search.hpp"
+
+class Node;
 
 class SearchThread : public ThreadControl {
-    SearchFn* searchFn;
-    const PositionMoves* parent;
-    SearchWindow* window;
+    Node* parent;
+    Node* child;
 
     void thread_body() override;
 
 public:
-    void set(SearchFn*, const PositionMoves&, SearchWindow&);
+    SearchThread () : parent(nullptr), child(nullptr) {}
+    void set(Node* parent, Node* child);
 };
 
 #endif
