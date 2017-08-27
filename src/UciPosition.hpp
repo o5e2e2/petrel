@@ -6,9 +6,6 @@
 #include "PositionMoves.hpp"
 
 class UciPosition : public PositionMoves {
-    friend class WriteFenBoard;
-    friend class WriteFenCastling;
-
     Color colorToMove; //root position color for moves long algebraic format output
     ChessVariant chessVariant; //format of castling moves output
 
@@ -18,13 +15,14 @@ class UciPosition : public PositionMoves {
     void setBoard(std::istream&);
     std::istream& setCastling(std::istream&);
     std::istream& setEnPassant(std::istream&);
-    void setupFromFen(std::istream&);
 
 public:
     UciPosition() : PositionMoves(0), colorToMove{White}, chessVariant{Orthodox} {}
 
-    ChessVariant getVariant() const { return chessVariant; }
+    ChessVariant getChessVariant() const { return chessVariant; }
     Color getColorToMove() const { return colorToMove; }
+
+    const PositionSide& getSide(Color color) const { return side[colorToMove.is(color)? My : Op];}
 
     void setVariant(ChessVariant v) { chessVariant = v; }
 

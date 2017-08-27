@@ -36,7 +36,7 @@ UciOutput::UciOutput (const UciPosition& p, std::ostream& o, std::ostream& e) :
 void UciOutput::uciok(const HashMemory& hashMemory) const {
     auto current = hashMemory.getSize();
     auto max = hashMemory.getMax();
-    bool isChess960 = pos.getVariant().is(Chess960);
+    bool isChess960 = pos.getChessVariant().is(Chess960);
 
     OUTPUT(ob);
     ob << "id name " << io::app_version << '\n';
@@ -94,7 +94,7 @@ void UciOutput::info_currmove() const {
 }
 
 void UciOutput::write(std::ostream& ob, const Move& move) const {
-    Move::write(ob, move, pos.getColorToMove(), pos.getVariant());
+    Move::write(ob, move, pos.getColorToMove(), pos.getChessVariant());
 }
 
 void UciOutput::nps(std::ostream& ob) const {

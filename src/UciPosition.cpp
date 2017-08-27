@@ -6,7 +6,111 @@
 
 #define MY side[My]
 #define OP side[Op]
-#define OCCUPIED side[My].occupied()
+
+class WriteFenBoard {
+    const PositionSide& whiteSide;
+    const PositionSide& blackSide;
+
+public:
+    WriteFenBoard (const UciPosition& pos) :
+        whiteSide(pos.getSide(White)),
+        blackSide(pos.getSide(Black))
+        {}
+
+    friend std::ostream& operator << (std::ostream& out, const WriteFenBoard& fen) {
+        FOR_INDEX(Rank, rank) {
+            index_t blank_squares = 0;
+
+            FOR_INDEX(File, file) {
+                Square sq(file,rank);
+
+                if (fen.whiteSide.isOccupied(sq)) {
+                    if (blank_squares != 0) { out << blank_squares; blank_squares = 0; }
+                    out << static_cast<io::char_type>(std::toupper( fen.whiteSide.typeOf(sq).to_char() ));
+                    continue;
+                }
+
+                if (fen.blackSide.isOccupied(~sq)) {
+                    if (blank_squares != 0) { out << blank_squares; blank_squares = 0; }
+                    out << fen.blackSide.typeOf(~sq).to_char();
+                    continue;
+                }
+
+                ++blank_squares;
+            }
+
+            if (blank_squares != 0) { out << blank_squares; }
+            if (rank != Rank1) { out << '/'; }
+        }
+
+        return out;
+    }
+};
+
+class WriteFenCastling {
+    std::set<io::char_type> castlingSet;
+
+    void insert(const PositionSide& side, Color color, ChessVariant chessVariant) {
+        for (Pi pi : side.castlingRooks()) {
+            io::char_type castling_symbol;
+
+            switch (chessVariant) {
+                case Chess960:
+                    castling_symbol = File{side.squareOf(pi)}.to_char();
+                    break;
+
+                case Orthodox:
+                default:
+                    castling_symbol = CastlingRules::castlingSide(side.kingSquare(), side.squareOf(pi)).to_char();
+                    break;
+            }
+
+            if (color.is(White)) {
+                castling_symbol = static_cast<io::char_type>(std::toupper(castling_symbol));
+            }
+
+            castlingSet.insert(castling_symbol);
+        }
+    }
+
+public:
+    WriteFenCastling (const UciPosition& pos) {
+        insert(pos.getSide(White), White, pos.getChessVariant());
+        insert(pos.getSide(Black), Black, pos.getChessVariant());
+    }
+
+    friend std::ostream& operator << (std::ostream& out, const WriteFenCastling& fen) {
+        if (fen.castlingSet.empty()) {
+            return out << '-';
+        }
+
+        for (auto castling_symbol : fen.castlingSet) {
+            out << castling_symbol;
+        }
+
+        return out;
+    }
+};
+
+void UciPosition::fenEnPassant(std::ostream& out) const {
+    if (!OP.hasEnPassant()) {
+        out << '-';
+        return;
+    }
+
+    out << Square(OP.enPassantFile(), colorToMove.is(White)? Rank6 : Rank3);
+}
+
+std::ostream& operator << (std::ostream& out, const UciPosition& pos) {
+    out << WriteFenBoard(pos)
+        << ' '
+        << pos.colorToMove
+        << ' '
+        << WriteFenCastling(pos)
+        << ' ';
+    pos.fenEnPassant(out);
+    return out;
+}
 
 Move UciPosition::readMove(std::istream& in) const {
     auto before = in.tellg();
@@ -111,124 +215,14 @@ void UciPosition::playMoves(std::istream& in) {
     }
 }
 
-void UciPosition::fenEnPassant(std::ostream& out) const {
-    if (!OP.hasEnPassant()) {
-        out << '-';
-        return;
+void UciPosition::setBoard(std::istream& in) {
+    FenBoard board;
+
+    in >> board >> std::ws >> colorToMove;
+
+    if (in && !board.setPosition(*this, colorToMove)) {
+        io::fail_char(in);
     }
-
-    out << Square(OP.enPassantFile(), colorToMove.is(White)? Rank6 : Rank3);
-}
-
-class WriteFenBoard {
-    const PositionSide& whiteSide;
-    const PositionSide& blackSide;
-
-public:
-    WriteFenBoard (const UciPosition& pos) :
-        whiteSide(pos.side[pos.colorToMove.is(White)? My : Op]),
-        blackSide(pos.side[pos.colorToMove.is(Black)? My : Op])
-        {}
-
-    friend std::ostream& operator << (std::ostream& out, const WriteFenBoard& fen) {
-        FOR_INDEX(Rank, rank) {
-            index_t blank_squares = 0;
-
-            FOR_INDEX(File, file) {
-                Square sq(file,rank);
-
-                if (fen.whiteSide.isOccupied(sq)) {
-                    if (blank_squares != 0) { out << blank_squares; blank_squares = 0; }
-                    out << static_cast<io::char_type>(std::toupper( fen.whiteSide.typeOf(sq).to_char() ));
-                    continue;
-                }
-
-                if (fen.blackSide.isOccupied(~sq)) {
-                    if (blank_squares != 0) { out << blank_squares; blank_squares = 0; }
-                    out << fen.blackSide.typeOf(~sq).to_char();
-                    continue;
-                }
-
-                ++blank_squares;
-            }
-
-            if (blank_squares != 0) { out << blank_squares; }
-            if (rank != Rank1) { out << '/'; }
-        }
-
-        return out;
-    }
-};
-
-class WriteFenCastling {
-    std::set<io::char_type> castlingSet;
-
-    void insert(const PositionSide& side, Color color, ChessVariant chessVariant) {
-        for (Pi pi : side.castlingRooks()) {
-            io::char_type castling_symbol;
-
-            switch (chessVariant) {
-                case Chess960:
-                    castling_symbol = File{side.squareOf(pi)}.to_char();
-                    break;
-
-                case Orthodox:
-                default:
-                    castling_symbol = CastlingRules::castlingSide(side.kingSquare(), side.squareOf(pi)).to_char();
-                    break;
-            }
-
-            if (color.is(White)) {
-                castling_symbol = static_cast<io::char_type>(std::toupper(castling_symbol));
-            }
-
-            castlingSet.insert(castling_symbol);
-        }
-    }
-
-public:
-    WriteFenCastling (const UciPosition& pos) {
-        insert(pos.side[pos.colorToMove.is(White)? My : Op], White, pos.chessVariant);
-        insert(pos.side[pos.colorToMove.is(Black)? My : Op], Black, pos.chessVariant);
-    }
-
-    friend std::ostream& operator << (std::ostream& out, const WriteFenCastling& fen) {
-        if (fen.castlingSet.empty()) {
-            return out << '-';
-        }
-
-        for (auto castling_symbol : fen.castlingSet) {
-            out << castling_symbol;
-        }
-
-        return out;
-    }
-};
-
-std::ostream& operator << (std::ostream& out, const UciPosition& pos) {
-    out << WriteFenBoard(pos)
-        << ' '
-        << pos.colorToMove
-        << ' '
-        << WriteFenCastling(pos)
-        << ' ';
-    pos.fenEnPassant(out);
-    return out;
-}
-
-std::istream& UciPosition::setEnPassant(std::istream& in) {
-    in >> std::ws;
-    if (in.peek() == '-') { in.ignore(); return in; }
-
-    auto before = in.tellg();
-
-    Square ep{Square::Begin};
-    if (in >> ep) {
-        if (!ep.is(colorToMove.is(White)? Rank6 : Rank3) || !Position::setEnPassant(File{ep})) {
-            io::fail_pos(in, before);
-        }
-    }
-    return in;
 }
 
 std::istream& UciPosition::setCastling(std::istream& in) {
@@ -262,25 +256,26 @@ std::istream& UciPosition::setCastling(std::istream& in) {
     return in;
 }
 
-void UciPosition::setBoard(std::istream& in) {
-    FenBoard board;
+std::istream& UciPosition::setEnPassant(std::istream& in) {
+    in >> std::ws;
+    if (in.peek() == '-') { in.ignore(); return in; }
 
-    in >> board >> std::ws >> colorToMove;
+    auto before = in.tellg();
 
-    if (in && !board.setPosition(*this, colorToMove)) {
-        io::fail_char(in);
+    Square ep{Square::Begin};
+    if (in >> ep) {
+        if (!ep.is(colorToMove.is(White)? Rank6 : Rank3) || !Position::setEnPassant(File{ep})) {
+            io::fail_pos(in, before);
+        }
     }
-}
-
-void UciPosition::setupFromFen(std::istream& in) {
-    setBoard(in);
-    setCastling(in);
-    setEnPassant(in);
-    zobrist = generateZobrist();
+    return in;
 }
 
 std::istream& operator >> (std::istream& in, UciPosition& pos) {
-    pos.setupFromFen(in);
+    pos.setBoard(in);
+    pos.setCastling(in);
+    pos.setEnPassant(in);
+    pos.zobrist = pos.generateZobrist();
     pos.generateMoves<My>();
 
     if (in) {
@@ -295,4 +290,3 @@ std::istream& operator >> (std::istream& in, UciPosition& pos) {
 
 #undef MY
 #undef OP
-#undef OCCUPIED
