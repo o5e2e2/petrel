@@ -32,7 +32,7 @@ public:
 #else
     void assertValid(Pi pi) const {
         assert ( !isEmpty(pi) );
-        assert ( _v.is(pi, King) || ::is_singleton(_v[pi] & PieceTypeMask) );
+        assert ( _v.is(pi, King) || ::isSingleton(_v[pi] & PieceTypeMask) );
         assert ( !_v.is(pi, King) || (pi.is(TheKing) && !_v.is(pi, Rook) && !_v.is(pi, Pawn)) || _v.is(pi, Rook) || _v.is(pi, Pawn) );
     }
 #endif

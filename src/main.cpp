@@ -25,7 +25,7 @@ const VectorPiSingle vectorPiSingle; //256
 const CastlingRules castlingRules; //128
 const ZobristKey Zobrist::zobristKey; //64
 const BitReverse bitReverse; //64
-const VectorBitCount bit_count; //48
+const VectorBitCount bitCount; //48
 const VectorPiOrder::Sorted VectorPiOrder::sorted; //16
 
 const PieceSquareTable Evaluation::pieceSquareTable; //7*64

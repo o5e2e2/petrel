@@ -141,9 +141,9 @@ public:
     index_t count() const {
         VectorBitCount::_t result = ::vectorOfAll[0];
         FOR_INDEX(Rank, rank) {
-            result = _mm_add_epi8(result, bit_count.per_byte(static_cast<VectorBitCount::_t>(matrix[rank])));
+            result = _mm_add_epi8(result, ::bitCount.perByte(static_cast<VectorBitCount::_t>(matrix[rank])));
         }
-        return bit_count.total(result);
+        return ::bitCount.total(result);
     }
 
 };

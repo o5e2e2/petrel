@@ -1,14 +1,14 @@
 #include "ThreadControl.hpp"
 
 ThreadControl::ThreadControl () : status{Ready}, sequence{0} {
-    auto infinite_loop = [this] {
+    auto infiniteLoop = [this] {
         for (;;) {
             wait(Run);
             this->thread_body();
             signal(Ready);
         }
     };
-    std::thread(infinite_loop).detach();
+    std::thread(infiniteLoop).detach();
 }
 
 template <typename Condition>

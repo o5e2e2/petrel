@@ -3,20 +3,20 @@
 
 ReverseBb::Singleton::Singleton () {
     FOR_INDEX(Square, sq) {
-        Square r_sq(~File{sq}, ~Rank{sq});
+        Square reversedSq(~File{sq}, ~Rank{sq});
 
-        (*this)[sq] = ::combine(Bb{sq}, Bb{r_sq});
+        (*this)[sq] = ::combine(Bb{sq}, Bb{reversedSq});
     }
 }
 
 ReverseBb::Direction::Direction () {
     FOR_INDEX(Square, sq) {
-        Square r_sq{~File(sq), ~Rank(sq)};
+        Square reversedSq{~File(sq), ~Rank(sq)};
 
-        (*this)[Queen][sq][Horizont] = ::combine(Bb::horizont(sq), Bb::horizont(r_sq));
-        (*this)[Queen][sq][Vertical] = ::combine(Bb::vertical(sq), Bb::vertical(r_sq));
-        (*this)[Queen][sq][Diagonal] = ::combine(Bb::diagonal(sq), Bb::diagonal(r_sq));
-        (*this)[Queen][sq][Antidiag] = ::combine(Bb::antidiag(sq), Bb::antidiag(r_sq));
+        (*this)[Queen][sq][Horizont] = ::combine(Bb::horizont(sq), Bb::horizont(reversedSq));
+        (*this)[Queen][sq][Vertical] = ::combine(Bb::vertical(sq), Bb::vertical(reversedSq));
+        (*this)[Queen][sq][Diagonal] = ::combine(Bb::diagonal(sq), Bb::diagonal(reversedSq));
+        (*this)[Queen][sq][Antidiag] = ::combine(Bb::antidiag(sq), Bb::antidiag(reversedSq));
 
         (*this)[Rook][sq][Horizont] = (*this)[Queen][sq][Horizont];
         (*this)[Rook][sq][Vertical] = (*this)[Queen][sq][Vertical];

@@ -19,27 +19,27 @@ public:
 
     friend std::ostream& operator << (std::ostream& out, const WriteFenBoard& fen) {
         FOR_INDEX(Rank, rank) {
-            index_t blank_squares = 0;
+            index_t emptySqCount = 0;
 
             FOR_INDEX(File, file) {
                 Square sq(file,rank);
 
                 if (fen.whiteSide.isOccupied(sq)) {
-                    if (blank_squares != 0) { out << blank_squares; blank_squares = 0; }
+                    if (emptySqCount != 0) { out << emptySqCount; emptySqCount = 0; }
                     out << static_cast<io::char_type>(std::toupper( fen.whiteSide.typeOf(sq).to_char() ));
                     continue;
                 }
 
                 if (fen.blackSide.isOccupied(~sq)) {
-                    if (blank_squares != 0) { out << blank_squares; blank_squares = 0; }
+                    if (emptySqCount != 0) { out << emptySqCount; emptySqCount = 0; }
                     out << fen.blackSide.typeOf(~sq).to_char();
                     continue;
                 }
 
-                ++blank_squares;
+                ++emptySqCount;
             }
 
-            if (blank_squares != 0) { out << blank_squares; }
+            if (emptySqCount != 0) { out << emptySqCount; }
             if (rank != Rank1) { out << '/'; }
         }
 
@@ -52,24 +52,24 @@ class WriteFenCastling {
 
     void insert(const PositionSide& side, Color color, ChessVariant chessVariant) {
         for (Pi pi : side.castlingRooks()) {
-            io::char_type castling_symbol;
+            io::char_type castlingSymbol;
 
             switch (chessVariant) {
                 case Chess960:
-                    castling_symbol = File{side.squareOf(pi)}.to_char();
+                    castlingSymbol = File{side.squareOf(pi)}.to_char();
                     break;
 
                 case Orthodox:
                 default:
-                    castling_symbol = CastlingRules::castlingSide(side.kingSquare(), side.squareOf(pi)).to_char();
+                    castlingSymbol = CastlingRules::castlingSide(side.kingSquare(), side.squareOf(pi)).to_char();
                     break;
             }
 
             if (color.is(White)) {
-                castling_symbol = static_cast<io::char_type>(std::toupper(castling_symbol));
+                castlingSymbol = static_cast<io::char_type>(std::toupper(castlingSymbol));
             }
 
-            castlingSet.insert(castling_symbol);
+            castlingSet.insert(castlingSymbol);
         }
     }
 
@@ -84,8 +84,8 @@ public:
             return out << '-';
         }
 
-        for (auto castling_symbol : fen.castlingSet) {
-            out << castling_symbol;
+        for (auto castlingSymbol : fen.castlingSet) {
+            out << castlingSymbol;
         }
 
         return out;

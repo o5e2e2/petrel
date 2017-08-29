@@ -21,45 +21,45 @@ Move Move::create(const PositionSide& side, Square moveFrom, Square moveTo) {
 std::ostream& Move::write(std::ostream& out, Move move, Color colorToMove, ChessVariant chessVariant) {
     if (move.isNull()) { return out << "0000"; }
 
-    Square move_from = move.from();
-    Square move_to = move.to();
+    Square moveFrom = move.from();
+    Square moveTo = move.to();
 
     if (colorToMove.is(Black)) {
-        move_from.flip();
-        move_to.flip();
+        moveFrom.flip();
+        moveTo.flip();
     }
 
     if (!move.isSpecial()) {
-        return out << move_from << move_to;
+        return out << moveFrom << moveTo;
     }
 
     if (move.from().is(Rank7)) {
         //the type of a promoted pawn piece encoded in place of to's rank
-        Square promoted_to(File(move_to), colorToMove.is(White)? Rank8 : Rank1);
-        return out << move_from << promoted_to << move.promoType();
+        Square promotedTo(File(moveTo), colorToMove.is(White)? Rank8 : Rank1);
+        return out << moveFrom << promotedTo << move.promoType();
     }
     if (move.from().is(Rank5)) {
         //en passant capture move internally encoded as pawn captures pawn
         assert (move.to().is(Rank5));
-        return out << move_from << Square{File{move_to}, colorToMove.is(White)? Rank6 : Rank3};
+        return out << moveFrom << Square{File{moveTo}, colorToMove.is(White)? Rank6 : Rank3};
     }
     if (move.from().is(Rank1)) {
         //castling move internally encoded as the rook captures the king
         switch (chessVariant) {
             case Orthodox:
-                if (move_from.is(FileA)) {
-                    return out << move_to << Square{FileC, Rank{move_to}};
+                if (moveFrom.is(FileA)) {
+                    return out << moveTo << Square{FileC, Rank{moveTo}};
                 }
                 else {
-                    assert (move_from.is(FileH));
-                    return out << move_to << Square{FileG, Rank{move_to}};
+                    assert (moveFrom.is(FileH));
+                    return out << moveTo << Square{FileG, Rank{moveTo}};
                 }
 
             case Chess960:
-                return out << move_to << move_from;
+                return out << moveTo << moveFrom;
         }
     }
 
     //should never happen
-    return out << '?' << move_from << move_to << '?';
+    return out << '?' << moveFrom << moveTo << '?';
 }

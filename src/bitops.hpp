@@ -60,17 +60,12 @@ constexpr T singleton(N n) { return static_cast<T>(static_cast<T>(1) << n); }
 
 //TRICK: "v & (v-1)" clears the lowest unset bit
 template <typename T>
-constexpr T without_lsb(T n) { return n & static_cast<T>(n-1); }
+constexpr T withoutLsb(T n) { return n & static_cast<T>(n-1); }
 
 template <typename T>
-constexpr bool is_singleton(T n) { return (n != 0) && (::without_lsb(n) == 0); }
+constexpr bool isSingleton(T n) { return (n != 0) && (::withoutLsb(n) == 0); }
 
 typedef int index_t; //small numbers [0..N) with a known upper bound
-
-template <typename T, int N = sizeof(T)>
-constexpr T* xor_ptr(T* p, index_t i) {
-    return reinterpret_cast<T*>(reinterpret_cast<uintptr_t>(p) ^ static_cast<uintptr_t>(i) * N);
-}
 
 #if defined __GNUC__
     INLINE index_t bsf(std::uint32_t b) {

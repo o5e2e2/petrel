@@ -20,10 +20,10 @@ public:
     constexpr BitSet (Index i) : BitSet{::singleton<_t>(i)} {}
     constexpr BitSet (typename Index::_t i) : BitSet{::singleton<_t>(i)} {}
 
-    constexpr _t without_lsb() const { return ::without_lsb(this->_v); }
+    constexpr _t withoutLsb() const { return ::withoutLsb(this->_v); }
 
     constexpr bool operator [] (Index i) const { return (self() & Self{i}).any(); }
-    bool isSingleton() const { assert (self().any()); return without_lsb() == 0; }
+    bool isSingleton() const { assert (self().any()); return withoutLsb() == 0; }
 
     constexpr Index smallestOne() const { return static_cast<typename Index::_t>(::bsf(this->_v)); }
     constexpr Index largestOne()  const { return static_cast<typename Index::_t>(::bsr(this->_v)); }
@@ -31,7 +31,7 @@ public:
     Index index() const { assert (self().any() && self().isSingleton()); return *self(); }
 
     constexpr Index operator * () const { return self().smallestOne(); }
-    Self& operator ++ () { *this = Self(without_lsb()); return self(); }
+    Self& operator ++ () { *this = Self(withoutLsb()); return self(); }
 
     constexpr Self begin() const { return self(); }
     constexpr Self end() const { return Self{}; }
