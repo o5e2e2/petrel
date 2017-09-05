@@ -55,9 +55,9 @@ friend class Position;
     bool setCastling(CastlingSide);
 
 public:
-    PositionSide ();
-    PositionSide (const PositionSide&) = delete;
-    PositionSide& operator = (const PositionSide&) = default;
+    PositionSide () {};
+    PositionSide (int);
+    PositionSide (const PositionSide&) = default;
 
     Zobrist generateZobrist() const; //calculate Zobrist key from scratch
 

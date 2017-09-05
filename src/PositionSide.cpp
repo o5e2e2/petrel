@@ -18,8 +18,7 @@
     }
 #endif
 
-PositionSide::PositionSide() : occupiedBb{}, piecesBb{}, pawnsBb{} {
-    attacks.clear();
+PositionSide::PositionSide(int) : attacks(0), occupiedBb{}, piecesBb{}, pawnsBb{} {
     types.clear();
     squares.clear();
     evaluation.clear();
