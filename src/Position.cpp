@@ -325,8 +325,8 @@ Zobrist Position::generateZobrist() const {
 }
 
 Zobrist Position::makeZobrist(Square from, Square to) const {
-    Zobrist mz = zobrist;
-    Zobrist oz = {};
+    Zobrist mz{zobrist};
+    Zobrist oz{0};
 
     if (OP.hasEnPassant()) {
         oz.clearEnPassant(OP.enPassantSquare());

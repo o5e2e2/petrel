@@ -19,7 +19,7 @@ namespace Perft {
         info.decrementQuota();
 
         if (window.draft <= 0) {
-            child.playMove(parent, from, to, {});
+            child.playMove(parent, from, to, Zobrist{0});
             auto n = child.getMoves().count();
             info.inc(PerftNodes, n);
             return false;

@@ -18,14 +18,14 @@
     }
 #endif
 
-PositionSide::PositionSide(int) : attacks(0), occupiedBb{}, piecesBb{}, pawnsBb{} {
+PositionSide::PositionSide(int) : attacks{0}, occupiedBb{}, piecesBb{}, pawnsBb{} {
     types.clear();
     squares.clear();
     evaluation.clear();
 }
 
 Zobrist PositionSide::generateZobrist() const {
-    Zobrist z = {};
+    Zobrist z{0};
 
     for (Pi pi : alivePieces()) {
         z.drop(typeOf(pi), squareOf(pi));

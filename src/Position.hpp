@@ -27,7 +27,7 @@ private:
 
 public:
     Position (const Position&) = default;
-    Position (int) {};
+    explicit Position (int) : side{PositionSide(0), PositionSide(0)}, zobrist{0} {}
 
     VectorPiMask alivePieces() const { return side[My].alivePieces(); }
     Square squareOf(Pi pi) const { return side[My].squareOf(pi); }

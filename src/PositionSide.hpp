@@ -56,7 +56,7 @@ friend class Position;
 
 public:
     PositionSide () {};
-    PositionSide (int);
+    explicit PositionSide (int);
     PositionSide (const PositionSide&) = default;
 
     Zobrist generateZobrist() const; //calculate Zobrist key from scratch

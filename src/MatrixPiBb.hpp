@@ -11,7 +11,7 @@ class MatrixPiBb {
 
 public:
     MatrixPiBb () {};
-    MatrixPiBb (int) { clear(); }
+    explicit MatrixPiBb (int) { clear(); }
 
     MatrixPiBb (const MatrixPiBb& from) {
         FOR_INDEX(Rank, rank) {
