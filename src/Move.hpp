@@ -4,8 +4,6 @@
 #include "typedefs.hpp"
 #include "Square.hpp"
 
-class PositionSide;
-
 /**
  * Internal move is packed to 12 bits and connected with the position from it was made
  * Independent move is extended to 13 bits (extra flag bit to mark castling, promotion or en passant move)
@@ -41,7 +39,6 @@ public:
     constexpr Square to()   const { return static_cast<Square::_t>(_v >>ToShift & Square::Mask); }
     constexpr PromoType promoType() const { return PromoType{to()}; }
 
-    static Move create(const PositionSide&, Square, Square);
     static std::ostream& write(std::ostream&, Move, Color, ChessVariant = Orthodox);
 };
 
