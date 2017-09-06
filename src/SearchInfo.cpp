@@ -17,7 +17,7 @@ bool SearchInfo::checkQuota(const SearchThread& searchThread) {
         return false;
     }
 
-    assert (nodesQuota == 0);
+    nodes -= nodesQuota;
 
     this->readyok();
 
