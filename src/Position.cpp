@@ -306,7 +306,7 @@ void Position::playMove(const Position& parent, Square from, Square to, Zobrist 
 }
 
 void Position::playMove(Square from, Square to) {
-    zobrist = makeZobrist(from, to);
+    zobrist = createZobrist(from, to);
     PositionSide::swap(MY, OP);
 
     //the position just swapped its sides, so we make the move for the Op
@@ -324,7 +324,7 @@ Zobrist Position::generateZobrist() const {
     return Zobrist(mz, oz);
 }
 
-Zobrist Position::makeZobrist(Square from, Square to) const {
+Zobrist Position::createZobrist(Square from, Square to) const {
     Zobrist mz{zobrist};
     Zobrist oz{0};
 

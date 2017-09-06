@@ -25,7 +25,7 @@ namespace Perft {
             return false;
         }
 
-        Zobrist zobrist = parent.makeZobrist(from, to);
+        Zobrist zobrist = parent.createZobrist(from, to);
         auto origin = window.control.tt().lookup(zobrist);
 
         {
