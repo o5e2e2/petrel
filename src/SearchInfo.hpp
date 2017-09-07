@@ -35,7 +35,15 @@ public:
     void setNodesLimit(node_count_t n) { nodesLimit = n; }
 
     void decrementQuota() { --nodesQuota; }
-    bool checkQuota(const SearchThread&);
+
+    bool refreshQuota(const SearchThread&);
+
+    bool checkQuota(const SearchThread& searchThread) {
+        if (nodesQuota > 0) {
+            return false;
+        }
+        return refreshQuota(searchThread);
+    }
 
     void clear();
     void clearNodes() { _v = {0, 0, 0, 0, 0}; }

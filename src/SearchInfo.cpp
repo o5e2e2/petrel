@@ -12,11 +12,7 @@ void SearchInfo::clear() {
 }
 
 //callbacks from search thread
-bool SearchInfo::checkQuota(const SearchThread& searchThread) {
-    if (nodesQuota > 0) {
-        return false;
-    }
-
+bool SearchInfo::refreshQuota(const SearchThread& searchThread) {
     nodes -= nodesQuota;
 
     this->readyok();
@@ -25,13 +21,13 @@ bool SearchInfo::checkQuota(const SearchThread& searchThread) {
         return true;
     }
 
-    if (nodesLimit >= nodes + TickLimit) {
-        nodesQuota = TickLimit;
-        nodes += nodesQuota;
-        return false;
-    }
-
     if (nodesLimit > nodes) {
+        if (nodesLimit >= nodes + TickLimit) {
+            nodesQuota = TickLimit;
+            nodes += nodesQuota;
+            return false;
+        }
+
         nodesQuota = static_cast<quota_t>(nodesLimit - nodes);
         nodes += nodesQuota;
         return false;
