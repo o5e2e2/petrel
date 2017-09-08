@@ -46,10 +46,10 @@ DEPS := $(patsubst %.o, %.d, $(OBJECTS))
 all: $(builddir)/$(TARGET)
 
 test: all
-	$(testdir)/expect.sh $(builddir)/$(TARGET) $(testdir)/$(TARGET).rc
+	$(testdir)/expect.sh $(builddir)/$(TARGET) $(testdir)/test.rc
 
 test-hash: all
-	$(testdir)/expect.sh $(builddir)/$(TARGET) $(testdir)/hashtable-test.rc
+	$(testdir)/expect.sh $(builddir)/$(TARGET) $(testdir)/test-hash.rc
 
 clean:
 	$(RM) -r *.o *.gch *.d $(debugdir) $(releasedir)

@@ -3,8 +3,10 @@
 #include "SearchInfo.hpp"
 
 bool NodePerftLeaf::visit(Square from, Square to) {
-    playMove(parent, from, to, Zobrist{0});
+    CUT ( control.checkQuota() );
     control.info.decrementQuota();
+
+    playMove(parent, from, to, Zobrist{0});
     control.info.inc(PerftNodes, getMoves().count());
     return false;
 }
