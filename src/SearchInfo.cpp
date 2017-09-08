@@ -47,7 +47,6 @@ void SearchInfo::report_perft_depth(depth_t draft) {
 void SearchInfo::report_perft_divide(Move move) {
     currmove = move;
     currmovenumber++;
-    _v[PerftDivideNodes] = _v[PerftNodes];
-
     this->info_currmove();
+    _v[PerftDivideNodes] = _v[PerftNodes];
 }
