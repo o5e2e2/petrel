@@ -25,9 +25,9 @@ private:
     void _set(Pi pi, storage_type v) { byte[pi] = v; }
 
 public:
-    VectorPiEnum () : _v(::vectorOfAll[None]) {}
-    explicit VectorPiEnum (_t v) : _v(v) {}
-    explicit VectorPiEnum (element_type e) : _v(::vectorOfAll[e]) {}
+    constexpr VectorPiEnum () : _v(::vectorOfAll[None]) {}
+    constexpr explicit VectorPiEnum (_t v) : _v(v) {}
+    constexpr explicit VectorPiEnum (element_type e) : _v(::vectorOfAll[e]) {}
     constexpr explicit operator _t () const { return _v; }
 
     VectorPiMask notEmpty() const {

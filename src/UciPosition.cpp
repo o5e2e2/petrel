@@ -159,7 +159,8 @@ Move UciPosition::readMove(std::istream& in) const {
 }
 
 void UciPosition::limitMoves(std::istream& in) {
-    MatrixPiBb searchMoves(0);
+    MatrixPiBb searchMoves;
+    searchMoves.clear();
     index_t limit = 0;
 
     while (in) {

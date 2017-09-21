@@ -16,10 +16,10 @@ private:
     EvalStage stage;
 
 public:
-    Evaluation () : pst{0}, stage(Middlegame) {}
-    Evaluation (const Evaluation& e) = default;
-    explicit operator _t () const { return pst; }
-    void clear() { *this = {}; }
+    constexpr Evaluation () : pst{0}, stage(Middlegame) {}
+    Evaluation (const Evaluation&) = default;
+
+    constexpr explicit operator _t () const { return pst; }
 
     void setStage(EvalStage evalStage, Square kingFrom) {
         if (stage == evalStage) {

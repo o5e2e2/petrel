@@ -18,12 +18,6 @@
     }
 #endif
 
-PositionSide::PositionSide(int) : attacks{0}, occupiedBb{}, piecesBb{}, pawnsBb{} {
-    types.clear();
-    squares.clear();
-    evaluation.clear();
-}
-
 Zobrist PositionSide::generateZobrist() const {
     Zobrist z{0};
 
@@ -36,6 +30,10 @@ Zobrist PositionSide::generateZobrist() const {
     }
 
     return z;
+}
+
+void PositionSide::clear() {
+    attacks.clear();
 }
 
 void PositionSide::swap(PositionSide& my, PositionSide& op) {

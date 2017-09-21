@@ -20,10 +20,10 @@ private:
     void clear(Index ty, Square from) { drop(ty, from); }
 
 public:
-    constexpr explicit Zobrist (int) : _v{0} {}
     constexpr explicit Zobrist (_t z) : _v{z} {}
-    Zobrist (Arg my, Arg op) : _v{ my._v ^ ::bswap(op._v) } {}
     constexpr operator const _t& () const { return _v; }
+
+    Zobrist (Arg my, Arg op) : _v{ my._v ^ ::bswap(op._v) } {}
 
     void drop(PieceType::_t ty, Square to) { drop(Index{ty}, to); }
     void clear(PieceType::_t ty, Square from) { drop(ty, from); }

@@ -17,7 +17,7 @@ class UciPosition : public PositionMoves {
     std::istream& setEnPassant(std::istream&);
 
 public:
-    UciPosition() : PositionMoves(0), colorToMove{White}, chessVariant{Orthodox} {}
+    UciPosition() : PositionMoves{}, colorToMove{White}, chessVariant{Orthodox} {}
 
     ChessVariant getChessVariant() const { return chessVariant; }
     Color getColorToMove() const { return colorToMove; }

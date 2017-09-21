@@ -24,9 +24,12 @@ private:
     template <Side::_t> void playCastling(Pi, Square, Square);
     template <Side::_t> void playMove(Square, Square);
 
+protected:
+    constexpr const PositionSide& getSide(Side si) const { return side[si]; }
+
 public:
+    constexpr explicit Position () : side(), zobrist{0} {}
     Position (const Position&) = default;
-    explicit Position (int) : side{PositionSide(0), PositionSide(0)}, zobrist{0} {}
 
     VectorPiMask alivePieces() const { return side[My].alivePieces(); }
     Square squareOf(Pi pi) const { return side[My].squareOf(pi); }
@@ -40,6 +43,7 @@ public:
     void playMove(Square, Square);
 
     //initial position setup
+    void clear();
     bool drop(Side, PieceType, Square);
     bool setCastling(Side si, File fi) { return side[si].setCastling(fi); }
     bool setCastling(Side si, CastlingSide cs) { return side[si].setCastling(cs); }

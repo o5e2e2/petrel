@@ -10,6 +10,11 @@
 #define OP side[Op]
 #define OCCUPIED side[My].occupied()
 
+void Position::clear() {
+    MY.clear();
+    OP.clear();
+}
+
 bool Position::setup() {
     setStage<My>();
     setStage<Op>();

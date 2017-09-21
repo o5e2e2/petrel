@@ -70,7 +70,8 @@ bool FenBoard::drop(Color color, PieceType ty, Square sq) {
 }
 
 bool FenBoard::setPosition(Position& position, Color colorToMove) {
-    Position pos{0};
+    Position pos;
+    pos.clear();
 
     //TRICK: kings should be placed before any opponent's non king pieces
     FOR_INDEX(Color, color) {

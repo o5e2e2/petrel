@@ -12,7 +12,7 @@ protected:
     Node& parent; //virtual
     SearchControl& control;
 
-    Node (Node& p) : PositionMoves(0), parent(p), control(p.control) {}
+    Node (Node& p) : PositionMoves(), parent(p), control(p.control) {}
 
 public:
     Node (const PositionMoves& pm, SearchControl& c) : PositionMoves(pm), parent(*this), control(c) {}

@@ -30,7 +30,8 @@ class PositionSide {
     bool setCastling(Pi);
     void setLeaperAttack(Pi, PieceType, Square);
 
-friend class Position;
+//friend class Position;
+public:
     static void swap(PositionSide&, PositionSide&);
 
     void move(Pi, PieceType, Square, Square);
@@ -51,6 +52,7 @@ friend class Position;
     void setStage(EvalStage opStage) { evaluation.setStage(opStage, kingSquare()); }
 
     //used only during initial position setup
+    void clear();
     void drop(Pi, PieceType, Square);
     bool setCastling(File);
     bool setCastling(CastlingSide);
@@ -58,8 +60,7 @@ friend class Position;
     Move createMove(Square, Square) const;
 
 public:
-    PositionSide () {};
-    explicit PositionSide (int);
+    constexpr PositionSide () = default;
     PositionSide (const PositionSide&) = default;
 
     Zobrist generateZobrist() const; //calculate Zobrist key from scratch
