@@ -4,6 +4,7 @@
 #include "SearchControl.hpp"
 #include "SearchInfo.hpp"
 #include "SearchLimit.hpp"
+#include "Move.hpp"
 
 bool NodeRoot::searchDepth() {
     MatrixPiBb _moves = cloneMoves();
@@ -27,7 +28,7 @@ bool NodeRoot::searchDepth() {
             }
 
             if (isDivide) {
-                Move move = createMove(from, to);
+                Move move = Move::createMove(getSide(My), from, to);
                 control.info.report_perft_divide(move);
             }
         }

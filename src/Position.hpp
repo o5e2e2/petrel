@@ -33,7 +33,6 @@ public:
 
     VectorPiMask alivePieces() const { return side[My].alivePieces(); }
     Square squareOf(Pi pi) const { return side[My].squareOf(pi); }
-    Move createMove(Square from, Square to) const { return side[My].createMove(from, to); }
 
     Zobrist generateZobrist() const;
     Zobrist createZobrist(Square, Square) const;

@@ -3,7 +3,6 @@
 
 #include "Evaluation.hpp"
 #include "MatrixPiBb.hpp"
-#include "Move.hpp"
 #include "VectorPiType.hpp"
 #include "VectorPiSquare.hpp"
 #include "Zobrist.hpp"
@@ -56,8 +55,6 @@ public:
     void drop(Pi, PieceType, Square);
     bool setCastling(File);
     bool setCastling(CastlingSide);
-
-    Move createMove(Square, Square) const;
 
 public:
     constexpr PositionSide () = default;

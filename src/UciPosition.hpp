@@ -4,6 +4,7 @@
 #include "io.hpp"
 #include "typedefs.hpp"
 #include "PositionMoves.hpp"
+#include "Move.hpp"
 
 class UciPosition : public PositionMoves {
     Color colorToMove; //root position color for moves long algebraic format output
