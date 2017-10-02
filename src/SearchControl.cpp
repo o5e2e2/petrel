@@ -15,7 +15,6 @@ void SearchControl::clear() {
         delete child;
     }
     info.clear();
-    transpositionTable.clear();
 }
 
 void SearchControl::nextIteration() {
@@ -27,7 +26,7 @@ bool SearchControl::checkQuota() {
 }
 
 void SearchControl::go(const PositionMoves& rootMoves, const SearchLimit& searchLimit) {
-    info.clear();
+    clear();
     info.setNodesLimit( searchLimit.getNodes() );
 
     auto draft = searchLimit.getDepth();

@@ -36,6 +36,7 @@ void Uci::ucinewgame() {
     SHOULD_BE_READY;
 
     uciControl.clear();
+    uciControl.tt().clear();
 
     startpos();
 }

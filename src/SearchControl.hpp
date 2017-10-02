@@ -34,6 +34,8 @@ private:
 
 public:
     SearchControl (SearchInfo&);
+   ~SearchControl () { stop(); clear(); }
+
     void clear();
 
     bool isReady() const { return searchThread.isReady(); }
