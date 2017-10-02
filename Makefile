@@ -1,32 +1,31 @@
 #debug = yes
 
-TARGET = petrel
+GIT_DATE = $(shell git log -1 --date=short --pretty=format:%cd)
+GIT_HASH = $(shell git log -1 --date=short --pretty=format:%h)
+GIT_ORIGIN = $(shell git remote get-url origin)
 
-GIT_DATE := $(shell git log -1 --date=short --pretty=format:%cd)
-GIT_HASH := $(shell git log -1 --date=short --pretty=format:%h)
-GIT_ORIGIN := $(shell git remote get-url origin)
-
-srcdir ?= ./src
-debugdir = ./debug
-releasedir = ./release
-testdir = ./test
+SRC_DIR ?= ./src
+DEBUG_DIR ?= ./debug
+RELEASE_DIR ?= ./release
+TEST_DIR ?= ./test
 
 ifeq ($(debug),yes)
-	builddir ?= $(debugdir)
+	BUILD_DIR = $(DEBUG_DIR)
 	CXXFLAGS += -DDEBUG -g
 else
-	builddir ?= $(releasedir)
+	BUILD_DIR = $(RELEASE_DIR)
 	CXXFLAGS += -DNDEBUG
 endif
 
+TARGET ?= $(BUILD_DIR)/petrel
+EXPECT ?= $(TEST_DIR)/expect.sh
+
 LIBS = -pthread
 OPTIONS  = -std=c++11 -mssse3 -march=native -mtune=native
-OPTIONS += -finline-functions -funroll-all-loops
+OPTIONS += -fno-rtti -fno-common -fno-exceptions
 
-OPTIMIZATIONS = -Ofast -flto -fno-rtti -fno-common
-OPTIMIZATIONS += -fno-exceptions
+OPTIMIZATIONS = -Ofast -flto -finline-functions -funroll-all-loops
 WARNINGS += -pedantic -Wall -Wextra -Wuninitialized -Wpointer-arith -Wcast-qual -Wcast-align
-#WARNINGS += -Wsign-conversion
 WARNINGS += -Wconversion -Wshadow
 
 CXXFLAGS += $(OPTIONS) $(OPTIMIZATIONS) $(WARNINGS)
@@ -34,36 +33,36 @@ CXXFLAGS += -DGIT_DATE=\"$(GIT_DATE)\" -DGIT_HASH=\"$(GIT_HASH)\" -DGIT_ORIGIN=\
 LDFLAGS += $(LIBS) $(OPTIMIZATIONS) -Wl,--no-as-needed
 
 HEADER = StdAfx.hpp
-PRECOMP := $(builddir)/$(HEADER).gch
-HEADER := $(srcdir)/$(HEADER)
+PRECOMP = $(BUILD_DIR)/$(HEADER).gch
+HEADER_SRC = $(SRC_DIR)/$(HEADER)
 
-SOURCES := $(wildcard $(srcdir)/*.cpp)
-OBJECTS := $(patsubst $(srcdir)/%.cpp, $(builddir)/%.o, $(SOURCES))
-DEPS := $(patsubst %.o, %.d, $(OBJECTS))
+SOURCES = $(wildcard $(SRC_DIR)/*.cpp)
+OBJECTS = $(patsubst $(SRC_DIR)/%.cpp, $(BUILD_DIR)/%.o, $(SOURCES))
+DEPS = $(patsubst %.o, %.d, $(OBJECTS))
 
 .PHONY: all test test-hash clean
 
-all: $(builddir)/$(TARGET)
+all: $(TARGET)
 
 test: all
-	$(testdir)/expect.sh $(builddir)/$(TARGET) $(testdir)/test.rc
+	$(EXPECT) $(TARGET) $(TEST_DIR)/test.rc
 
 test-hash: all
-	$(testdir)/expect.sh $(builddir)/$(TARGET) $(testdir)/test-hash.rc
+	$(EXPECT) $(TARGET) $(TEST_DIR)/test-hash.rc
 
 clean:
-	$(RM) -r *.o *.gch *.d $(debugdir) $(releasedir)
+	$(RM) -r $(DEBUG_DIR) $(RELEASE_DIR)
 
-$(builddir)/$(TARGET): $(PRECOMP) $(OBJECTS)
+$(TARGET): $(PRECOMP) $(OBJECTS)
 	$(CXX) -o $@ $(LDFLAGS) $(OBJECTS)
 
-$(builddir)/%.o: $(srcdir)/%.cpp $(PRECOMP)
-	$(CXX) $< -c -o $@ -MMD $(CXXFLAGS) -Winvalid-pch -include $(HEADER)
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp $(PRECOMP)
+	$(CXX) -c -o $@ $< -MMD $(CXXFLAGS) -Winvalid-pch -include $(HEADER_SRC)
 
-$(PRECOMP): $(HEADER) | $(builddir)
-	$(CXX) $< -o $@ -MD $(CXXFLAGS)
+$(PRECOMP): $(HEADER_SRC) | $(BUILD_DIR)
+	$(CXX) -o $@ $< -MD $(CXXFLAGS)
 
-$(builddir):
+$(BUILD_DIR):
 	mkdir -p $@
 
 -include $(DEPS)
