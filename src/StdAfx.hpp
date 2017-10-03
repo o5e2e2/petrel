@@ -2,12 +2,26 @@
 #define STD_AFX_HPP
 
 #define USE_PRECOMPILED_HEADERS
+
 #if defined USE_PRECOMPILED_HEADERS
 
-#include "io.hpp"
-#include "bitops.hpp"
-#include "bitops128.hpp"
-#include "typedefs.hpp"
+#include <array>
+#include <atomic>
+#include <cctype>
+#include <chrono>
+#include <condition_variable>
+#include <cstdint>
+#include <cstdlib>
+#include <forward_list>
+#include <immintrin.h>
+#include <iomanip>
+#include <iostream>
+#include <limits>
+#include <mutex>
+#include <set>
+#include <sstream>
+#include <thread>
 
 #endif
+
 #endif

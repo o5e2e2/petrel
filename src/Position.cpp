@@ -1,5 +1,3 @@
-#include <utility>
-
 #include "Position.hpp"
 #include "BetweenSquares.hpp"
 #include "CastlingRules.hpp"
