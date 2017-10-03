@@ -15,12 +15,14 @@ std::size_t getAvailableMemory() {
 }
 
 #else
+
 #include <unistd.h>
 std::size_t getAvailableMemory() {
-    auto pages     = ::sysconf(_SC_AVPHYS_PAGES);
-    auto page_size = ::sysconf(_SC_PAGE_SIZE);
-    return static_cast<std::size_t>(pages) * static_cast<std::size_t>(page_size);
+    std::size_t pages     = ::sysconf(_SC_AVPHYS_PAGES);
+    std::size_t page_size = ::sysconf(_SC_PAGE_SIZE);
+    return pages * page_size;
 }
+
 #endif
 
 void* allocateAligned(std::size_t size, std::size_t alignment) {
