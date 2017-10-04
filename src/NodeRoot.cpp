@@ -19,12 +19,10 @@ bool NodeRoot::searchDepth() {
                 control.info.inc(PerftNodes, 1);
             }
             else if (draft == 1) {
-                NodePerftLeaf child(*this);
-                CUT (child.visit(from, to));
+                CUT ( NodePerftLeaf(*this).visit(from, to) );
             }
             else {
-                NodePerft child(*this);
-                CUT (child.visit(from, to));
+                CUT ( NodePerft(*this).visit(from, to) );
             }
 
             if (isDivide) {
@@ -38,7 +36,7 @@ bool NodeRoot::searchDepth() {
     return false;
 }
 
-bool NodeRoot::visitChildren(Node&) {
+bool NodeRoot::visitChildren() {
     if (draft > 0) {
         searchDepth();
     }

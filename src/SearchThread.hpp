@@ -7,13 +7,12 @@ class Node;
 
 class SearchThread : public ThreadControl {
     Node* parent;
-    Node* child;
 
     void thread_body() override;
 
 public:
-    SearchThread () : parent(nullptr), child(nullptr) {}
-    void set(Node* parent, Node* child);
+    SearchThread () : parent(nullptr) {}
+    void set(Node* parent);
 };
 
 #endif

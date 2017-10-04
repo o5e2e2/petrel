@@ -1,15 +1,15 @@
 #include "Node.hpp"
 
-bool Node::visitChildren(Node& child) {
-    MatrixPiBb& _moves = getMoves();
+bool Node::visitChildren() {
+    MatrixPiBb& _moves = parent.getMoves();
 
-    for (Pi pi : alivePieces()) {
-        Square from = squareOf(pi);
+    for (Pi pi : parent.alivePieces()) {
+        Square from = parent.squareOf(pi);
 
         for (Square to : _moves[pi]) {
             _moves.clear(pi, to);
 
-            CUT (child.visit(from, to));
+            CUT (visit(from, to));
         }
     }
 

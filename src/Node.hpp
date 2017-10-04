@@ -19,7 +19,7 @@ public:
     virtual ~Node() {}
 
     virtual bool visit(Square, Square) { return false; };
-    virtual bool visitChildren(Node&);
+    virtual bool visitChildren();
 };
 
 #endif

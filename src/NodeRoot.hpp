@@ -8,7 +8,7 @@ class NodeRoot : public NodeDeep {
 public:
     bool isDivide;
     NodeRoot (const PositionMoves& pm, SearchControl& c, depth_t d, bool b) : NodeDeep(pm, c, d), isDivide(b) {}
-    bool visitChildren(Node&) override;
+    bool visitChildren() override;
 };
 
 #endif
