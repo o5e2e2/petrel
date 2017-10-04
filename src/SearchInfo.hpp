@@ -34,12 +34,11 @@ public:
     node_count_t getNodes() const { return nodes - nodesQuota; }
     void setNodesLimit(node_count_t n) { nodesLimit = n; }
 
-    void decrementQuota() { --nodesQuota; }
-
     bool refreshQuota(const SearchThread&);
 
-    bool checkQuota(const SearchThread& searchThread) {
+    bool countNode(const SearchThread& searchThread) {
         if (nodesQuota > 0) {
+            --nodesQuota;
             return false;
         }
         return refreshQuota(searchThread);

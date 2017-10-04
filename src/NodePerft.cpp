@@ -8,8 +8,7 @@
 bool NodePerft::visit(Square from, Square to) {
     auto& info = control.info;
 
-    CUT ( control.checkQuota() );
-    control.info.decrementQuota();
+    CUT ( control.countNode() );
 
     zobrist = parent.createZobrist(from, to);
     auto origin = control.tt().lookup(zobrist);

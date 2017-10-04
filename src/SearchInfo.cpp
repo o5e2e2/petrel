@@ -21,19 +21,21 @@ bool SearchInfo::refreshQuota(const SearchThread& searchThread) {
         return true;
     }
 
-    if (nodesLimit > nodes) {
-        if (nodesLimit >= nodes + TickLimit) {
-            nodesQuota = TickLimit;
-            nodes += nodesQuota;
-            return false;
-        }
-
-        nodesQuota = static_cast<quota_t>(nodesLimit - nodes);
-        nodes += nodesQuota;
-        return false;
+    if (nodesLimit <= nodes) {
+        return true;
     }
 
-    return true;
+    if (nodesLimit - nodes >= TickLimit) {
+        nodesQuota = TickLimit;
+    }
+    else {
+        nodesQuota = static_cast<quota_t>(nodesLimit - nodes);
+    }
+
+    nodes += nodesQuota;
+
+    --nodesQuota; //count current node
+    return false;
 }
 
 void SearchInfo::report_perft_depth(depth_t draft) {

@@ -21,8 +21,8 @@ void SearchControl::nextIteration() {
     transpositionTable.nextAge();
 }
 
-bool SearchControl::checkQuota() {
-    return info.checkQuota(searchThread);
+bool SearchControl::countNode() {
+    return info.countNode(searchThread);
 }
 
 void SearchControl::go(const PositionMoves& rootMoves, const SearchLimit& searchLimit) {

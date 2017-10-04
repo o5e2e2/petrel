@@ -47,7 +47,7 @@ public:
     void go(const PositionMoves&, const SearchLimit&);
 
     //callbacks from search thread
-    bool checkQuota();
+    bool countNode();
     void nextIteration();
 
 };
