@@ -8,7 +8,7 @@ void SearchInfo::clear() {
     nodesQuota = 0;
     currmovenumber = 0;
     _bestmove = {};
-    clearNodes();
+    _v = {0, 0, 0, 0, 0};
 }
 
 //callbacks from search thread

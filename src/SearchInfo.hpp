@@ -45,7 +45,6 @@ public:
     }
 
     void clear();
-    void clearNodes() { _v = {0, 0, 0, 0, 0}; }
 
     void report_perft_divide(Move);
     void report_perft_depth(depth_t);

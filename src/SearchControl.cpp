@@ -8,10 +8,12 @@
 SearchControl::SearchControl (SearchInfo& i) : info(i), root(nullptr) { clear(); }
 
 void SearchControl::clear() {
+    info.clear();
+
     if (root) {
         delete root;
+        root = nullptr;
     }
-    info.clear();
 }
 
 void SearchControl::nextIteration() {
