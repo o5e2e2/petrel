@@ -15,22 +15,26 @@ void SearchInfo::clear() {
 bool SearchInfo::refreshQuota(const SearchThread& searchThread) {
     nodes -= nodesQuota;
 
-    this->readyok();
-
-    if (searchThread.isStopped()) {
-        return true;
-    }
-
-    if (nodesLimit <= nodes) {
-        return true;
-    }
-
-    if (nodesLimit - nodes >= TickLimit) {
+    auto nodesRemaining = nodesLimit - nodes;
+    if (TickLimit <= nodesRemaining) {
         nodesQuota = TickLimit;
     }
-    else {
-        nodesQuota = static_cast<quota_t>(nodesLimit - nodes);
+    else if (nodesRemaining > 0) {
+        nodesQuota = static_cast<quota_t>(nodesRemaining);
     }
+    else {
+        nodesLimit = nodes;
+        nodesQuota = 0;
+        return true;
+    }
+
+    if (searchThread.isStopped()) {
+        nodesLimit = nodes;
+        nodesQuota = 0;
+        return true;
+    }
+
+    this->readyok();
 
     nodes += nodesQuota;
 
