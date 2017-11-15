@@ -34,8 +34,10 @@ Clock::_t SearchLimit::getThinkingTime() const {
     return std::min(time[My], average);
 }
 
-void SearchLimit::readUci(std::istream& command, UciPosition* uciPosition) {
-    Color colorToMove = uciPosition->getColorToMove();
+void SearchLimit::readUci(std::istream& command, const UciPosition& uciPosition, UciPosition* resultPosition) {
+    *resultPosition = uciPosition;
+
+    Color colorToMove = uciPosition.getColorToMove();
     Side white = colorToMove.is(White)? My : Op;
     Side black = colorToMove.is(Black)? My : Op;
 
@@ -55,7 +57,7 @@ void SearchLimit::readUci(std::istream& command, UciPosition* uciPosition) {
         else if (io::next(command, "infinite")) { infinite = true; }
         else if (io::next(command, "perft"))    { perft = true; }
         else if (io::next(command, "divide"))   { divide = true; }
-        else if (io::next(command, "searchmoves")) { uciPosition->limitMoves(command); }
+        else if (io::next(command, "searchmoves")) { resultPosition->limitMoves(command); }
         else { break; }
     }
 }

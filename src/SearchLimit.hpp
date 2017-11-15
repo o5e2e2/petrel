@@ -37,7 +37,7 @@ public:
 
     Clock::_t getThinkingTime() const;
 
-    void readUci(std::istream&, UciPosition*);
+    void readUci(std::istream&, const UciPosition&, UciPosition*);
 };
 
 #endif

@@ -1,5 +1,4 @@
 #include "Uci.hpp"
-#include "SearchLimit.hpp"
 
 #define SHOULD_BE_READY  if (!uciControl.isReady()) { io::fail_rewind(command); return; }
 
@@ -86,10 +85,7 @@ void Uci::startpos() {
 
 void Uci::go() {
     SHOULD_BE_READY;
-
-    SearchLimit searchLimit;
-    searchLimit.readUci(command, &uciPosition);
-    uciControl.go(uciPosition, searchLimit);
+    uciControl.go(command, uciPosition);
 }
 
 #undef SHOULD_BE_READY

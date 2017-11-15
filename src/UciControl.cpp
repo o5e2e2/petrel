@@ -3,6 +3,11 @@
 
 UciControl::UciControl (UciOutput& o) : SearchControl(o) {}
 
+void UciControl::go(std::istream& command, const UciPosition& uciPosition) {
+    searchLimit.readUci(command, uciPosition, &position);
+    SearchControl::go(position, searchLimit);
+}
+
 void UciControl::readUciHash(std::istream& command) {
     HashMemory::size_t quantity = 0;
     if (!(command >> quantity)) {
