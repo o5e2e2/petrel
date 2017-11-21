@@ -37,7 +37,7 @@ void Uci::ucinewgame() {
     uciControl.clear();
     uciControl.tt().clear();
 
-    startpos();
+    uciPosition.setStartpos();
 }
 
 void Uci::setoption() {
@@ -64,23 +64,10 @@ void Uci::setoption() {
 }
 
 void Uci::position() {
-    if (next("")) {
-        uciOutput.info_fen();
-        return;
-    }
+    if (next("")) { uciOutput.info_fen(); return; }
 
     SHOULD_BE_READY;
-
-    if (next("startpos")) { startpos(); }
-    if (next("fen")) { command >> uciPosition; }
-
-    next("moves");
-    uciPosition.playMoves(command);
-}
-
-void Uci::startpos() {
-    std::istringstream startpos{"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"};
-    startpos >> uciPosition;
+    uciPosition.readUci(command);
 }
 
 void Uci::go() {

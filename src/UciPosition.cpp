@@ -272,12 +272,12 @@ std::istream& UciPosition::setEnPassant(std::istream& in) {
     return in;
 }
 
-std::istream& operator >> (std::istream& in, UciPosition& pos) {
-    pos.setBoard(in);
-    pos.setCastling(in);
-    pos.setEnPassant(in);
-    pos.zobrist = pos.generateZobrist();
-    pos.generateMoves<My>();
+void UciPosition::readFen(std::istream& in) {
+    setBoard(in);
+    setCastling(in);
+    setEnPassant(in);
+    zobrist = generateZobrist();
+    generateMoves<My>();
 
     if (in) {
         unsigned _fifty;
@@ -285,8 +285,19 @@ std::istream& operator >> (std::istream& in, UciPosition& pos) {
         in >> _fifty >> _moves;
         in.clear(); //ignore missing optional 'fifty' and 'moves' fen fields
     }
+}
 
-    return in;
+void UciPosition::setStartpos() {
+    std::istringstream startpos{"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"};
+    readFen(startpos);
+}
+
+void UciPosition::readUci(std::istream& command) {
+    if (io::next(command, "startpos")) { setStartpos(); }
+    if (io::next(command, "fen")) { readFen(command); }
+
+    io::next(command, "moves");
+    playMoves(command);
 }
 
 #undef MY
