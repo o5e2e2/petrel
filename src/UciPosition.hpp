@@ -23,11 +23,11 @@ public:
     UciPosition() : PositionMoves{}, colorToMove{White}, chessVariant{Orthodox} {}
 
     ChessVariant getChessVariant() const { return chessVariant; }
+    void setChessVariant(ChessVariant v) { chessVariant = v; }
+
     Color getColorToMove() const { return colorToMove; }
 
     const PositionSide& getSide(Color color) const { return side[colorToMove.is(color)? My : Op];}
-
-    void setVariant(ChessVariant v) { chessVariant = v; }
 
     void readUci(std::istream&);
     void setStartpos();

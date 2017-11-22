@@ -46,8 +46,8 @@ void Uci::setoption() {
     if (next("UCI_Chess960")) {
         next("value");
 
-        if (next("true"))  { uciPosition.setVariant(Chess960); return; }
-        if (next("false")) { uciPosition.setVariant(Orthodox); return; }
+        if (next("true"))  { uciPosition.setChessVariant(Chess960); return; }
+        if (next("false")) { uciPosition.setChessVariant(Orthodox); return; }
 
         io::fail_rewind(command);
         return;
