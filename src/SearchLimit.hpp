@@ -4,10 +4,11 @@
 #include "io.hpp"
 #include "typedefs.hpp"
 #include "Clock.hpp"
-
-class UciPosition;
+#include "UciPosition.hpp"
 
 class SearchLimit {
+    UciPosition positionMoves;
+
     Side::array<Clock::_t> time;
     Side::array<Clock::_t> inc;
 
@@ -35,9 +36,11 @@ public:
     node_count_t getNodes()  const { return nodes; }
     bool         getDivide() const { return divide; }
 
+    const UciPosition& getPositionMoves() const { return positionMoves; }
+
     Clock::_t getThinkingTime() const;
 
-    void readUci(std::istream&, const UciPosition&, UciPosition*);
+    void readUci(std::istream&, const UciPosition&);
 };
 
 #endif

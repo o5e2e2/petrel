@@ -72,7 +72,8 @@ void Uci::position() {
 
 void Uci::go() {
     SHOULD_BE_READY;
-    uciControl.go(command, uciPosition);
+    searchLimit.readUci(command, uciPosition);
+    uciControl.go(searchLimit);
 }
 
 #undef SHOULD_BE_READY

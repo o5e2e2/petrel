@@ -24,12 +24,12 @@ bool SearchControl::countNode() {
     return info.countNode(searchThread);
 }
 
-void SearchControl::go(const PositionMoves& rootMoves, const SearchLimit& searchLimit) {
+void SearchControl::go(const SearchLimit& searchLimit) {
     clear();
     info.setNodesLimit( searchLimit.getNodes() );
 
     auto draft = searchLimit.getDepth();
-    root = new NodeRoot(rootMoves, *this, draft, searchLimit.getDivide());
+    root = new NodeRoot(searchLimit.getPositionMoves(), *this, draft, searchLimit.getDivide());
 
     searchThread.set(root);
     searchSequence = searchThread.commandRun();

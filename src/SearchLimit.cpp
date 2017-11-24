@@ -3,7 +3,7 @@
 
 namespace {
     std::istream& operator >> (std::istream& in, Clock::_t& duration) {
-        long milliseconds;
+        unsigned long milliseconds;
         if (in >> milliseconds) {
             duration = std::chrono::duration_cast<Clock::_t>(std::chrono::milliseconds{milliseconds});
         }
@@ -34,8 +34,8 @@ Clock::_t SearchLimit::getThinkingTime() const {
     return std::min(time[My], average);
 }
 
-void SearchLimit::readUci(std::istream& command, const UciPosition& uciPosition, UciPosition* resultPosition) {
-    *resultPosition = uciPosition;
+void SearchLimit::readUci(std::istream& command, const UciPosition& uciPosition) {
+    positionMoves = uciPosition;
 
     Color colorToMove = uciPosition.getColorToMove();
     Side white = colorToMove.is(White)? My : Op;
@@ -57,7 +57,7 @@ void SearchLimit::readUci(std::istream& command, const UciPosition& uciPosition,
         else if (io::next(command, "infinite")) { infinite = true; }
         else if (io::next(command, "perft"))    { perft = true; }
         else if (io::next(command, "divide"))   { divide = true; }
-        else if (io::next(command, "searchmoves")) { resultPosition->limitMoves(command); }
+        else if (io::next(command, "searchmoves")) { positionMoves.limitMoves(command); }
         else { break; }
     }
 }

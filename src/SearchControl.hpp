@@ -42,7 +42,7 @@ public:
     const HashMemory& tt() const { return transpositionTable; }
     HashMemory& tt() { return transpositionTable; }
 
-    void go(const PositionMoves&, const SearchLimit&);
+    void go(const SearchLimit&);
 
     //callbacks from search thread
     bool countNode();
