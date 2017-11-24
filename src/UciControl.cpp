@@ -5,15 +5,17 @@ UciControl::UciControl (UciOutput& o) : SearchControl(o) {}
 
 void UciControl::readUciHash(std::istream& command) {
     HashMemory::size_t quantity = 0;
-    if (!(command >> quantity)) {
+    command >> quantity;
+    if (!command) {
         io::fail_rewind(command);
         return;
     }
 
-    io::char_type u = 'm';
-    command >> u;
+    io::char_type unit = 'm';
+    command >> unit;
 
-    switch (std::tolower(u)) {
+    switch (std::tolower(unit)) {
+        case 't': quantity *= 1024;
         case 'g': quantity *= 1024;
         case 'm': quantity *= 1024;
         case 'k': quantity *= 1024;
