@@ -166,10 +166,10 @@ void UciPosition::limitMoves(std::istream& in) {
     while (in) {
         auto before = in.tellg();
 
-        Move m = readMove(in);
+        Move move = readMove(in);
         if (in) {
-            Square from{ m.from() };
-            Square to{ m.to() } ;
+            Square from{ move.from() };
+            Square to{ move.to() } ;
             Pi pi{ MY.pieceOn(from) };
 
             if (moves.is(pi, to) && !searchMoves.is(pi, to)) {
@@ -198,10 +198,10 @@ void UciPosition::playMoves(std::istream& in) {
     while (in) {
         auto before = in.tellg();
 
-        Move m = readMove(in);
+        Move move = readMove(in);
         if (in) {
-            Square from{ m.from() };
-            Square to{ m.to() } ;
+            Square from{ move.from() };
+            Square to{ move.to() } ;
             Pi pi{ side[My].pieceOn(from) };
 
             if (is(pi, to)) {
