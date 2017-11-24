@@ -28,8 +28,8 @@ void SearchLimit::clear() {
 Clock::_t SearchLimit::getThinkingTime() const {
     if (movetime != Clock::_t::zero()) { return movetime; }
 
-    auto moves_to_go = movestogo? movestogo : 40;
-    auto average = (time[My] + moves_to_go*inc[My]) / moves_to_go;
+    auto moves_to_go = movestogo? movestogo : 60;
+    auto average = (time[My] + (moves_to_go-1)*inc[My]) / moves_to_go;
 
     return std::min(time[My], average);
 }
