@@ -4,7 +4,7 @@
 #include "NodeDeep.hpp"
 
 class NodeRoot : public NodeDeep {
-    bool searchDepth();
+    bool searchIteration();
 public:
     bool isDivide;
     NodeRoot (const PositionMoves& pm, SearchControl& c, depth_t d, bool b) : NodeDeep(pm, c, d), isDivide(b) {}

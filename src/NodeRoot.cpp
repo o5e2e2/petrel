@@ -6,7 +6,7 @@
 #include "SearchLimit.hpp"
 #include "Move.hpp"
 
-bool NodeRoot::searchDepth() {
+bool NodeRoot::searchIteration() {
     MatrixPiBb _moves = cloneMoves();
 
     for (Pi pi : alivePieces()) {
@@ -38,11 +38,11 @@ bool NodeRoot::searchDepth() {
 
 bool NodeRoot::visitChildren() {
     if (draft > 0) {
-        searchDepth();
+        searchIteration();
     }
     else {
-        for (this->draft = 1; this->draft < SearchLimit::MaxDepth; ++this->draft) {
-            if (searchDepth()) {
+        for (draft = 1; draft <= SearchLimit::MaxDepth; ++draft) {
+            if (searchIteration()) {
                 break;
             }
             control.nextIteration();
