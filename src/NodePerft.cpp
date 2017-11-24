@@ -12,9 +12,10 @@ bool NodePerft::visit(Square from, Square to) {
 
     zobrist = parent.createZobrist(from, to);
     auto origin = control.tt().lookup(zobrist);
+    auto hashAge = control.tt().getAge();
 
     {
-        auto n = PerftTT(origin, control.tt().getAge()).get(zobrist, draft);
+        auto n = PerftTT(origin, hashAge).get(zobrist, draft);
         info.inc(TT_Tried);
 
         if (n != NODE_COUNT_NONE) {
@@ -36,7 +37,7 @@ bool NodePerft::visit(Square from, Square to) {
     }
 
     auto n = info.get(PerftNodes) - perftNodesBefore;
-    PerftTT(origin, control.tt().getAge()).set(zobrist, draft, n);
+    PerftTT(origin, hashAge).set(zobrist, draft, n);
     info.inc(TT_Written);
 
     return false;

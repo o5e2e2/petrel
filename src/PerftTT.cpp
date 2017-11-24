@@ -12,7 +12,7 @@ node_count_t PerftTT::get(Zobrist z, depth_t d) {
     if (b.b[2].isKeyMatch(z, d)) {
         auto n = b.b[2].getNodes();
         if (b.b[1].getDepth() <= d) {
-            b.b[2].updateAge(age);
+            b.b[2].updateAge(hashAge);
             if (b.b[0].getDepth() <= d) {
                 origin->set(0, m[2]);
                 origin->set(1, m[0]);
@@ -28,7 +28,7 @@ node_count_t PerftTT::get(Zobrist z, depth_t d) {
     if (b.b[1].isKeyMatch(z, d)) {
         auto n = b.b[1].getNodes();
         if (b.b[0].getDepth() <= d) {
-            b.b[1].updateAge(age);
+            b.b[1].updateAge(hashAge);
             origin->set(1, m[0]);
             origin->set(0, m[1]);
         }
@@ -44,7 +44,7 @@ node_count_t PerftTT::get(Zobrist z, depth_t d) {
 }
 
 void PerftTT::set(Zobrist z, depth_t d, node_count_t n) {
-    if (b.b[2].isOk(age) && b.b[2].getDepth() > d) {
+    if (b.b[2].isOk(hashAge) && b.b[2].getDepth() > d) {
         if (d == 1) {
             b.s.set(0, z, n);
             origin->set(3, m[3]);
@@ -68,16 +68,16 @@ void PerftTT::set(Zobrist z, depth_t d, node_count_t n) {
         origin->set(3, m[3]);
     }
 
-    b.b[2].set(z, d, n, age);
+    b.b[2].set(z, d, n, hashAge);
 
-    if (b.b[1].isOk(age) && b.b[1].getDepth() > d) {
+    if (b.b[1].isOk(hashAge) && b.b[1].getDepth() > d) {
         origin->set(2, m[2]);
         return;
     }
 
     origin->set(2, m[1]);
 
-    if (b.b[0].isOk(age) && b.b[0].getDepth() > d) {
+    if (b.b[0].isOk(hashAge) && b.b[0].getDepth() > d) {
         origin->set(1, m[2]);
         return;
     }
