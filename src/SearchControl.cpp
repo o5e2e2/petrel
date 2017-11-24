@@ -16,6 +16,11 @@ void SearchControl::clear() {
     }
 }
 
+void SearchControl::newGame() {
+    clear();
+    transpositionTable.clear();
+}
+
 void SearchControl::nextIteration() {
     transpositionTable.nextAge();
 }

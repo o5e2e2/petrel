@@ -35,6 +35,7 @@ public:
    ~SearchControl () { stop(); clear(); }
 
     void clear();
+    void newGame();
 
     bool isReady() const { return searchThread.isReady(); }
     void stop() { searchThread.stop(searchSequence); }

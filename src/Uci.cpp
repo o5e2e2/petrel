@@ -33,10 +33,7 @@ void Uci::operator() (std::istream& in) {
 
 void Uci::ucinewgame() {
     SHOULD_BE_READY;
-
-    uciControl.clear();
-    uciControl.tt().clear();
-
+    uciControl.newGame();
     uciPosition.setStartpos();
 }
 
