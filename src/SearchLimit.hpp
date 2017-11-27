@@ -28,8 +28,6 @@ class SearchLimit {
     void clear();
 
 public:
-    static const depth_t MaxDepth = 1000;
-
     SearchLimit ();
 
     depth_t      getDepth()  const { return depth; }

@@ -18,7 +18,7 @@ SearchLimit::SearchLimit () {
 void SearchLimit::clear() {
     movetime = time[My] = time[Op] = inc[My] = inc[Op] = Clock::_t::zero();
     ponder = infinite = perft = divide = false;
-    nodes = NODE_COUNT_NONE;
+    nodes = NODE_COUNT_MAX; //no limit
 
     movestogo = 0;
     depth = 0;
@@ -45,13 +45,13 @@ void SearchLimit::readUci(std::istream& command, const UciPosition& uciPosition)
     perft = true; //DEBUG
 
     while (command) {
-        if      (io::next(command, "depth"))    { command >> depth; depth = std::min(depth, MaxDepth); }
+        if      (io::next(command, "depth"))    { command >> depth; depth = std::min(depth, DEPTH_MAX); }
         else if (io::next(command, "wtime"))    { command >> time[white]; }
         else if (io::next(command, "btime"))    { command >> time[black]; }
         else if (io::next(command, "winc"))     { command >> inc[white]; }
         else if (io::next(command, "binc"))     { command >> inc[black]; }
         else if (io::next(command, "movestogo")){ command >> movestogo; }
-        else if (io::next(command, "nodes"))    { command >> nodes; }
+        else if (io::next(command, "nodes"))    { command >> nodes; nodes = std::min(nodes, NODE_COUNT_MAX); }
         else if (io::next(command, "movetime")) { command >> movetime; }
         else if (io::next(command, "ponder"))   { ponder = true; }
         else if (io::next(command, "infinite")) { infinite = true; }

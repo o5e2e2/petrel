@@ -41,7 +41,7 @@ bool NodeRoot::visitChildren() {
         searchIteration();
     }
     else {
-        for (draft = 1; draft <= SearchLimit::MaxDepth; ++draft) {
+        for (draft = 1; draft <= DEPTH_MAX; ++draft) {
             if (searchIteration()) {
                 break;
             }
