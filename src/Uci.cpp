@@ -54,7 +54,31 @@ void Uci::setoption() {
 
     if (next("Hash")) {
         next("value");
-        uciControl.readUciHash(command);
+
+        std::size_t quantity = 0;
+        command >> quantity;
+        if (!command) {
+            io::fail_rewind(command);
+            return;
+        }
+
+        io::char_type unit = 'm';
+        command >> unit;
+
+        switch (std::tolower(unit)) {
+            case 't': quantity *= 1024;
+            case 'g': quantity *= 1024;
+            case 'm': quantity *= 1024;
+            case 'k': quantity *= 1024;
+            case 'b': break;
+
+            default: {
+                io::fail_rewind(command);
+                return;
+            }
+        }
+
+        uciControl.resizeHash(quantity);
         return;
     }
 
