@@ -2,7 +2,6 @@
 #define UCI_HPP
 
 #include "io.hpp"
-#include "SearchLimit.hpp"
 #include "UciControl.hpp"
 #include "UciOutput.hpp"
 #include "UciPosition.hpp"
@@ -11,7 +10,6 @@ class Uci {
     UciPosition uciPosition; //initial chess position and moves to analyze
     UciOutput uciOutput;
     UciControl uciControl;
-    SearchLimit searchLimit;
 
     std::istringstream command; //current input command line
 

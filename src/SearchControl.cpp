@@ -1,6 +1,5 @@
 #include "SearchControl.hpp"
 #include "SearchInfo.hpp"
-#include "SearchLimit.hpp"
 #include "UciOutput.hpp"
 #include "NodePerft.hpp"
 #include "NodeRoot.hpp"
@@ -29,7 +28,7 @@ bool SearchControl::countNode() {
     return info.countNode(searchThread);
 }
 
-void SearchControl::go(const SearchLimit& searchLimit) {
+void SearchControl::go() {
     clear();
     info.setNodesLimit( searchLimit.getNodes() );
 

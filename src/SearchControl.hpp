@@ -2,6 +2,7 @@
 #define SEARCH_CONTROL_HPP
 
 #include "SearchThread.hpp"
+#include "SearchLimit.hpp"
 
 #include "HashMemory.hpp"
 #include "Timer.hpp"
@@ -17,6 +18,9 @@ class NodeRoot;
 class SearchControl {
 public:
     SearchInfo& info; //virtual
+
+protected:
+    SearchLimit searchLimit;
 
 private:
     SearchThread     searchThread;
@@ -44,7 +48,7 @@ public:
     HashMemory& tt() { return transpositionTable; }
     void resizeHash(size_t bytes) { tt().resize(bytes); }
 
-    void go(const SearchLimit&);
+    void go();
 
     //callbacks from search thread
     bool countNode();

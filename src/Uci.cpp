@@ -85,16 +85,16 @@ void Uci::setoption() {
 }
 
 void Uci::position() {
-    if (next("")) { uciOutput.info_fen(); return; }
+    if (next("")) {
+        uciOutput.info_fen();
+        return;
+    }
 
-    SHOULD_BE_READY;
     uciPosition.readUci(command);
 }
 
 void Uci::go() {
-    SHOULD_BE_READY;
-    searchLimit.readUci(command, uciPosition);
-    uciControl.go(searchLimit);
+    uciControl.go(command, uciPosition);
 }
 
 #undef SHOULD_BE_READY
