@@ -2,10 +2,10 @@
 #include "UciPosition.hpp"
 
 namespace {
-    io::istream& operator >> (io::istream& in, Clock::_t& duration) {
+    io::istream& operator >> (io::istream& in, Duration& duration) {
         unsigned long milliseconds;
         if (in >> milliseconds) {
-            duration = std::chrono::duration_cast<Clock::_t>(std::chrono::milliseconds{milliseconds});
+            duration = duration_cast<Duration>(Milliseconds{milliseconds});
         }
         return in;
     }
@@ -16,7 +16,7 @@ SearchLimit::SearchLimit () {
 }
 
 void SearchLimit::clear() {
-    movetime = time[My] = time[Op] = inc[My] = inc[Op] = Clock::_t::zero();
+    movetime = time[My] = time[Op] = inc[My] = inc[Op] = Duration::zero();
     ponder = infinite = perft = divide = false;
     nodes = NODE_COUNT_MAX; //no limit
 
@@ -25,8 +25,8 @@ void SearchLimit::clear() {
     mate = 0;
 }
 
-Clock::_t SearchLimit::getThinkingTime() const {
-    if (movetime != Clock::_t::zero()) { return movetime; }
+Duration SearchLimit::getThinkingTime() const {
+    if (movetime != Duration::zero()) { return movetime; }
 
     auto moves_to_go = movestogo? movestogo : 60;
     auto average = (time[My] + (moves_to_go-1)*inc[My]) / moves_to_go;

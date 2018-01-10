@@ -2,7 +2,7 @@
 #define SEARCH_INFO_HPP
 
 #include "typedefs.hpp"
-#include "Clock.hpp"
+#include "TimePoint.hpp"
 #include "Move.hpp"
 
 class SearchThread;
@@ -20,7 +20,7 @@ protected:
     enum { TickLimit = 5000 }; // ~1 msec
     signed nodesQuota; //number of remaining nodes before checking for terminate, normally should never be negative
 
-    Clock fromSearchStart;
+    TimePoint fromSearchStart;
     depth_t depth; //current search depth
 
     Move _bestmove;

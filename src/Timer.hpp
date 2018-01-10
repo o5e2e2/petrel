@@ -1,7 +1,7 @@
 #ifndef TIMER_HPP
 #define TIMER_HPP
 
-#include "Clock.hpp"
+#include "typedefs.hpp"
 #include "Pool.hpp"
 #include "ThreadControl.hpp"
 
@@ -14,7 +14,7 @@ private:
     TimerPool::_t timerHandle;
     ThreadControl* slaveThread;
     ThreadControl::_t slaveSequence;
-    Clock::_t duration;
+    Duration duration;
 
     void thread_body() override {
         std::this_thread::sleep_for(duration);
@@ -24,9 +24,9 @@ private:
     }
 
 public:
-    static void run(TimerPool& timerPool, Clock::_t duration, ThreadControl& slaveThread, ThreadControl::_t slaveSequence) {
+    static void run(TimerPool& timerPool, Duration duration, ThreadControl& slaveThread, ThreadControl::_t slaveSequence) {
         //zero duration means no timer
-        if (!slaveSequence || duration == Clock::_t::zero()) {
+        if (!slaveSequence || duration == Duration::zero()) {
             return;
         }
 

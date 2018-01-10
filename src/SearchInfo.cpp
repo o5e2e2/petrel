@@ -2,7 +2,7 @@
 #include "SearchThread.hpp"
 
 void SearchInfo::clear() {
-    fromSearchStart.restart();
+    fromSearchStart = {};
 
     nodes = 0;
     nodesQuota = 0;

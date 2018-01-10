@@ -13,15 +13,15 @@ namespace {
     template <typename T>
     constexpr T permil(T n, T m) { return (n * 1000) / m; }
 
-    template <typename Duration>
-    auto milliseconds(Duration duration)
-        -> decltype(std::chrono::duration_cast<std::chrono::milliseconds>(duration).count()) {
-        return std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
+    template <typename duration_type>
+    auto milliseconds(duration_type duration)
+        -> decltype(duration_cast<Milliseconds>(duration).count()) {
+        return duration_cast<Milliseconds>(duration).count();
     }
 
-    template <typename Nodes, typename Duration>
-    Nodes nps(Nodes nodes, Duration duration) {
-        return (nodes * Duration::period::den) / (duration.count() * Duration::period::num);
+    template <typename nodes_type, typename duration_type>
+    nodes_type nps(nodes_type nodes, duration_type duration) {
+        return (nodes * duration_type::period::den) / (duration.count() * duration_type::period::num);
     }
 }
 
@@ -103,10 +103,10 @@ void UciOutput::nps(io::ostream& ob) const {
         ob << " nodes " << _nodes;
 
         auto duration = fromSearchStart.getDuration();
-        if (duration >= std::chrono::milliseconds{1}) {
+        if (duration >= Milliseconds{1}) {
             ob << " time " << ::milliseconds(duration);
 
-            if (duration >= std::chrono::milliseconds{20}) {
+            if (duration >= Milliseconds{20}) {
                 ob << " nps " << ::nps(_nodes, duration);
             }
         }

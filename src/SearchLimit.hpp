@@ -3,16 +3,15 @@
 
 #include "io.hpp"
 #include "typedefs.hpp"
-#include "Clock.hpp"
 #include "UciPosition.hpp"
 
 class SearchLimit {
     UciPosition positionMoves;
 
-    Side::array<Clock::_t> time;
-    Side::array<Clock::_t> inc;
+    Side::array<Duration> time;
+    Side::array<Duration> inc;
 
-    Clock::_t movetime;
+    Duration movetime;
 
     node_count_t nodes;
     index_t movestogo;
@@ -36,7 +35,7 @@ public:
 
     const UciPosition& getPositionMoves() const { return positionMoves; }
 
-    Clock::_t getThinkingTime() const;
+    Duration getThinkingTime() const;
 
     void readUci(io::istream&, const UciPosition&);
 };

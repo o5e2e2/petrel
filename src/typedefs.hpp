@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <limits>
+#include <chrono>
 #include "Index.hpp"
 
 using std::size_t;
@@ -48,5 +49,10 @@ typedef Index<2, chess_variant_t> ChessVariant;
 
 enum eval_stage_t { Middlegame, Endgame };
 typedef Index<2, eval_stage_t> EvalStage;
+
+typedef std::chrono::milliseconds Milliseconds; //UCI i/o type
+typedef Milliseconds Duration; //internal type
+
+using std::chrono::duration_cast;
 
 #endif
