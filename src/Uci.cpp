@@ -1,7 +1,5 @@
 #include "Uci.hpp"
 
-#define SHOULD_BE_READY  if (!uciControl.isReady()) { io::fail_rewind(command); return; }
-
 Uci::Uci (io::ostream& out, io::ostream& err): uciPosition(), uciControl(uciPosition, out, err) {
     ucinewgame();
 }
@@ -28,7 +26,11 @@ void Uci::operator() (io::istream& in) {
 }
 
 void Uci::ucinewgame() {
-    SHOULD_BE_READY;
+    if (!uciControl.isReady()) {
+        io::fail_rewind(command);
+        return;
+    }
+
     uciControl.newGame();
     uciPosition.setStartpos();
 }
@@ -46,8 +48,6 @@ void Uci::setoption() {
         return;
     }
 
-    SHOULD_BE_READY;
-
     if (next("Hash")) {
         next("value");
         setHash();
@@ -57,6 +57,11 @@ void Uci::setoption() {
 }
 
 void Uci::setHash() {
+    if (!uciControl.isReady()) {
+        io::fail_rewind(command);
+        return;
+    }
+
     size_t quantity = 0;
     command >> quantity;
     if (!command) {
@@ -95,5 +100,3 @@ void Uci::position() {
 void Uci::go() {
     uciControl.go(command, uciPosition);
 }
-
-#undef SHOULD_BE_READY
