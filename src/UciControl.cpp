@@ -3,17 +3,9 @@
 
 UciControl::UciControl (const UciPosition& pos, io::ostream& out, io::ostream& err)
 :
-    SearchControl(this->uciOutput),
-    uciOutput(pos, out, err)
+    uciOutput(pos, out, err),
+    searchControl(this->uciOutput)
 {}
-
-void UciControl::error(io::istream& command) const {
-    uciOutput.error(command);
-}
-
-void UciControl::info_fen() const {
-    uciOutput.info_fen();
-}
 
 void UciControl::go(io::istream& command, const UciPosition& position) {
     if (!isReady()) {
@@ -21,14 +13,6 @@ void UciControl::go(io::istream& command, const UciPosition& position) {
         return;
     }
 
-    searchLimit.readUci(command, position);
-    SearchControl::go();
-}
-
-void UciControl::uciok() {
-    static_cast<UciOutput&>(info).uciok( this->tt().getInfo() );
-}
-
-void UciControl::readyok() {
-    static_cast<UciOutput&>(info).isready( this->isReady() );
+    searchControl.searchLimit.readUci(command, position);
+    searchControl.go();
 }

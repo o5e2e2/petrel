@@ -7,16 +7,24 @@
 
 class UciPosition;
 
-class UciControl : public SearchControl {
+class UciControl {
     UciOutput uciOutput;
+    SearchControl searchControl;
+
 public:
     UciControl (const UciPosition&, io::ostream&, io::ostream&);
 
     void go(io::istream&, const UciPosition&);
-    void error(io::istream&) const;
-    void info_fen() const;
-    void uciok();
-    void readyok();
+    void stop() { searchControl.stop(); }
+    void newGame() { searchControl.newGame(); }
+    void resizeHash(size_t bytes) { searchControl.tt().resize(bytes); }
+
+    bool isReady() const { return searchControl.isReady(); }
+
+    void error(io::istream& command) const { uciOutput.error(command); }
+    void info_fen() const { uciOutput.info_fen(); }
+    void uciok()    const { uciOutput.uciok( searchControl.tt().getInfo() ); }
+    void readyok()  const { uciOutput.isready( this->isReady() ); }
 };
 
 #endif

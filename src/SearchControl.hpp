@@ -18,8 +18,6 @@ class NodeRoot;
 class SearchControl {
 public:
     SearchInfo& info; //virtual
-
-protected:
     SearchLimit searchLimit;
 
 private:
@@ -46,7 +44,6 @@ public:
 
     const HashMemory& tt() const { return transpositionTable; }
     HashMemory& tt() { return transpositionTable; }
-    void resizeHash(size_t bytes) { tt().resize(bytes); }
 
     void go();
 
