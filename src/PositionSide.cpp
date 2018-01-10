@@ -273,3 +273,19 @@ bool PositionSide::canBeAttacked(Square from, Square to) const {
     assert (!result || isSlider(pi));
     return result;
 }
+
+Move PositionSide::createMove(Square from, Square to) const {
+    if (kingSquare().is(to)) {
+        return Move::castling(from, to);
+    }
+
+    if (isPawn(pieceOn(from))) {
+        if (from.is(Rank7)) {
+            return Move::promotion(from, to);
+        }
+        if (from.is(Rank5) && to.is(Rank5)) {
+            return Move::enPassant(from, to);
+        }
+    }
+    return Move(from, to);
+}

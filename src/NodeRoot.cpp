@@ -26,7 +26,7 @@ bool NodeRoot::searchIteration() {
             }
 
             if (isDivide) {
-                Move move = Move::createMove(getSide(My), from, to);
+                Move move = getSide(My).createMove(from, to);
                 control.info.report_perft_divide(move);
             }
         }

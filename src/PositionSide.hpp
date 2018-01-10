@@ -3,6 +3,7 @@
 
 #include "Evaluation.hpp"
 #include "MatrixPiBb.hpp"
+#include "Move.hpp"
 #include "VectorPiType.hpp"
 #include "VectorPiSquare.hpp"
 #include "Zobrist.hpp"
@@ -110,6 +111,8 @@ public:
     VectorPiMask attacksTo(Square a, Square b, Square c) const { return attacks[a] | attacks[b] | attacks[c]; }
 
     EvalStage getStage() const; //returns whether material for endgame or middlegame
+
+    Move createMove(Square from, Square to) const;
 
 };
 
