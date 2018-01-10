@@ -15,14 +15,17 @@ bool NodeRoot::searchIteration() {
         for (Square to : _moves[pi]) {
             _moves.clear(pi, to);
 
-            if (draft == 0) {
-                control.info.inc(PerftNodes, 1);
-            }
-            else if (draft == 1) {
-                CUT ( NodePerftLeaf(*this).visit(from, to) );
-            }
-            else {
-                CUT ( NodePerft(*this).visit(from, to) );
+            switch (draft) {
+                case 0:
+                    control.info.inc(PerftNodes, 1);
+                    break;
+
+                case 1:
+                    CUT ( NodePerftLeaf(*this).visit(from, to) );
+                    break;
+
+                default:
+                    CUT ( NodePerft(*this).visit(from, to) );
             }
 
             if (isDivide) {
@@ -36,17 +39,20 @@ bool NodeRoot::searchIteration() {
     return false;
 }
 
+bool NodeRoot::iterativeDeepening() {
+    for (draft = 1; draft <= DEPTH_MAX; ++draft) {
+        CUT (searchIteration());
+        control.nextIteration();
+    }
+    return false;
+}
+
 bool NodeRoot::visitChildren() {
     if (draft > 0) {
         searchIteration();
     }
     else {
-        for (draft = 1; draft <= DEPTH_MAX; ++draft) {
-            if (searchIteration()) {
-                break;
-            }
-            control.nextIteration();
-        }
+        iterativeDeepening();
     }
     control.info.bestmove();
     return false;
