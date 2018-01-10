@@ -14,7 +14,7 @@ public:
 
     void restart() { start = clock_t::now(); }
 
-    _t read() const {
+    _t getDuration() const {
         return std::chrono::duration_cast<_t>(clock_t::now() - start);
     }
 

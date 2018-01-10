@@ -102,7 +102,7 @@ void UciOutput::nps(io::ostream& ob) const {
 
         ob << " nodes " << _nodes;
 
-        auto duration = clock.read();
+        auto duration = fromSearchStart.getDuration();
         if (duration >= std::chrono::milliseconds{1}) {
             ob << " time " << ::milliseconds(duration);
 

@@ -17,11 +17,10 @@ protected:
     node_count_t nodes;
     node_count_t nodesLimit; //search limit
 
-    typedef signed quota_t;
     enum { TickLimit = 5000 }; // ~1 msec
-    quota_t nodesQuota; //number of remaining nodes before checking for terminate
+    signed nodesQuota; //number of remaining nodes before checking for terminate, normally should never be negative
 
-    Clock clock;
+    Clock fromSearchStart;
     depth_t depth; //current search depth
 
     Move _bestmove;

@@ -2,7 +2,7 @@
 #include "SearchThread.hpp"
 
 void SearchInfo::clear() {
-    clock.restart();
+    fromSearchStart.restart();
 
     nodes = 0;
     nodesQuota = 0;
@@ -16,13 +16,14 @@ bool SearchInfo::refreshQuota(const SearchThread& searchThread) {
     nodes -= nodesQuota;
 
     auto nodesRemaining = nodesLimit - nodes;
-    if (TickLimit <= nodesRemaining) {
-        nodesQuota = TickLimit;
+    if (nodesRemaining >= TickLimit) {
+        nodesQuota = static_cast<decltype(nodesQuota)>(TickLimit);
     }
     else if (nodesRemaining > 0) {
-        nodesQuota = static_cast<quota_t>(nodesRemaining);
+        nodesQuota = static_cast<decltype(nodesQuota)>(nodesRemaining);
     }
     else {
+        assert (nodesRemaining == 0);
         nodesLimit = nodes;
         nodesQuota = 0;
         return true;
