@@ -3,12 +3,10 @@
 
 #include "io.hpp"
 #include "UciControl.hpp"
-#include "UciOutput.hpp"
 #include "UciPosition.hpp"
 
 class Uci {
-    UciPosition uciPosition; //initial chess position and moves to analyze
-    UciOutput uciOutput;
+    UciPosition uciPosition; //store position just between 'position' and 'go' commands
     UciControl uciControl;
 
     std::istringstream command; //current input command line

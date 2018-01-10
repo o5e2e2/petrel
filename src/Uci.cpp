@@ -2,11 +2,7 @@
 
 #define SHOULD_BE_READY  if (!uciControl.isReady()) { io::fail_rewind(command); return; }
 
-Uci::Uci (io::ostream& out, io::ostream& err):
-    uciPosition(),
-    uciOutput(uciPosition, out, err),
-    uciControl(uciOutput)
-{
+Uci::Uci (io::ostream& out, io::ostream& err): uciPosition(), uciControl(uciPosition, out, err) {
     ucinewgame();
 }
 
@@ -27,7 +23,7 @@ void Uci::operator() (io::istream& in) {
         else if (next("quit"))      { break; }
 
         //error if something left unparsed
-        if (!next("")) { uciOutput.error(command); }
+        if (!next("")) { uciControl.error(command); }
     }
 }
 
@@ -86,7 +82,7 @@ void Uci::setoption() {
 
 void Uci::position() {
     if (next("")) {
-        uciOutput.info_fen();
+        uciControl.info_fen();
         return;
     }
 
