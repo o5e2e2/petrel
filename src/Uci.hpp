@@ -19,6 +19,7 @@ class Uci {
     void startpos();
     void position();
     void ucinewgame();
+    void setHash();
     void quit();
 
 public:
