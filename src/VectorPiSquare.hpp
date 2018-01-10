@@ -65,7 +65,7 @@ public:
         _v.set(p2, s2);
     }
 
-    friend std::ostream& operator << (std::ostream& out, VectorPiSquare squares) {
+    friend io::ostream& operator << (io::ostream& out, VectorPiSquare squares) {
         auto flags = out.flags();
 
         out << std::hex;

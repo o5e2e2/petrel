@@ -1,11 +1,12 @@
 #include <cstdlib>
+using std::size_t;
 
 #include "memory.hpp"
 
 #ifdef _WIN32
 
 #include <windows.h>
-std::size_t getAvailableMemory() {
+size_t getAvailableMemory() {
     MEMORYSTATUSEX status;
     status.dwLength = sizeof(status);
     status.ullAvailPhys = 0;
@@ -17,15 +18,15 @@ std::size_t getAvailableMemory() {
 #else
 
 #include <unistd.h>
-std::size_t getAvailableMemory() {
-    std::size_t pages     = ::sysconf(_SC_AVPHYS_PAGES);
-    std::size_t page_size = ::sysconf(_SC_PAGE_SIZE);
+size_t getAvailableMemory() {
+    size_t pages     = ::sysconf(_SC_AVPHYS_PAGES);
+    size_t page_size = ::sysconf(_SC_PAGE_SIZE);
     return pages * page_size;
 }
 
 #endif
 
-void* allocateAligned(std::size_t size, std::size_t alignment) {
+void* allocateAligned(size_t size, size_t alignment) {
 #ifdef _ISOC11_SOURCE
     return ::aligned_alloc(alignment, size);
 #else

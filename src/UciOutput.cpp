@@ -25,7 +25,7 @@ namespace {
     }
 }
 
-UciOutput::UciOutput (const UciPosition& p, std::ostream& o, std::ostream& e) :
+UciOutput::UciOutput (const UciPosition& p, io::ostream& o, io::ostream& e) :
     out(o),
     err(e),
     pos(p),
@@ -91,11 +91,11 @@ void UciOutput::info_currmove() const {
     ob << " score " << get(PerftNodes) - get(PerftDivideNodes) << '\n';
 }
 
-void UciOutput::write(std::ostream& ob, const Move& move) const {
+void UciOutput::write(io::ostream& ob, const Move& move) const {
     Move::write(ob, move, pos.getColorToMove(), pos.getChessVariant());
 }
 
-void UciOutput::nps(std::ostream& ob) const {
+void UciOutput::nps(io::ostream& ob) const {
     auto _nodes = getNodes();
     if (_nodes > 0 && lastInfoNodes != _nodes) {
         lastInfoNodes = _nodes;
@@ -120,7 +120,7 @@ void UciOutput::nps(std::ostream& ob) const {
     }
 }
 
-void UciOutput::info_nps(std::ostream& ob) const {
+void UciOutput::info_nps(io::ostream& ob) const {
     std::ostringstream buffer;
     nps(buffer);
 
@@ -136,7 +136,7 @@ void UciOutput::info_fen() const {
     ob << '\n';
 }
 
-void UciOutput::error(std::istream& in) const {
+void UciOutput::error(io::istream& in) const {
     OutputBuffer<decltype(outLock)>(err, outLock) << "parsing error: " << in.rdbuf() << '\n';
 }
 

@@ -12,7 +12,7 @@ typedef int index_t; //small numbers [0..N) with a known upper bound
 
 template <int _Limit, typename _Value = int>
 class Index {
-    static io::literal The_string;
+    static io::literal_type The_string;
 public:
     typedef _Value _t;
 
@@ -54,7 +54,7 @@ public:
 
     bool from_char(io::char_type c) {
         if (const void* p = std::memchr(The_string, c, _Limit)) {
-            this->_v = static_cast<_t>(static_cast<io::literal>(p) - The_string);
+            this->_v = static_cast<_t>(static_cast<io::literal_type>(p) - The_string);
             assert (c == to_char());
             return true;
         }
@@ -62,7 +62,7 @@ public:
     }
     constexpr const io::char_type& to_char() const { return The_string[*this]; }
 
-    friend std::istream& operator >> (std::istream& in, Index& i) {
+    friend io::istream& operator >> (io::istream& in, Index& i) {
         io::char_type c;
         if (in.get(c)) {
             if (!i.from_char(c)) { io::fail_char(in); }
@@ -70,7 +70,7 @@ public:
         return in;
     }
 
-    friend std::ostream& operator << (std::ostream& out, Index i) {
+    friend io::ostream& operator << (io::ostream& out, Index i) {
         return out << i.to_char();
     }
 

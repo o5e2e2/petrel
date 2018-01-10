@@ -39,11 +39,11 @@ public:
     }
 
     bool isOk(HashAge::_t age) const {
-        return (static_cast<std::size_t>(perft) >> AgeShift) == age;
+        return (static_cast<size_t>(perft) >> AgeShift) == age;
     }
 
     depth_t getDepth() const {
-        return static_cast<depth_t>(static_cast<std::size_t>(key) >> DepthShift & 0xFF);
+        return static_cast<depth_t>(static_cast<size_t>(key) >> DepthShift & 0xFF);
     }
 
     node_count_t getNodes() const {

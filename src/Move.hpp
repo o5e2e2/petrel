@@ -43,7 +43,7 @@ public:
     constexpr Square to()   const { return static_cast<Square::_t>(_v >>ToShift & Square::Mask); }
     constexpr PromoType promoType() const { return PromoType{to()}; }
 
-    static std::ostream& write(std::ostream&, Move, Color, ChessVariant = Orthodox);
+    static io::ostream& write(io::ostream&, Move, Color, ChessVariant = Orthodox);
 };
 
 #endif

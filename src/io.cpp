@@ -2,27 +2,27 @@
 
 namespace io {
 
-std::istream& fail_here(std::istream& in) {
+istream& fail_here(istream& in) {
     in.setstate(std::ios::failbit);
     return in;
 }
 
-std::istream& fail_char(std::istream& in) {
+istream& fail_char(istream& in) {
     in.unget();
-    return io::fail_here(in);
+    return fail_here(in);
 }
 
-std::istream& fail_pos(std::istream& in, std::streampos before) {
+istream& fail_pos(istream& in, std::streampos before) {
     in.clear();
     in.seekg(before);
-    return io::fail_here(in);
+    return fail_here(in);
 }
 
-std::istream& fail_rewind(std::istream& in) {
-    return io::fail_pos(in, 0);
+istream& fail_rewind(istream& in) {
+    return fail_pos(in, 0);
 }
 
-std::istream& skip_token(std::istream& in) {
+istream& skip_token(istream& in) {
     while (in && !std::isspace(in.peek())) {
         in.ignore();
     }
@@ -36,7 +36,7 @@ std::istream& skip_token(std::istream& in) {
     * true  -- next stream token is matches to the given token, shift stream cursor past the matched token
     * false -- failed to read stram or failed to match next stream token with the given token, stream state is not changed
     **/
-bool next(std::istream& in, io::literal token) {
+bool next(istream& in, literal_type token) {
     if (token == nullptr) { token = ""; }
 
     auto pos_before = in.tellg();
@@ -61,7 +61,7 @@ bool next(std::istream& in, io::literal token) {
     return false;
 }
 
-std::ostream& app_version(std::ostream& out) {
+ostream& app_version(ostream& out) {
     out << "Petrel ";
 
 #ifdef GIT_HASH
@@ -71,11 +71,9 @@ std::ostream& app_version(std::ostream& out) {
 #ifdef GIT_DATE
     out << GIT_DATE;
 #else
-    typedef io::char_type _t;
+    char_type year[] {__DATE__[7], __DATE__[8], __DATE__[9], __DATE__[10], '\0'};
 
-    _t year[] {__DATE__[7], __DATE__[8], __DATE__[9], __DATE__[10], '\0'};
-
-    _t month[] {
+    char_type month[] {
         (__DATE__[0] == 'O' && __DATE__[1] == 'c' && __DATE__[2] == 't')? '1' :
         (__DATE__[0] == 'N' && __DATE__[1] == 'o' && __DATE__[2] == 'v')? '1' :
         (__DATE__[0] == 'D' && __DATE__[1] == 'e' && __DATE__[2] == 'c')? '1' : '0',
@@ -96,7 +94,7 @@ std::ostream& app_version(std::ostream& out) {
         '\0'
     };
 
-    _t day[] {((__DATE__[4] == ' ')? '0' : __DATE__[4]), __DATE__[5], '\0'};
+    char_type day[] {((__DATE__[4] == ' ')? '0' : __DATE__[4]), __DATE__[5], '\0'};
 
     out << "build " << year << '-' << month << '-' << day;
 
@@ -109,8 +107,8 @@ std::ostream& app_version(std::ostream& out) {
     return out;
 }
 
-std::ostream& app_copyright(std::ostream& out) {
-    out << io::app_version << '\n';
+ostream& app_copyright(ostream& out) {
+    out << app_version << '\n';
 
 #ifdef GIT_ORIGIN
     out << GIT_ORIGIN << '\n';
@@ -121,7 +119,7 @@ std::ostream& app_copyright(std::ostream& out) {
     return out;
 }
 
-std::ostream& app_usage(std::ostream& out) {
+ostream& app_usage(ostream& out) {
     return out
         << "Usage: petrel [OPTION]\n"
         << "UCI Chess engine. Plays the game of chess.\n"

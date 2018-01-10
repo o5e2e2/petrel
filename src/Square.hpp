@@ -37,11 +37,11 @@ struct Square : Index<64, square_t> {
     constexpr signed x88(signed fileOffset, signed rankOffset) const;
     constexpr Bb operator() (signed fileOffset, signed rankOffset) const;
 
-    friend std::ostream& operator << (std::ostream& out, Square sq) {
+    friend io::ostream& operator << (io::ostream& out, Square sq) {
         return out << File{sq} << Rank{sq};
     }
 
-    friend std::istream& operator >> (std::istream& in, Square& sq) {
+    friend io::istream& operator >> (io::istream& in, Square& sq) {
         auto before = in.tellg();
         File file{File::Begin}; Rank rank{Rank::Begin};
 

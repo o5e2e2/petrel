@@ -49,7 +49,7 @@ public:
 
     constexpr friend bool operator == (Arg a, Arg b) { return a._v == b._v; }
 
-    friend std::ostream& operator << (std::ostream& out, Zobrist z) {
+    friend io::ostream& operator << (io::ostream& out, Zobrist z) {
         auto flags(out.flags());
 
         out << std::hex << std::setw(16) << std::setfill('0');

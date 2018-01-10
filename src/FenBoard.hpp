@@ -30,7 +30,7 @@ class FenBoard {
     bool drop(Color, PieceType, Square);
 
 public:
-    friend std::istream& operator >> (std::istream&, FenBoard&);
+    friend io::istream& operator >> (io::istream&, FenBoard&);
     bool setPosition(Position& pos, Color colorToMove);
 };
 

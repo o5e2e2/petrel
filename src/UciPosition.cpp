@@ -17,7 +17,7 @@ public:
         blackSide(pos.getSide(Black))
         {}
 
-    friend std::ostream& operator << (std::ostream& out, const WriteFenBoard& fen) {
+    friend io::ostream& operator << (io::ostream& out, const WriteFenBoard& fen) {
         FOR_INDEX(Rank, rank) {
             index_t emptySqCount = 0;
 
@@ -79,7 +79,7 @@ public:
         insert(pos.getSide(Black), Black, pos.getChessVariant());
     }
 
-    friend std::ostream& operator << (std::ostream& out, const WriteFenCastling& fen) {
+    friend io::ostream& operator << (io::ostream& out, const WriteFenCastling& fen) {
         if (fen.castlingSet.empty()) {
             return out << '-';
         }
@@ -92,7 +92,7 @@ public:
     }
 };
 
-void UciPosition::fenEnPassant(std::ostream& out) const {
+void UciPosition::fenEnPassant(io::ostream& out) const {
     if (!OP.hasEnPassant()) {
         out << '-';
         return;
@@ -101,7 +101,7 @@ void UciPosition::fenEnPassant(std::ostream& out) const {
     out << Square(OP.enPassantFile(), colorToMove.is(White)? Rank6 : Rank3);
 }
 
-std::ostream& operator << (std::ostream& out, const UciPosition& pos) {
+io::ostream& operator << (io::ostream& out, const UciPosition& pos) {
     out << WriteFenBoard(pos)
         << ' '
         << pos.colorToMove
@@ -112,7 +112,7 @@ std::ostream& operator << (std::ostream& out, const UciPosition& pos) {
     return out;
 }
 
-Move UciPosition::readMove(std::istream& in) const {
+Move UciPosition::readMove(io::istream& in) const {
     auto before = in.tellg();
 
     Square moveFrom{Square::Begin};
@@ -158,7 +158,7 @@ Move UciPosition::readMove(std::istream& in) const {
     return Move{};
 }
 
-void UciPosition::limitMoves(std::istream& in) {
+void UciPosition::limitMoves(io::istream& in) {
     MatrixPiBb searchMoves;
     searchMoves.clear();
     index_t limit = 0;
@@ -194,7 +194,7 @@ void UciPosition::limitMoves(std::istream& in) {
     }
 }
 
-void UciPosition::playMoves(std::istream& in) {
+void UciPosition::playMoves(io::istream& in) {
     while (in) {
         auto before = in.tellg();
 
@@ -216,7 +216,7 @@ void UciPosition::playMoves(std::istream& in) {
     }
 }
 
-void UciPosition::setBoard(std::istream& in) {
+void UciPosition::setBoard(io::istream& in) {
     FenBoard board;
 
     in >> board >> std::ws >> colorToMove;
@@ -226,7 +226,7 @@ void UciPosition::setBoard(std::istream& in) {
     }
 }
 
-std::istream& UciPosition::setCastling(std::istream& in) {
+io::istream& UciPosition::setCastling(io::istream& in) {
     in >> std::ws;
     if (in.peek() == '-') { in.ignore(); return in; }
 
@@ -257,7 +257,7 @@ std::istream& UciPosition::setCastling(std::istream& in) {
     return in;
 }
 
-std::istream& UciPosition::setEnPassant(std::istream& in) {
+io::istream& UciPosition::setEnPassant(io::istream& in) {
     in >> std::ws;
     if (in.peek() == '-') { in.ignore(); return in; }
 
@@ -272,7 +272,7 @@ std::istream& UciPosition::setEnPassant(std::istream& in) {
     return in;
 }
 
-void UciPosition::readFen(std::istream& in) {
+void UciPosition::readFen(io::istream& in) {
     setBoard(in);
     setCastling(in);
     setEnPassant(in);
@@ -292,7 +292,7 @@ void UciPosition::setStartpos() {
     readFen(startpos);
 }
 
-void UciPosition::readUci(std::istream& command) {
+void UciPosition::readUci(io::istream& command) {
     if (io::next(command, "startpos")) { setStartpos(); }
     if (io::next(command, "fen")) { readFen(command); }
 

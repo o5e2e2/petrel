@@ -2,7 +2,7 @@
 #include "UciPosition.hpp"
 
 namespace {
-    std::istream& operator >> (std::istream& in, Clock::_t& duration) {
+    io::istream& operator >> (io::istream& in, Clock::_t& duration) {
         unsigned long milliseconds;
         if (in >> milliseconds) {
             duration = std::chrono::duration_cast<Clock::_t>(std::chrono::milliseconds{milliseconds});
@@ -34,7 +34,7 @@ Clock::_t SearchLimit::getThinkingTime() const {
     return std::min(time[My], average);
 }
 
-void SearchLimit::readUci(std::istream& command, const UciPosition& uciPosition) {
+void SearchLimit::readUci(io::istream& command, const UciPosition& uciPosition) {
     positionMoves = uciPosition;
 
     Color colorToMove = uciPosition.getColorToMove();
@@ -44,20 +44,21 @@ void SearchLimit::readUci(std::istream& command, const UciPosition& uciPosition)
     clear();
     perft = true; //DEBUG
 
+    using io::next;
     while (command) {
-        if      (io::next(command, "depth"))    { command >> depth; depth = std::min(depth, DEPTH_MAX); }
-        else if (io::next(command, "wtime"))    { command >> time[white]; }
-        else if (io::next(command, "btime"))    { command >> time[black]; }
-        else if (io::next(command, "winc"))     { command >> inc[white]; }
-        else if (io::next(command, "binc"))     { command >> inc[black]; }
-        else if (io::next(command, "movestogo")){ command >> movestogo; }
-        else if (io::next(command, "nodes"))    { command >> nodes; nodes = std::min(nodes, NODE_COUNT_MAX); }
-        else if (io::next(command, "movetime")) { command >> movetime; }
-        else if (io::next(command, "ponder"))   { ponder = true; }
-        else if (io::next(command, "infinite")) { infinite = true; }
-        else if (io::next(command, "perft"))    { perft = true; }
-        else if (io::next(command, "divide"))   { divide = true; }
-        else if (io::next(command, "searchmoves")) { positionMoves.limitMoves(command); }
+        if      (next(command, "depth"))    { command >> depth; depth = std::min(depth, DEPTH_MAX); }
+        else if (next(command, "wtime"))    { command >> time[white]; }
+        else if (next(command, "btime"))    { command >> time[black]; }
+        else if (next(command, "winc"))     { command >> inc[white]; }
+        else if (next(command, "binc"))     { command >> inc[black]; }
+        else if (next(command, "movestogo")){ command >> movestogo; }
+        else if (next(command, "nodes"))    { command >> nodes; nodes = std::min(nodes, NODE_COUNT_MAX); }
+        else if (next(command, "movetime")) { command >> movetime; }
+        else if (next(command, "ponder"))   { ponder = true; }
+        else if (next(command, "infinite")) { infinite = true; }
+        else if (next(command, "perft"))    { perft = true; }
+        else if (next(command, "divide"))   { divide = true; }
+        else if (next(command, "searchmoves")) { positionMoves.limitMoves(command); }
         else { break; }
     }
 }

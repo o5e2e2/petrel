@@ -1,7 +1,7 @@
 #include "FenBoard.hpp"
 #include "Position.hpp"
 
-std::istream& operator >> (std::istream& in, FenBoard& board) {
+io::istream& operator >> (io::istream& in, FenBoard& board) {
     in >> std::ws;
 
     Color::array<index_t> colorCount;

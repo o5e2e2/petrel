@@ -15,7 +15,7 @@ class Uci {
 
     std::istringstream command; //current input command line
 
-    bool next(io::literal token) { return io::next(command, token); }
+    bool next(io::literal_type token) { return io::next(command, token); }
 
     //UCI command handlers
     void go();
@@ -26,8 +26,8 @@ class Uci {
     void quit();
 
 public:
-    Uci (std::ostream&, std::ostream&);
-    void operator() (std::istream&);
+    Uci (io::ostream&, io::ostream&);
+    void operator() (io::istream&);
 };
 
 #endif

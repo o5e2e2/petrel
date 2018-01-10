@@ -1,6 +1,7 @@
 /**
 * Startup constant initialization
 */
+#include "io.hpp"
 #include "BetweenSquares.hpp"
 #include "BitArray128Reverse.hpp"
 #include "CastlingRules.hpp"
@@ -30,13 +31,14 @@ const VectorPiOrder::Sorted VectorPiOrder::sorted; //16
 
 const PieceSquareTable Evaluation::pieceSquareTable; //7*64
 
-template <> io::literal PieceType::The_string{"qrbnpk"};
-template <> io::literal PromoType::The_string{"qrbn"};
-template <> io::literal Color::The_string{"wb"};
-template <> io::literal CastlingSide::The_string{"kq"};
-template <> io::literal File::The_string{"abcdefgh"};
-template <> io::literal Rank::The_string{"87654321"};
-template <> io::literal Pi::The_string{"K123456789abcdef"};
+using io::literal_type;
+template <> literal_type PieceType::The_string{"qrbnpk"};
+template <> literal_type PromoType::The_string{"qrbn"};
+template <> literal_type Color::The_string{"wb"};
+template <> literal_type CastlingSide::The_string{"kq"};
+template <> literal_type File::The_string{"abcdefgh"};
+template <> literal_type Rank::The_string{"87654321"};
+template <> literal_type Pi::The_string{"K123456789abcdef"};
 
 int main(int argc, const char* argv[]) {
     //speed tricks

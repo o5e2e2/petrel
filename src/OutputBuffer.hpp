@@ -5,10 +5,10 @@
 
 template<typename Lock>
 class OutputBuffer : public std::ostringstream {
-    std::ostream& out;
+    io::ostream& out;
     Lock& outLock;
 public:
-    OutputBuffer (std::ostream& o, Lock& l) : std::ostringstream{}, out(o), outLock(l) {}
+    OutputBuffer (io::ostream& o, Lock& l) : std::ostringstream{}, out(o), outLock(l) {}
    ~OutputBuffer () { outLock.lock(); out << str() << std::flush; outLock.unlock(); }
 };
 

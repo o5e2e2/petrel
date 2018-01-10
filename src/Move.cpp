@@ -18,7 +18,7 @@ Move Move::createMove(const PositionSide& side, Square moveFrom, Square moveTo) 
 }
 
 //convert internal move to long algebraic format
-std::ostream& Move::write(std::ostream& out, Move move, Color colorToMove, ChessVariant chessVariant) {
+io::ostream& Move::write(io::ostream& out, Move move, Color colorToMove, ChessVariant chessVariant) {
     if (move.isNull()) { return out << "0000"; }
 
     Square moveFrom = move.from();

@@ -5,6 +5,8 @@
 #include <limits>
 #include "Index.hpp"
 
+using std::size_t;
+
 typedef index_t depth_t; //search tree depth (relative to root)
 typedef std::uint64_t node_count_t;
 const auto NODE_COUNT_NONE = std::numeric_limits<node_count_t>::max();

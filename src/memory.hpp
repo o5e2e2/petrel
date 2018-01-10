@@ -3,11 +3,12 @@
 
 #include <cstring>
 
-std::size_t getAvailableMemory();
-
-void* allocateAligned(std::size_t size, std::size_t alignment);
-void  freeAligned(void*);
-
+using std::size_t;
 using std::memset;
+
+size_t getAvailableMemory();
+
+void* allocateAligned(size_t size, size_t alignment);
+void  freeAligned(void*);
 
 #endif

@@ -2,7 +2,7 @@
 
 #define SHOULD_BE_READY  if (!uciControl.isReady()) { io::fail_rewind(command); return; }
 
-Uci::Uci (std::ostream& out, std::ostream& err):
+Uci::Uci (io::ostream& out, io::ostream& err):
     uciPosition(),
     uciOutput(uciPosition, out, err),
     uciControl(uciOutput)
@@ -10,7 +10,7 @@ Uci::Uci (std::ostream& out, std::ostream& err):
     ucinewgame();
 }
 
-void Uci::operator() (std::istream& in) {
+void Uci::operator() (io::istream& in) {
     for (std::string commandLine; std::getline(in, commandLine); ) {
         command.clear(); //clear errors from the previous command
         command.str(std::move(commandLine));
@@ -55,7 +55,7 @@ void Uci::setoption() {
     if (next("Hash")) {
         next("value");
 
-        std::size_t quantity = 0;
+        size_t quantity = 0;
         command >> quantity;
         if (!command) {
             io::fail_rewind(command);

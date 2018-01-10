@@ -42,7 +42,7 @@ public:
 
     const HashMemory& tt() const { return transpositionTable; }
     HashMemory& tt() { return transpositionTable; }
-    void resizeHash(std::size_t bytes) { tt().resize(bytes); }
+    void resizeHash(size_t bytes) { tt().resize(bytes); }
 
     void go(const SearchLimit&);
 

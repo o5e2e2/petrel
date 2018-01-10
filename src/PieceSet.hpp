@@ -22,7 +22,7 @@ public:
         return total;
     }
 
-    friend std::ostream& operator << (std::ostream& out, PieceSet v) {
+    friend io::ostream& operator << (io::ostream& out, PieceSet v) {
         auto flags(out.flags());
 
         out << std::hex;

@@ -10,14 +10,14 @@ class UciPosition : public PositionMoves {
     Color colorToMove; //root position color for moves long algebraic format output
     ChessVariant chessVariant; //format of castling moves output
 
-    Move readMove(std::istream&) const;
-    void fenEnPassant(std::ostream&) const;
+    Move readMove(io::istream&) const;
+    void fenEnPassant(io::ostream&) const;
 
-    void setBoard(std::istream&);
-    std::istream& setCastling(std::istream&);
-    std::istream& setEnPassant(std::istream&);
-    void readFen(std::istream&);
-    void playMoves(std::istream&);
+    void setBoard(io::istream&);
+    io::istream& setCastling(io::istream&);
+    io::istream& setEnPassant(io::istream&);
+    void readFen(io::istream&);
+    void playMoves(io::istream&);
 
 public:
     UciPosition() : PositionMoves{}, colorToMove{White}, chessVariant{Orthodox} {}
@@ -29,12 +29,12 @@ public:
 
     const PositionSide& getSide(Color color) const { return side[colorToMove.is(color)? My : Op];}
 
-    void readUci(std::istream&);
+    void readUci(io::istream&);
     void setStartpos();
 
-    void limitMoves(std::istream&);
+    void limitMoves(io::istream&);
 
-    friend std::ostream& operator << (std::ostream&, const UciPosition&);
+    friend io::ostream& operator << (io::ostream&, const UciPosition&);
 };
 
 #endif

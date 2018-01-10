@@ -7,20 +7,23 @@
 #include <sstream>
 
 namespace io {
-    typedef std::ostream::char_type char_type;
-    typedef const char_type* literal;
+    using std::istream;
+    using std::ostream;
 
-    std::istream& fail_here(std::istream&);
-    std::istream& fail_char(std::istream&);
-    std::istream& fail_pos(std::istream&, std::streampos);
-    std::istream& fail_rewind(std::istream&);
+    typedef ostream::char_type char_type;
+    typedef const char_type* literal_type;
 
-    bool next(std::istream&, io::literal);
+    istream& fail_here(istream&);
+    istream& fail_char(istream&);
+    istream& fail_pos(istream&, std::streampos);
+    istream& fail_rewind(istream&);
 
-    std::istream& skip_token(std::istream&);
-    std::ostream& app_version(std::ostream&);
-    std::ostream& app_copyright(std::ostream&);
-    std::ostream& app_usage(std::ostream&);
+    bool next(istream&, literal_type);
+
+    istream& skip_token(istream&);
+    ostream& app_version(ostream&);
+    ostream& app_copyright(ostream&);
+    ostream& app_usage(ostream&);
 }
 
 #endif
