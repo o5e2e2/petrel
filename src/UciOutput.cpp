@@ -33,16 +33,14 @@ UciOutput::UciOutput (const UciPosition& p, std::ostream& o, std::ostream& e) :
     lastInfoNodes{0}
 {}
 
-void UciOutput::uciok(const HashMemory& hashMemory) const {
-    auto current = hashMemory.getSize();
-    auto max = hashMemory.getMax();
+void UciOutput::uciok(const HashMemory::Info& hashInfo) const {
     bool isChess960 = pos.getChessVariant().is(Chess960);
 
     OUTPUT(ob);
     ob << "id name " << io::app_version << '\n';
     ob << "id author Aleks Peshkov\n";
     ob << "option name UCI_Chess960 type check default " << (isChess960? "true" : "false") << '\n';
-    ob << "option name Hash type spin min 0 max " << ::mebi(max) << " default " << ::mebi(current) << '\n';
+    ob << "option name Hash type spin min 0 max " << ::mebi(hashInfo.max) << " default " << ::mebi(hashInfo.current) << '\n';
     ob << "uciok\n";
 }
 

@@ -13,6 +13,11 @@ public:
     typedef std::size_t size_t;
     typedef HashBucket _t;
 
+    struct Info {
+        size_t current;
+        size_t max;
+    };
+
 private:
     enum : size_t { BucketSize = sizeof(_t) };
 
@@ -34,8 +39,10 @@ public:
     HashMemory ();
    ~HashMemory () { free(); }
 
-    size_t getMax()  const { return max; }
-    size_t getSize() const { return size; }
+    Info getInfo() const {
+        return {size, max};
+    }
+
     size_t getTotalRecords() const { return (size / BucketSize) * _t::Index::Size; }
 
     void resize(size_t bytes);

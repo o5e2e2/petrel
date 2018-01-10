@@ -3,10 +3,10 @@
 
 #include "io.hpp"
 #include "typedefs.hpp"
+#include "HashMemory.hpp"
 #include "SearchInfo.hpp"
 #include "SpinLock.hpp"
 
-class HashMemory;
 class Move;
 class UciPosition;
 
@@ -29,7 +29,7 @@ public:
 
     //called from Uci
     void isready(bool) const;
-    void uciok(const HashMemory&) const;
+    void uciok(const HashMemory::Info&) const;
     void info_fen() const;
 
     void error(std::istream&) const;

@@ -4,7 +4,7 @@
 UciControl::UciControl (UciOutput& o) : SearchControl(o) {}
 
 void UciControl::uciok() {
-    static_cast<UciOutput&>(info).uciok( this->tt() );
+    static_cast<UciOutput&>(info).uciok( this->tt().getInfo() );
 }
 
 void UciControl::readyok() {
