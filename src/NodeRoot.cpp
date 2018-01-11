@@ -6,44 +6,45 @@
 #include "SearchLimit.hpp"
 #include "Move.hpp"
 
-bool NodeRoot::searchIteration() {
-    MatrixPiBb _moves = cloneMoves();
+bool NodeRoot::visit(Square from, Square to) {
+    switch (draft) {
+        case 0:
+            control.info.inc(PerftNodes, 1);
+            break;
 
-    for (Pi pi : alivePieces()) {
-        Square from = squareOf(pi);
+        case 1:
+            CUT ( NodePerftLeaf(*this).visit(from, to) );
+            break;
 
-        for (Square to : _moves[pi]) {
-            _moves.clear(pi, to);
-
-            switch (draft) {
-                case 0:
-                    control.info.inc(PerftNodes, 1);
-                    break;
-
-                case 1:
-                    CUT ( NodePerftLeaf(*this).visit(from, to) );
-                    break;
-
-                default:
-                    CUT ( NodePerft(*this).visit(from, to) );
-            }
-
-            if (isDivide) {
-                Move move = getSide(My).createMove(from, to);
-                control.info.report_perft_divide(move);
-            }
-        }
+        default:
+            CUT ( NodePerft(*this).visit(from, to) );
     }
+
+    if (isDivide) {
+        Move move = getSide(My).createMove(from, to);
+        control.info.report_perft_divide(move);
+    }
+
+    return false;
+}
+
+bool NodeRoot::searchIteration() {
+    CUT (Node::visitChildren());
 
     control.info.report_perft_depth(draft);
     return false;
 }
 
 bool NodeRoot::iterativeDeepening() {
+    MatrixPiBb _moves = cloneMoves();
+
     for (draft = 1; draft <= DEPTH_MAX; ++draft) {
         CUT (searchIteration());
+
+        this->moves = _moves;
         control.nextIteration();
     }
+
     return false;
 }
 
@@ -54,6 +55,7 @@ bool NodeRoot::visitChildren() {
     else {
         iterativeDeepening();
     }
+
     control.info.bestmove();
     return false;
 }

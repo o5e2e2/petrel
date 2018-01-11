@@ -11,6 +11,7 @@ class NodeRoot : public NodeDeep {
 public:
     NodeRoot (const PositionMoves& pm, SearchControl& c, depth_t d, bool b) : NodeDeep(pm, c, d), isDivide(b) {}
     bool visitChildren() override;
+    bool visit(Square from, Square to) override;
 };
 
 #endif

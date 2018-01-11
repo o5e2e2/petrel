@@ -12,7 +12,12 @@ typedef index_t depth_t; //search tree depth (relative to root)
 typedef std::uint64_t node_count_t;
 const auto NODE_COUNT_NONE = std::numeric_limits<node_count_t>::max();
 const auto NODE_COUNT_MAX  = std::numeric_limits<node_count_t>::max();
-const depth_t DEPTH_MAX = 1000;
+
+#ifndef NDEBUG
+    const depth_t DEPTH_MAX = 20;
+#else
+    const depth_t DEPTH_MAX = 1000;
+#endif
 
 enum file_t { FileA, FileB, FileC, FileD, FileE, FileF, FileG, FileH };
 typedef Index<8, file_t> File;
