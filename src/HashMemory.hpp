@@ -48,7 +48,7 @@ public:
     void resize(size_t bytes);
     void clear();
 
-    _t* lookup(Zobrist z) const;
+    _t* prefetch(Zobrist z) const;
 
     const HashAge& getAge() const { return age; }
     void nextAge() { age.next(); }

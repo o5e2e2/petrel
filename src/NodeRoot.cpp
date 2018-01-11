@@ -8,11 +8,11 @@
 
 bool NodeRoot::visit(Square from, Square to) {
     switch (draft) {
-        case 0:
+        case 1:
             control.info.inc(PerftNodes, 1);
             break;
 
-        case 1:
+        case 2:
             CUT ( NodePerftLeaf(*this).visit(from, to) );
             break;
 

@@ -67,7 +67,7 @@ void HashMemory::resize(size_t bytes) {
 
 }
 
-HashMemory::_t* HashMemory::lookup(Zobrist z) const {
+HashMemory::_t* HashMemory::prefetch(Zobrist z) const {
     auto o = reinterpret_cast<char*>(hash) + (static_cast<Zobrist::_t>(z) & mask);
 
     enum { CACHE_PAGES = (BucketSize-1)/64 + 1 };
