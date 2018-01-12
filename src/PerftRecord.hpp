@@ -8,58 +8,48 @@
 class PerftRecord {
     typedef unsigned age_t;
 
-    Zobrist key;
-    node_count_t perft;
+    Zobrist::_t key;
+    node_count_t nodes;
 
-    enum {DepthShift = 6, AgeShift = 64-HashAge::AgeBits};
+    enum { DepthBits = 6, DepthShift = 64 - DepthBits, AgeShift = DepthShift - HashAge::AgeBits };
 
-    static const Zobrist::_t DepthMask = static_cast<Zobrist::_t>(0xff) << DepthShift;
-    static const node_count_t AgeMask = static_cast<node_count_t>(HashAge::AgeMask) << AgeShift;
+    static const node_count_t DepthMask = static_cast<node_count_t>((1 << DepthBits)-1) << DepthShift;
+    static const node_count_t AgeMask = static_cast<node_count_t>((1 << HashAge::AgeBits)-1) << AgeShift;
+    static const node_count_t NodesMask = DepthMask | AgeMask;
 
-    static constexpr Zobrist _key(Zobrist::_t z, depth_t d) {
-        return Zobrist{ (z & ~DepthMask) | ((static_cast<decltype(z)>(static_cast<unsigned>(d)) << DepthShift) & DepthMask) };
+    static constexpr node_count_t createNodes(node_count_t n, depth_t d, HashAge::_t age) {
+        //assert (n == (n & ~NodesMask));
+        return (n & ~NodesMask) | (static_cast<decltype(nodes)>(age) << AgeShift) | (static_cast<decltype(nodes)>(d) << DepthShift);
     }
 
 public:
-    void set(Zobrist::_t z, depth_t d, node_count_t n, HashAge::_t age) {
-        key = _key(z, d);
-        setPerft(n, age);
-    }
-
-    void setPerft(node_count_t n, HashAge::_t age) {
-        perft = (n & ~AgeMask) | (static_cast<decltype(perft)>(age) << AgeShift);
-    }
-
-    void updateAge(HashAge::_t age) {
-        setPerft(perft, age);
-    }
-
     bool isKeyMatch(Zobrist::_t z, depth_t d) const {
-        return key == _key(z, d);
+        return (getKey() == z) && (getDepth() == d);
     }
 
-    bool isOk(HashAge::_t age) const {
-        return (static_cast<size_t>(perft) >> AgeShift) == age;
+    bool isAgeMatch(HashAge::_t age) const {
+        return ((nodes & AgeMask) >> AgeShift) == age;
     }
 
-    depth_t getDepth() const {
-        return static_cast<depth_t>(static_cast<size_t>(key) >> DepthShift & 0xFF);
-    }
-
-    node_count_t getNodes() const {
-        return perft & ~AgeMask;
-    }
-
-    const Zobrist& getZobrist() const {
+    const Zobrist::_t& getKey() const {
         return key;
     }
 
-    friend bool operator < (const PerftRecord& a, const PerftRecord& b) {
-        return a.getNodes() < b.getNodes();
+    depth_t getDepth() const {
+        return static_cast<depth_t>((nodes & DepthMask) >> DepthShift);
     }
 
-    bool operator <= (node_count_t n) const {
-        return getNodes() <= n;
+    node_count_t getNodes() const {
+        return nodes & ~NodesMask;
+    }
+
+    void set(Zobrist::_t z, depth_t d, node_count_t n, HashAge::_t age) {
+        key = z;
+        nodes = createNodes(n, d, age);
+    }
+
+    void setAge(HashAge::_t age) {
+        nodes = (nodes & ~AgeMask) | (static_cast<decltype(nodes)>(age) << AgeShift);
     }
 
 };
