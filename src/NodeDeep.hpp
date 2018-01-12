@@ -7,7 +7,7 @@
 class NodeDeep : public Node {
 public:
     depth_t draft;
-    NodeDeep (const PositionMoves& pm, SearchControl& c, depth_t d) : Node(pm, c), draft(d) {}
+    NodeDeep (const PositionMoves& p, SearchControl& c, depth_t d) : Node(p, c), draft(d) {}
     NodeDeep (NodeDeep& p) : Node(p), draft(p.draft-1) {}
 };
 

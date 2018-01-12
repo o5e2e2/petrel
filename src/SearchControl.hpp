@@ -10,7 +10,7 @@
 class SearchInfo;
 class PositionMoves;
 class SearchLimit;
-class NodeRoot;
+class NodePerftRoot;
 
 /**
  * Shared data to all search threads (currently the only one)
@@ -24,7 +24,7 @@ private:
     SearchThread     searchThread;
     SearchThread::_t searchSequence;
 
-    NodeRoot* root;
+    NodePerftRoot* root;
 
     HashMemory transpositionTable;
     Timer::TimerPool timerPool;

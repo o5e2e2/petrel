@@ -1,8 +1,7 @@
 #include "SearchControl.hpp"
 #include "SearchInfo.hpp"
 #include "UciOutput.hpp"
-#include "NodePerft.hpp"
-#include "NodeRoot.hpp"
+#include "NodePerftRoot.hpp"
 
 SearchControl::SearchControl (SearchInfo& i) : info(i), root(nullptr) { clear(); }
 
@@ -33,7 +32,7 @@ void SearchControl::go() {
     info.setNodesLimit( searchLimit.getNodes() );
 
     auto draft = searchLimit.getDepth();
-    root = new NodeRoot(searchLimit.getPositionMoves(), *this, draft, searchLimit.getDivide());
+    root = new NodePerftRoot(searchLimit.getPositionMoves(), *this, draft, searchLimit.getDivide());
 
     searchThread.set(root);
     searchSequence = searchThread.commandRun();
