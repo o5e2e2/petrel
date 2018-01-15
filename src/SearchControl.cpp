@@ -1,6 +1,4 @@
 #include "SearchControl.hpp"
-#include "SearchInfo.hpp"
-#include "UciOutput.hpp"
 #include "NodePerftRoot.hpp"
 
 SearchControl::SearchControl (SearchInfo& i) : info(i), root(nullptr) { clear(); }

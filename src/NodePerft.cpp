@@ -2,8 +2,6 @@
 #include "NodePerftLeaf.hpp"
 #include "PerftTT.hpp"
 #include "PerftRecord.hpp"
-#include "SearchControl.hpp"
-#include "SearchInfo.hpp"
 
 bool NodePerft::visit(Square from, Square to) {
     auto& info = control.info;

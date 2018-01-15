@@ -1,6 +1,4 @@
 #include "NodePerftLeaf.hpp"
-#include "SearchControl.hpp"
-#include "SearchInfo.hpp"
 
 bool NodePerftLeaf::visit(Square from, Square to) {
     CUT ( control.countNode() );

@@ -28,20 +28,20 @@ void SearchLimit::clear() {
 Duration SearchLimit::getThinkingTime() const {
     if (movetime != Duration::zero()) { return movetime; }
 
-    auto moves_to_go = movestogo? movestogo : 60;
-    auto average = (time[My] + (moves_to_go-1)*inc[My]) / moves_to_go;
+    auto moveToGo = movestogo? movestogo : 60;
+    auto average = (time[My] + (moveToGo-1)*inc[My]) / moveToGo;
 
     return std::min(time[My], average);
 }
 
 void SearchLimit::readUci(io::istream& command, const UciPosition& uciPosition) {
+    clear();
     positionMoves = uciPosition;
 
     Color colorToMove = uciPosition.getColorToMove();
     Side white = colorToMove.is(White)? My : Op;
     Side black = colorToMove.is(Black)? My : Op;
 
-    clear();
     perft = true; //DEBUG
 
     using io::next;

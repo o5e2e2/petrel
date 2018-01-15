@@ -1,11 +1,7 @@
 #include "NodePerftRootDivide.hpp"
 #include "NodePerft.hpp"
 #include "NodePerftLeaf.hpp"
-#include "SearchControl.hpp"
-#include "SearchInfo.hpp"
-#include "SearchLimit.hpp"
 #include "Move.hpp"
-#include "NodePerftRoot.hpp"
 
 bool NodePerftRootDivide::visit(Square from, Square to) {
     switch (draft) {

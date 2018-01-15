@@ -2,9 +2,6 @@
 #include "NodePerft.hpp"
 #include "NodePerftLeaf.hpp"
 #include "NodePerftRootDivide.hpp"
-#include "SearchControl.hpp"
-#include "SearchInfo.hpp"
-#include "SearchLimit.hpp"
 #include "Move.hpp"
 
 bool NodePerftRoot::searchIteration() {

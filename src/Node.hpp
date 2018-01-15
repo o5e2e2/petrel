@@ -2,10 +2,9 @@
 #define NODE_HPP
 
 #include "PositionMoves.hpp"
+#include "SearchControl.hpp"
 
 #define CUT(found) { if (found) { return true; } } ((void)0)
-
-class SearchControl;
 
 class Node : public PositionMoves {
 protected:

@@ -2,8 +2,6 @@
 #define ZOBRIST_HPP
 
 #include "bitops.hpp"
-#include "typedefs.hpp"
-#include "Square.hpp"
 #include "ZobristKey.hpp"
 
 class Zobrist {
