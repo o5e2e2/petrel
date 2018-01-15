@@ -278,23 +278,24 @@ void Position::playMove(Square from, Square to) {
     }
 
     if (OP.isOccupied(~to)) {
-        //simple non-pawn capture
+        //simple non-pawn non-king capture
         capture<Op>(~to);
         movePiece<My>(pi, from, to);
         updateSliderAttacksKing<My>(MY.attacksTo(from) | pi);
         setSliderAttacks<Op>(OP.attacksTo(~from));
+        return;
     }
-    else {
-        if (MY.kingSquare().is(to)) {
-            playCastling<My>(pi, from, to);
-            return;
-        }
 
-        //simple non-pawn move
-        movePiece<My>(pi, from, to);
-        updateSliderAttacksKing<My>(MY.attacksTo(from, to));
-        setSliderAttacks<Op>(OP.attacksTo(~from, ~to));
+    if (MY.kingSquare().is(to)) {
+        //castling move encoded as castling rook captures own king
+        playCastling<My>(pi, from, to);
+        return;
     }
+
+    //simple non-pawn non-king non-capture move
+    movePiece<My>(pi, from, to);
+    updateSliderAttacksKing<My>(MY.attacksTo(from, to));
+    setSliderAttacks<Op>(OP.attacksTo(~from, ~to));
 }
 
 void Position::playMove(const Position& parent, Square from, Square to, Zobrist z) {
