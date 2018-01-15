@@ -1,4 +1,4 @@
-#include "UciOutput.hpp"
+#include "UciSearchInfo.hpp"
 #include "HashMemory.hpp"
 #include "Move.hpp"
 #include "OutputBuffer.hpp"
@@ -25,7 +25,7 @@ namespace {
     }
 }
 
-UciOutput::UciOutput (const UciPosition& p, io::ostream& o, io::ostream& e) :
+UciSearchInfo::UciSearchInfo (const UciPosition& p, io::ostream& o, io::ostream& e) :
     out(o),
     err(e),
     pos(p),
@@ -33,7 +33,7 @@ UciOutput::UciOutput (const UciPosition& p, io::ostream& o, io::ostream& e) :
     lastInfoNodes{0}
 {}
 
-void UciOutput::uciok(const HashMemory::Info& hashInfo) const {
+void UciSearchInfo::uciok(const HashMemory::Info& hashInfo) const {
     bool isChess960 = pos.getChessVariant().is(Chess960);
 
     OUTPUT(ob);
@@ -44,7 +44,7 @@ void UciOutput::uciok(const HashMemory::Info& hashInfo) const {
     ob << "uciok\n";
 }
 
-void UciOutput::isready(bool searchIsReady) const {
+void UciSearchInfo::isready(bool searchIsReady) const {
     OUTPUT(ob);
     if (searchIsReady) {
         isreadyWaiting = false;
@@ -55,7 +55,7 @@ void UciOutput::isready(bool searchIsReady) const {
     }
 }
 
-void UciOutput::readyok() const {
+void UciSearchInfo::readyok() const {
     if (isreadyWaiting) {
         if (outLock.try_lock()) {
             isreadyWaiting = false;
@@ -69,21 +69,21 @@ void UciOutput::readyok() const {
     }
 }
 
-void UciOutput::bestmove() const {
+void UciSearchInfo::bestmove() const {
     OUTPUT(ob);
     info_nps(ob);
     ob << "bestmove "; write(ob, _bestmove); ob << '\n';
     lastInfoNodes = 0;
 }
 
-void UciOutput::info_depth() const {
+void UciSearchInfo::info_depth() const {
     OUTPUT(ob);
     ob << "info depth " << depth;
     nps(ob);
     ob << " score " << get(PerftNodes) << '\n';
 }
 
-void UciOutput::info_currmove() const {
+void UciSearchInfo::info_currmove() const {
     OUTPUT(ob);
     ob << "info currmovenumber " << currmovenumber;
     ob << " currmove "; write(ob, currmove);
@@ -91,11 +91,11 @@ void UciOutput::info_currmove() const {
     ob << " score " << get(PerftNodes) - get(PerftDivideNodes) << '\n';
 }
 
-void UciOutput::write(io::ostream& ob, const Move& move) const {
+void UciSearchInfo::write(io::ostream& ob, const Move& move) const {
     Move::write(ob, move, pos.getColorToMove(), pos.getChessVariant());
 }
 
-void UciOutput::nps(io::ostream& ob) const {
+void UciSearchInfo::nps(io::ostream& ob) const {
     auto _nodes = getNodes();
     if (_nodes > 0 && lastInfoNodes != _nodes) {
         lastInfoNodes = _nodes;
@@ -120,7 +120,7 @@ void UciOutput::nps(io::ostream& ob) const {
     }
 }
 
-void UciOutput::info_nps(io::ostream& ob) const {
+void UciSearchInfo::info_nps(io::ostream& ob) const {
     std::ostringstream buffer;
     nps(buffer);
 
@@ -129,18 +129,18 @@ void UciOutput::info_nps(io::ostream& ob) const {
     }
 }
 
-void UciOutput::info_fen() const {
+void UciSearchInfo::info_fen() const {
     OUTPUT(ob);
     ob << "info fen " << pos;
     //ob << " key 0x" << pos.getZobrist();
     ob << '\n';
 }
 
-void UciOutput::error(io::istream& in) const {
+void UciSearchInfo::error(io::istream& in) const {
     OutputBuffer<decltype(outLock)>(err, outLock) << "parsing error: " << in.rdbuf() << '\n';
 }
 
-void UciOutput::error(const std::string& str) const {
+void UciSearchInfo::error(const std::string& str) const {
     OutputBuffer<decltype(outLock)>(err, outLock) << str << '\n';
 }
 

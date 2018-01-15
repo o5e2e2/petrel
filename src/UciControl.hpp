@@ -3,12 +3,12 @@
 
 #include "io.hpp"
 #include "SearchControl.hpp"
-#include "UciOutput.hpp"
+#include "UciSearchInfo.hpp"
 
 class UciPosition;
 
 class UciControl {
-    UciOutput uciOutput;
+    UciSearchInfo uciSearchInfo;
     SearchControl searchControl;
 
 public:
@@ -21,10 +21,10 @@ public:
 
     bool isReady() const { return searchControl.isReady(); }
 
-    void error(io::istream& command) const { uciOutput.error(command); }
-    void info_fen() const { uciOutput.info_fen(); }
-    void uciok()    const { uciOutput.uciok( searchControl.tt().getInfo() ); }
-    void readyok()  const { uciOutput.isready( this->isReady() ); }
+    void error(io::istream& command) const { uciSearchInfo.error(command); }
+    void info_fen() const { uciSearchInfo.info_fen(); }
+    void uciok()    const { uciSearchInfo.uciok( searchControl.tt().getInfo() ); }
+    void readyok()  const { uciSearchInfo.isready( this->isReady() ); }
 };
 
 #endif

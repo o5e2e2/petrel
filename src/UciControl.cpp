@@ -1,10 +1,10 @@
 #include "UciControl.hpp"
-#include "UciOutput.hpp"
+#include "UciSearchInfo.hpp"
 
 UciControl::UciControl (const UciPosition& pos, io::ostream& out, io::ostream& err)
 :
-    uciOutput(pos, out, err),
-    searchControl(this->uciOutput)
+    uciSearchInfo(pos, out, err),
+    searchControl(uciSearchInfo)
 {}
 
 void UciControl::go(io::istream& command, const UciPosition& position) {

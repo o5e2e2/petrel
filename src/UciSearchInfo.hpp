@@ -1,5 +1,5 @@
-#ifndef UCI_OUTPUT_HPP
-#define UCI_OUTPUT_HPP
+#ifndef UCI_SEARCH_INFO_HPP
+#define UCI_SEARCH_INFO_HPP
 
 #include "io.hpp"
 #include "typedefs.hpp"
@@ -10,7 +10,7 @@
 class Move;
 class UciPosition;
 
-class UciOutput : public SearchInfo {
+class UciSearchInfo : public SearchInfo {
     io::ostream& out; //output stream
     io::ostream& err; //error output stream
     const UciPosition& pos;
@@ -25,7 +25,7 @@ class UciOutput : public SearchInfo {
     void info_nps(io::ostream&) const;
 
 public:
-    UciOutput (const UciPosition&, io::ostream&, io::ostream& = std::cerr);
+    UciSearchInfo (const UciPosition&, io::ostream&, io::ostream& = std::cerr);
 
     //called from Uci
     void isready(bool) const;
