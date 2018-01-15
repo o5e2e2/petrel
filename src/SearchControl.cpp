@@ -29,9 +29,7 @@ void SearchControl::go() {
     clear();
     info.setNodesLimit( searchLimit.getNodes() );
 
-    auto draft = searchLimit.getDepth();
-    root = new NodePerftRoot(searchLimit.getPositionMoves(), *this, draft, searchLimit.getDivide());
-
+    root = new NodePerftRoot(searchLimit.getPositionMoves(), *this);
     searchThread.set(root);
     searchSequence = searchThread.commandRun();
     Timer::run(timerPool, searchLimit.getThinkingTime(), searchThread, searchSequence);

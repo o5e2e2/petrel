@@ -4,14 +4,14 @@
 #include "NodePerftRootDivide.hpp"
 #include "Move.hpp"
 
-bool NodePerftRoot::searchIteration() {
-    if (isDivide) {
+bool NodePerftRoot::searchIteration(depth_t draft) {
+    if (control.searchLimit.isDivide()) {
         CUT ( NodePerftRootDivide(*this, control, draft).visitChildren() );
     }
     else {
         switch (draft) {
             case 1:
-                control.info.inc(PerftNodes, getMoves().count());;
+                control.info.inc(PerftNodes, getMoves().count());
                 break;
 
             case 2:
@@ -19,7 +19,7 @@ bool NodePerftRoot::searchIteration() {
                 break;
 
             default:
-                CUT ( NodePerft(*this).visitChildren() );
+                CUT ( NodePerft(*this, draft-1).visitChildren() );
         }
     }
 
@@ -30,8 +30,8 @@ bool NodePerftRoot::searchIteration() {
 bool NodePerftRoot::iterativeDeepening() {
     MatrixPiBb _moves = cloneMoves();
 
-    for (draft = 1; draft <= DEPTH_MAX; ++draft) {
-        CUT (searchIteration());
+    for (depth_t draft = 1; draft <= DEPTH_MAX; ++draft) {
+        CUT (searchIteration(draft));
 
         this->moves = _moves;
         control.nextIteration();
@@ -41,8 +41,10 @@ bool NodePerftRoot::iterativeDeepening() {
 }
 
 bool NodePerftRoot::visitChildren() {
+    auto draft = control.searchLimit.getDepth();
+
     if (draft > 0) {
-        searchIteration();
+        searchIteration(draft);
     }
     else {
         iterativeDeepening();

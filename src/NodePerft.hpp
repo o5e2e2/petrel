@@ -6,6 +6,7 @@
 class NodePerft : public NodeDeep {
 public:
     NodePerft (NodeDeep& p) : NodeDeep(p) {}
+    NodePerft (Node& p, depth_t d) : NodeDeep(p, d) {}
     bool visit(Square from, Square to) override;
 };
 

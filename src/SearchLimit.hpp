@@ -29,9 +29,9 @@ class SearchLimit {
 public:
     SearchLimit ();
 
-    depth_t      getDepth()  const { return depth; }
-    node_count_t getNodes()  const { return nodes; }
-    bool         getDivide() const { return divide; }
+    depth_t      getDepth() const { return depth; }
+    node_count_t getNodes() const { return nodes; }
+    bool         isDivide() const { return divide; }
 
     const UciPosition& getPositionMoves() const { return positionMoves; }
 

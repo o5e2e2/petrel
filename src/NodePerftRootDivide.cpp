@@ -17,8 +17,7 @@ bool NodePerftRootDivide::visit(Square from, Square to) {
             CUT ( NodePerft(*this).visit(from, to) );
     }
 
-    Move move = getSide(My).createMove(from, to);
+    Move move = createMove(from, to);
     control.info.report_perft_divide(move);
-
     return false;
 }

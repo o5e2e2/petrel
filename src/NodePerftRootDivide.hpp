@@ -3,8 +3,6 @@
 
 #include "NodeDeep.hpp"
 
-class NodePerftRoot;
-
 class NodePerftRootDivide : public NodeDeep {
 public:
     NodePerftRootDivide(const PositionMoves& p, SearchControl& c, depth_t d) : NodeDeep(p, c, d) {}

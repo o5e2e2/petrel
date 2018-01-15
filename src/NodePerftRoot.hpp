@@ -1,15 +1,14 @@
 #ifndef NODE_PERFT_ROOT_HPP
 #define NODE_PERFT_ROOT_HPP
 
-#include "NodeDeep.hpp"
+#include "Node.hpp"
 
-class NodePerftRoot : public NodeDeep {
-    const bool isDivide;
-    bool searchIteration();
+class NodePerftRoot : public Node {
+    bool searchIteration(depth_t);
     bool iterativeDeepening();
 
 public:
-    NodePerftRoot (const PositionMoves& p, SearchControl& c, depth_t d, bool b) : NodeDeep(p, c, d), isDivide(b) {}
+    NodePerftRoot (const PositionMoves& p, SearchControl& c) : Node(p, c) {}
     bool visitChildren() override;
 };
 

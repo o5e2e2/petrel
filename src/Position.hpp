@@ -36,6 +36,7 @@ public:
 
     Zobrist generateZobrist() const;
     Zobrist createZobrist(Square, Square) const;
+    Move createMove(Square from, Square to) const { return side[My].createMove(from, to); }
 
     void playMove(const Position&, Square, Square, Zobrist);
     void playMove(const Position& parent, Square from, Square to) { playMove(parent, from, to, createZobrist(from, to)); }
@@ -44,8 +45,8 @@ public:
     //initial position setup
     void clear();
     bool drop(Side, PieceType, Square);
-    bool setCastling(Side si, File fi) { return side[si].setCastling(fi); }
-    bool setCastling(Side si, CastlingSide cs) { return side[si].setCastling(cs); }
+    bool setCastling(Side si, File file) { return side[si].setCastling(file); }
+    bool setCastling(Side si, CastlingSide castlingSide) { return side[si].setCastling(castlingSide); }
     bool setEnPassant(File);
     bool setup();
 };
