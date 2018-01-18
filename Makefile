@@ -11,10 +11,12 @@ TEST_DIR ?= ./test
 
 ifeq ($(debug),yes)
 	BUILD_DIR = $(DEBUG_DIR)
-	CXXFLAGS += -DDEBUG -g
+	CXXFLAGS += -DDEBUG -ggdb
+	OPTIMIZATIONS = -Og
 else
 	BUILD_DIR = $(RELEASE_DIR)
 	CXXFLAGS += -DNDEBUG
+	OPTIMIZATIONS = -Ofast -flto -finline-functions -funroll-all-loops
 endif
 
 TARGET ?= $(BUILD_DIR)/petrel
@@ -24,7 +26,6 @@ LIBS = -pthread
 OPTIONS  = -std=c++11 -mssse3 -march=native -mtune=native
 OPTIONS += -fno-rtti -fno-common -fno-exceptions
 
-OPTIMIZATIONS = -Ofast -flto -finline-functions -funroll-all-loops
 WARNINGS += -pedantic -Wall -Wextra -Wuninitialized -Wpointer-arith -Wcast-qual -Wcast-align
 WARNINGS += -Wconversion -Wshadow
 
