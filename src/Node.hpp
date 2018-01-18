@@ -14,7 +14,7 @@ protected:
     Node (Node& p) : PositionMoves(), parent(p), control(p.control) {}
 
 public:
-    Node (const PositionMoves& pm, SearchControl& c) : PositionMoves(pm), parent(*this), control(c) {}
+    Node (const PositionMoves& p, SearchControl& c) : PositionMoves(p), parent(*this), control(c) {}
     virtual ~Node() {}
 
     virtual bool visit(Square, Square) { return false; };

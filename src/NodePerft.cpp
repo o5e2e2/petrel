@@ -28,7 +28,7 @@ bool NodePerft::visit(Square from, Square to) {
     auto perftNodesBefore = info.get(PerftNodes);
 
     if (draft >= 3) {
-        CUT ( NodePerft(*this).visitChildren() );
+        CUT ( NodePerft(*this, draft-1).visitChildren() );
     }
     else {
         assert (draft == 2);

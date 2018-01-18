@@ -14,7 +14,7 @@ bool NodePerftRootDivide::visit(Square from, Square to) {
             break;
 
         default:
-            CUT ( NodePerft(*this).visit(from, to) );
+            CUT ( NodePerft(*this, draft-1).visit(from, to) );
     }
 
     Move move = createMove(from, to);

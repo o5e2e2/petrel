@@ -1,12 +1,12 @@
 #ifndef NODE_PERFT_HPP
 #define NODE_PERFT_HPP
 
-#include "NodeDeep.hpp"
+#include "Node.hpp"
 
-class NodePerft : public NodeDeep {
+class NodePerft : public Node {
+    depth_t draft;
 public:
-    NodePerft (NodeDeep& p) : NodeDeep(p) {}
-    NodePerft (Node& p, depth_t d) : NodeDeep(p, d) {}
+    NodePerft (Node& p, depth_t d) : Node(p), draft(d) {}
     bool visit(Square from, Square to) override;
 };
 
