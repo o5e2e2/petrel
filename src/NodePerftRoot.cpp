@@ -1,5 +1,5 @@
 #include "NodePerftRoot.hpp"
-#include "NodePerft.hpp"
+#include "NodePerftTT.hpp"
 #include "NodePerftLeaf.hpp"
 #include "NodePerftRootDivide.hpp"
 #include "Move.hpp"
@@ -19,7 +19,7 @@ bool NodePerftRoot::searchIteration(depth_t draft) {
                 break;
 
             default:
-                CUT ( NodePerft(*this, draft-1).visitChildren() );
+                CUT ( NodePerftTT(*this, draft-1).visitChildren() );
         }
     }
 

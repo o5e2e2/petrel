@@ -4,6 +4,7 @@
 #include "Node.hpp"
 
 class NodePerft : public Node {
+protected:
     depth_t draft;
 public:
     NodePerft (Node& p, depth_t d) : Node(p), draft(d) {}

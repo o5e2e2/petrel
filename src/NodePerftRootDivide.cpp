@@ -1,6 +1,6 @@
 #include "NodePerftRootDivide.hpp"
-#include "NodePerft.hpp"
 #include "NodePerftLeaf.hpp"
+#include "NodePerftTT.hpp"
 #include "Move.hpp"
 
 bool NodePerftRootDivide::visit(Square from, Square to) {
@@ -14,7 +14,7 @@ bool NodePerftRootDivide::visit(Square from, Square to) {
             break;
 
         default:
-            CUT ( NodePerft(*this, draft-1).visit(from, to) );
+            CUT ( NodePerftTT(*this, draft-1).visit(from, to) );
     }
 
     Move move = createMove(from, to);
