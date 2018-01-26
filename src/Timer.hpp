@@ -12,21 +12,21 @@ public:
 private:
     TimerPool* timerPool;
     TimerPool::_t timerHandle;
-    ThreadControl* slaveThread;
-    ThreadControl::_t slaveSequence;
+    ThreadControl* thread;
+    ThreadControl::Sequence sequence;
     Duration duration;
 
     void thread_body() override {
         std::this_thread::sleep_for(duration);
-        slaveThread->commandStop(slaveSequence);
+        thread->commandStop(sequence);
 
         timerPool->release(std::move(timerHandle));
     }
 
 public:
-    static void run(TimerPool& timerPool, Duration duration, ThreadControl& slaveThread, ThreadControl::_t slaveSequence) {
+    static void run(TimerPool& timerPool, Duration duration, ThreadControl& thread, ThreadControl::Sequence sequence) {
         //zero duration means no timer
-        if (!slaveSequence || duration == Duration::zero()) {
+        if (!sequence || duration == Duration::zero()) {
             return;
         }
 
@@ -36,8 +36,8 @@ public:
 
         timer.timerPool = &timerPool;
         timer.timerHandle = timerHandle;
-        timer.slaveThread = &slaveThread;
-        timer.slaveSequence = slaveSequence;
+        timer.thread = &thread;
+        timer.sequence = sequence;
         timer.duration = duration;
 
         timer.commandRun();

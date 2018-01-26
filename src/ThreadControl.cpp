@@ -34,7 +34,7 @@ void ThreadControl::signal(Status to, Condition condition) {
 }
 
 template <typename Condition>
-ThreadControl::_t ThreadControl::signalSequence(Status to, Condition condition) {
+ThreadControl::Sequence ThreadControl::signalSequence(Status to, Condition condition) {
     statusLock.lock();
     if (!condition()) {
         statusLock.unlock();
@@ -43,7 +43,7 @@ ThreadControl::_t ThreadControl::signalSequence(Status to, Condition condition) 
 
     ++sequence;
     if (sequence == 0) { sequence = 1; } //wrap around
-    auto result = sequence;
+    Sequence result = sequence;
     status = to;
 
     statusLock.unlock();
@@ -59,13 +59,13 @@ void ThreadControl::signal(Status from, Status to) {
     signal(to, [this, from]() { return isStatus(from); });
 }
 
-void ThreadControl::signal(_t seq, Status from, Status to) {
+void ThreadControl::signal(Sequence seq, Status from, Status to) {
     if (seq != 0) {
         signal(to, [this, seq, from]() { return sequence == seq && isStatus(from); });
     }
 }
 
-ThreadControl::_t ThreadControl::signalSequence(Status from, Status to) {
+ThreadControl::Sequence ThreadControl::signalSequence(Status from, Status to) {
     return signalSequence(to, [this, from]() { return isStatus(from); });
 }
 

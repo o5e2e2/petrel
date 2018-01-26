@@ -19,8 +19,8 @@ public:
     SearchLimit searchLimit;
 
 private:
-    SearchThread     searchThread;
-    SearchThread::_t searchSequence;
+    SearchThread searchThread;
+    SearchThread::Sequence searchSequence;
 
     Node* root;  //virtual
 
