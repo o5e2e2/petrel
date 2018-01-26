@@ -17,9 +17,7 @@ class VectorPiType {
         SliderMask = ::singleton<_t>(Queen)|::singleton<_t>(Rook)|::singleton<_t>(Bishop),
         LeaperMask = ::singleton<_t>(King)|::singleton<_t>(Knight)|::singleton<_t>(Pawn),
         MinorMask = ::singleton<_t>(Bishop)|::singleton<_t>(Knight),
-        PieceTypeMask = SliderMask|LeaperMask,
-        CastlingMask  = ::singleton<_t>(Castling),
-        EnPassantMask = ::singleton<_t>(EnPassant)
+        PieceTypeMask = SliderMask|LeaperMask
     };
 
     Value _v;
@@ -47,16 +45,16 @@ public:
     PieceType typeOf(Pi pi) const { assertValid(pi); return static_cast<PieceType::_t>( ::bsf(static_cast<unsigned>(_v[pi])) ); }
     bool isPawn(Pi pi) const { return is(pi, Pawn); }
 
-    VectorPiMask castlingRooks() const { return _v.allOf(CastlingMask); }
+    VectorPiMask castlingRooks() const { return _v.anyOf(Castling); }
     bool isCastling(Pi pi) const { return is(pi, Castling); }
     void setCastling(Pi pi) { assert (is(pi, Rook)); assert (!isCastling(pi)); _v.set(pi, Castling); }
     void clearCastling(Pi pi) { assert (!isCastling(pi) || is(pi, Rook)); _v.clear(pi, Castling); }
     void clearCastlings() { _v.clear(Castling); }
 
-    VectorPiMask enPassantPawns() const { return _v.allOf(EnPassantMask); }
+    VectorPiMask enPassantPawns() const { return _v.anyOf(EnPassant); }
     Pi   getEnPassant() const { Pi pi{ enPassantPawns().index() }; assert (isPawn(pi)); return pi; }
     bool isEnPassant(Pi pi) const { assert (isPawn(pi)); return _v.is(pi, EnPassant); }
-    void setEnPassant(Pi pi) { _v.set(pi, EnPassant); }
+    void setEnPassant(Pi pi) { assert (isPawn(pi)); _v.set(pi, EnPassant); }
     void clearEnPassant(Pi pi) { assert (isEnPassant(pi)); _v.clear(pi, EnPassant); }
     void clearEnPassants() { _v.clear(EnPassant); }
 

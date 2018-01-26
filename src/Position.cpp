@@ -190,7 +190,7 @@ void Position::playPawnMove(Pi pi, Square from, Square to) {
             return;
         }
 
-        //promotion withoout capture
+        //promotion without capture
         updateSliderAttacksKing<My>(MY.attacksTo(from, promotedTo) | pi);
         setSliderAttacks<Op>(OP.attacksTo(~from, ~promotedTo));
         return;

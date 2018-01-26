@@ -34,11 +34,7 @@ public:
     constexpr bool is(Pi pi, index_type _Bit) const { return is(pi, single(_Bit)); }
 
     VectorPiMask anyOf(index_type _Bit) const {
-        return allOf(single(_Bit));
-    }
-
-    VectorPiMask allOf(element_type bitmask) const {
-        _t mask = ::vectorOfAll[bitmask];
+        _t mask = singleVector(_Bit);
         return _mm_cmpeq_epi8(mask, this->_v & mask);
     }
 

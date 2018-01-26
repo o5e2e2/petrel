@@ -182,7 +182,8 @@ void PositionSide::promote(Pi pi, PromoType ty, Square from, Square to) {
 
 void PositionSide::setLeaperAttack(Pi pi, PieceType ty, Square to) {
     assertValid(pi);
-    assert (!isSlider(pi));
+    assert (typeOf(pi) == ty);
+    assert (isLeaper(ty));
     attacks.set(pi, ::pieceTypeAttack(ty, to));
 }
 
