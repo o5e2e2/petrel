@@ -18,8 +18,7 @@ private:
 
     void thread_body() override {
         std::this_thread::sleep_for(duration);
-        thread->commandStop(sequence);
-
+        thread->stop(sequence);
         timerPool->release(std::move(timerHandle));
     }
 
@@ -40,7 +39,7 @@ public:
         timer.sequence = sequence;
         timer.duration = duration;
 
-        timer.commandRun();
+        timer.start();
     }
 };
 

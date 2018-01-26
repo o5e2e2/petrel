@@ -7,7 +7,7 @@
 
 class ThreadControl {
 public:
-    typedef int Sequence;
+    typedef unsigned int Sequence;
 
 private:
     SpinLock statusLock;
@@ -39,11 +39,8 @@ public:
     bool isReady()   const { return isStatus(Ready); }
     bool isStopped() const { return isStatus(Abort); }
 
-    Sequence commandRun() { return signalSequence(Ready, Run); }
-    void commandStop() { signal(Run, Abort); }
-    void commandStop(Sequence seq) { signal(seq, Run, Abort); }
-
-    void stop(Sequence seq) { commandStop(seq); wait(Ready); }
+    Sequence start() { return signalSequence(Ready, Run); }
+    void stop(Sequence seq) { signal(seq, Run, Abort); wait(Ready); }
 };
 
 #endif
