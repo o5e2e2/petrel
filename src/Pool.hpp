@@ -17,11 +17,11 @@ class Pool {
     typedef SpinLock::Guard Lock;
 
 public:
-    typedef typename List::iterator _t;
+    typedef typename List::iterator Handle;
 
-    static Element& fetch(const _t& that) { return *std::next(that); }
+    static Element& fetch(const Handle& iterator) { return *std::next(iterator); }
 
-    _t acquire() {
+    Handle acquire() {
         Lock lock(listLock);
 
         if (ready.empty()) {
@@ -35,7 +35,7 @@ public:
     }
 
     //return the used element to the ready list
-    void release(_t&& element) {
+    void release(Handle&& element) {
         if (element != ready.end()) {
             Lock lock(listLock);
 

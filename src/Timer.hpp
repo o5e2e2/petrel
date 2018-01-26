@@ -11,7 +11,7 @@ public:
 
 private:
     TimerPool* timerPool;
-    TimerPool::_t timerHandle;
+    TimerPool::Handle timerHandle;
     ThreadControl* thread;
     ThreadControl::Sequence sequence;
     Duration duration;
@@ -30,7 +30,7 @@ public:
             return;
         }
 
-        TimerPool::_t timerHandle = timerPool.acquire();
+        TimerPool::Handle timerHandle = timerPool.acquire();
         Timer& timer = timerPool.fetch(timerHandle);
         assert (timer.isReady());
 
