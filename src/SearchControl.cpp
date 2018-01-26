@@ -31,6 +31,8 @@ void SearchControl::go() {
 
     root = new NodePerftRoot(searchLimit.getPositionMoves(), *this);
     searchThread.set(root);
-    searchSequence = searchThread.start();
-    Timer::run(timerPool, searchLimit.getThinkingTime(), searchThread, searchSequence);
+    auto duration = searchLimit.getThinkingTime();
+    auto sequence = searchThread.start();
+    searchSequence = sequence;
+    timer.start(duration, searchThread, sequence);
 }

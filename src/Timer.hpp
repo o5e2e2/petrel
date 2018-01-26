@@ -5,13 +5,14 @@
 #include "Pool.hpp"
 #include "ThreadControl.hpp"
 
-class Timer : private ThreadControl {
-public:
-    typedef Pool<Timer> TimerPool;
+class TimerThread;
+typedef Pool<TimerThread> TimerPool;
 
-private:
-    TimerPool* timerPool;
-    TimerPool::Handle timerHandle;
+class TimerThread : private ThreadControl {
+    friend class Timer;
+
+    TimerPool* pool;
+    TimerPool::Handle handle;
     ThreadControl* thread;
     ThreadControl::Sequence sequence;
     Duration duration;
@@ -19,22 +20,24 @@ private:
     void thread_body() override {
         std::this_thread::sleep_for(duration);
         thread->stop(sequence);
-        timerPool->release(std::move(timerHandle));
+        pool->release(std::move(handle));
     }
+};
 
+class Timer : private TimerPool {
 public:
-    static void run(TimerPool& timerPool, Duration duration, ThreadControl& thread, ThreadControl::Sequence sequence) {
+    void start(Duration duration, ThreadControl& thread, ThreadControl::Sequence sequence) {
         //zero duration means no timer
         if (!sequence || duration == Duration::zero()) {
             return;
         }
 
-        TimerPool::Handle timerHandle = timerPool.acquire();
-        Timer& timer = timerPool.fetch(timerHandle);
+        auto handle = acquire();
+        auto& timer = fetch(handle);
         assert (timer.isReady());
 
-        timer.timerPool = &timerPool;
-        timer.timerHandle = timerHandle;
+        timer.pool = this;
+        timer.handle = handle;
         timer.thread = &thread;
         timer.sequence = sequence;
         timer.duration = duration;

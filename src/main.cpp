@@ -9,7 +9,6 @@
 #include "OutsideSquares.hpp"
 #include "PerftRecord.hpp"
 #include "PieceTypeAttack.hpp"
-#include "Timer.hpp"
 #include "Uci.hpp"
 #include "VectorOf.hpp"
 #include "VectorPiOrder.hpp"

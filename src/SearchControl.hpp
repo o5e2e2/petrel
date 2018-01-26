@@ -25,7 +25,7 @@ private:
     Node* root;  //virtual
 
     HashMemory transpositionTable;
-    Timer::TimerPool timerPool;
+    Timer timer;
 
     SearchControl (const SearchControl&) = delete;
     SearchControl& operator = (const SearchControl&) = delete;
