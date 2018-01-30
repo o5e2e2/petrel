@@ -2,7 +2,6 @@
 #include "BetweenSquares.hpp"
 #include "CastlingRules.hpp"
 #include "PieceTypeAttack.hpp"
-#include "OutsideSquares.hpp"
 
 #define MY side[My]
 #define OP side[Op]
@@ -42,22 +41,6 @@ bool Position::drop(Side My, PieceType ty, Square to) {
         MY.updatePinner(pi, ~OP.kingSquare());
     }
     return true;
-}
-
-template <Side::_t My>
-bool Position::isPinned(Square opPinned, Bb myOccupied, Bb allOccupied) const {
-    constexpr Side Op{~My};
-
-    Square opKingSquare = ~OP.kingSquare();
-
-    Bb pinners = ::outside(opKingSquare, opPinned) & myOccupied;
-    if (pinners.none()) {
-        return false;
-    }
-
-    Square sq = (opKingSquare < opPinned)? pinners.smallestOne() : pinners.largestOne();
-    return MY.pinners()[MY.pieceOn(sq)]
-        && (::between(opKingSquare, sq) & (allOccupied - opPinned)).none();
 }
 
 template <Side::_t My>
@@ -145,6 +128,22 @@ void Position::playCastling(Pi rook, Square rookFrom, Square kingFrom) {
 }
 
 template <Side::_t My>
+bool Position::isPinned(Bb allOccupiedWithoutPinned) const {
+    constexpr Side Op{~My};
+
+    Square opKingSquare = ~OP.kingSquare();
+
+    for (Pi pinner : MY.pinners()) {
+        Bb pinLine = ::between(opKingSquare, MY.squareOf(pinner));
+        if ((pinLine & allOccupiedWithoutPinned).none()) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+template <Side::_t My>
 void Position::setLegalEnPassant(Pi pi) {
     constexpr Side Op{~My};
 
@@ -162,7 +161,7 @@ void Position::setLegalEnPassant(Pi pi) {
         return;
     }
 
-    if (isPinned<My>(from, MY.occupiedSquares(), OCCUPIED + from)) {
+    if (isPinned<My>(OCCUPIED)) {
         assert ((MY.attacksTo(~OP.kingSquare()) % pi).any());
         return; //discovered check found
     }
@@ -171,7 +170,7 @@ void Position::setLegalEnPassant(Pi pi) {
     for (Square killer : killers) {
         assert (killer.is(Rank4));
 
-        if (!isPinned<My>(killer, MY.occupiedSquares() - to, OCCUPIED + ep - to)) {
+        if (!isPinned<My>(OCCUPIED - killer + ep - to)) {
             OP.markEnPassant(OP.pieceOn(~killer));
             MY.setEnPassant(pi);
         }
@@ -379,14 +378,14 @@ Zobrist Position::createZobrist(Square from, Square to) const {
                 return Zobrist{oz, mz};
             }
 
-            if (isPinned<My>(from, MY.occupiedSquares(), OCCUPIED + ep)) {
+            if (isPinned<My>(OCCUPIED - from + ep)) {
                 return Zobrist{oz, mz}; //discovered check found
             }
 
             for (Square killer : killers) {
                 assert (killer.is(Rank4));
 
-                if (!isPinned<My>(killer, MY.occupiedSquares(), OCCUPIED + ep)) {
+                if (!isPinned<My>(OCCUPIED - killer + ep)) {
                     mz.setEnPassant(file);
                     return Zobrist{oz, mz};
                 }
@@ -456,7 +455,7 @@ bool Position::setEnPassant(File file) {
     if (!OP.isPawn(victim)) { return false; }
 
     //check against illegal en passant set field like "8/5bk1/8/2Pp4/8/1K6/8/8 w - d6"
-    if (isPinned<Op>(victimSquare, OP.occupiedSquares(), OP.occupied())) {
+    if (isPinned<Op>(OP.occupied() - victimSquare)) {
         return false;
     }
 

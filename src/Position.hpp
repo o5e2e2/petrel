@@ -10,7 +10,7 @@ protected:
     Zobrist zobrist;
 
 private:
-    template <Side::_t> bool isPinned(Square, Bb, Bb) const;
+    template <Side::_t> bool isPinned(Bb) const;
     template <Side::_t> void movePiece(Pi, Square, Square);
     template <Side::_t> void movePawn(Pi, Square, Square);
     template <Side::_t> void setSliderAttacks(VectorPiMask);

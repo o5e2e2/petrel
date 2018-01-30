@@ -6,7 +6,6 @@
 #include "BitArray128Reverse.hpp"
 #include "CastlingRules.hpp"
 #include "Evaluation.hpp"
-#include "OutsideSquares.hpp"
 #include "PerftRecord.hpp"
 #include "PieceTypeAttack.hpp"
 #include "Uci.hpp"
@@ -16,7 +15,6 @@
 #include "Zobrist.hpp"
 
 const BetweenSquares between; //32k
-const OutsideSquares outside; //32k
 const ReverseBb::Direction ReverseBb::direction; //12k
 const ReverseBb::Singleton ReverseBb::singleton; //1k
 const PieceTypeAttack pieceTypeAttack; //3k

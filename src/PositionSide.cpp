@@ -270,8 +270,9 @@ const Bb& PositionSide::pinRayFrom(Square from) const {
 
 void PositionSide::updatePinner(Pi pi, Square opKingSquare) {
     assert (isSlider(pi));
+    Square sq = squareOf(pi);
 
-    if ( ::pieceTypeAttack(typeOf(pi), opKingSquare)[squareOf(pi)] ) {
+    if (::pieceTypeAttack(typeOf(pi), sq)[opKingSquare] && ::between(opKingSquare, sq).any()) {
         types.setPinner(pi);
     }
     else {

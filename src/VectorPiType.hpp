@@ -7,7 +7,7 @@
 class VectorPiType {
     //Castling: rooks with castling rights
     //EnPassant: pawns that can either be legally captured en passant or perform a legal en passant capture (depends on side to move)
-    //Pinner: sliding pieces that can directly attack enemy king square on empty board
+    //Pinner: sliding pieces that can potentially pin a piece to enemy king
 
     typedef ::Index<8, piece_type_t> Index;
 
