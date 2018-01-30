@@ -5,8 +5,9 @@
 #include "VectorPiBit.hpp"
 
 class VectorPiType {
-    //Castling: rooks with castling rights;
-    //EnPassant: pawns that can either be legally captured en passant or perform a legal en passant capture (depends on side to move);
+    //Castling: rooks with castling rights
+    //EnPassant: pawns that can either be legally captured en passant or perform a legal en passant capture (depends on side to move)
+    //Pinner: sliding pieces that can directly attack enemy king square on empty board
 
     typedef ::Index<8, piece_type_t> Index;
 
@@ -51,12 +52,16 @@ public:
     void clearCastling(Pi pi) { assert (!isCastling(pi) || is(pi, Rook)); _v.clear(pi, Castling); }
     void clearCastlings() { _v.clear(Castling); }
 
-    VectorPiMask enPassantPawns() const { return _v.anyOf(EnPassant); }
+    VectorPiMask enPassantPawns() const { return _v.anyOf(EnPassant) & _v.anyOf(Pawn); }
     Pi   getEnPassant() const { Pi pi{ enPassantPawns().index() }; assert (isPawn(pi)); return pi; }
     bool isEnPassant(Pi pi) const { assert (isPawn(pi)); return _v.is(pi, EnPassant); }
     void setEnPassant(Pi pi) { assert (isPawn(pi)); _v.set(pi, EnPassant); }
     void clearEnPassant(Pi pi) { assert (isEnPassant(pi)); _v.clear(pi, EnPassant); }
-    void clearEnPassants() { _v.clear(EnPassant); }
+    void clearEnPassants() { _v.clearIf(EnPassant, Pawn); }
+
+    VectorPiMask pinners() const { return _v.anyOf(Pinner) & _v.anyOf(SliderMask); }
+    void setPinner(Pi pi) { assert (isSlider(pi)); _v.set(pi, Pinner); }
+    void clearPinner(Pi pi) { assert (isSlider(pi)); _v.clear(pi, Pinner); }
 
     void clear() { _v.clear(); }
     void clear(Pi pi) { assert (!_v.is(pi, King) || _v.is(pi, Rook) || _v.is(pi, Pawn)); _v.clear(pi); }

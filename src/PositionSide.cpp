@@ -268,11 +268,21 @@ const Bb& PositionSide::pinRayFrom(Square from) const {
     return ::between(kingSquare(), from);
 }
 
-bool PositionSide::canBeAttacked(Square from, Square to) const {
-    Pi pi = pieceOn(from);
-    bool result = ::pieceTypeAttack(typeOf(pi), from)[to];
-    assert (!result || isSlider(pi));
-    return result;
+void PositionSide::updatePinner(Pi pi, Square opKingSquare) {
+    assert (isSlider(pi));
+
+    if ( ::pieceTypeAttack(typeOf(pi), opKingSquare)[squareOf(pi)] ) {
+        types.setPinner(pi);
+    }
+    else {
+        types.clearPinner(pi);
+    }
+}
+
+void PositionSide::updatePinners(Square opKingSquare) {
+    for (Pi pi : sliders()) {
+        updatePinner(pi, opKingSquare);
+    }
 }
 
 Move PositionSide::createMove(Square from, Square to) const {

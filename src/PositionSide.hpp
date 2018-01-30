@@ -103,7 +103,10 @@ public:
     File   enPassantFile()   const { return File{ enPassantSquare() }; }
 
     const Bb& pinRayFrom(Square) const;
-    bool canBeAttacked(Square from, Square to) const;
+
+    VectorPiMask pinners() const { return types.pinners(); }
+    void updatePinner(Pi, Square opKing);
+    void updatePinners(Square opKing);
 
     const MatrixPiBb& allAttacks() const { return attacks; }
     VectorPiMask attacksTo(Square a) const { return attacks[a]; }

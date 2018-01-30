@@ -38,6 +38,9 @@ bool Position::drop(Side My, PieceType ty, Square to) {
 
     Pi pi{ (MY.alivePieces() | Pi{TheKing}).seekVacant() };
     MY.drop(pi, ty, to);
+    if (isSlider(ty)) {
+        MY.updatePinner(pi, ~OP.kingSquare());
+    }
     return true;
 }
 
@@ -52,9 +55,9 @@ bool Position::isPinned(Square opPinned, Bb myOccupied, Bb allOccupied) const {
         return false;
     }
 
-    Square pinner = (opKingSquare < opPinned)? pinners.smallestOne() : pinners.largestOne();
-    return MY.canBeAttacked(pinner, opKingSquare)
-        && (::between(opKingSquare, pinner) & (allOccupied - opPinned)).none();
+    Square sq = (opKingSquare < opPinned)? pinners.smallestOne() : pinners.largestOne();
+    return MY.pinners()[MY.pieceOn(sq)]
+        && (::between(opKingSquare, sq) & (allOccupied - opPinned)).none();
 }
 
 template <Side::_t My>
@@ -116,6 +119,9 @@ void Position::movePiece(Pi pi, Square from, Square to) {
     assert (!ty.is(King));
 
     MY.move(pi, ty, from, to);
+    if (MY.isSlider(pi)) {
+        MY.updatePinner(pi, ~OP.kingSquare());
+    }
 }
 
 template <Side::_t My>
@@ -126,6 +132,8 @@ void Position::playCastling(Pi rook, Square rookFrom, Square kingFrom) {
     Square rookTo = CastlingRules::castlingSide(kingFrom, rookFrom).is(QueenSide)? D1 : F1;
 
     MY.castle(rook, rookFrom, rookTo, kingFrom, kingTo);
+    MY.updatePinner(rook, ~OP.kingSquare());
+    OP.updatePinners(~kingTo);
 
     //TRICK: castling should not affect opponent's sliders, otherwise it is check or pin
     //TRICK: castling rook should attack 'kingFrom' square
@@ -180,6 +188,9 @@ void Position::playPawnMove(Pi pi, Square from, Square to) {
         Square promotedTo = Square(File(to), Rank8);
 
         MY.promote(pi, ty, from, promotedTo);
+        if (isSlider(ty)) {
+            MY.updatePinner(pi, ~OP.kingSquare());
+        }
         setStage<Op>();
 
         if (OP.isOccupied(~promotedTo)) {
@@ -237,6 +248,7 @@ void Position::playKingMove(Square from, Square to) {
     assert (MY.typeOf(pi).is(King));
 
     MY.moveKing(from, to);
+    OP.updatePinners(~to);
 
     if (OP.isOccupied(~to)) {
         //capture

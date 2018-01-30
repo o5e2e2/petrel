@@ -61,6 +61,16 @@ public:
         (*this)[pi] |= mask;
     }
 
+    //clear 'cleanBit' only where 'ifBit' is set
+    void clearIf(index_type cleanBit, index_type ifBit) {
+        clearIf(cleanBit, single(ifBit));
+    }
+
+    //clear 'cleanBit' only where any of 'ifAnyMask' bits are set
+    void clearIf(index_type cleanBit, element_type ifAnyMask) {
+        this->_v &= exceptSingleVector(cleanBit) | _mm_cmpeq_epi8(this->_v & ::vectorOfAll[ifAnyMask], ::vectorOfAll[0]);
+    }
+
 };
 
 #endif

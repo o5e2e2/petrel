@@ -39,11 +39,22 @@ typedef Index<2, castling_side_t> CastlingSide;
 enum piece_index_t { TheKing };
 typedef Index<16, piece_index_t> Pi; //piece index
 
-enum piece_type_t { Queen, Rook, Bishop, Knight, Pawn, King, KingEndgame, Castling = KingEndgame, EnPassant };
+enum piece_type_t {
+    Queen = 0,
+    Rook = 1,
+    Bishop = 2,
+    Knight = 3,
+    Pawn = 4,
+    King = 5,
+    Castling = 6, KingEndgame = Castling,
+    Special = 7, EnPassant = Special, Pinner = Special
+};
 typedef Index<3, piece_type_t> SliderType;
 typedef Index<4, piece_type_t> PromoType;
 typedef Index<6, piece_type_t> PieceType;
 typedef Index<7, piece_type_t> PieceEvalType;
+
+constexpr bool isSlider(PromoType::_t ty) { return ty < Knight; }
 constexpr bool isLeaper(PromoType::_t ty) { return ty >= Knight; }
 
 //encoding of the promoted piece type inside 12-bit move

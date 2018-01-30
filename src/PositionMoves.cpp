@@ -117,15 +117,10 @@ template <Side::_t My>
 void PositionMoves::excludePinnedMoves(VectorPiMask pinnerCandidates) {
     constexpr Side Op{~My};
 
-    Square kingSquare = MY.kingSquare();
-
     for (Pi pi : pinnerCandidates) {
         Square pinFrom{~OP.squareOf(pi)};
 
-        bool isPinnable = ::pieceTypeAttack(OP.typeOf(pi), pinFrom)[kingSquare];
-        if (!isPinnable) {
-            continue;
-        }
+        assert (::pieceTypeAttack(OP.typeOf(pi), pinFrom)[MY.kingSquare()]);
 
         Bb pinRay = MY.pinRayFrom(pinFrom);
         Bb betweenPieces{pinRay & OCCUPIED};
@@ -164,7 +159,7 @@ void PositionMoves::generateCheckEvasions(Bb attackedSquares) {
         //pawns moves are special case
         correctCheckEvasionsByPawns<My>(checkLine, checkFrom);
 
-        excludePinnedMoves<My>(OP.sliders() % checkers);
+        excludePinnedMoves<My>(OP.pinners() % checkers);
 
         populateUnderpromotions<My>();
 
@@ -199,7 +194,7 @@ void PositionMoves::generateMoves() {
     generateCastlingMoves<My>(attackedSquares);
 
     //TRICK: castling encoded as a rook move, so we implicitly cover the case of pinned castling in Chess960
-    excludePinnedMoves<My>(OP.sliders());
+    excludePinnedMoves<My>(OP.pinners());
 
     populateUnderpromotions<My>();
 
