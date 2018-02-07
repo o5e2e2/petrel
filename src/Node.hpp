@@ -7,16 +7,17 @@
 #define CUT(found) { if (found) { return true; } } ((void)0)
 
 class Node : public PositionMoves {
-protected:
+public:
     Node& parent; //virtual
     SearchControl& control;
 
+protected:
     Node (Node& p) : PositionMoves(), parent(p), control(p.control) {}
+    Node (const PositionMoves& p, SearchControl& c) : PositionMoves(p), parent(*this), control(c) {}
+    Node (const PositionMoves& p, Node& n) : PositionMoves(p), parent(n), control(n.control) {}
 
 public:
-    Node (const PositionMoves& p, SearchControl& c) : PositionMoves(p), parent(*this), control(c) {}
     virtual ~Node() {}
-
     virtual bool visit(Square, Square) { return false; };
     virtual bool visitChildren();
 };

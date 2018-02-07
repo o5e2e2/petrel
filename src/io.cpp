@@ -114,7 +114,7 @@ ostream& app_copyright(ostream& out) {
     out << GIT_ORIGIN << '\n';
 #endif
 
-    out << "(c) 2006-2017 Aleks Peshkov\n";
+    out << "(c) 2006-2018 Aleks Peshkov\n";
 
     return out;
 }

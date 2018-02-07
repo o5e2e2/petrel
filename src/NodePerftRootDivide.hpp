@@ -1,12 +1,15 @@
 #ifndef NODE_PERFT_ROOT_DIVIDE_HPP
 #define NODE_PERFT_ROOT_DIVIDE_HPP
 
-#include "Node.hpp"
+#include "NodePerft.hpp"
 
-class NodePerftRootDivide : public Node {
-    depth_t draft;
+class NodePerftRoot;
+
+class NodePerftRootDivide : public NodePerft {
+    index_t moveCount;
+
 public:
-    NodePerftRootDivide(const PositionMoves& p, SearchControl& c, depth_t d) : Node(p, c), draft(d) {}
+    NodePerftRootDivide(NodePerftRoot& p);
     bool visit(Square from, Square to) override;
 };
 

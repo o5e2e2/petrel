@@ -88,7 +88,7 @@ void UciSearchInfo::info_currmove() const {
     ob << "info currmovenumber " << currmovenumber;
     ob << " currmove "; write(ob, currmove);
     nps(ob);
-    ob << " score " << get(PerftNodes) - get(PerftDivideNodes) << '\n';
+    ob << " score " << get(PerftNodes) << '\n';
 }
 
 void UciSearchInfo::write(io::ostream& ob, const Move& move) const {

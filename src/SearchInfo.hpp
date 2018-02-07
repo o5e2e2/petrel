@@ -45,8 +45,8 @@ public:
 
     void clear();
 
-    void report_perft_divide(Move);
-    void report_perft_depth(depth_t);
+    void report_perft_divide(Move, index_t, node_count_t);
+    void report_perft_depth(depth_t, node_count_t);
 
     node_count_t get(Index i) const { return _v[i]; }
     void inc(Index i, node_count_t n = 1) { _v[i] += n; }
