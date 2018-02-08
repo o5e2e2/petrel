@@ -62,11 +62,7 @@ bool next(istream& in, literal_type token) {
 }
 
 ostream& app_version(ostream& out) {
-    out << "Petrel ";
-
-#ifdef GIT_HASH
-    out << GIT_HASH << ' ';
-#endif
+    out << "petrel ";
 
 #ifdef GIT_DATE
     out << GIT_DATE;
@@ -104,29 +100,21 @@ ostream& app_version(ostream& out) {
     out << " DEBUG";
 #endif
 
-    return out;
-}
-
-ostream& app_copyright(ostream& out) {
-    out << app_version << '\n';
+    out << '\n';
 
 #ifdef GIT_ORIGIN
-    out << GIT_ORIGIN << '\n';
+    out << GIT_ORIGIN << ' ';
+#else
+    out << "https://bitbucket.org/alekspeshkov/petrel/src/";
 #endif
 
-    out << "(c) 2006-2018 Aleks Peshkov\n";
+#ifdef GIT_HASH
+    out << GIT_HASH;
+#endif
+
+    out << '\n';
 
     return out;
-}
-
-ostream& app_usage(ostream& out) {
-    return out
-        << "Usage: petrel [OPTION]\n"
-        << "UCI Chess engine. Plays the game of chess.\n"
-        << "\n"
-        << "  --help        display this help and exit\n"
-        << "  --version     output version information and exit\n"
-    ;
 }
 
 } //end of namespace io

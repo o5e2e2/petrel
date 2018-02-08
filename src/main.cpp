@@ -20,13 +20,12 @@ const ReverseBb::Singleton ReverseBb::singleton; //1k
 const PieceTypeAttack pieceTypeAttack; //3k
 const VectorOf vectorOfAll; //4k
 const VectorPiSingle vectorPiSingle; //256
-const CastlingRules castlingRules; //128
+const PieceSquareTable Evaluation::pieceSquareTable; //7*64
 const ZobristKey Zobrist::zobristKey; //64
+const CastlingRules castlingRules; //128
 const BitReverse bitReverse; //64
 const VectorBitCount bitCount; //48
 const VectorPiOrder::Sorted VectorPiOrder::sorted; //16
-
-const PieceSquareTable Evaluation::pieceSquareTable; //7*64
 
 using io::literal_type;
 template <> literal_type PieceType::The_string{"qrbnpk"};
@@ -42,20 +41,35 @@ int main(int argc, const char* argv[]) {
     std::ios_base::sync_with_stdio(false);
     std::cin.tie(nullptr);
 
-    if (argc > 1) {
-        std::string option{argv[1]};
-
-        if (option == "--version" || option == "-v") {
-            std::cout << io::app_copyright;
-            return 0;
-        }
-
-        if (option == "--help" || option == "-h") {
-            std::cout << io::app_usage;
-            return 0;
-        }
+    if (argc == 1) {
+        Uci uci(std::cout, std::cerr);
+        uci(std::cin);
+        return 0;
     }
 
-    Uci uci(std::cout, std::cerr);
-    uci(std::cin);
+    std::string option{argv[1]};
+
+    if (option == "--help" || option == "-h") {
+        std::cout
+            << "Usage: "
+            << argv[0]
+            << " [OPTION]\n"
+            << "UCI Chess engine. Plays the game of chess.\n"
+            << "\n"
+            << "  -h, --help        display this help and exit\n"
+            << "  -v, --version     output version information and exit\n"
+        ;
+        return 0;
+    }
+
+    if (option == "--version" || option == "-v") {
+        std::cout
+            << io::app_version
+            << "(c) 2006-2018 Aleks Peshkov\n";
+        ;
+        return 0;
+    }
+
+    std::cerr << argv[0] << ": invalid option '" << option << "'\n";
+    return 1;
 }
