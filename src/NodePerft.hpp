@@ -10,7 +10,7 @@ public:
     depth_t draft;
 
 protected:
-    void count() {
+    void updateParentPerft() {
         static_cast<NodePerft&>(parent).perft += perft;
         perft = 0;
     }

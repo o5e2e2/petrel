@@ -24,6 +24,6 @@ bool NodePerftRootDivide::visit(Square from, Square to) {
     ++moveCount;
     Move move = createMove(from, to);
     control.info.report_perft_divide(move, moveCount, perft);
-    count();
+    updateParentPerft();
     return false;
 }

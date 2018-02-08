@@ -13,6 +13,6 @@ bool NodePerft::visit(Square from, Square to) {
         CUT ( NodePerftTT(*this, draft-1).visitChildren() );
     }
 
-    count();
+    updateParentPerft();
     return false;
 }

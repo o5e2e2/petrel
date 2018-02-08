@@ -16,14 +16,14 @@ bool NodePerftTT::visit(Square from, Square to) {
         if (n != NODE_COUNT_NONE) {
             info.inc(TT_Hit);
             perft = n;
-            count();
+            updateParentPerft();
             return false;
         }
     }
 
-    auto perftNodesBefore = static_cast<NodePerft&>(parent).perft;
+    auto parentPerftBefore = static_cast<NodePerft&>(parent).perft;
     CUT (NodePerft::visit(from, to));
-    auto n = static_cast<NodePerft&>(parent).perft - perftNodesBefore;
+    auto n = static_cast<NodePerft&>(parent).perft - parentPerftBefore;
 
     PerftTT(origin, hashAge).set(zobrist, draft-2, n);
     info.inc(TT_Written);
