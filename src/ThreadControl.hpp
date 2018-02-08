@@ -1,7 +1,6 @@
 #ifndef THREAD_CONTROL_HPP
 #define THREAD_CONTROL_HPP
 
-#include <thread>
 #include <condition_variable>
 #include "SpinLock.hpp"
 

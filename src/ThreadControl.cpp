@@ -1,3 +1,4 @@
+#include <thread>
 #include "ThreadControl.hpp"
 
 ThreadControl::ThreadControl () : status{Ready}, sequence{0} {
