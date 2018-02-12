@@ -12,7 +12,7 @@ class SearchThread : public ThreadControl {
 
 public:
     SearchThread () : parent(nullptr) {}
-    void set(Node* parent);
+    void set(std::unique_ptr<Node> parent);
 };
 
 #endif

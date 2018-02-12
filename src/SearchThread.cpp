@@ -1,16 +1,18 @@
 #include "SearchThread.hpp"
 #include "Node.hpp"
 
-void SearchThread::set(Node* p) {
+void SearchThread::set(std::unique_ptr<Node> p) {
     assert( isReady() );
-
-    if (isReady()) {
-        parent = p;
-    }
+    assert( !parent );
+    parent = p.release();
 }
 
 void SearchThread::thread_body() {
-    if (parent) {
-        parent->visitChildren();
+    if (!parent) {
+        return;
     }
+
+    parent->visitChildren();
+    delete parent;
+    parent = nullptr;
 }

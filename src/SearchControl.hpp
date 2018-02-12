@@ -8,8 +8,6 @@
 #include "HashMemory.hpp"
 #include "Timer.hpp"
 
-class Node;
-
 /**
  * Shared data to all search threads (currently the only one)
  */
@@ -21,8 +19,6 @@ public:
 private:
     SearchThread searchThread;
     SearchThread::Sequence searchSequence;
-
-    Node* root;  //virtual
 
     HashMemory transpositionTable;
     Timer timer;
