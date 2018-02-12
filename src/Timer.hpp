@@ -28,7 +28,7 @@ class Timer : private TimerPool {
 public:
     void start(Duration duration, ThreadControl& thread, ThreadControl::Sequence sequence) {
         //zero duration means no timer
-        if (!sequence || duration == Duration::zero()) {
+        if (sequence == decltype(sequence)::None || duration == Duration::zero()) {
             return;
         }
 

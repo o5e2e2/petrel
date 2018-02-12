@@ -6,7 +6,7 @@
 
 class ThreadControl {
 public:
-    typedef unsigned int Sequence;
+    enum class Sequence : unsigned int { None };
 
 private:
     SpinLock statusLock;

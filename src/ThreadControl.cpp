@@ -1,7 +1,7 @@
 #include <thread>
 #include "ThreadControl.hpp"
 
-ThreadControl::ThreadControl () : status{Ready}, sequence{0} {
+ThreadControl::ThreadControl () : status{Ready}, sequence{Sequence::None} {
     auto infiniteLoop = [this] {
         for (;;) {
             wait(Run);
@@ -39,16 +39,19 @@ ThreadControl::Sequence ThreadControl::signalSequence(Status to, Condition condi
     statusLock.lock();
     if (!condition()) {
         statusLock.unlock();
-        return 0;
+        return Sequence::None;
     }
 
-    ++sequence;
-    if (sequence == 0) { sequence = 1; } //wrap around
-    Sequence result = sequence;
-    status = to;
+    sequence = static_cast<Sequence>(
+        static_cast< std::underlying_type_t<Sequence> >(sequence)+1
+    );
+    if (sequence == Sequence::None) { sequence = static_cast<Sequence>(1); } //wrap around
+    auto result = sequence;
 
+    status = to;
     statusLock.unlock();
     statusChanged.notify_all();
+
     return result;
 }
 
@@ -61,7 +64,7 @@ void ThreadControl::signal(Status from, Status to) {
 }
 
 void ThreadControl::signal(Sequence seq, Status from, Status to) {
-    if (seq != 0) {
+    if (seq != Sequence::None) {
         signal(to, [this, seq, from]() { return sequence == seq && isStatus(from); });
     }
 }
