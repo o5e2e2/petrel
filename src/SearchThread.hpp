@@ -6,13 +6,15 @@
 class Node;
 
 class SearchThread : public ThreadControl {
-    Node* parent;
+    std::unique_ptr<Node> node;
 
     void thread_body() override;
 
 public:
-    SearchThread () : parent(nullptr) {}
-    void set(std::unique_ptr<Node> parent);
+    SearchThread ();
+    ~SearchThread();
+
+    void set(std::unique_ptr<Node>);
 };
 
 #endif
