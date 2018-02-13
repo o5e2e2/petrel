@@ -3,6 +3,7 @@
 #include "NodePerftLeaf.hpp"
 #include "NodePerftTT.hpp"
 #include "Move.hpp"
+#include "SearchControl.hpp"
 
 NodePerftRootDivide::NodePerftRootDivide(NodePerftRoot& p)
     : NodePerft(p, p), moveCount(0) {}

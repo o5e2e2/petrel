@@ -1,5 +1,6 @@
 #include "NodePerftTT.hpp"
 #include "PerftTT.hpp"
+#include "SearchControl.hpp"
 
 bool NodePerftTT::visit(Square from, Square to) {
     auto& info = control.info;

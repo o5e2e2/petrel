@@ -3,6 +3,7 @@
 #include "NodePerftLeaf.hpp"
 #include "NodePerftRootDivide.hpp"
 #include "Move.hpp"
+#include "SearchControl.hpp"
 
 bool NodePerftRoot::searchIteration() {
     if (control.searchLimit.isDivide()) {

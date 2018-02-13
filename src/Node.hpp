@@ -2,9 +2,10 @@
 #define NODE_HPP
 
 #include "PositionMoves.hpp"
-#include "SearchControl.hpp"
 
 #define CUT(found) { if (found) { return true; } } ((void)0)
+
+class SearchControl;
 
 class Node : public PositionMoves {
 public:
@@ -12,9 +13,9 @@ public:
     SearchControl& control;
 
 protected:
-    Node (Node& p) : PositionMoves(), parent(p), control(p.control) {}
-    Node (const PositionMoves& p, SearchControl& c) : PositionMoves(p), parent(*this), control(c) {}
-    Node (const PositionMoves& p, Node& n) : PositionMoves(p), parent(n), control(n.control) {}
+    Node (Node& p);
+    Node (const PositionMoves& p, SearchControl& c);
+    Node (const PositionMoves& p, Node& n);
 
 public:
     virtual ~Node() {}
