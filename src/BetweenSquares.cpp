@@ -9,11 +9,11 @@ BetweenSquares::BetweenSquares () {
 
             Bb betweenArea = (belowFrom ^ belowTo) % to;
 
-            if      (Bb::horizont(from)[to]) { between[from][to] = betweenArea & Bb::horizont(from); }
-            else if (Bb::vertical(from)[to]) { between[from][to] = betweenArea & Bb::vertical(from); }
-            else if (Bb::diagonal(from)[to]) { between[from][to] = betweenArea & Bb::diagonal(from); }
-            else if (Bb::antidiag(from)[to]) { between[from][to] = betweenArea & Bb::antidiag(from); }
-            else                             { between[from][to] = Bb{}; }
+            if      (from.horizont()[to]) { between[from][to] = betweenArea & from.horizont(); }
+            else if (from.vertical()[to]) { between[from][to] = betweenArea & from.vertical(); }
+            else if (from.diagonal()[to]) { between[from][to] = betweenArea & from.diagonal(); }
+            else if (from.antidiag()[to]) { between[from][to] = betweenArea & from.antidiag(); }
+            else                          { between[from][to] = Bb{}; }
         }
     }
 }

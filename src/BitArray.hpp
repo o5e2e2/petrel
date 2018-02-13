@@ -13,14 +13,14 @@ protected:
     constexpr explicit BitArrayBase (_t v) : _v(v) {}
     constexpr explicit operator _t () const { return _v; }
 
-    Self& operator = (Arg a) { _v  = a._v; return *this; }
+    constexpr Self& operator = (Arg a) { _v  = a._v; return *this; }
 
-    void operator &= (Arg a) { _v &= a._v; }
-    void operator |= (Arg a) { _v |= a._v; }
-    void operator ^= (Arg a) { _v ^= a._v; }
-    void operator %= (Arg a) { _v |= a._v; _v ^= a._v; }  //"and not"
+    constexpr void operator &= (Arg a) { _v &= a._v; }
+    constexpr void operator |= (Arg a) { _v |= a._v; }
+    constexpr void operator ^= (Arg a) { _v ^= a._v; }
+    constexpr void operator %= (Arg a) { _v |= a._v; _v ^= a._v; }  //"and not"
 
-    bool operator == (Arg a) { return _v == a._v; }
+    constexpr bool operator == (Arg a) { return _v == a._v; }
 
 protected:
     _t _v;
@@ -38,8 +38,8 @@ public:
     typedef Self Arg;
 
 protected:
-    Self& self() { return static_cast<Self&>(*this); }
-    const Self& self() const { return static_cast<const Self&>(*this); }
+    constexpr Self& self() { return static_cast<Self&>(*this); }
+    constexpr const Self& self() const { return static_cast<const Self&>(*this); }
 
     using Base::Base;
 
@@ -52,13 +52,13 @@ public:
 
     constexpr bool none(Arg a) const { return (self() & a).none(); }
 
-    Self& operator  = (Arg a) { Base::operator = (a); return self(); }
-    Self& operator &= (Arg a) { Base::operator &= (a); return self(); }
-    Self& operator |= (Arg a) { Base::operator |= (a); return self(); }
-    Self& operator ^= (Arg a) { Base::operator ^= (a); return self(); }
-    Self& operator %= (Arg a) { Base::operator %= (a); return self(); }  //"and not"
-    Self& operator += (Arg a) { assert (none(a)); return self() ^= a; }
-    Self& operator -= (Arg a) { assert (self() >= a); return self() ^= a; }
+    constexpr Self& operator  = (Arg a) { Base::operator = (a); return self(); }
+    constexpr Self& operator &= (Arg a) { Base::operator &= (a); return self(); }
+    constexpr Self& operator |= (Arg a) { Base::operator |= (a); return self(); }
+    constexpr Self& operator ^= (Arg a) { Base::operator ^= (a); return self(); }
+    constexpr Self& operator %= (Arg a) { Base::operator %= (a); return self(); }  //"and not"
+    constexpr Self& operator += (Arg a) { assert (none(a)); return self() ^= a; }
+    constexpr Self& operator -= (Arg a) { assert (self() >= a); return self() ^= a; }
 
     constexpr friend bool operator == (Arg a, Arg b) { return a.Base::operator== (b); }
     constexpr friend bool operator != (Arg a, Arg b) { return !(a == b); }

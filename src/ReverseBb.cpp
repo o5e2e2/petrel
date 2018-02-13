@@ -13,16 +13,16 @@ ReverseBb::Direction::Direction () {
     FOR_INDEX(Square, sq) {
         Square reversedSq{~File(sq), ~Rank(sq)};
 
-        (*this)[Queen][sq][Horizont] = ::combine(Bb::horizont(sq), Bb::horizont(reversedSq));
-        (*this)[Queen][sq][Vertical] = ::combine(Bb::vertical(sq), Bb::vertical(reversedSq));
-        (*this)[Queen][sq][Diagonal] = ::combine(Bb::diagonal(sq), Bb::diagonal(reversedSq));
-        (*this)[Queen][sq][Antidiag] = ::combine(Bb::antidiag(sq), Bb::antidiag(reversedSq));
+        (*this)[Queen][sq][Horizont] = ::combine(sq.horizont(), reversedSq.horizont());
+        (*this)[Queen][sq][Vertical] = ::combine(sq.vertical(), reversedSq.vertical());
+        (*this)[Queen][sq][Diagonal] = ::combine(sq.diagonal(), reversedSq.diagonal());
+        (*this)[Queen][sq][Antidiag] = ::combine(sq.antidiag(), reversedSq.antidiag());
 
-        (*this)[Rook][sq][Horizont] = (*this)[Queen][sq][Horizont];
-        (*this)[Rook][sq][Vertical] = (*this)[Queen][sq][Vertical];
+        (*this)[Rook][sq][Horizont] = ::combine(sq.horizont(), reversedSq.horizont());
+        (*this)[Rook][sq][Vertical] = ::combine(sq.vertical(), reversedSq.vertical());
 
-        (*this)[Bishop][sq][Diagonal] = (*this)[Queen][sq][Diagonal];
-        (*this)[Bishop][sq][Antidiag] = (*this)[Queen][sq][Antidiag];
+        (*this)[Bishop][sq][Diagonal] = ::combine(sq.diagonal(), reversedSq.diagonal());
+        (*this)[Bishop][sq][Antidiag] = ::combine(sq.antidiag(), reversedSq.antidiag());
 
         (*this)[Rook][sq][Diagonal] =
         (*this)[Rook][sq][Antidiag] =

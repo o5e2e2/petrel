@@ -33,9 +33,15 @@ struct Square : Index<64, square_t> {
     constexpr bool is(Rank rank) const { return (this->_v & RankMask) == (rank << RankShift); }
     constexpr bool is(File file) const { return (this->_v & File::Mask) == file; }
 
-    //PieceTypeAttack table initialization
-    constexpr signed x88(signed fileOffset, signed rankOffset) const;
-    constexpr Bb operator() (signed fileOffset, signed rankOffset) const;
+    constexpr Bb horizont() const;
+    constexpr Bb vertical() const;
+    constexpr Bb diagonal() const;
+    constexpr Bb antidiag() const;
+    constexpr Bb operator() (signed d_file, signed d_rank) const;
+
+    constexpr signed x88(signed d_file, signed d_rank) const {
+        return this->_v + (this->_v & 070) + d_file + 16*d_rank;
+    }
 
     friend io::ostream& operator << (io::ostream& out, Square sq) {
         return out << File{sq} << Rank{sq};

@@ -20,9 +20,6 @@ class Bb : public BitSet<Bb, Square, std::uint64_t> {
     Bb (unsigned int) = delete;
     Bb (int) = delete;
 
-    //bidirectional signed shift
-    constexpr Bb (_t v, signed offset) : Bb( (offset >= 0)? (v << offset) : (v >> -offset) ) {}
-
 public:
     constexpr Bb () : BitSet() {}
     constexpr explicit Bb (_t v) : BitSet{v} {}
@@ -34,6 +31,11 @@ public:
     constexpr explicit Bb (Rank::_t r) : Bb{BB(0xff) << 8*r} {}
     constexpr Bb (BitRank br, Rank::_t r) : Bb{static_cast<_t>(static_cast<BitRank::_t>(br)) << 8*r} {}
 
+    //bidirectional signed shift
+    constexpr Bb (_t v, signed offset) : Bb( (offset >= 0)? (v << offset) : (v >> -offset) ) {}
+
+    constexpr explicit operator __int64 () const { return static_cast<__int64>(this->_v); }
+
     Bb operator ~ () const { return Bb{::bswap(this->_v)}; }
 
     void move(Square from, Square to) { assert (from != to); *this -= from; *this += to; }
@@ -43,13 +45,6 @@ public:
 
     constexpr friend Bb operator << (Bb bb, unsigned offset) { return Bb{static_cast<_t>(bb) << offset}; }
     constexpr friend Bb operator >> (Bb bb, unsigned offset) { return Bb{static_cast<_t>(bb) >> offset}; }
-
-    constexpr static Bb horizont(Square sq) { return Bb{Rank(sq)} - sq; }
-    constexpr static Bb vertical(Square sq) { return Bb{File(sq)} - sq; }
-    constexpr static Bb diagonal(Square sq) { return Bb{BB(0x0102040810204080), 8*(Rank(sq) + File(sq) - 7)} - sq; }
-    constexpr static Bb antidiag(Square sq) { return Bb{BB(0x8040201008040201), 8*(Rank(sq) - File(sq))} - sq; }
-
-    constexpr explicit operator __int64 () const { return static_cast<__int64>(this->_v); }
 
     friend io::ostream& operator << (io::ostream& out, Bb bb) {
         FOR_INDEX(Rank, rank) {
@@ -62,5 +57,16 @@ public:
     }
 
 };
+
+constexpr Bb Square::operator() (signed d_file, signed d_rank) const {
+    return (x88(d_file, d_rank) & 0x88)
+        ? Bb{}
+        : Bb{static_cast<_t>((x88(d_file, d_rank) + (x88(d_file, d_rank) & 7)) >> 1)}
+    ;
+}
+constexpr Bb Square::horizont() const { return Bb{Rank(*this)} - *this; }
+constexpr Bb Square::vertical() const { return Bb{File(*this)} - *this; }
+constexpr Bb Square::diagonal() const { return Bb{BB(0x0102040810204080), 8*(Rank(*this) + File(*this) - 7)} - *this; }
+constexpr Bb Square::antidiag() const { return Bb{BB(0x8040201008040201), 8*(Rank(*this) - File(*this))} - *this; }
 
 #endif

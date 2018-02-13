@@ -18,14 +18,14 @@ const BetweenSquares between; //32k
 const ReverseBb::Direction ReverseBb::direction; //12k
 const ReverseBb::Singleton ReverseBb::singleton; //1k
 const PieceTypeAttack pieceTypeAttack; //3k
-const VectorOf vectorOfAll; //4k
+constexpr const VectorOf vectorOfAll; //4k
 const VectorPiSingle vectorPiSingle; //256
-const PieceSquareTable Evaluation::pieceSquareTable; //7*64
-const ZobristKey Zobrist::zobristKey; //64
+constexpr const PieceSquareTable Evaluation::pieceSquareTable; //7*64
+constexpr const ZobristKey Zobrist::zobristKey; //64
 const CastlingRules castlingRules; //128
 const BitReverse bitReverse; //64
 const VectorBitCount bitCount; //48
-const VectorPiOrder::Sorted VectorPiOrder::sorted; //16
+constexpr const VectorPiOrder::Sorted VectorPiOrder::sorted; //16
 
 using io::literal_type;
 template <> literal_type PieceType::The_string{"qrbnpk"};
