@@ -4,10 +4,11 @@
 SearchThread::SearchThread() = default;
 SearchThread::~SearchThread() = default;
 
-void SearchThread::set(std::unique_ptr<Node> n) {
+ThreadControl::Sequence SearchThread::start(std::unique_ptr<Node> n) {
     assert (isReady());
     assert (!node);
     node = std::move(n);
+    return ThreadControl::start();
 }
 
 void SearchThread::thread_body() {

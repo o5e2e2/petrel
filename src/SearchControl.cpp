@@ -24,9 +24,9 @@ void SearchControl::go() {
     clear();
     info.setNodesLimit( searchLimit.getNodes() );
 
-    searchThread.set( std::make_unique<NodePerftRoot>(searchLimit.getPositionMoves(), *this) );
     auto duration = searchLimit.getThinkingTime();
-    auto sequence = searchThread.start();
+    auto sequence = searchThread.start( std::make_unique<NodePerftRoot>(searchLimit.getPositionMoves(), *this) );
+
     searchSequence = sequence;
     timer.start(duration, searchThread, sequence);
 }

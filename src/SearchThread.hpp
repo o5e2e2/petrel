@@ -14,7 +14,7 @@ public:
     SearchThread ();
     ~SearchThread();
 
-    void set(std::unique_ptr<Node>);
+    ThreadControl::Sequence start(std::unique_ptr<Node>);
 };
 
 #endif
