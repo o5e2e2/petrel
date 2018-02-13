@@ -6,7 +6,7 @@
 
 class NodePerft : public Node {
 public:
-    node_count_t perft;
+    node_count_t perft = 0;
     depth_t draft;
 
 protected:
@@ -16,9 +16,9 @@ protected:
     }
 
 public:
-    NodePerft (const PositionMoves& p, SearchControl& c, depth_t d) : Node(p, c), perft(0), draft(d) {}
-    NodePerft (NodePerft& p, depth_t d) : Node(p), perft(0), draft(d) {}
-    NodePerft (const PositionMoves& p, NodePerft& n) : Node(p, n), perft(0), draft(n.draft) {}
+    NodePerft (NodePerft& p, depth_t d) : Node(p), draft(d) {}
+    NodePerft (const PositionMoves& p, SearchControl& c, depth_t d) : Node(p, c), draft(d) {}
+    NodePerft (const PositionMoves& p, NodePerft& n) : Node(p, n), draft(n.draft) {}
     bool visit(Square from, Square to) override;
 };
 

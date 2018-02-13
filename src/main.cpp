@@ -64,6 +64,7 @@ int main(int argc, const char* argv[]) {
 
     if (option == "--version" || option == "-v") {
         std::cout
+            << "petrel "
             << io::app_version
             << "(c) 2006-2018 Aleks Peshkov\n";
         ;

@@ -13,9 +13,9 @@ public:
     SearchControl& control;
 
 protected:
-    Node (Node& p);
-    Node (const PositionMoves& p, SearchControl& c);
-    Node (const PositionMoves& p, Node& n);
+    Node (Node&);
+    Node (const PositionMoves&, SearchControl&);
+    Node (const PositionMoves&, Node&);
 
 public:
     virtual ~Node() {}

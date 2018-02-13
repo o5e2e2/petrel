@@ -37,7 +37,7 @@ void UciSearchInfo::uciok(const HashMemory::Info& hashInfo) const {
     bool isChess960 = pos.getChessVariant().is(Chess960);
 
     OUTPUT(ob);
-    ob << "id name " << io::app_version << '\n';
+    ob << "id name petrel\n";
     ob << "id author Aleks Peshkov\n";
     ob << "option name UCI_Chess960 type check default " << (isChess960? "true" : "false") << '\n';
     ob << "option name Hash type spin min 0 max " << ::mebi(hashInfo.max) << " default " << ::mebi(hashInfo.current) << '\n';

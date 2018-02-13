@@ -62,7 +62,6 @@ bool next(istream& in, literal_type token) {
 }
 
 ostream& app_version(ostream& out) {
-    out << "petrel ";
 
 #ifdef GIT_DATE
     out << GIT_DATE;
@@ -93,23 +92,20 @@ ostream& app_version(ostream& out) {
     char_type day[] {((__DATE__[4] == ' ')? '0' : __DATE__[4]), __DATE__[5], '\0'};
 
     out << "build " << year << '-' << month << '-' << day;
-
 #endif
 
 #ifndef NDEBUG
     out << " DEBUG";
 #endif
 
-    out << '\n';
-
 #ifdef GIT_ORIGIN
-    out << GIT_ORIGIN << ' ';
+    out << ' ' << GIT_ORIGIN;
 #else
-    out << "https://bitbucket.org/alekspeshkov/petrel/src/";
+    out << " https://bitbucket.org/alekspeshkov/petrel/src/";
 #endif
 
 #ifdef GIT_HASH
-    out << GIT_HASH;
+    out << ' ' << GIT_HASH;
 #endif
 
     out << '\n';

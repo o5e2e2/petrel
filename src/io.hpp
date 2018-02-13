@@ -22,7 +22,6 @@ namespace io {
 
     istream& skip_token(istream&);
     ostream& app_version(ostream&);
-    ostream& app_usage(ostream&);
 }
 
 #endif
