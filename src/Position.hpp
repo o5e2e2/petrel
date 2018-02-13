@@ -28,7 +28,7 @@ protected:
     constexpr const PositionSide& getSide(Side si) const { return side[si]; }
 
 public:
-    constexpr explicit Position () : side(), zobrist{0} {}
+    constexpr Position () = default;
     Position (const Position&) = default;
 
     VectorPiMask alivePieces() const { return side[My].alivePieces(); }

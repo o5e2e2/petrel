@@ -10,7 +10,7 @@ class MatrixPiBb {
     Rank::array<VectorPiRank> matrix;
 
 public:
-    constexpr MatrixPiBb () {};
+    constexpr MatrixPiBb () = default;
 
     MatrixPiBb (const MatrixPiBb& from) {
         FOR_INDEX(Rank, rank) {

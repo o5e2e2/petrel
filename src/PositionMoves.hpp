@@ -22,7 +22,7 @@ private:
     template <Side::_t> void generateCheckEvasions(Bb attackedSquares);
 
 public:
-    PositionMoves () = default;
+    constexpr PositionMoves () = default;
     PositionMoves (const PositionMoves&) = default;
 
     void playMove(const Position&, Square, Square, Zobrist);
