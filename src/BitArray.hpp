@@ -3,27 +3,23 @@
 
 template <typename _ValueType>
 class BitArrayBase {
-    typedef BitArrayBase Self;
-    typedef BitArrayBase Arg;
+    typedef BitArrayBase B;
 
 protected:
     typedef _ValueType _t;
+    _t _v;
 
     constexpr BitArrayBase () : _v{} {}
     constexpr explicit BitArrayBase (_t v) : _v(v) {}
     constexpr explicit operator _t () const { return _v; }
 
-    constexpr Self& operator = (Arg a) { _v  = a._v; return *this; }
+    constexpr void operator  = (B b) { _v  = b._v; }
+    constexpr void operator &= (B b) { _v &= b._v; }
+    constexpr void operator |= (B b) { _v |= b._v; }
+    constexpr void operator ^= (B b) { _v ^= b._v; }
+    constexpr void operator %= (B b) { _v |= b._v; _v ^= b._v; }  //"and not"
+    constexpr bool operator == (B b) { return _v == b._v; }
 
-    constexpr void operator &= (Arg a) { _v &= a._v; }
-    constexpr void operator |= (Arg a) { _v |= a._v; }
-    constexpr void operator ^= (Arg a) { _v ^= a._v; }
-    constexpr void operator %= (Arg a) { _v |= a._v; _v ^= a._v; }  //"and not"
-
-    constexpr bool operator == (Arg a) { return _v == a._v; }
-
-protected:
-    _t _v;
 };
 
 /*
@@ -52,7 +48,7 @@ public:
 
     constexpr bool none(Arg a) const { return (self() & a).none(); }
 
-    constexpr Self& operator  = (Arg a) { Base::operator = (a); return self(); }
+    constexpr Self& operator  = (Arg a) { Base::operator  = (a); return self(); }
     constexpr Self& operator &= (Arg a) { Base::operator &= (a); return self(); }
     constexpr Self& operator |= (Arg a) { Base::operator |= (a); return self(); }
     constexpr Self& operator ^= (Arg a) { Base::operator ^= (a); return self(); }
