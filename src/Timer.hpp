@@ -17,33 +17,12 @@ class TimerThread : private ThreadControl {
     ThreadControl::Sequence sequence;
     Duration duration;
 
-    void thread_body() override {
-        std::this_thread::sleep_for(duration);
-        thread->stop(sequence);
-        pool->release(std::move(handle));
-    }
+    void thread_body() override;
 };
 
 class Timer : private TimerPool {
 public:
-    void start(Duration duration, ThreadControl& thread, ThreadControl::Sequence sequence) {
-        //zero duration means no timer
-        if (sequence == decltype(sequence)::None || duration == Duration::zero()) {
-            return;
-        }
-
-        auto handle = acquire();
-        auto& timer = fetch(handle);
-        assert (timer.isReady());
-
-        timer.pool = this;
-        timer.handle = handle;
-        timer.thread = &thread;
-        timer.sequence = sequence;
-        timer.duration = duration;
-
-        timer.start();
-    }
+    void start(Duration, ThreadControl&, ThreadControl::Sequence);
 };
 
 #endif
