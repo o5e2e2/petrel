@@ -21,7 +21,7 @@ namespace {
 
     template <typename nodes_type, typename duration_type>
     nodes_type nps(nodes_type nodes, duration_type duration) {
-        return (nodes * duration_type::period::den) / (duration.count() * duration_type::period::num);
+        return (nodes * duration_type::period::den) / (static_cast<nodes_type>(duration.count()) * duration_type::period::num);
     }
 }
 

@@ -10,7 +10,7 @@ typedef int index_t; //small numbers [0..N) with a known upper bound
 
 #define FOR_INDEX(Index, i) for (Index i{Index::Begin}; i.isOk(); ++i)
 
-template <int _Limit, typename _Value = int>
+template <int _Limit, typename _Value = unsigned int>
 class Index {
     static io::literal_type The_string;
 public:
@@ -20,7 +20,7 @@ public:
     static const _t Begin = static_cast<_t>(0);
 
 protected:
-    int _v;
+    unsigned int _v;
 
 public:
     constexpr Index () : _v{Size} {}

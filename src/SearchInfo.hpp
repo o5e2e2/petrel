@@ -30,7 +30,11 @@ protected:
 public:
     SearchInfo () { clear(); }
 
-    node_count_t getNodes() const { return nodes - nodesQuota; }
+    node_count_t getNodes() const {
+        assert (nodesQuota < 0 || nodes >= static_cast<unsigned>(nodesQuota));
+        return nodes - static_cast<node_count_t>(nodesQuota);
+    }
+
     void setNodesLimit(node_count_t n) { nodesLimit = n; }
 
     bool refreshQuota(const SearchThread&);

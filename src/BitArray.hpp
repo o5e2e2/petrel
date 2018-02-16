@@ -17,8 +17,8 @@ protected:
     constexpr void operator &= (B b) { _v &= b._v; }
     constexpr void operator |= (B b) { _v |= b._v; }
     constexpr void operator ^= (B b) { _v ^= b._v; }
-    constexpr void operator %= (B b) { _v |= b._v; _v ^= b._v; }  //"and not"
-    constexpr bool operator == (B b) { return _v == b._v; }
+    void operator %= (B b) { _v |= b._v; _v ^= b._v; }  //"and not"
+    bool operator == (B b) { return _v == b._v; }
 
 };
 
@@ -27,9 +27,8 @@ protected:
  */
 template <class _Self, typename _ValueType>
 class BitArray : protected BitArrayBase<_ValueType> {
-    typedef BitArrayBase<_ValueType> Base;
-
 public:
+    using Base = BitArrayBase<_ValueType>;
     typedef _Self Self;
     typedef Self Arg;
 
@@ -56,7 +55,7 @@ public:
     constexpr Self& operator += (Arg a) { assert (none(a)); return self() ^= a; }
     constexpr Self& operator -= (Arg a) { assert (self() >= a); return self() ^= a; }
 
-    constexpr friend bool operator == (Arg a, Arg b) { return a.Base::operator== (b); }
+    constexpr friend bool operator == (Arg a, Arg b) { return a.operator== (b); }
     constexpr friend bool operator != (Arg a, Arg b) { return !(a == b); }
     constexpr friend bool operator <= (Arg a, Arg b) { return (a & b) == a; }
     constexpr friend bool operator >= (Arg a, Arg b) { return b <= a; }

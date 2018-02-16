@@ -24,8 +24,8 @@ struct VectorPiRank : VectorPiBit<VectorPiRank, File> {
         return BitRank{small_cast<BitRank::_t>(_mm_cvtsi128_si32(v))};
     }
 
-    constexpr const BitRank& operator [] (Pi pi) const {
-        return reinterpret_cast<const BitRank&>(VectorPiBit::operator[](pi));
+    constexpr BitRank operator [] (Pi pi) const {
+        return BitRank{ VectorPiBit::operator[](pi) };
     }
 
     VectorPiMask operator [] (File file) const {

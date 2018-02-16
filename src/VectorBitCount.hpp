@@ -16,7 +16,7 @@ public:
             reinterpret_cast<char*>(&lowNibbleMask)[n] = 0x0f;
             reinterpret_cast<char*>(&emptyMask)[n] = 0;
 
-            index_t c{0}; for (index_t b = n; b; b &= b-1) { c++; }
+            index_t c{0}; for (Index<0x10>::_t b = n; b; b &= b-1) { c++; }
             reinterpret_cast<char*>(&nibbleCount)[n] = static_cast<char>(c);
         }
     }

@@ -12,7 +12,7 @@ public:
     typedef unsigned char _t;
     Index::array< Square::array<_t> > pst;
 
-    static constexpr _t e(unsigned m, signed s) { return static_cast<_t>((m + s) / 5); }
+    static constexpr _t e(unsigned m, signed s) { return static_cast<_t>((m + static_cast<unsigned>(s)) / 5); }
 
 public:
     constexpr PieceSquareTable () : pst {{

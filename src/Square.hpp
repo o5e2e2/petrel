@@ -30,7 +30,7 @@ struct Square : Index<64, square_t> {
     constexpr Square rankForward() const { return static_cast<_t>(this->_v - A7 + A8); }
 
     using Index::is;
-    constexpr bool is(Rank rank) const { return (this->_v & RankMask) == (rank << RankShift); }
+    constexpr bool is(Rank rank) const { return (this->_v & RankMask) == static_cast<unsigned>(rank << RankShift); }
     constexpr bool is(File file) const { return (this->_v & File::Mask) == file; }
 
     constexpr Bb horizont() const;
@@ -40,7 +40,7 @@ struct Square : Index<64, square_t> {
     constexpr Bb operator() (signed d_file, signed d_rank) const;
 
     constexpr signed x88(signed d_file, signed d_rank) const {
-        return this->_v + (this->_v & 070) + d_file + 16*d_rank;
+        return static_cast<signed>(this->_v + (this->_v & 070)) + d_file + 16*d_rank;
     }
 
     friend io::ostream& operator << (io::ostream& out, Square sq) {

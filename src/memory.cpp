@@ -19,9 +19,14 @@ size_t getAvailableMemory() {
 
 #include <unistd.h>
 size_t getAvailableMemory() {
-    size_t pages     = ::sysconf(_SC_AVPHYS_PAGES);
-    size_t page_size = ::sysconf(_SC_PAGE_SIZE);
-    return pages * page_size;
+    auto pages = ::sysconf(_SC_AVPHYS_PAGES);
+    auto page_size = ::sysconf(_SC_PAGE_SIZE);
+
+    if (pages > 0 && page_size > 0) {
+        return static_cast<size_t>(pages) * static_cast<size_t>(page_size);
+    }
+
+    return 0;
 }
 
 #endif

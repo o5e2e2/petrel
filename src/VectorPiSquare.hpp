@@ -37,7 +37,10 @@ public:
     VectorPiMask rightBackward(Square sq) const { return _v > sq; }
 
     VectorPiMask piecesOn(Rank rank) const {
-        return _mm_cmpeq_epi8(static_cast<_t>(_v) & ::vectorOfAll[static_cast<unsigned char>(0xff^File::Mask)], ::vectorOfAll[rank << 3]);
+        return _mm_cmpeq_epi8(
+            static_cast<_t>(_v) & ::vectorOfAll[static_cast<unsigned char>(0xff^File::Mask)],
+            ::vectorOfAll[static_cast<unsigned char>(rank << 3)]
+        );
     }
 
     void clear() { _v.clear(); }
