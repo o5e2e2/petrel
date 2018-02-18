@@ -2,12 +2,14 @@
 #define UCI_HPP
 
 #include "io.hpp"
-#include "UciControl.hpp"
+#include "SearchControl.hpp"
 #include "UciPosition.hpp"
+#include "UciSearchInfo.hpp"
 
 class Uci {
     UciPosition uciPosition; //store position just between 'position' and 'go' commands
-    UciControl uciControl;
+    UciSearchInfo uciSearchInfo;
+    SearchControl searchControl;
 
     std::istringstream command; //current input command line
 

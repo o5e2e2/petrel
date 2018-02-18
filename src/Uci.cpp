@@ -1,6 +1,10 @@
 #include "Uci.hpp"
 
-Uci::Uci (io::ostream& out, io::ostream& err): uciPosition(), uciControl(uciPosition, out, err) {
+Uci::Uci (io::ostream& out, io::ostream& err):
+    uciPosition(),
+    uciSearchInfo(uciPosition, out, err),
+    searchControl(uciSearchInfo)
+{
     ucinewgame();
 }
 
@@ -12,26 +16,26 @@ void Uci::operator() (io::istream& in) {
 
         if      (next("go"))        { go(); }
         else if (next("position"))  { position(); }
-        else if (next("stop"))      { uciControl.stop(); }
-        else if (next("isready"))   { uciControl.readyok(); }
+        else if (next("stop"))      { searchControl.stop(); }
+        else if (next("isready"))   { uciSearchInfo.isready( searchControl.isReady() ); }
         else if (next("setoption")) { setoption(); }
         else if (next("set"))       { setoption(); }
         else if (next("ucinewgame")){ ucinewgame(); }
-        else if (next("uci"))       { uciControl.uciok(); }
+        else if (next("uci"))       { uciSearchInfo.uciok( searchControl.tt().getInfo() ); }
         else if (next("quit"))      { break; }
 
         //error if something left unparsed
-        if (!next("")) { uciControl.error(command); }
+        if (!next("")) { uciSearchInfo.error(command); }
     }
 }
 
 void Uci::ucinewgame() {
-    if (!uciControl.isReady()) {
+    if (!searchControl.isReady()) {
         io::fail_rewind(command);
         return;
     }
 
-    uciControl.newGame();
+    searchControl.newGame();
     uciPosition.setStartpos();
 }
 
@@ -57,7 +61,7 @@ void Uci::setoption() {
 }
 
 void Uci::setHash() {
-    if (!uciControl.isReady()) {
+    if (!searchControl.isReady()) {
         io::fail_rewind(command);
         return;
     }
@@ -85,12 +89,12 @@ void Uci::setHash() {
         }
     }
 
-    uciControl.resizeHash(quantity);
+    searchControl.tt().resize(quantity);
 }
 
 void Uci::position() {
     if (next("")) {
-        uciControl.info_fen();
+        uciSearchInfo.info_fen();
         return;
     }
 
@@ -98,5 +102,11 @@ void Uci::position() {
 }
 
 void Uci::go() {
-    uciControl.go(command, uciPosition);
+    if (!searchControl.isReady()) {
+        io::fail_rewind(command);
+        return;
+    }
+
+    searchControl.searchLimit.readUci(command, uciPosition);
+    searchControl.go();
 }
