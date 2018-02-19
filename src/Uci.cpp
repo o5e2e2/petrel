@@ -1,9 +1,10 @@
 #include "Uci.hpp"
 
 Uci::Uci (io::ostream& out, io::ostream& err):
-    uciPosition(),
-    uciSearchInfo(uciPosition, out, err),
-    searchControl(uciSearchInfo)
+    uciPosition{},
+    searchLimit{},
+    info(uciPosition, out, err),
+    searchControl(info)
 {
     ucinewgame();
 }
@@ -17,15 +18,15 @@ void Uci::operator() (io::istream& in) {
         if      (next("go"))        { go(); }
         else if (next("position"))  { position(); }
         else if (next("stop"))      { searchControl.stop(); }
-        else if (next("isready"))   { uciSearchInfo.isready( searchControl.isReady() ); }
+        else if (next("isready"))   { info.isready( searchControl.isReady() ); }
         else if (next("setoption")) { setoption(); }
         else if (next("set"))       { setoption(); }
         else if (next("ucinewgame")){ ucinewgame(); }
-        else if (next("uci"))       { uciSearchInfo.uciok( searchControl.tt().getInfo() ); }
+        else if (next("uci"))       { info.uciok( searchControl.tt().getInfo() ); }
         else if (next("quit"))      { break; }
 
         //error if something left unparsed
-        if (!next("")) { uciSearchInfo.error(command); }
+        if (!next("")) { info.error(command); }
     }
 }
 
@@ -94,7 +95,7 @@ void Uci::setHash() {
 
 void Uci::position() {
     if (next("")) {
-        uciSearchInfo.info_fen();
+        info.info_fen();
         return;
     }
 
@@ -107,6 +108,6 @@ void Uci::go() {
         return;
     }
 
-    searchControl.searchLimit.readUci(command, uciPosition);
-    searchControl.go();
+    searchLimit.readUci(command, uciPosition);
+    searchControl.go(searchLimit);
 }

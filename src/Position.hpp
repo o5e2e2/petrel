@@ -24,9 +24,6 @@ private:
     template <Side::_t> void playCastling(Pi, Square, Square);
     template <Side::_t> void playMove(Square, Square);
 
-protected:
-    constexpr const PositionSide& getSide(Side si) const { return side[si]; }
-
 public:
     constexpr Position () = default;
     Position (const Position&) = default;

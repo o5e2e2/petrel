@@ -4,9 +4,16 @@
 #include "NodePerftRootDivide.hpp"
 #include "Move.hpp"
 #include "SearchControl.hpp"
+#include "SearchInfo.hpp"
+#include "SearchLimit.hpp"
+
+NodePerftRoot::NodePerftRoot (const SearchLimit& l, SearchControl& c):
+    NodePerft(l.getPositionMoves(), c, l.getDepth()),
+    isDivide(l.isDivide())
+{}
 
 bool NodePerftRoot::searchIteration() {
-    if (control.searchLimit.isDivide()) {
+    if (isDivide) {
         CUT ( NodePerftRootDivide(*this).visitChildren() );
     }
     else {
@@ -43,8 +50,6 @@ bool NodePerftRoot::iterativeDeepening() {
 }
 
 bool NodePerftRoot::visitChildren() {
-    draft = control.searchLimit.getDepth();
-
     if (draft > 0) {
         searchIteration();
     }

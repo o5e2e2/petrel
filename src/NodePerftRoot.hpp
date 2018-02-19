@@ -3,12 +3,15 @@
 
 #include "NodePerft.hpp"
 
+class SearchLimit;
+
 class NodePerftRoot : public NodePerft {
     bool searchIteration();
     bool iterativeDeepening();
+    bool isDivide;
 
 public:
-    NodePerftRoot (const PositionMoves& p, SearchControl& c) : NodePerft(p, c, 1) {}
+    NodePerftRoot (const SearchLimit&, SearchControl&);
     bool visitChildren() override;
 };
 

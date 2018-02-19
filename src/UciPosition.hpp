@@ -20,14 +20,13 @@ class UciPosition : public PositionMoves {
     void playMoves(io::istream&);
 
 public:
-    UciPosition() : PositionMoves{}, colorToMove{White}, chessVariant{Orthodox} {}
+    constexpr UciPosition() : PositionMoves{}, colorToMove{White}, chessVariant{Orthodox} {}
 
-    ChessVariant getChessVariant() const { return chessVariant; }
-    void setChessVariant(ChessVariant v) { chessVariant = v; }
+    constexpr ChessVariant getChessVariant() const { return chessVariant; }
+    constexpr void setChessVariant(ChessVariant v) { chessVariant = v; }
 
-    Color getColorToMove() const { return colorToMove; }
-
-    const PositionSide& getSide(Color color) const { return side[colorToMove.is(color)? My : Op];}
+    constexpr Color getColorToMove() const { return colorToMove; }
+    constexpr const PositionSide& operator[] (Color color) const { return side[colorToMove.is(color)? My : Op];}
 
     void readUci(io::istream&);
     void setStartpos();

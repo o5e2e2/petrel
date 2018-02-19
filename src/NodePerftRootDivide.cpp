@@ -4,6 +4,7 @@
 #include "NodePerftTT.hpp"
 #include "Move.hpp"
 #include "SearchControl.hpp"
+#include "SearchInfo.hpp"
 
 NodePerftRootDivide::NodePerftRootDivide(NodePerftRoot& p)
     : NodePerft(p, p), moveCount(0) {}

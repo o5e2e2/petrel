@@ -3,12 +3,14 @@
 
 #include "io.hpp"
 #include "SearchControl.hpp"
+#include "SearchLimit.hpp"
 #include "UciPosition.hpp"
 #include "UciSearchInfo.hpp"
 
 class Uci {
-    UciPosition uciPosition; //store position just between 'position' and 'go' commands
-    UciSearchInfo uciSearchInfo;
+    UciPosition uciPosition; //root position between 'position' and 'go' commands
+    SearchLimit searchLimit;
+    UciSearchInfo info;
     SearchControl searchControl;
 
     std::istringstream command; //current input command line

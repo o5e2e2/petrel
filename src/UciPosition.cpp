@@ -13,8 +13,8 @@ class WriteFenBoard {
 
 public:
     WriteFenBoard (const UciPosition& pos) :
-        whiteSide(pos.getSide(White)),
-        blackSide(pos.getSide(Black))
+        whiteSide(pos[White]),
+        blackSide(pos[Black])
         {}
 
     friend io::ostream& operator << (io::ostream& out, const WriteFenBoard& fen) {
@@ -75,8 +75,8 @@ class WriteFenCastling {
 
 public:
     WriteFenCastling (const UciPosition& pos) {
-        insert(pos.getSide(White), White, pos.getChessVariant());
-        insert(pos.getSide(Black), Black, pos.getChessVariant());
+        insert(pos[White], White, pos.getChessVariant());
+        insert(pos[Black], Black, pos.getChessVariant());
     }
 
     friend io::ostream& operator << (io::ostream& out, const WriteFenCastling& fen) {
@@ -204,7 +204,7 @@ void UciPosition::playMoves(io::istream& in) {
             Square to{ move.to() } ;
             Pi pi{ side[My].pieceOn(from) };
 
-            if (is(pi, to)) {
+            if (isLegalMove(pi, to)) {
                 Position::playMove(from, to);
                 generateMoves<My>();
                 colorToMove.flip();

@@ -31,7 +31,7 @@ public:
     MatrixPiBb& getMoves() { return moves; }
     MatrixPiBb cloneMoves() const { return MatrixPiBb{moves}; }
 
-    bool is(Pi pi, Square to) const { return moves.is(pi, to); }
+    bool isLegalMove(Pi pi, Square to) const { return moves.is(pi, to); }
 };
 
 #endif
