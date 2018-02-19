@@ -3,10 +3,10 @@
 
 #include "io.hpp"
 #include "typedefs.hpp"
-#include "UciPosition.hpp"
+#include "PositionFen.hpp"
 
 class SearchLimit {
-    UciPosition positionMoves;
+    PositionFen positionMoves;
 
     Side::array<Duration> time;
     Side::array<Duration> inc;
@@ -33,11 +33,11 @@ public:
     node_count_t getNodes() const { return nodes; }
     bool         isDivide() const { return divide; }
 
-    const UciPosition& getPositionMoves() const { return positionMoves; }
+    const PositionFen& getPositionMoves() const { return positionMoves; }
 
     Duration getThinkingTime() const;
 
-    void readUci(io::istream&, const UciPosition&);
+    void readUci(io::istream&, const PositionFen&);
 };
 
 #endif

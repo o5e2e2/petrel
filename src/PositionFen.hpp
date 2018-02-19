@@ -1,12 +1,12 @@
-#ifndef UCI_POSITION_HPP
-#define UCI_POSITION_HPP
+#ifndef POSITION_FEN_HPP
+#define POSITION_FEN_HPP
 
 #include "io.hpp"
 #include "typedefs.hpp"
 #include "PositionMoves.hpp"
 #include "Move.hpp"
 
-class UciPosition : public PositionMoves {
+class PositionFen : public PositionMoves {
     Color colorToMove; //root position color for moves long algebraic format output
     ChessVariant chessVariant; //format of castling moves output
 
@@ -20,7 +20,7 @@ class UciPosition : public PositionMoves {
     void playMoves(io::istream&);
 
 public:
-    constexpr UciPosition() : PositionMoves{}, colorToMove{White}, chessVariant{Orthodox} {}
+    constexpr PositionFen() : PositionMoves{}, colorToMove{White}, chessVariant{Orthodox} {}
 
     constexpr ChessVariant getChessVariant() const { return chessVariant; }
     constexpr void setChessVariant(ChessVariant v) { chessVariant = v; }
@@ -33,7 +33,7 @@ public:
 
     void limitMoves(io::istream&);
 
-    friend io::ostream& operator << (io::ostream&, const UciPosition&);
+    friend io::ostream& operator << (io::ostream&, const PositionFen&);
 };
 
 #endif

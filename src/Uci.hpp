@@ -4,11 +4,11 @@
 #include "io.hpp"
 #include "SearchControl.hpp"
 #include "SearchLimit.hpp"
-#include "UciPosition.hpp"
+#include "PositionFen.hpp"
 #include "UciSearchInfo.hpp"
 
 class Uci {
-    UciPosition uciPosition; //root position between 'position' and 'go' commands
+    PositionFen positionFen; //root position between 'position' and 'go' commands
     SearchLimit searchLimit;
     UciSearchInfo info;
     SearchControl searchControl;

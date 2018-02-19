@@ -8,12 +8,12 @@
 #include "SpinLock.hpp"
 
 class Move;
-class UciPosition;
+class PositionFen;
 
 class UciSearchInfo : public SearchInfo {
     io::ostream& out; //output stream
     io::ostream& err; //error output stream
-    const UciPosition& pos;
+    const PositionFen& pos;
 
     mutable SpinLock outLock;
     mutable volatile bool isreadyWaiting; //set when got 'isready' command while thinking
@@ -25,7 +25,7 @@ class UciSearchInfo : public SearchInfo {
     void info_nps(io::ostream&) const;
 
 public:
-    UciSearchInfo (const UciPosition&, io::ostream&, io::ostream& = std::cerr);
+    UciSearchInfo (const PositionFen&, io::ostream&, io::ostream& = std::cerr);
 
     //called from Uci
     void isready(bool) const;

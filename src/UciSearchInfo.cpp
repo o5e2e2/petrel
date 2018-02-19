@@ -2,7 +2,7 @@
 #include "HashMemory.hpp"
 #include "Move.hpp"
 #include "OutputBuffer.hpp"
-#include "UciPosition.hpp"
+#include "PositionFen.hpp"
 
 #define OUTPUT(ob) OutputBuffer<decltype(outLock)> ob(out, outLock)
 
@@ -25,7 +25,7 @@ namespace {
     }
 }
 
-UciSearchInfo::UciSearchInfo (const UciPosition& p, io::ostream& o, io::ostream& e) :
+UciSearchInfo::UciSearchInfo (const PositionFen& p, io::ostream& o, io::ostream& e) :
     out(o),
     err(e),
     pos(p),

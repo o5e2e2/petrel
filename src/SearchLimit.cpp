@@ -1,5 +1,5 @@
 #include "SearchLimit.hpp"
-#include "UciPosition.hpp"
+#include "PositionFen.hpp"
 
 namespace {
     io::istream& operator >> (io::istream& in, Duration& duration) {
@@ -34,11 +34,11 @@ Duration SearchLimit::getThinkingTime() const {
     return std::min(time[My], average);
 }
 
-void SearchLimit::readUci(io::istream& command, const UciPosition& uciPosition) {
+void SearchLimit::readUci(io::istream& command, const PositionFen& positionFen) {
     clear();
-    positionMoves = uciPosition;
+    positionMoves = positionFen;
 
-    Color colorToMove = uciPosition.getColorToMove();
+    Color colorToMove = positionFen.getColorToMove();
     Side white = colorToMove.is(White)? My : Op;
     Side black = colorToMove.is(Black)? My : Op;
 

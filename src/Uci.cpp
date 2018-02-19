@@ -1,9 +1,9 @@
 #include "Uci.hpp"
 
 Uci::Uci (io::ostream& out, io::ostream& err):
-    uciPosition{},
+    positionFen{},
     searchLimit{},
-    info(uciPosition, out, err),
+    info(positionFen, out, err),
     searchControl(info)
 {
     ucinewgame();
@@ -37,7 +37,7 @@ void Uci::ucinewgame() {
     }
 
     searchControl.newGame();
-    uciPosition.setStartpos();
+    positionFen.setStartpos();
 }
 
 void Uci::setoption() {
@@ -46,8 +46,8 @@ void Uci::setoption() {
     if (next("UCI_Chess960")) {
         next("value");
 
-        if (next("true"))  { uciPosition.setChessVariant(Chess960); return; }
-        if (next("false")) { uciPosition.setChessVariant(Orthodox); return; }
+        if (next("true"))  { positionFen.setChessVariant(Chess960); return; }
+        if (next("false")) { positionFen.setChessVariant(Orthodox); return; }
 
         io::fail_rewind(command);
         return;
@@ -99,7 +99,7 @@ void Uci::position() {
         return;
     }
 
-    uciPosition.readUci(command);
+    positionFen.readUci(command);
 }
 
 void Uci::go() {
@@ -108,6 +108,6 @@ void Uci::go() {
         return;
     }
 
-    searchLimit.readUci(command, uciPosition);
+    searchLimit.readUci(command, positionFen);
     searchControl.go(searchLimit);
 }
