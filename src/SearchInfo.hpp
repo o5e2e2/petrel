@@ -2,16 +2,14 @@
 #define SEARCH_INFO_HPP
 
 #include "typedefs.hpp"
-#include "TimePoint.hpp"
-#include "Move.hpp"
 
 class SearchControl;
 
-enum { PerftNodes, PerftDivideNodes, TT_Tried, TT_Hit, TT_Written, _Total };
+enum { PerftNodes, PerftDivideNodes, TT_Tried, TT_Hit, TT_Written, _TotalCounters };
 
 class SearchInfo {
 protected:
-    typedef ::Index<_Total> Index;
+    typedef ::Index<_TotalCounters> Index;
     Index::array<node_count_t> _v;
 
     node_count_t nodes;
@@ -20,17 +18,11 @@ protected:
     enum { TickLimit = 5000 }; // ~1 msec
     signed nodesQuota; //number of remaining nodes before checking for terminate, normally should never be negative
 
-    TimePoint fromSearchStart;
-    depth_t depth; //current search depth
-
-    Move _bestmove;
-    Move currmove;
-    index_t currmovenumber;
-
     bool refreshQuota(const SearchControl&);
 
 public:
     SearchInfo () { clear(); }
+    void clear();
 
     node_count_t getNodes() const {
         assert (nodesQuota < 0 || nodes >= static_cast<unsigned>(nodesQuota));
@@ -47,13 +39,10 @@ public:
         return refreshQuota(searchControl);
     }
 
-    void clear();
-
-    void report_perft_divide(Move, index_t, node_count_t);
-    void report_perft_depth(depth_t, node_count_t);
-
     node_count_t get(Index i) const { return _v[i]; }
     void inc(Index i, node_count_t n = 1) { _v[i] += n; }
+
+    virtual void searchStarted() { clear(); };
 
     //do nothing by default
     virtual void bestmove() const {};

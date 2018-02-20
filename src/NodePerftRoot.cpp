@@ -4,8 +4,8 @@
 #include "NodePerftRootDivide.hpp"
 #include "Move.hpp"
 #include "SearchControl.hpp"
-#include "SearchInfo.hpp"
 #include "SearchLimit.hpp"
+#include "UciSearchInfo.hpp"
 
 NodePerftRoot::NodePerftRoot (const SearchLimit& l, SearchControl& c):
     NodePerft(l.getPositionMoves(), c, l.getDepth()),
@@ -31,7 +31,7 @@ bool NodePerftRoot::searchIteration() {
         }
     }
 
-    control.info.report_perft_depth(draft, perft);
+    static_cast<UciSearchInfo&>(control.info).report_perft_depth(draft, perft);
     perft = 0;
     return false;
 }

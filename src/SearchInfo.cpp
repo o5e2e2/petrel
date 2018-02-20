@@ -2,12 +2,9 @@
 #include "SearchControl.hpp"
 
 void SearchInfo::clear() {
-    fromSearchStart = {};
-
     nodes = 0;
+    nodesLimit = NODE_COUNT_MAX;
     nodesQuota = 0;
-    currmovenumber = 0;
-    _bestmove = {};
     _v = {0, 0, 0, 0, 0};
 }
 
@@ -44,17 +41,4 @@ bool SearchInfo::refreshQuota(const SearchControl& searchControl) {
 
     --nodesQuota; //count current node
     return false;
-}
-
-void SearchInfo::report_perft_depth(depth_t draft, node_count_t n) {
-    depth = draft;
-    _v[PerftNodes] = n;
-    this->info_depth();
-}
-
-void SearchInfo::report_perft_divide(Move move, index_t moveCount, node_count_t n) {
-    currmove = move;
-    currmovenumber = moveCount;
-    _v[PerftNodes] = n;
-    this->info_currmove();
 }

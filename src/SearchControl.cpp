@@ -19,7 +19,7 @@ bool SearchControl::countNode() {
 }
 
 void SearchControl::go(const SearchLimit& searchLimit) {
-    info.clear();
+    info.searchStarted();
     info.setNodesLimit( searchLimit.getNodes() );
 
     auto duration = searchLimit.getThinkingTime();

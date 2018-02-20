@@ -4,7 +4,7 @@
 #include "NodePerftTT.hpp"
 #include "Move.hpp"
 #include "SearchControl.hpp"
-#include "SearchInfo.hpp"
+#include "UciSearchInfo.hpp"
 
 NodePerftRootDivide::NodePerftRootDivide(NodePerftRoot& p)
     : NodePerft(p, p), moveCount(0) {}
@@ -25,7 +25,7 @@ bool NodePerftRootDivide::visit(Square from, Square to) {
 
     ++moveCount;
     Move move = createMove(from, to);
-    control.info.report_perft_divide(move, moveCount, perft);
+    static_cast<UciSearchInfo&>(control.info).report_perft_divide(move, moveCount, perft);
     updateParentPerft();
     return false;
 }

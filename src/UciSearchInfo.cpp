@@ -33,6 +33,14 @@ UciSearchInfo::UciSearchInfo (const PositionFen& p, io::ostream& o, io::ostream&
     lastInfoNodes{0}
 {}
 
+void UciSearchInfo::searchStarted() {
+    SearchInfo::searchStarted();
+    currmovenumber = 0;
+    _bestmove = {};
+    lastInfoNodes = 0;
+    fromSearchStart = {};
+}
+
 void UciSearchInfo::uciok(const HashMemory::Info& hashInfo) const {
     bool isChess960 = pos.getChessVariant().is(Chess960);
 
@@ -73,7 +81,6 @@ void UciSearchInfo::bestmove() const {
     OUTPUT(ob);
     info_nps(ob);
     ob << "bestmove "; write(ob, _bestmove); ob << '\n';
-    lastInfoNodes = 0;
 }
 
 void UciSearchInfo::info_depth() const {
@@ -142,6 +149,19 @@ void UciSearchInfo::error(io::istream& in) const {
 
 void UciSearchInfo::error(const std::string& str) const {
     OutputBuffer<decltype(outLock)>(err, outLock) << str << '\n';
+}
+
+void UciSearchInfo::report_perft_depth(depth_t draft, node_count_t n) {
+    depth = draft;
+    _v[PerftNodes] = n;
+    this->info_depth();
+}
+
+void UciSearchInfo::report_perft_divide(Move move, index_t moveCount, node_count_t n) {
+    currmove = move;
+    currmovenumber = moveCount;
+    _v[PerftNodes] = n;
+    this->info_currmove();
 }
 
 #undef OUTPUT
