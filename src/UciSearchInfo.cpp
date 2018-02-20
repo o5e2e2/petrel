@@ -104,26 +104,27 @@ void UciSearchInfo::write(io::ostream& ob, const Move& move) const {
 
 void UciSearchInfo::nps(io::ostream& ob) const {
     auto _nodes = getNodes();
-    if (_nodes > 0 && lastInfoNodes != _nodes) {
-        lastInfoNodes = _nodes;
+    if (lastInfoNodes == _nodes) {
+        return;
+    }
+    lastInfoNodes = _nodes;
 
-        ob << " nodes " << _nodes;
+    ob << " nodes " << _nodes;
 
-        auto duration = fromSearchStart.getDuration();
-        if (duration >= Milliseconds{1}) {
-            ob << " time " << ::milliseconds(duration);
+    auto duration = fromSearchStart.getDuration();
+    if (duration >= Milliseconds{1}) {
+        ob << " time " << ::milliseconds(duration);
 
-            if (duration >= Milliseconds{20}) {
-                ob << " nps " << ::nps(_nodes, duration);
-            }
+        if (duration >= Milliseconds{20}) {
+            ob << " nps " << ::nps(_nodes, duration);
         }
+    }
 
-        if (get(TT_Tried) > 0) {
-            ob << " hhits " << get(TT_Hit);
-            ob << " hreads " << get(TT_Tried);
-            ob << " hhitratio " << ::permil(get(TT_Hit), get(TT_Tried));
-            ob << " hwrites " << get(TT_Written);
-        }
+    if (get(TT_Tried) > 0) {
+        ob << " hhits " << get(TT_Hit);
+        ob << " hreads " << get(TT_Tried);
+        ob << " hhitratio " << ::permil(get(TT_Hit), get(TT_Tried));
+        ob << " hwrites " << get(TT_Written);
     }
 }
 

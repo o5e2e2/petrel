@@ -12,8 +12,8 @@ void SearchInfo::clear() {
 bool SearchInfo::refreshQuota(const SearchControl& searchControl) {
     static_assert (TickLimit > 0, "TickLimit should be positive number");
 
-    assert (nodesQuota < 0 || nodes >= static_cast<decltype(nodes)>(nodesQuota));
-    nodes -= nodesQuota;
+    assert (nodesQuota < 0 || nodes >= static_cast<unsigned>(nodesQuota));
+    nodes -= static_cast<unsigned>(nodesQuota);
 
     assert (nodesLimit >= nodes);
     auto nodesRemaining = nodesLimit - nodes;
@@ -37,7 +37,7 @@ bool SearchInfo::refreshQuota(const SearchControl& searchControl) {
     this->readyok();
 
     assert (nodesQuota > 0);
-    nodes += static_cast<decltype(nodes)>(nodesQuota);
+    nodes += static_cast<unsigned>(nodesQuota);
 
     --nodesQuota; //count current node
     return false;

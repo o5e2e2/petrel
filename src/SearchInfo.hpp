@@ -26,7 +26,7 @@ public:
 
     node_count_t getNodes() const {
         assert (nodesQuota < 0 || nodes >= static_cast<unsigned>(nodesQuota));
-        return nodes - static_cast<node_count_t>(nodesQuota);
+        return nodes - static_cast<unsigned>(nodesQuota);
     }
 
     void setNodesLimit(node_count_t n) { nodesLimit = n; }
