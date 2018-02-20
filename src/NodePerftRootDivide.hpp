@@ -9,7 +9,7 @@ class NodePerftRootDivide : public NodePerft {
     index_t moveCount;
 
 public:
-    NodePerftRootDivide(NodePerftRoot& p);
+    NodePerftRootDivide(NodePerftRoot&);
     bool visit(Square from, Square to) override;
 };
 

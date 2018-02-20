@@ -24,7 +24,7 @@ bool NodePerftTT::visit(Square from, Square to) {
     }
 
     auto parentPerftBefore = static_cast<NodePerft&>(parent).perft;
-    CUT (NodePerft::visit(from, to));
+    CUT ( NodePerft::visit(from, to) );
     auto n = static_cast<NodePerft&>(parent).perft - parentPerftBefore;
 
     PerftTT(origin, hashAge).set(zobrist, draft-2, n);

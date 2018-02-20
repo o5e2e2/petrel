@@ -40,7 +40,7 @@ bool NodePerftRoot::iterativeDeepening() {
     MatrixPiBb _moves = cloneMoves();
 
     for (draft = 1; draft <= DEPTH_MAX; ++draft) {
-        CUT (searchIteration());
+        CUT ( searchIteration() );
 
         this->moves = _moves;
         control.nextIteration();

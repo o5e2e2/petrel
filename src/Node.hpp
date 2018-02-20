@@ -8,14 +8,13 @@
 class SearchControl;
 
 class Node : public PositionMoves {
-public:
+protected:
     Node& parent; //virtual
     SearchControl& control;
 
-protected:
-    Node (Node&);
-    Node (const PositionMoves&, SearchControl&);
-    Node (const PositionMoves&, Node&);
+    Node (Node& n) : PositionMoves{}, parent{n}, control{n.control} {}
+    Node (Node& n, const PositionMoves& p) : PositionMoves{p}, parent{n}, control{n.control} {}
+    Node (const PositionMoves& p, SearchControl& c) : PositionMoves{p}, parent{*this}, control{c} {}
 
 public:
     virtual ~Node() {}

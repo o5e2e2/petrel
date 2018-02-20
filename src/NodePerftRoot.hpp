@@ -4,6 +4,7 @@
 #include "NodePerft.hpp"
 
 class SearchLimit;
+class SearchControl;
 
 class NodePerftRoot : public NodePerft {
     bool searchIteration();

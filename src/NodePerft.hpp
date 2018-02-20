@@ -2,7 +2,6 @@
 #define NODE_PERFT_HPP
 
 #include "Node.hpp"
-#include "NodePerft.hpp"
 
 class NodePerft : public Node {
 public:
@@ -11,14 +10,15 @@ public:
 
 protected:
     void updateParentPerft() {
+        assert (&parent != this);
         static_cast<NodePerft&>(parent).perft += perft;
         perft = 0;
     }
 
 public:
-    NodePerft (NodePerft& p, depth_t d) : Node(p), draft(d) {}
-    NodePerft (const PositionMoves& p, SearchControl& c, depth_t d) : Node(p, c), draft(d) {}
-    NodePerft (const PositionMoves& p, NodePerft& n) : Node(p, n), draft(n.draft) {}
+    NodePerft (NodePerft& n, depth_t d) : Node(n), draft(d) {}
+    NodePerft (NodePerft& n, const PositionMoves& p) : Node(n, p), draft{n.draft} {}
+    NodePerft (const PositionMoves& p, SearchControl& c, depth_t d) : Node(p, c), draft{d} {}
     bool visit(Square from, Square to) override;
 };
 

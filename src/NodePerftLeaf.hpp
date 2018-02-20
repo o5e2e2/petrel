@@ -2,11 +2,12 @@
 #define NODE_PERFT_LEAF_HPP
 
 #include "Node.hpp"
-#include "NodePerft.hpp"
+
+class NodePerft;
 
 class NodePerftLeaf : public Node {
 public:
-    NodePerftLeaf (NodePerft& p) : Node(p) {}
+    NodePerftLeaf (NodePerft&);
     bool visit(Square from, Square to) override;
 };
 

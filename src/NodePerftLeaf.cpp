@@ -1,5 +1,8 @@
 #include "NodePerftLeaf.hpp"
+#include "NodePerft.hpp"
 #include "SearchControl.hpp"
+
+NodePerftLeaf::NodePerftLeaf(NodePerft& n) : Node(n) {}
 
 bool NodePerftLeaf::visit(Square from, Square to) {
     CUT ( control.countNode() );

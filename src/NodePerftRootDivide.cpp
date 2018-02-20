@@ -6,8 +6,7 @@
 #include "SearchControl.hpp"
 #include "UciSearchInfo.hpp"
 
-NodePerftRootDivide::NodePerftRootDivide(NodePerftRoot& p)
-    : NodePerft(p, p), moveCount(0) {}
+NodePerftRootDivide::NodePerftRootDivide(NodePerftRoot& n) : NodePerft(n, n), moveCount(0) {}
 
 bool NodePerftRootDivide::visit(Square from, Square to) {
     switch (draft) {
