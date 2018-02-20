@@ -40,6 +40,7 @@ int main(int argc, const char* argv[]) {
     //speed tricks
     std::ios_base::sync_with_stdio(false);
     std::cin.tie(nullptr);
+    std::cerr.tie(nullptr);
 
     if (argc == 1) {
         Uci uci(std::cout, std::cerr);

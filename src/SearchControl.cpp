@@ -3,14 +3,10 @@
 #include "SearchInfo.hpp"
 #include "SearchLimit.hpp"
 
-SearchControl::SearchControl (SearchInfo& i) : info(i) { clear(); }
-
-void SearchControl::clear() {
-    info.clear();
-}
+SearchControl::SearchControl (SearchInfo& i) : info{i} {}
 
 void SearchControl::newGame() {
-    clear();
+    info.clear();
     transpositionTable.clear();
 }
 
@@ -19,11 +15,11 @@ void SearchControl::nextIteration() {
 }
 
 bool SearchControl::countNode() {
-    return info.countNode(searchThread);
+    return info.countNode(*this);
 }
 
 void SearchControl::go(const SearchLimit& searchLimit) {
-    clear();
+    info.clear();
     info.setNodesLimit( searchLimit.getNodes() );
 
     auto duration = searchLimit.getThinkingTime();

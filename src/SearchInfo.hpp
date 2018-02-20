@@ -5,7 +5,7 @@
 #include "TimePoint.hpp"
 #include "Move.hpp"
 
-class SearchThread;
+class SearchControl;
 
 enum { PerftNodes, PerftDivideNodes, TT_Tried, TT_Hit, TT_Written, _Total };
 
@@ -27,6 +27,8 @@ protected:
     Move currmove;
     index_t currmovenumber;
 
+    bool refreshQuota(const SearchControl&);
+
 public:
     SearchInfo () { clear(); }
 
@@ -37,14 +39,12 @@ public:
 
     void setNodesLimit(node_count_t n) { nodesLimit = n; }
 
-    bool refreshQuota(const SearchThread&);
-
-    bool countNode(const SearchThread& searchThread) {
+    bool countNode(const SearchControl& searchControl) {
         if (nodesQuota > 0) {
             --nodesQuota;
             return false;
         }
-        return refreshQuota(searchThread);
+        return refreshQuota(searchControl);
     }
 
     void clear();

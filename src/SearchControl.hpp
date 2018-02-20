@@ -27,12 +27,12 @@ private:
 
 public:
     SearchControl (SearchInfo&);
-   ~SearchControl () { stop(); clear(); }
+   ~SearchControl () { stop(); }
 
-    void clear();
     void newGame();
 
     bool isReady() const { return searchThread.isReady(); }
+    bool isStopped() const { return searchThread.isStopped(); }
     void stop() { searchThread.stop(searchSequence); }
 
     const HashMemory& tt() const { return transpositionTable; }

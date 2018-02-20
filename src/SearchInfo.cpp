@@ -1,5 +1,5 @@
 #include "SearchInfo.hpp"
-#include "SearchThread.hpp"
+#include "SearchControl.hpp"
 
 void SearchInfo::clear() {
     fromSearchStart = {};
@@ -12,7 +12,7 @@ void SearchInfo::clear() {
 }
 
 //callbacks from search thread
-bool SearchInfo::refreshQuota(const SearchThread& searchThread) {
+bool SearchInfo::refreshQuota(const SearchControl& searchControl) {
     static_assert (TickLimit > 0, "TickLimit should be positive number");
 
     assert (nodesQuota < 0 || nodes >= static_cast<decltype(nodes)>(nodesQuota));
@@ -31,7 +31,7 @@ bool SearchInfo::refreshQuota(const SearchThread& searchThread) {
         }
     }
 
-    if (searchThread.isStopped()) {
+    if (searchControl.isStopped()) {
         nodesQuota = 0;
         nodesLimit = nodes;
         return true;
