@@ -20,6 +20,7 @@ public:
 
 private:
     enum : size_t { BucketSize = sizeof(_t) };
+    const size_t PageSize;
 
     _t  one;
 

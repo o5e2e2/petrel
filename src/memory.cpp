@@ -1,6 +1,4 @@
 #include <cstdlib>
-using std::size_t;
-
 #include "memory.hpp"
 
 #ifdef _WIN32
@@ -18,12 +16,17 @@ size_t getAvailableMemory() {
 #else
 
 #include <unistd.h>
+
+size_t getPageSize() {
+    return ::sysconf(_SC_PAGESIZE);
+}
+
 size_t getAvailableMemory() {
     auto pages = ::sysconf(_SC_AVPHYS_PAGES);
-    auto page_size = ::sysconf(_SC_PAGE_SIZE);
+    auto pageSize = getPageSize();
 
-    if (pages > 0 && page_size > 0) {
-        return static_cast<size_t>(pages) * static_cast<size_t>(page_size);
+    if (pages > 0 && pageSize > 0) {
+        return static_cast<size_t>(pages) * static_cast<size_t>(pageSize);
     }
 
     return 0;

@@ -1,3 +1,4 @@
+#include <cstring>
 #include "HashMemory.hpp"
 #include "bitops.hpp"
 #include "memory.hpp"
@@ -10,13 +11,15 @@ namespace {
     }
 }
 
-HashMemory::HashMemory () {
+HashMemory::HashMemory () :
+    PageSize{ std::max(::getPageSize(), static_cast<size_t>(BucketSize)) }
+{
     setDefault();
     max = round(::getAvailableMemory());
 }
 
 void HashMemory::clear() {
-    ::memset(hash, 0, size);
+    std::memset(hash, 0, size);
     age = {};
 }
 
@@ -46,7 +49,7 @@ void HashMemory::free() {
 }
 
 void HashMemory::resize(size_t bytes) {
-    bytes = (bytes <= BucketSize)? BucketSize : round(bytes);
+    bytes = std::max(PageSize, round(bytes));
 
     if (bytes == size) {
         clear();
@@ -55,9 +58,10 @@ void HashMemory::resize(size_t bytes) {
 
     free();
     max = round(::getAvailableMemory());
+    bytes = std::min(bytes, max);
 
-    for (bytes = std::min(bytes, max); bytes > BucketSize; bytes >>= 1) {
-        auto p = reinterpret_cast<_t*>(::allocateAligned(bytes, BucketSize));
+    for (; bytes >= PageSize; bytes >>= 1) {
+        auto p = reinterpret_cast<_t*>(::allocateAligned(bytes, PageSize));
 
         if (p) {
             set(p, bytes);
