@@ -49,7 +49,7 @@ public:
     virtual void readyok() const {};
     virtual void info_depth() const {};
     virtual void info_currmove() const {};
-    virtual ~SearchInfo() {}
+    virtual ~SearchInfo() = default;
 };
 
 #endif
