@@ -1,12 +1,24 @@
 #include <thread>
 #include "ThreadControl.hpp"
 
-ThreadControl::ThreadControl () : status{Ready}, sequence{Sequence::None} {
+namespace {
+    using Sequence = ThreadControl::Sequence;
+    Sequence& operator++ (Sequence& seq) {
+        seq = static_cast<Sequence>( static_cast< std::underlying_type_t<Sequence> >(seq)+1 );
+        if (seq == Sequence::None) {
+            //wrap around Sequence::None
+            seq = static_cast<Sequence>( static_cast< std::underlying_type_t<Sequence> >(Sequence::None)+1 );
+        }
+        return seq;
+    }
+}
+
+ThreadControl::ThreadControl () : status{Status::Ready}, sequence{Sequence::None} {
     auto infiniteLoop = [this] {
         for (;;) {
-            wait(Run);
+            wait(Status::Run);
             this->thread_body();
-            signal(Ready);
+            signal(Status::Ready);
         }
     };
     std::thread(infiniteLoop).detach();
@@ -14,44 +26,45 @@ ThreadControl::ThreadControl () : status{Ready}, sequence{Sequence::None} {
 
 template <typename Condition>
 void ThreadControl::wait(Condition condition) {
+    std::unique_lock<decltype(statusLock)> lock(statusLock);
+
     if (!condition()) {
-        std::unique_lock<decltype(statusLock)> lock(statusLock);
         statusChanged.wait(lock, condition);
     }
 }
 
 template <typename Condition>
 void ThreadControl::signal(Status to, Condition condition) {
-    statusLock.lock();
-    if (!condition()) {
-        statusLock.unlock();
-        return;
+    {
+        std::unique_lock<decltype(statusLock)> lock(statusLock);
+
+        if (!condition()) {
+            return;
+        }
+
+        status = to;
     }
 
-    status = to;
-
-    statusLock.unlock();
     statusChanged.notify_all();
 }
 
 template <typename Condition>
 ThreadControl::Sequence ThreadControl::signalSequence(Status to, Condition condition) {
-    statusLock.lock();
-    if (!condition()) {
-        statusLock.unlock();
-        return Sequence::None;
+    Sequence result;
+
+    {
+        std::unique_lock<decltype(statusLock)> lock(statusLock);
+
+        if (!condition()) {
+            return Sequence::None;
+        }
+
+        ++sequence;
+        result = sequence;
+        status = to;
     }
 
-    sequence = static_cast<Sequence>(
-        static_cast< std::underlying_type_t<Sequence> >(sequence)+1
-    );
-    if (sequence == Sequence::None) { sequence = static_cast<Sequence>(1); } //wrap around
-    auto result = sequence;
-
-    status = to;
-    statusLock.unlock();
     statusChanged.notify_all();
-
     return result;
 }
 
@@ -64,9 +77,10 @@ void ThreadControl::signal(Status from, Status to) {
 }
 
 void ThreadControl::signal(Sequence seq, Status from, Status to) {
-    if (seq != Sequence::None) {
-        signal(to, [this, seq, from]() { return sequence == seq && isStatus(from); });
+    if (seq == Sequence::None) {
+        return;
     }
+    signal(to, [this, seq, from]() { return seq == sequence && isStatus(from); });
 }
 
 ThreadControl::Sequence ThreadControl::signalSequence(Status from, Status to) {

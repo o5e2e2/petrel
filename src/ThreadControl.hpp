@@ -6,15 +6,15 @@
 
 class ThreadControl {
 public:
-    enum class Sequence : unsigned int { None };
+    enum class Sequence : unsigned { None };
 
 private:
+    enum class Status { Ready, Run, Abort };
+
     SpinLock statusLock;
-
     std::condition_variable_any statusChanged;
-
-    enum Status { Ready, Run, Abort };
     volatile Status status;
+
     Sequence sequence;
 
     bool isStatus(Status to) const { return status == to; }
@@ -33,13 +33,13 @@ private:
 
 public:
     ThreadControl ();
-    virtual ~ThreadControl() {}
+    virtual ~ThreadControl() = default;
 
-    bool isReady()   const { return isStatus(Ready); }
-    bool isStopped() const { return isStatus(Abort); }
+    bool isReady()   const { return isStatus(Status::Ready); }
+    bool isStopped() const { return isStatus(Status::Abort); }
 
-    Sequence start() { return signalSequence(Ready, Run); }
-    void stop(Sequence seq) { signal(seq, Run, Abort); wait(Ready); }
+    Sequence start() { return signalSequence(Status::Ready, Status::Run); }
+    void stop(Sequence seq) { signal(seq, Status::Run, Status::Abort); wait(Status::Ready); }
 };
 
 #endif
