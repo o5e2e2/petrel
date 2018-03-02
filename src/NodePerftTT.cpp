@@ -5,7 +5,6 @@
 
 bool NodePerftTT::visit(Square from, Square to) {
     auto& info = control.info;
-    CUT ( control.countNode() );
 
     zobrist = parent.createZobrist(from, to);
     auto origin = control.tt().prefetch(zobrist);

@@ -5,8 +5,6 @@
 NodePerftLeaf::NodePerftLeaf(NodePerft& n) : Node(n) {}
 
 bool NodePerftLeaf::visit(Square from, Square to) {
-    CUT ( control.countNode() );
-
     playMove(parent, from, to, Zobrist{0});
 
     //updateParentPerft:

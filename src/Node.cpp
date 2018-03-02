@@ -8,8 +8,8 @@ bool Node::visitChildren() {
         Square from = parent.squareOf(pi);
 
         for (Square to : parentMoves[pi]) {
+            CUT (control.countNode());
             parentMoves.clear(pi, to);
-
             CUT (visit(from, to));
         }
     }
