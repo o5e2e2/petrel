@@ -10,34 +10,34 @@ void SearchInfo::clear() {
 
 //callbacks from search thread
 bool SearchInfo::refreshQuota(const SearchControl& searchControl) {
-    static_assert (TickLimit > 0, "TickLimit should be positive number");
+    static_assert (TickLimit > 0, "TickLimit should be a positive number");
 
-    assert (nodesQuota < 0 || nodes >= static_cast<unsigned>(nodesQuota));
-    nodes -= static_cast<unsigned>(nodesQuota);
+    assert (nodes >= nodesQuota);
+    nodes -= nodesQuota;
 
     assert (nodesLimit >= nodes);
     auto nodesRemaining = nodesLimit - nodes;
 
     if (nodesRemaining >= TickLimit) {
-        nodesQuota = static_cast<decltype(nodesQuota)>(TickLimit);
+        nodesQuota = TickLimit;
     }
     else {
         nodesQuota = static_cast<decltype(nodesQuota)>(nodesRemaining);
-        if (nodesRemaining == 0) {
+        if (nodesQuota == 0) {
             return true;
         }
     }
 
     if (searchControl.isStopped()) {
-        nodesQuota = 0;
         nodesLimit = nodes;
+        nodesQuota = 0;
         return true;
     }
 
     this->readyok();
 
     assert (nodesQuota > 0);
-    nodes += static_cast<unsigned>(nodesQuota);
+    nodes += nodesQuota;
 
     --nodesQuota; //count current node
     return false;

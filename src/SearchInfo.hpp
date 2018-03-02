@@ -15,8 +15,8 @@ protected:
     node_count_t nodes;
     node_count_t nodesLimit; //search limit
 
-    enum { TickLimit = 5000 }; // ~1 msec
-    signed nodesQuota; //number of remaining nodes before checking for terminate, normally should never be negative
+    enum : unsigned { TickLimit = 5000 }; // ~1 msec
+    unsigned nodesQuota; //number of remaining nodes before slow checking for terminate
 
     bool refreshQuota(const SearchControl&);
 
@@ -25,11 +25,11 @@ public:
     void clear();
 
     node_count_t getNodes() const {
-        assert (nodesQuota < 0 || nodes >= static_cast<unsigned>(nodesQuota));
-        return nodes - static_cast<unsigned>(nodesQuota);
+        assert (nodes >= nodesQuota);
+        return nodes - nodesQuota;
     }
 
-    void setNodesLimit(node_count_t n) { nodesLimit = n; }
+    void setNodesLimit(node_count_t n) { nodesLimit = n; nodes = 0; nodesQuota = 0; }
 
     bool countNode(const SearchControl& searchControl) {
         if (nodesQuota > 0) {
