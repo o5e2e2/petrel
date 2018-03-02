@@ -206,7 +206,7 @@ void PositionFen::playMoves(io::istream& in) {
 
             if (isLegalMove(pi, to)) {
                 Position::playMove(from, to);
-                generateMoves<My>();
+                generateMoves();
                 colorToMove.flip();
                 continue;
             }
@@ -277,7 +277,7 @@ void PositionFen::readFen(io::istream& in) {
     setCastling(in);
     setEnPassant(in);
     zobrist = generateZobrist();
-    generateMoves<My>();
+    generateMoves();
 
     if (in) {
         unsigned _fifty;

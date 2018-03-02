@@ -6,7 +6,7 @@
 class NodePerft : public Node {
 public:
     node_count_t perft = 0;
-    depth_t draft;
+    depth_t draft; //remaining depth to leaves
 
 protected:
     void updateParentPerft() {

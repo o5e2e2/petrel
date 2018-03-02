@@ -8,7 +8,7 @@
 class PositionMoves : public Position {
 protected:
     MatrixPiBb moves; //generated moves from side[My]
-    template <Side::_t> void generateMoves();
+    index_t movesCount = 0;
 
 private:
     //legal move generation helpers
@@ -20,12 +20,14 @@ private:
     template <Side::_t> void generateCastlingMoves(Bb attackedSquares);
     template <Side::_t> void generateKingMoves(Bb attackedSquares);
     template <Side::_t> void generateCheckEvasions(Bb attackedSquares);
+    template <Side::_t> void generateMoves();
 
 public:
     constexpr PositionMoves () = default;
     PositionMoves (const PositionMoves&) = default;
 
     void playMove(const Position&, Square, Square, Zobrist);
+    void generateMoves() { generateMoves<My>(); movesCount = moves.count(); }
 
     const MatrixPiBb& getMoves() const { return moves; }
     MatrixPiBb& getMoves() { return moves; }

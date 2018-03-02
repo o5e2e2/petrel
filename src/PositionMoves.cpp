@@ -207,7 +207,7 @@ void PositionMoves::generateMoves() {
 
 void PositionMoves::playMove(const Position& parent, Square from, Square to, Zobrist z) {
     Position::playMove(parent, from, to, z);
-    generateMoves<My>();
+    generateMoves();
 }
 
 #undef MY

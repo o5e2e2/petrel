@@ -2,13 +2,13 @@
 #include "SearchControl.hpp"
 
 bool Node::visitChildren() {
-    MatrixPiBb& _moves = parent.getMoves();
+    auto& parentMoves = parent.getMoves();
 
     for (Pi pi : parent.alivePieces()) {
         Square from = parent.squareOf(pi);
 
-        for (Square to : _moves[pi]) {
-            _moves.clear(pi, to);
+        for (Square to : parentMoves[pi]) {
+            parentMoves.clear(pi, to);
 
             CUT (visit(from, to));
         }

@@ -19,7 +19,7 @@ bool NodePerftRoot::searchIteration() {
     else {
         switch (draft) {
             case 1:
-                perft += getMoves().count();
+                perft += movesCount;
                 break;
 
             case 2:
@@ -37,12 +37,12 @@ bool NodePerftRoot::searchIteration() {
 }
 
 bool NodePerftRoot::iterativeDeepening() {
-    MatrixPiBb _moves = cloneMoves();
+    MatrixPiBb movesBackup = cloneMoves();
 
     for (draft = 1; draft <= DEPTH_MAX; ++draft) {
         CUT ( searchIteration() );
 
-        this->moves = _moves;
+        moves = movesBackup;
         control.nextIteration();
     }
 
