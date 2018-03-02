@@ -2,26 +2,26 @@ setoption hash 16
 uci
 
 go depth 1 divide
-;info currmovenumber 1 currmove b1a3 score 1
-;info currmovenumber 2 currmove b1c3 score 1
-;info currmovenumber 3 currmove g1f3 score 1
-;info currmovenumber 4 currmove g1h3 score 1
-;info currmovenumber 5 currmove d2d4 score 1
-;info currmovenumber 6 currmove d2d3 score 1
-;info currmovenumber 7 currmove e2e4 score 1
-;info currmovenumber 8 currmove e2e3 score 1
-;info currmovenumber 9 currmove c2c4 score 1
-;info currmovenumber 10 currmove c2c3 score 1
-;info currmovenumber 11 currmove f2f4 score 1
-;info currmovenumber 12 currmove f2f3 score 1
-;info currmovenumber 13 currmove b2b4 score 1
-;info currmovenumber 14 currmove b2b3 score 1
-;info currmovenumber 15 currmove g2g4 score 1
-;info currmovenumber 16 currmove g2g3 score 1
-;info currmovenumber 17 currmove a2a4 score 1
-;info currmovenumber 18 currmove a2a3 score 1
-;info currmovenumber 19 currmove h2h4 score 1
-;info currmovenumber 20 currmove h2h3 score 1
+;info currmovenumber 1 currmove b1a3 *score 1
+;info currmovenumber 2 currmove b1c3 *score 1
+;info currmovenumber 3 currmove g1f3 *score 1
+;info currmovenumber 4 currmove g1h3 *score 1
+;info currmovenumber 5 currmove d2d4 *score 1
+;info currmovenumber 6 currmove d2d3 *score 1
+;info currmovenumber 7 currmove e2e4 *score 1
+;info currmovenumber 8 currmove e2e3 *score 1
+;info currmovenumber 9 currmove c2c4 *score 1
+;info currmovenumber 10 currmove c2c3 *score 1
+;info currmovenumber 11 currmove f2f4 *score 1
+;info currmovenumber 12 currmove f2f3 *score 1
+;info currmovenumber 13 currmove b2b4 *score 1
+;info currmovenumber 14 currmove b2b3 *score 1
+;info currmovenumber 15 currmove g2g4 *score 1
+;info currmovenumber 16 currmove g2g3 *score 1
+;info currmovenumber 17 currmove a2a4 *score 1
+;info currmovenumber 18 currmove a2a3 *score 1
+;info currmovenumber 19 currmove h2h4 *score 1
+;info currmovenumber 20 currmove h2h3 *score 1
 ;info depth 1 score 20
 ;bestmove 0000
 

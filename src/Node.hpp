@@ -13,7 +13,6 @@ protected:
     SearchControl& control;
 
     Node (Node& n) : PositionMoves{}, parent{n}, control{n.control} {}
-    Node (Node& n, const PositionMoves& p) : PositionMoves{p}, parent{n}, control{n.control} {}
     Node (const PositionMoves& p, SearchControl& c) : PositionMoves{p}, parent{*this}, control{c} {}
 
 public:

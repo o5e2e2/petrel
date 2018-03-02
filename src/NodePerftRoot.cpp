@@ -27,12 +27,12 @@ bool NodePerftRoot::searchIteration() {
                 break;
 
             default:
+                assert (draft >= 3);
                 CUT ( NodePerftTT(*this, draft-1).visitChildren() );
         }
     }
 
     static_cast<UciSearchInfo&>(control.info).report_perft_depth(draft, perft);
-    perft = 0;
     return false;
 }
 
@@ -43,6 +43,7 @@ bool NodePerftRoot::iterativeDeepening() {
         CUT ( searchIteration() );
 
         moves = movesBackup;
+        perft = 0;
         control.nextIteration();
     }
 

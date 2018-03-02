@@ -11,13 +11,13 @@ public:
 protected:
     void updateParentPerft() {
         assert (&parent != this);
-        static_cast<NodePerft&>(parent).perft += perft;
+        auto& p = static_cast<NodePerft&>(parent);
+        p.perft += perft;
         perft = 0;
     }
 
 public:
     NodePerft (NodePerft& n, depth_t d) : Node(n), draft(d) {}
-    NodePerft (NodePerft& n, const PositionMoves& p) : Node(n, p), draft{n.draft} {}
     NodePerft (const PositionMoves& p, SearchControl& c, depth_t d) : Node(p, c), draft{d} {}
     bool visit(Square from, Square to) override;
 };

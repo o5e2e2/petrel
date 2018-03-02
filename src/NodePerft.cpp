@@ -5,12 +5,14 @@
 bool NodePerft::visit(Square from, Square to) {
     playMove(parent, from, to, zobrist);
 
-    if (draft == 2) {
-        CUT ( NodePerftLeaf(*this).visitChildren() );
-    }
-    else {
-        assert (draft >= 3);
-        CUT ( NodePerftTT(*this, draft-1).visitChildren() );
+    switch (draft) {
+        case 2:
+            CUT ( NodePerftLeaf(*this).visitChildren() );
+            break;
+
+        default:
+            assert (draft >= 3);
+            CUT ( NodePerftTT(*this, draft-1).visitChildren() );
     }
 
     updateParentPerft();

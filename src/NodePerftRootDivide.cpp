@@ -6,25 +6,29 @@
 #include "SearchControl.hpp"
 #include "UciSearchInfo.hpp"
 
-NodePerftRootDivide::NodePerftRootDivide(NodePerftRoot& n) : NodePerft(n, n), moveCount(0) {}
+NodePerftRootDivide::NodePerftRootDivide(NodePerftRoot& n) : Node(n) {}
 
 bool NodePerftRootDivide::visit(Square from, Square to) {
-    switch (draft) {
+    auto& p = static_cast<NodePerftRoot&>(parent);
+    auto parentPerftBefore = p.perft;
+
+    switch (p.draft) {
         case 1:
-            perft += 1;
+            p.perft += 1;
             break;
 
         case 2:
-            CUT ( NodePerftLeaf(*this).visit(from, to) );
+            CUT ( NodePerftLeaf(p).visit(from, to) );
             break;
 
         default:
-            CUT ( NodePerftTT(*this, draft-1).visit(from, to) );
+            CUT ( NodePerftTT(p, p.draft-1).visit(from, to) );
     }
 
     ++moveCount;
-    Move move = createMove(from, to);
-    static_cast<UciSearchInfo&>(control.info).report_perft_divide(move, moveCount, perft);
-    updateParentPerft();
+    auto n = p.perft - parentPerftBefore;
+    Move move = p.createMove(from, to);
+    static_cast<UciSearchInfo&>(control.info).report_perft_divide(move, moveCount, n);
+
     return false;
 }

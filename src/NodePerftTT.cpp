@@ -4,9 +4,10 @@
 #include "SearchInfo.hpp"
 
 bool NodePerftTT::visit(Square from, Square to) {
+    auto& p = static_cast<NodePerft&>(parent);
     auto& info = control.info;
 
-    zobrist = parent.createZobrist(from, to);
+    zobrist = p.createZobrist(from, to);
     auto origin = control.tt().prefetch(zobrist);
     auto hashAge = control.tt().getAge();
 
@@ -22,9 +23,9 @@ bool NodePerftTT::visit(Square from, Square to) {
         }
     }
 
-    auto parentPerftBefore = static_cast<NodePerft&>(parent).perft;
+    auto parentPerftBefore = p.perft;
     CUT ( NodePerft::visit(from, to) );
-    auto n = static_cast<NodePerft&>(parent).perft - parentPerftBefore;
+    auto n = p.perft - parentPerftBefore;
 
     PerftTT(origin, hashAge).set(zobrist, draft-2, n);
     info.inc(TT_Written);
