@@ -26,7 +26,7 @@ public:
     constexpr void setChessVariant(ChessVariant v) { chessVariant = v; }
 
     constexpr Color getColorToMove() const { return colorToMove; }
-    constexpr const PositionSide& operator[] (Color color) const { return side[colorToMove.is(color)? My : Op];}
+    constexpr const PositionSide& operator[] (Color color) const { return side[colorToMove.is(color) ? My : Op];}
 
     void readUci(io::istream&);
     void setStartpos();

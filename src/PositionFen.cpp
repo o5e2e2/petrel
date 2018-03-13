@@ -98,7 +98,7 @@ void PositionFen::fenEnPassant(io::ostream& out) const {
         return;
     }
 
-    out << Square(OP.enPassantFile(), colorToMove.is(White)? Rank6 : Rank3);
+    out << Square(OP.enPassantFile(), colorToMove.is(White) ? Rank6 : Rank3);
 }
 
 io::ostream& operator << (io::ostream& out, const PositionFen& pos) {
@@ -232,21 +232,21 @@ io::istream& PositionFen::setCastling(io::istream& in) {
 
     for (io::char_type c; in.get(c) && !std::isblank(c); ) {
         if (std::isalpha(c)) {
-            Color color(std::isupper(c)? White : Black);
-            Side si(color.is(colorToMove)? My : Op);
+            Color color = std::isupper(c) ? White : Black;
+            Side colorSide = color.is(colorToMove) ? My : Op;
 
             c = static_cast<io::char_type>(std::tolower(c));
 
             CastlingSide castlingSide{CastlingSide::Begin};
             if (castlingSide.from_char(c)) {
-                if (Position::setCastling(si, castlingSide)) {
+                if (Position::setCastling(colorSide, castlingSide)) {
                     continue;
                 }
             }
             else {
                 File file{File::Begin};
                 if (file.from_char(c)) {
-                    if (Position::setCastling(si, file)) {
+                    if (Position::setCastling(colorSide, file)) {
                         continue;
                     }
                 }
@@ -265,7 +265,7 @@ io::istream& PositionFen::setEnPassant(io::istream& in) {
 
     Square ep{Square::Begin};
     if (in >> ep) {
-        if (!ep.is(colorToMove.is(White)? Rank6 : Rank3) || !Position::setEnPassant(File{ep})) {
+        if (!ep.is(colorToMove.is(White) ? Rank6 : Rank3) || !Position::setEnPassant(File{ep})) {
             io::fail_pos(in, before);
         }
     }

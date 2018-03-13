@@ -43,6 +43,14 @@ bool Position::drop(Side My, PieceType ty, Square to) {
     return true;
 }
 
+bool Position::setCastling(Side My, File file) {
+    return MY.setCastling(file);
+}
+
+bool Position::setCastling(Side My, CastlingSide castlingSide) {
+    return MY.setCastling(castlingSide);
+}
+
 template <Side::_t My>
 void Position::updateSliderAttacksKing(VectorPiMask affected) {
     constexpr Side Op{~My};
@@ -111,8 +119,8 @@ template <Side::_t My>
 void Position::playCastling(Pi rook, Square rookFrom, Square kingFrom) {
     constexpr Side Op{~My};
 
-    Square kingTo = CastlingRules::castlingSide(kingFrom, rookFrom).is(QueenSide)? C1 : G1;
-    Square rookTo = CastlingRules::castlingSide(kingFrom, rookFrom).is(QueenSide)? D1 : F1;
+    Square kingTo = CastlingRules::castlingSide(kingFrom, rookFrom).is(QueenSide) ? C1 : G1;
+    Square rookTo = CastlingRules::castlingSide(kingFrom, rookFrom).is(QueenSide) ? D1 : F1;
 
     MY.castle(rook, rookFrom, rookTo, kingFrom, kingTo);
     MY.updatePinner(rook, ~OP.kingSquare());
@@ -410,8 +418,8 @@ Zobrist Position::createZobrist(Square from, Square to) const {
 
         Square kingFrom = to;
         Square rookFrom = from;
-        Square kingTo = CastlingRules::castlingSide(kingFrom, rookFrom).is(QueenSide)? C1 : G1;
-        Square rookTo = CastlingRules::castlingSide(kingFrom, rookFrom).is(QueenSide)? D1 : F1;
+        Square kingTo = CastlingRules::castlingSide(kingFrom, rookFrom).is(QueenSide) ? C1 : G1;
+        Square rookTo = CastlingRules::castlingSide(kingFrom, rookFrom).is(QueenSide) ? D1 : F1;
 
         mz.clear(King, kingFrom);
         mz.clear(Rook, rookFrom);

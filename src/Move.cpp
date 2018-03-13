@@ -19,13 +19,13 @@ io::ostream& Move::write(io::ostream& out, Move move, Color colorToMove, ChessVa
 
     if (move.from().is(Rank7)) {
         //the type of a promoted pawn piece encoded in place of to's rank
-        Square promotedTo(File(moveTo), colorToMove.is(White)? Rank8 : Rank1);
+        Square promotedTo(File(moveTo), colorToMove.is(White) ? Rank8 : Rank1);
         return out << moveFrom << promotedTo << move.promoType();
     }
     if (move.from().is(Rank5)) {
         //en passant capture move internally encoded as pawn captures pawn
         assert (move.to().is(Rank5));
-        return out << moveFrom << Square{File{moveTo}, colorToMove.is(White)? Rank6 : Rank3};
+        return out << moveFrom << Square{File{moveTo}, colorToMove.is(White) ? Rank6 : Rank3};
     }
     if (move.from().is(Rank1)) {
         //castling move internally encoded as the rook captures the king

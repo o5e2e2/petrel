@@ -18,7 +18,7 @@ public:
         //1) we want to break 4*n ply transposition pattern
         //2) make sure that initally clear entry is never hidden
         auto a = (_v + 1) & AgeMask;
-        _v = a? a : 1;
+        _v = a ? a : 1;
     }
 
 };

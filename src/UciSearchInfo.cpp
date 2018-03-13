@@ -47,7 +47,7 @@ void UciSearchInfo::uciok(const HashMemory::Info& hashInfo) const {
     OUTPUT(ob);
     ob << "id name petrel\n";
     ob << "id author Aleks Peshkov\n";
-    ob << "option name UCI_Chess960 type check default " << (isChess960? "true" : "false") << '\n';
+    ob << "option name UCI_Chess960 type check default " << (isChess960 ? "true" : "false") << '\n';
     ob << "option name Hash type spin min 0 max " << ::mebi(hashInfo.max) << " default " << ::mebi(hashInfo.current) << '\n';
     ob << "uciok\n";
 }

@@ -32,7 +32,7 @@ public:
     constexpr Bb (BitRank br, Rank::_t r) : Bb{static_cast<_t>(static_cast<BitRank::_t>(br)) << 8*r} {}
 
     //bidirectional signed shift
-    constexpr Bb (_t v, signed offset) : Bb( (offset >= 0)? (v << offset) : (v >> -offset) ) {}
+    constexpr Bb (_t v, signed offset) : Bb( (offset >= 0) ? (v << offset) : (v >> -offset) ) {}
 
     constexpr explicit operator __int64 () const { return static_cast<__int64>(this->_v); }
 

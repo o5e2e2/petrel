@@ -7,9 +7,10 @@ class SearchLimit;
 class SearchControl;
 
 class NodePerftRoot : public NodePerft {
+    bool isDivide;
+
     bool searchIteration();
     bool iterativeDeepening();
-    bool isDivide;
 
 public:
     NodePerftRoot (const SearchLimit&, SearchControl&);

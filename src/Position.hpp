@@ -42,8 +42,8 @@ public:
     //initial position setup
     void clear();
     bool drop(Side, PieceType, Square);
-    bool setCastling(Side si, File file) { return side[si].setCastling(file); }
-    bool setCastling(Side si, CastlingSide castlingSide) { return side[si].setCastling(castlingSide); }
+    bool setCastling(Side, File);
+    bool setCastling(Side, CastlingSide);
     bool setEnPassant(File);
     bool setup();
 };

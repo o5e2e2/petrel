@@ -10,7 +10,7 @@ io::istream& operator >> (io::istream& in, FenBoard& board) {
     File file{FileA}; Rank rank{Rank8};
     for (io::char_type c; in.get(c); ) {
         if (std::isalpha(c) && rank.isOk() && file.isOk()) {
-            Color color = std::isupper(c)? White : Black;
+            Color color = std::isupper(c) ? White : Black;
             c = static_cast<io::char_type>(std::tolower(c));
 
             PieceType ty{PieceType::Begin};
@@ -65,7 +65,7 @@ bool FenBoard::drop(Color color, PieceType ty, Square sq) {
         }
     }
 
-    pieces[color][ty].insert(color.is(White)? sq : ~sq);
+    pieces[color][ty].insert(color.is(White) ? sq : ~sq);
     return true;
 }
 
@@ -79,10 +79,10 @@ bool FenBoard::setPosition(Position& position, Color colorToMove) {
             return false;
         }
 
-        Side si(color.is(colorToMove)? My : Op);
+        Side colorSide = color.is(colorToMove) ? My : Op;
 
         auto king = pieces[color][King].begin();
-        if (!pos.drop(si, King, *king)) {
+        if (!pos.drop(colorSide, King, *king)) {
             return false;
         }
 
@@ -92,13 +92,13 @@ bool FenBoard::setPosition(Position& position, Color colorToMove) {
     }
 
     FOR_INDEX(Color, color) {
-        Side si(color.is(colorToMove)? My : Op);
+        Side colorSide = color.is(colorToMove) ? My : Op;
 
         FOR_INDEX(PieceType, ty) {
             while (!pieces[color][ty].empty()) {
                 auto piece = pieces[color][ty].begin();
 
-                if (!pos.drop(si, ty, *piece)) {
+                if (!pos.drop(colorSide, ty, *piece)) {
                     return false;
                 }
 

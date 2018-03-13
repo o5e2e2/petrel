@@ -39,7 +39,7 @@ void SearchLimit::readUci(io::istream& command, const PositionFen& positionFen) 
     positionMoves = positionFen;
 
     Color colorToMove = positionFen.getColorToMove();
-    Side whiteSide = colorToMove.is(White)? My : Op;
+    Side whiteSide = colorToMove.is(White) ? My : Op;
     Side blackSide = ~whiteSide;
 
     perft = true; //DEBUG

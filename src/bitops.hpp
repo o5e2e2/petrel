@@ -184,13 +184,13 @@ typedef int index_t; //small numbers [0..N) with a known upper bound
     INLINE index_t bsf(std::uint64_t b) {
         assert (b != 0);
         auto lo = ::lo(b);
-        return ::bsf(lo? lo : (hi(b)+32));
+        return ::bsf(lo ? lo : (hi(b)+32));
     }
 
     INLINE index_t bsr(std::uint64_t b) {
         assert (b != 0);
         auto hi = ::hi(b);
-        return ::bsr(hi? (hi+32) : lo(b));
+        return ::bsr(hi ? (hi+32) : lo(b));
     }
 
     INLINE std::uint64_t bswap(std::uint64_t b) {

@@ -48,7 +48,7 @@ public:
     }
 
     static constexpr CastlingSide castlingSide(Square king, Square rook) {
-        return (rook < king)? QueenSide : KingSide;
+        return (rook < king) ? QueenSide : KingSide;
     }
 
 };
