@@ -28,7 +28,7 @@ bool NodePerftRootDivide::visit(Square from, Square to) {
     ++moveCount;
     auto n = p.perft - parentPerftBefore;
     Move move = p.createMove(from, to);
-    static_cast<UciSearchInfo&>(control.info).report_perft_divide(move, moveCount, n);
+    control.info.report_perft_divide(move, moveCount, n, control.getNodes());
 
     return false;
 }

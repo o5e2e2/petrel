@@ -32,7 +32,7 @@ bool NodePerftRoot::searchIteration() {
         }
     }
 
-    static_cast<UciSearchInfo&>(control.info).report_perft_depth(draft, perft);
+    control.info.report_perft_depth(draft, perft, control.getNodes());
     return false;
 }
 
@@ -58,6 +58,6 @@ bool NodePerftRoot::visitChildren() {
         iterativeDeepening();
     }
 
-    control.info.bestmove();
+    control.info.bestmove({}, control.getNodes());
     return false;
 }

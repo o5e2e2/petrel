@@ -1,7 +1,7 @@
 #include "NodePerftTT.hpp"
 #include "PerftTT.hpp"
 #include "SearchControl.hpp"
-#include "SearchInfo.hpp"
+#include "UciSearchInfo.hpp"
 
 bool NodePerftTT::visit(Square from, Square to) {
     auto& p = static_cast<NodePerft&>(parent);

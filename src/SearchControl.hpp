@@ -5,7 +5,7 @@
 #include "HashMemory.hpp"
 #include "Timer.hpp"
 
-class SearchInfo;
+class UciSearchInfo;
 class SearchLimit;
 
 /**
@@ -13,9 +13,15 @@ class SearchLimit;
  */
 class SearchControl {
 public:
-    SearchInfo& info; //virtual
+    UciSearchInfo& info; //virtual
 
 private:
+    node_count_t nodes;
+    node_count_t nodesLimit; //search limit
+
+    enum : unsigned { TickLimit = 5000 }; // ~1 msec
+    unsigned nodesQuota; //number of remaining nodes before slow checking for terminate
+
     SearchThread searchThread;
     SearchThread::Sequence searchSequence;
 
@@ -25,8 +31,10 @@ private:
     SearchControl (const SearchControl&) = delete;
     SearchControl& operator = (const SearchControl&) = delete;
 
+    bool refreshQuota();
+
 public:
-    SearchControl (SearchInfo&);
+    SearchControl (UciSearchInfo&);
    ~SearchControl () { stop(); }
 
     void newGame();
@@ -40,9 +48,20 @@ public:
 
     void go(const SearchLimit&);
 
-    //callbacks from search thread
-    bool countNode();
     void nextIteration();
+
+    node_count_t getNodes() const {
+        assert (nodes >= nodesQuota);
+        return nodes - nodesQuota;
+    }
+
+    bool countNode() {
+        if (nodesQuota > 0) {
+            --nodesQuota;
+            return false;
+        }
+        return refreshQuota();
+    }
 
 };
 
