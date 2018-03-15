@@ -20,6 +20,7 @@ HashMemory::HashMemory () :
 
 void HashMemory::clear() {
     std::memset(hash, 0, size);
+    counter = { 0, 0, 0 };
     age = {};
 }
 

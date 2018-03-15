@@ -1,11 +1,9 @@
 #include "NodePerftTT.hpp"
 #include "PerftTT.hpp"
 #include "SearchControl.hpp"
-#include "UciSearchInfo.hpp"
 
 bool NodePerftTT::visit(Square from, Square to) {
     auto& p = static_cast<NodePerft&>(parent);
-    auto& info = control.info;
 
     zobrist = p.createZobrist(from, to);
     auto origin = control.tt().prefetch(zobrist);
@@ -13,10 +11,10 @@ bool NodePerftTT::visit(Square from, Square to) {
 
     {
         auto n = PerftTT(origin, hashAge).get(zobrist, draft-2);
-        info.inc(TT_Tried);
+        control.tt().countRead();
 
         if (n != NODE_COUNT_NONE) {
-            info.inc(TT_Hit);
+            control.tt().countHit();
             perft = n;
             updateParentPerft();
             return false;
@@ -28,7 +26,7 @@ bool NodePerftTT::visit(Square from, Square to) {
     auto n = p.perft - parentPerftBefore;
 
     PerftTT(origin, hashAge).set(zobrist, draft-2, n);
-    info.inc(TT_Written);
+    control.tt().countWrite();
 
     return false;
 }

@@ -30,6 +30,12 @@ private:
     size_t size;
     size_t max;
 
+    struct {
+        size_t reads = 0;
+        size_t writes = 0;
+        size_t hits = 0;
+    } counter;
+
     HashAge age;
 
     void set(_t*, size_t);
@@ -53,6 +59,30 @@ public:
 
     const HashAge& getAge() const { return age; }
     void nextAge() { age.next(); }
+
+    void countRead() {
+        ++counter.reads;
+    }
+
+    void countWrite() {
+        ++counter.writes;
+    }
+
+    void countHit() {
+        ++counter.hits;
+    }
+
+    size_t getReads() const {
+        return counter.reads;
+    }
+
+    size_t getWrites() const {
+        return counter.writes;
+    }
+
+    size_t getHits() const {
+        return counter.hits;
+    }
 
 };
 

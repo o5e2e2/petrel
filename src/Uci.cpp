@@ -22,7 +22,7 @@ void Uci::operator() (io::istream& in) {
         else if (next("setoption")) { setoption(); }
         else if (next("set"))       { setoption(); }
         else if (next("ucinewgame")){ ucinewgame(); }
-        else if (next("uci"))       { info.uciok( searchControl.tt().getInfo() ); }
+        else if (next("uci"))       { info.uciok( searchControl.tt() ); }
         else if (next("quit"))      { break; }
 
         //error if something left unparsed

@@ -34,12 +34,12 @@ UciSearchInfo::UciSearchInfo (const PositionFen& p, io::ostream& o, io::ostream&
 {}
 
 void UciSearchInfo::clear() {
-    _v = {0, 0, 0, 0, 0};
     lastInfoNodes = 0;
     fromSearchStart = {};
 }
 
-void UciSearchInfo::uciok(const HashMemory::Info& hashInfo) const {
+void UciSearchInfo::uciok(const HashMemory& tt) const {
+    auto hashInfo = tt.getInfo();
     bool isChess960 = pos.getChessVariant().is(Chess960);
 
     OUTPUT(ob);
@@ -61,13 +61,13 @@ void UciSearchInfo::isready(bool searchIsReady) const {
     }
 }
 
-void UciSearchInfo::readyok(node_count_t nodes) const {
+void UciSearchInfo::readyok(node_count_t nodes, const HashMemory& tt) const {
     if (isreadyWaiting) {
         if (outLock.try_lock()) {
             isreadyWaiting = false;
 
             std::ostringstream ob;
-            info_nps(ob, nodes);
+            info_nps(ob, nodes, tt);
             ob << "readyok\n";
             out << ob.str() << std::flush;
             outLock.unlock();
@@ -79,7 +79,7 @@ void UciSearchInfo::write(io::ostream& ob, const Move& move) const {
     Move::write(ob, move, pos.getColorToMove(), pos.getChessVariant());
 }
 
-void UciSearchInfo::nps(io::ostream& ob, node_count_t nodes) const {
+void UciSearchInfo::nps(io::ostream& ob, node_count_t nodes, const HashMemory& tt) const {
     if (lastInfoNodes == nodes) {
         return;
     }
@@ -96,17 +96,17 @@ void UciSearchInfo::nps(io::ostream& ob, node_count_t nodes) const {
         }
     }
 
-    if (get(TT_Tried) > 0) {
-        ob << " hhits " << get(TT_Hit);
-        ob << " hreads " << get(TT_Tried);
-        ob << " hhitratio " << ::permil(get(TT_Hit), get(TT_Tried));
-        ob << " hwrites " << get(TT_Written);
+    if (tt.getReads() > 0) {
+        ob << " hhits " << tt.getHits();
+        ob << " hreads " << tt.getReads();
+        ob << " hhitratio " << ::permil(tt.getHits(), tt.getReads());
+        ob << " hwrites " << tt.getWrites();
     }
 }
 
-void UciSearchInfo::info_nps(io::ostream& ob, node_count_t nodes) const {
+void UciSearchInfo::info_nps(io::ostream& ob, node_count_t nodes, const HashMemory& tt) const {
     std::ostringstream buffer;
-    nps(buffer, nodes);
+    nps(buffer, nodes, tt);
 
     if (!buffer.str().empty()) {
         ob << "info" << buffer.str() << '\n';
@@ -128,24 +128,24 @@ void UciSearchInfo::error(const std::string& str) const {
     OutputBuffer<decltype(outLock)>(err, outLock) << str << '\n';
 }
 
-void UciSearchInfo::bestmove(Move bestMove, node_count_t nodes) const {
+void UciSearchInfo::bestmove(Move bestMove, node_count_t nodes, const HashMemory& tt) const {
     OUTPUT(ob);
-    info_nps(ob, nodes);
+    info_nps(ob, nodes, tt);
     ob << "bestmove "; write(ob, bestMove); ob << '\n';
 }
 
-void UciSearchInfo::report_perft_depth(depth_t draft, node_count_t perftNodes, node_count_t nodes) const {
+void UciSearchInfo::report_perft_depth(depth_t draft, node_count_t perftNodes, node_count_t nodes, const HashMemory& tt) const {
     OUTPUT(ob);
     ob << "info depth " << draft;
-    nps(ob, nodes);
+    nps(ob, nodes, tt);
     ob << " score " << perftNodes << '\n';
 }
 
-void UciSearchInfo::report_perft_divide(Move currmove, index_t currmovenumber, node_count_t perftNodes, node_count_t nodes) const {
+void UciSearchInfo::report_perft_divide(Move currmove, index_t currmovenumber, node_count_t perftNodes, node_count_t nodes, const HashMemory& tt) const {
     OUTPUT(ob);
     ob << "info currmovenumber " << currmovenumber;
     ob << " currmove "; write(ob, currmove);
-    nps(ob, nodes);
+    nps(ob, nodes, tt);
     ob << " score " << perftNodes << '\n';
 }
 

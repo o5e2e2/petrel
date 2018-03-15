@@ -52,7 +52,7 @@ bool SearchControl::refreshQuota() {
         return true;
     }
 
-    info.readyok(nodes);
+    info.readyok(nodes, tt());
 
     assert (nodesQuota > 0);
     nodes += nodesQuota;
