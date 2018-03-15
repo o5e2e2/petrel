@@ -2,32 +2,40 @@
 #define PERFT_TT_HPP
 
 #include "HashAge.hpp"
-#include "HashBucket.hpp"
-#include "PerftRecord.hpp"
-#include "PerftRecordDual.hpp"
+#include "HashMemory.hpp"
 #include "Zobrist.hpp"
 
+class HashBucket;
+
 class PerftTT {
-    typedef HashBucket::Index Index;
-
-    typedef ::Index<3>::array<PerftRecord> Bucket;
-
-    union {
-        HashBucket m;
-        struct {
-            Bucket b;
-            PerftRecordDual s;
-        } b;
-    };
-
-    HashBucket* origin;
+    HashMemory hashMemory;
     HashAge hashAge;
 
-public:
-    PerftTT(HashBucket* p, HashAge a) : m(*p), origin(p), hashAge(a) {}
+    struct Counter {
+        size_t reads = 0;
+        size_t writes = 0;
+        size_t hits = 0;
+    } counter;
 
-    node_count_t get(Zobrist z, depth_t d);
-    void set(Zobrist z, depth_t d, node_count_t n);
+public:
+    PerftTT ();
+
+    node_count_t get(Zobrist, depth_t);
+    void set(Zobrist, depth_t, node_count_t);
+
+    void countRead() { ++counter.reads; }
+    void countWrite() { ++counter.writes; }
+    void countHit() { ++counter.hits; }
+
+    const Counter& getCounter() const { return counter; }
+
+    const HashAge& getAge() const { return hashAge; }
+    void nextAge() { hashAge.next(); }
+
+    const HashMemory::Info& getInfo() const { return hashMemory.getInfo(); }
+    void resize(size_t bytes) { hashMemory.resize(bytes); }
+    void clear() { hashMemory.clear(); clearCounter(); hashAge = {}; }
+    void clearCounter() { counter = {0, 0, 0}; }
 
 };
 

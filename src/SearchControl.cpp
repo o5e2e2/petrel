@@ -19,6 +19,7 @@ void SearchControl::go(const SearchLimit& searchLimit) {
     nodesLimit = searchLimit.getNodes();
     nodesQuota = 0;
     info.clear();
+    transpositionTable.clearCounter();
 
     auto duration = searchLimit.getThinkingTime();
     auto sequence = searchThread.start( std::make_unique<NodePerftRoot>(searchLimit, *this) );

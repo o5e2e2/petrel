@@ -10,59 +10,52 @@ namespace {
         return ::singleton<decltype(n)>(::bsr(n));
     }
 }
-
-HashMemory::HashMemory () :
+HashMemory::HashMemory (size_t bucketSize) :
+    BucketSize{ bucketSize },
     PageSize{ std::max(::getPageSize(), static_cast<size_t>(BucketSize)) }
 {
     setDefault();
-    max = round(::getAvailableMemory());
+    info.maxSize = round(::getAvailableMemory());
 }
 
 void HashMemory::clear() {
-    std::memset(hash, 0, size);
-    counter = { 0, 0, 0 };
-    age = {};
+    std::memset(hash, 0, info.currentSize);
 }
 
-void HashMemory::set(_t* _hash, size_t _size) {
+void HashMemory::set(void* _hash, size_t _size) {
     assert (_size == round(_size));
 
     hash = _hash;
-    size = _size;
-    mask = (size-1) ^ (BucketSize-1);
+    info.currentSize = _size;
+    mask = (_size-1) ^ (BucketSize-1);
 
     clear();
 }
 
 void HashMemory::setDefault() {
-    set(&one, BucketSize);
+    resize(PageSize);
 }
 
 void HashMemory::free() {
-    if (size == BucketSize) {
-        clear();
-        return;
-    }
-
-    auto p = this->hash;
-    setDefault();
-    ::freeAligned(p);
+    ::freeAligned(hash);
+    hash = nullptr;
+    info.currentSize = 0;
 }
 
 void HashMemory::resize(size_t bytes) {
     bytes = std::max(PageSize, round(bytes));
 
-    if (bytes == size) {
+    if (bytes == info.currentSize) {
         clear();
         return;
     }
 
     free();
-    max = round(::getAvailableMemory());
-    bytes = std::min(bytes, max);
+    info.maxSize = round(::getAvailableMemory());
+    bytes = std::min(bytes, info.maxSize);
 
     for (; bytes >= PageSize; bytes >>= 1) {
-        auto p = reinterpret_cast<_t*>(::allocateAligned(bytes, PageSize));
+        auto p = ::allocateAligned(bytes, PageSize);
 
         if (p) {
             set(p, bytes);
@@ -72,13 +65,18 @@ void HashMemory::resize(size_t bytes) {
 
 }
 
-HashMemory::_t* HashMemory::prefetch(Zobrist z) const {
-    auto o = reinterpret_cast<char*>(hash) + (static_cast<Zobrist::_t>(z) & mask);
+void* HashMemory::seek(Zobrist z) const {
+    return reinterpret_cast<char*>(hash) + (static_cast<Zobrist::_t>(z) & mask);
+}
 
-    enum { CACHE_PAGES = (BucketSize-1)/64 + 1 };
+template <size_t BucketSize>
+void* HashMemory::prefetch(Zobrist z) const {
+    auto o = seek(z);
+
+    constexpr auto CACHE_PAGES = (BucketSize-1)/64 + 1;
     for (index_t i = 0; i < CACHE_PAGES; i++) {
         _mm_prefetch(o + i, _MM_HINT_NTA);
     }
 
-    return reinterpret_cast<_t*>(o);
+    return static_cast<void*>(o);
 }

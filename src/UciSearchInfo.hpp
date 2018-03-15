@@ -9,7 +9,7 @@
 
 class PositionFen;
 class SearchControl;
-class HashMemory;
+class PerftTT;
 
 class UciSearchInfo {
     io::ostream& out; //output stream
@@ -23,15 +23,15 @@ class UciSearchInfo {
     mutable node_count_t lastInfoNodes;
 
     void write(io::ostream&, const Move&) const;
-    void nps(io::ostream&, node_count_t, const HashMemory&) const;
-    void info_nps(io::ostream&, node_count_t, const HashMemory&) const;
+    void nps(io::ostream&, node_count_t, const PerftTT&) const;
+    void info_nps(io::ostream&, node_count_t, const PerftTT&) const;
 
 public:
     UciSearchInfo (const PositionFen&, io::ostream&, io::ostream& = std::cerr);
 
     //called from Uci
     void isready(bool) const;
-    void uciok(const HashMemory&) const;
+    void uciok(const PerftTT&) const;
     void info_fen() const;
 
     void error(io::istream&) const;
@@ -40,11 +40,11 @@ public:
     //called from Search
     void clear();
 
-    void readyok(node_count_t, const HashMemory&) const;
-    void bestmove(Move, node_count_t, const HashMemory&) const;
+    void readyok(node_count_t, const PerftTT&) const;
+    void bestmove(Move, node_count_t, const PerftTT&) const;
 
-    void report_perft_divide(Move, index_t, node_count_t, node_count_t, const HashMemory&) const;
-    void report_perft_depth(depth_t, node_count_t, node_count_t, const HashMemory&) const;
+    void report_perft_divide(Move, index_t, node_count_t, node_count_t, const PerftTT&) const;
+    void report_perft_depth(depth_t, node_count_t, node_count_t, const PerftTT&) const;
 
 };
 

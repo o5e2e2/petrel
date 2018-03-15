@@ -2,7 +2,7 @@
 #define SEARCH_CONTROL_HPP
 
 #include "SearchThread.hpp"
-#include "HashMemory.hpp"
+#include "PerftTT.hpp"
 #include "Timer.hpp"
 
 class UciSearchInfo;
@@ -25,7 +25,7 @@ private:
     SearchThread searchThread;
     SearchThread::Sequence searchSequence;
 
-    HashMemory transpositionTable;
+    PerftTT transpositionTable;
     Timer timer;
 
     SearchControl (const SearchControl&) = delete;
@@ -43,8 +43,8 @@ public:
     bool isStopped() const { return searchThread.isStopped(); }
     void stop() { searchThread.stop(searchSequence); }
 
-    const HashMemory& tt() const { return transpositionTable; }
-    HashMemory& tt() { return transpositionTable; }
+    const PerftTT& tt() const { return transpositionTable; }
+    PerftTT& tt() { return transpositionTable; }
 
     void go(const SearchLimit&);
 
