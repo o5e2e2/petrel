@@ -23,10 +23,6 @@ public:
     node_count_t get(Zobrist, depth_t);
     void set(Zobrist, depth_t, node_count_t);
 
-    void countRead() { ++counter.reads; }
-    void countWrite() { ++counter.writes; }
-    void countHit() { ++counter.hits; }
-
     const Counter& getCounter() const { return counter; }
 
     const HashAge& getAge() const { return hashAge; }

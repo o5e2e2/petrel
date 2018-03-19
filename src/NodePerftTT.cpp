@@ -11,7 +11,6 @@ bool NodePerftTT::visit(Square from, Square to) {
         auto n = control.tt().get(zobrist, draft-2);
 
         if (n != NODE_COUNT_NONE) {
-            control.tt().countHit();
             perft = n;
             updateParentPerft();
             return false;

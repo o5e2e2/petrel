@@ -19,16 +19,18 @@ PerftTT::PerftTT () : hashMemory(sizeof(HashBucket)) {
 }
 
 node_count_t PerftTT::get(Zobrist z, depth_t d) {
+    ++counter.reads;
+
     auto origin = reinterpret_cast<HashBucket*>(hashMemory.seek(z));
     BucketUnion u = *reinterpret_cast<BucketUnion*>(origin);
 
-    countRead();
-
     if (d < 2 && u.b.s[d].isKeyMatch(z)) {
+        ++counter.hits;
         return u.b.s[d].getNodes();
     }
 
     if (u.b.b[2].isKeyMatch(z, d)) {
+        ++counter.hits;
         auto n = u.b.b[2].getNodes();
         if (u.b.b[1].getDepth() <= d) {
             u.b.b[2].setAge(hashAge);
@@ -45,6 +47,7 @@ node_count_t PerftTT::get(Zobrist z, depth_t d) {
     }
 
     if (u.b.b[1].isKeyMatch(z, d)) {
+        ++counter.hits;
         auto n = u.b.b[1].getNodes();
         if (u.b.b[0].getDepth() <= d) {
             u.b.b[1].setAge(hashAge);
@@ -55,6 +58,7 @@ node_count_t PerftTT::get(Zobrist z, depth_t d) {
     }
 
     if (u.b.b[0].isKeyMatch(z, d)) {
+        ++counter.hits;
         auto n = u.b.b[0].getNodes();
         return n;
     }
@@ -63,10 +67,10 @@ node_count_t PerftTT::get(Zobrist z, depth_t d) {
 }
 
 void PerftTT::set(Zobrist z, depth_t d, node_count_t n) {
+    ++counter.writes;
+
     auto origin = reinterpret_cast<HashBucket*>(hashMemory.seek(z));
     BucketUnion u = *reinterpret_cast<BucketUnion*>(origin);
-
-    countWrite();
 
     if (d < 2 && d < u.b.b[2].getDepth() && u.b.b[2].isAgeMatch(hashAge)) {
         //deep slots are occupied, update only short slot if possible
