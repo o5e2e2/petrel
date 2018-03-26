@@ -360,20 +360,14 @@ Zobrist Position::createZobrist(Square from, Square to) const {
             Square ep(file, Rank3);
 
             Bb killers = ~OP.occupiedByPawns() & ::pieceTypeAttack(Pawn, ep);
-            if (killers.none()) {
-                return Zobrist{oz, mz};
-            }
+            if (killers.any() && !isPinned<My>(OCCUPIED - from + ep)) {
+                for (Square killer : killers) {
+                    assert (killer.is(Rank4));
 
-            if (isPinned<My>(OCCUPIED - from + ep)) {
-                return Zobrist{oz, mz}; //discovered check found
-            }
-
-            for (Square killer : killers) {
-                assert (killer.is(Rank4));
-
-                if (!isPinned<My>(OCCUPIED - killer + ep)) {
-                    mz.setEnPassant(file);
-                    return Zobrist{oz, mz};
+                    if (!isPinned<My>(OCCUPIED - killer + ep)) {
+                        mz.setEnPassant(file);
+                        return Zobrist{oz, mz};
+                    }
                 }
             }
             return Zobrist{oz, mz};
