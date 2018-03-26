@@ -13,8 +13,8 @@ private:
     template <Side::_t> bool isPinned(Bb) const;
     template <Side::_t> void movePiece(Pi, Square, Square);
     template <Side::_t> void movePawn(Pi, Square, Square);
-    template <Side::_t> void setSliderAttacks(VectorPiMask);
-    template <Side::_t> void updateSliderAttacksKing(VectorPiMask); //remove king to avoid hiding it under its own shadow when in check
+    template <Side::_t> void updateSliderAttacks(VectorPiMask);
+    template <Side::_t> void updateSliderAttacks(VectorPiMask, VectorPiMask);
     template <Side::_t> void setLegalEnPassant(Pi);
     template <Side::_t> void capture(Square);
     template <Side::_t> void setStage(); //recalculate game stage for position evaluation

@@ -22,16 +22,17 @@ class PositionSide {
     Bb piecesBb; //all pieces of the current side, incrementally updated
     Bb pawnsBb; //pawns of the current side, incrementally updated
 
+    Square opKing; //location of the opponent's king
+
     Evaluation evaluation;
 
     void clear(PieceType, Square);
-    void drop(PieceType, Square);
+    void set(PieceType, Square);
     void move(PieceType, Square, Square);
     bool setCastling(Pi);
     void setLeaperAttack(Pi, PieceType, Square);
 
-//friend class Position;
-public:
+friend class Position;
     static void swap(PositionSide&, PositionSide&);
 
     void move(Pi, PieceType, Square, Square);
@@ -41,19 +42,20 @@ public:
     void promote(Pi, PromoType, Square, Square);
     void capture(Square);
 
-    //set/clear for just played pawn jump, mark/unmark for legal attacker to ep pawn
-    void setEnPassant(Pi);
-    void markEnPassant(Pi);
-    void clearEnPassant();
-    void unmarkEnPassants();
+    void setEnPassantVictim(Pi);
+    void setEnPassantKiller(Pi);
+    void clearEnPassantVictim();
+    void clearEnPassantKillers();
 
+    void updatePinner(Pi);
+    void setOpKing(Square sq);
     void setOccupied(const Bb& occupied) { occupiedBb = occupied; }
     void setSliderAttacks(VectorPiMask, Bb occupied);
     void setStage(EvalStage opStage) { evaluation.setStage(opStage, kingSquare()); }
 
     //used only during initial position setup
     void clear();
-    void drop(Pi, PieceType, Square);
+    bool drop(PieceType, Square);
     bool setCastling(File);
     bool setCastling(CastlingSide);
 
@@ -76,6 +78,7 @@ public:
 
     Square squareOf(Pi pi) const { assertValid(pi); return squares.squareOf(pi); }
     Square kingSquare() const { return squareOf(TheKing); }
+    const Square& opKingSquare() const { return opKing; }
 
     bool isPieceOn(Square sq) const { assert (piecesBb[sq] == squares.isPieceOn(sq)); return squares.isPieceOn(sq); }
     Pi pieceOn(Square sq) const { Pi pi = squares.pieceOn(sq); assertValid(pi); return pi; }
@@ -102,14 +105,10 @@ public:
     Square enPassantSquare() const { Square ep = squareOf(types.getEnPassant()); assert (ep.is(Rank4)); return ep; }
     File   enPassantFile()   const { return File{ enPassantSquare() }; }
 
-    const Bb& pinRayFrom(Square) const;
-
     VectorPiMask pinners() const { return types.pinners(); }
-    void updatePinner(Pi, Square opKing);
-    void updatePinners(Square opKing);
-
     const MatrixPiBb& allAttacks() const { return attacks; }
     VectorPiMask attacksTo(Square a) const { return attacks[a]; }
+    VectorPiMask attacksToKing() const { return attacks[opKing]; }
     VectorPiMask attacksTo(Square a, Square b) const { return attacks[a] | attacks[b]; }
     VectorPiMask attacksTo(Square a, Square b, Square c) const { return attacks[a] | attacks[b] | attacks[c]; }
 

@@ -58,38 +58,21 @@ bool FenBoard::drop(Color color, PieceType ty, Square sq) {
             return false;
         }
     }
-    else if (ty.is(Pawn)) {
-        //pawns should not occupy first and last ranks
-        if (sq.is(Rank1) || sq.is(Rank8)) {
-            return false;
-        }
-    }
 
     pieces[color][ty].insert(color.is(White) ? sq : ~sq);
     return true;
 }
 
 bool FenBoard::setPosition(Position& position, Color colorToMove) {
-    Position pos;
-    pos.clear();
-
-    //TRICK: kings should be placed before any opponent's non king pieces
+    //each side should have one king
     FOR_INDEX(Color, color) {
         if (pieces[color][King].empty()) {
             return false;
         }
-
-        Side colorSide = color.is(colorToMove) ? My : Op;
-
-        auto king = pieces[color][King].begin();
-        if (!pos.drop(colorSide, King, *king)) {
-            return false;
-        }
-
-        pieces[color][King].erase(king);
-
-        assert (pieces[color][King].empty());
     }
+
+    Position pos;
+    pos.clear();
 
     FOR_INDEX(Color, color) {
         Side colorSide = color.is(colorToMove) ? My : Op;

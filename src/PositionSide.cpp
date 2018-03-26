@@ -44,6 +44,7 @@ void PositionSide::swap(PositionSide& my, PositionSide& op) {
     swap(my.occupiedBb, op.occupiedBb);
     swap(my.piecesBb, op.piecesBb);
     swap(my.pawnsBb, op.pawnsBb);
+    swap(my.opKing, op.opKing);
     swap(my.evaluation, op.evaluation);
 }
 
@@ -52,7 +53,7 @@ void PositionSide::clear(PieceType ty, Square from) {
     evaluation.clear(ty, from);
 }
 
-void PositionSide::drop(PieceType ty, Square to) {
+void PositionSide::set(PieceType ty, Square to) {
     piecesBb += to;
     evaluation.drop(ty, to);
 }
@@ -62,19 +63,28 @@ void PositionSide::move(PieceType ty, Square from, Square to) {
     evaluation.move(ty, from, to);
 }
 
-void PositionSide::drop(Pi pi, PieceType ty, Square to) {
-    drop(ty, to);
+bool PositionSide::drop(PieceType ty, Square to) {
+    if (piecesBb[to]) { return false; }
+
+    if (ty.is(Pawn)) {
+        if (to.is(Rank1) || to.is(Rank8)) {
+            return false;
+        }
+        pawnsBb += to;
+    }
+    set(ty, to);
+
+    Pi pi = ty.is(King) ? Pi{TheKing} : (alivePieces() | Pi{TheKing}).seekVacant();
+
     types.drop(pi, ty);
     squares.drop(pi, to);
 
     if (isLeaper(ty)) {
-        if (ty.is(Pawn)) {
-            pawnsBb += to;
-        }
         setLeaperAttack(pi, ty, to);
     }
 
     assertValid(pi);
+    return true;
 }
 
 void PositionSide::capture(Square from) {
@@ -143,8 +153,8 @@ void PositionSide::castle(Pi rook, Square rookFrom, Square rookTo, Square kingFr
 
     clear(Rook, rookFrom);
     clear(King, kingFrom);
-    drop(King, kingTo);
-    drop(Rook, rookTo);
+    set(King, kingTo);
+    set(Rook, rookTo);
 
     squares.castle(rook, rookTo, TheKing, kingTo);
     setLeaperAttack(TheKing, King, kingTo);
@@ -239,40 +249,37 @@ bool PositionSide::setCastling(File file) {
     return false;
 }
 
-void PositionSide::setEnPassant(Pi pi) {
+void PositionSide::setEnPassantVictim(Pi pi) {
     assert (isPawn(pi));
     assert (squareOf(pi).is(Rank4));
+    assert (!hasEnPassant() || types.isEnPassant(pi));
     types.setEnPassant(pi);
 }
 
-void PositionSide::markEnPassant(Pi pi) {
+void PositionSide::setEnPassantKiller(Pi pi) {
     assert (isPawn(pi));
     assert (squareOf(pi).is(Rank5));
     types.setEnPassant(pi);
 }
 
-void PositionSide::clearEnPassant() {
+void PositionSide::clearEnPassantVictim() {
     assert (hasEnPassant());
     assert (types.enPassantPawns().isSingleton());
     assert (types.enPassantPawns() <= squares.piecesOn(Rank4));
     types.clearEnPassants();
 }
 
-void PositionSide::unmarkEnPassants() {
+void PositionSide::clearEnPassantKillers() {
     assert (hasEnPassant());
     assert (types.enPassantPawns() <= squares.piecesOn(Rank5));
     types.clearEnPassants();
 }
 
-const Bb& PositionSide::pinRayFrom(Square from) const {
-    return ::between(kingSquare(), from);
-}
-
-void PositionSide::updatePinner(Pi pi, Square opKingSquare) {
+void PositionSide::updatePinner(Pi pi) {
     assert (isSlider(pi));
     Square sq = squareOf(pi);
 
-    if (::pieceTypeAttack(typeOf(pi), sq)[opKingSquare] && ::between(opKingSquare, sq).any()) {
+    if (::pieceTypeAttack(typeOf(pi), sq)[opKing] && ::between(opKing, sq).any()) {
         types.setPinner(pi);
     }
     else {
@@ -280,9 +287,10 @@ void PositionSide::updatePinner(Pi pi, Square opKingSquare) {
     }
 }
 
-void PositionSide::updatePinners(Square opKingSquare) {
+void PositionSide::setOpKing(Square sq) {
+    opKing = sq;
     for (Pi pi : sliders()) {
-        updatePinner(pi, opKingSquare);
+        updatePinner(pi);
     }
 }
 

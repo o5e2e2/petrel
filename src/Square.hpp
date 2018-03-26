@@ -19,6 +19,7 @@ struct Square : Index<64, square_t> {
     enum { RankShift = 3, RankMask = (Rank::Mask << RankShift) };
 
     using Index::Index;
+    constexpr Square () = default;
     constexpr Square (File f, Rank r) : Index{static_cast<_t>(f + (r << RankShift))} {}
 
     constexpr explicit operator File() const { return static_cast<File::_t>(this->_v & File::Mask); }

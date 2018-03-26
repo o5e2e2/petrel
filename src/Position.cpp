@@ -13,34 +13,16 @@ void Position::clear() {
 }
 
 bool Position::setup() {
+    MY.setOpKing(~OP.kingSquare());
+    OP.setOpKing(~MY.kingSquare());
+    updateSliderAttacks<Op>(OP.alivePieces(), MY.alivePieces());
     setStage<My>();
     setStage<Op>();
-    updateSliderAttacksKing<Op>(OP.alivePieces());
-    setSliderAttacks<My>(MY.alivePieces());
-    return MY.attacksTo(~OP.kingSquare()).none(); //not in check
+    return MY.attacksToKing().none(); //not in check
 }
 
 bool Position::drop(Side My, PieceType ty, Square to) {
-    const Side Op{~My};
-
-    if (OCCUPIED[to]) { return false; }
-
-    if (ty.is(King)) {
-        //TRICK: king should be dropped before any opponents non-king pieces
-        MY.drop(TheKing, King, to);
-        return true;
-    }
-
-    if (ty.is(Pawn) && (to.is(Rank1) || to.is(Rank8))) {
-        return false;
-    }
-
-    Pi pi{ (MY.alivePieces() | Pi{TheKing}).seekVacant() };
-    MY.drop(pi, ty, to);
-    if (isSlider(ty)) {
-        MY.updatePinner(pi, ~OP.kingSquare());
-    }
-    return true;
+    return MY.drop(ty, to);
 }
 
 bool Position::setCastling(Side My, File file) {
@@ -52,25 +34,24 @@ bool Position::setCastling(Side My, CastlingSide castlingSide) {
 }
 
 template <Side::_t My>
-void Position::updateSliderAttacksKing(VectorPiMask affected) {
+void Position::updateSliderAttacks(VectorPiMask affected) {
     constexpr Side Op{~My};
 
     //sync occupiedBb between sides
     MY.setOccupied(MY.occupiedSquares() + ~OP.occupiedSquares());
-    OP.setOccupied(~OCCUPIED);
+    OP.setOccupied(OP.occupiedSquares() + ~MY.occupiedSquares());
 
     //TRICK: attacks calculated without opponent's king for implicit out of check king's moves generation
-    MY.setSliderAttacks(affected & MY.sliders(), OCCUPIED - ~OP.kingSquare());
+    MY.setSliderAttacks(affected & MY.sliders(), OCCUPIED - MY.opKingSquare());
 }
 
 template <Side::_t My>
-void Position::setSliderAttacks(VectorPiMask affected) {
+void Position::updateSliderAttacks(VectorPiMask myAffected, VectorPiMask opAffected) {
     constexpr Side Op{~My};
 
-    MY.setSliderAttacks(affected & MY.sliders(), OCCUPIED);
+    updateSliderAttacks<My>(myAffected);
 
-    //king cannot be in check
-    assert (MY.attacksTo(~OP.kingSquare()).none());
+    OP.setSliderAttacks(opAffected & OP.sliders(), OP.occupied());
 }
 
 template <Side::_t My>
@@ -111,7 +92,7 @@ void Position::movePiece(Pi pi, Square from, Square to) {
 
     MY.move(pi, ty, from, to);
     if (MY.isSlider(pi)) {
-        MY.updatePinner(pi, ~OP.kingSquare());
+        MY.updatePinner(pi);
     }
 }
 
@@ -123,13 +104,13 @@ void Position::playCastling(Pi rook, Square rookFrom, Square kingFrom) {
     Square rookTo = CastlingRules::castlingSide(kingFrom, rookFrom).is(QueenSide) ? D1 : F1;
 
     MY.castle(rook, rookFrom, rookTo, kingFrom, kingTo);
-    MY.updatePinner(rook, ~OP.kingSquare());
-    OP.updatePinners(~kingTo);
+    MY.updatePinner(rook);
+    OP.setOpKing(~kingTo);
 
     //TRICK: castling should not affect opponent's sliders, otherwise it is check or pin
     //TRICK: castling rook should attack 'kingFrom' square
     //TRICK: only first rank sliders can be affected
-    updateSliderAttacksKing<My>(MY.attacksTo(rookFrom, kingFrom) & MY.piecesOn(Rank1));
+    updateSliderAttacks<My>(MY.attacksTo(rookFrom, kingFrom) & MY.piecesOn(Rank1));
 
     MY.assertValid(TheKing);
     MY.assertValid(rook);
@@ -139,10 +120,8 @@ template <Side::_t My>
 bool Position::isPinned(Bb allOccupiedWithoutPinned) const {
     constexpr Side Op{~My};
 
-    Square opKingSquare = ~OP.kingSquare();
-
     for (Pi pinner : MY.pinners()) {
-        Bb pinLine = ::between(opKingSquare, MY.squareOf(pinner));
+        Bb pinLine = ::between(MY.opKingSquare(), MY.squareOf(pinner));
         if ((pinLine & allOccupiedWithoutPinned).none()) {
             return true;
         }
@@ -170,17 +149,17 @@ void Position::setLegalEnPassant(Pi pi) {
     }
 
     if (isPinned<My>(OCCUPIED)) {
-        assert ((MY.attacksTo(~OP.kingSquare()) % pi).any());
+        assert ((MY.attacksToKing() % pi).any());
         return; //discovered check found
     }
-    assert ((MY.attacksTo(~OP.kingSquare()) % pi).none());
+    assert ((MY.attacksToKing() % pi).none());
 
     for (Square killer : killers) {
         assert (killer.is(Rank4));
 
         if (!isPinned<My>(OCCUPIED - killer + ep - to)) {
-            OP.markEnPassant(OP.pieceOn(~killer));
-            MY.setEnPassant(pi);
+            MY.setEnPassantVictim(pi);
+            OP.setEnPassantKiller(OP.pieceOn(~killer));
         }
     }
 }
@@ -196,21 +175,19 @@ void Position::playPawnMove(Pi pi, Square from, Square to) {
 
         MY.promote(pi, ty, from, promotedTo);
         if (isSlider(ty)) {
-            MY.updatePinner(pi, ~OP.kingSquare());
+            MY.updatePinner(pi);
         }
         setStage<Op>();
 
         if (OP.isOccupied(~promotedTo)) {
             //promotion with capture
             capture<Op>(~promotedTo);
-            updateSliderAttacksKing<My>(MY.attacksTo(from) | pi);
-            setSliderAttacks<Op>(OP.attacksTo(~from));
+            updateSliderAttacks<My>(MY.attacksTo(from) | pi, OP.attacksTo(~from));
             return;
         }
 
         //promotion without capture
-        updateSliderAttacksKing<My>(MY.attacksTo(from, promotedTo) | pi);
-        setSliderAttacks<Op>(OP.attacksTo(~from, ~promotedTo));
+        updateSliderAttacks<My>(MY.attacksTo(from, promotedTo) | pi, OP.attacksTo(~from, ~promotedTo));
         return;
     }
 
@@ -221,23 +198,20 @@ void Position::playPawnMove(Pi pi, Square from, Square to) {
             //en passant move
             Square ep(File{to}, Rank6);
             movePawn<My>(pi, from, ep);
-            updateSliderAttacksKing<My>(MY.attacksTo(from, to, ep));
-            setSliderAttacks<Op>(OP.attacksTo(~from, ~to, ~ep));
+            updateSliderAttacks<My>(MY.attacksTo(from, to, ep), OP.attacksTo(~from, ~to, ~ep));
             return;
         }
 
         //simple pawn capture
         movePawn<My>(pi, from, to);
-        updateSliderAttacksKing<My>(MY.attacksTo(from));
-        setSliderAttacks<Op>(OP.attacksTo(~from));
+        updateSliderAttacks<My>(MY.attacksTo(from), OP.attacksTo(~from));
         return;
     }
 
     //simple pawn move
     movePawn<My>(pi, from, to);
 
-    updateSliderAttacksKing<My>(MY.attacksTo(from, to));
-    setSliderAttacks<Op>(OP.attacksTo(~from, ~to));
+    updateSliderAttacks<My>(MY.attacksTo(from, to), OP.attacksTo(~from, ~to));
 
     if (from.is(Rank2) && to.is(Rank4)) {
         setLegalEnPassant<My>(pi);
@@ -255,17 +229,17 @@ void Position::playKingMove(Square from, Square to) {
     assert (MY.typeOf(pi).is(King));
 
     MY.moveKing(from, to);
-    OP.updatePinners(~to);
+    OP.setOpKing(~to);
 
     if (OP.isOccupied(~to)) {
         //capture
         capture<Op>(~to);
-        updateSliderAttacksKing<My>(MY.attacksTo(from));
+        updateSliderAttacks<My>(MY.attacksTo(from));
         return;
     }
 
     //non-capture
-    updateSliderAttacksKing<My>(MY.attacksTo(from, to));
+    updateSliderAttacks<My>(MY.attacksTo(from, to));
 }
 
 template <Side::_t My>
@@ -278,8 +252,8 @@ void Position::playMove(Square from, Square to) {
 
     //clear en passant status from the previous move
     if (OP.hasEnPassant()) {
-        OP.clearEnPassant();
-        MY.unmarkEnPassants();
+        OP.clearEnPassantVictim();
+        MY.clearEnPassantKillers();
     }
     assert (!MY.hasEnPassant());
     assert (!OP.hasEnPassant());
@@ -300,8 +274,7 @@ void Position::playMove(Square from, Square to) {
         //simple non-pawn non-king capture
         capture<Op>(~to);
         movePiece<My>(pi, from, to);
-        updateSliderAttacksKing<My>(MY.attacksTo(from) | pi);
-        setSliderAttacks<Op>(OP.attacksTo(~from));
+        updateSliderAttacks<My>(MY.attacksTo(from) | pi, OP.attacksTo(~from));
         return;
     }
 
@@ -313,8 +286,7 @@ void Position::playMove(Square from, Square to) {
 
     //simple non-pawn non-king non-capture move
     movePiece<My>(pi, from, to);
-    updateSliderAttacksKing<My>(MY.attacksTo(from, to));
-    setSliderAttacks<Op>(OP.attacksTo(~from, ~to));
+    updateSliderAttacks<My>(MY.attacksTo(from, to), OP.attacksTo(~from, ~to));
 }
 
 void Position::playMove(const Position& parent, Square from, Square to, Zobrist z) {
@@ -326,6 +298,9 @@ void Position::playMove(const Position& parent, Square from, Square to, Zobrist 
 
     //current position flipped its sides relative to parent, so we make the move inplace for the Op
     playMove<Op>(from, to);
+
+    //king cannot be in check
+    assert (MY.attacksToKing().none());
 }
 
 void Position::playMove(Square from, Square to) {
@@ -334,6 +309,9 @@ void Position::playMove(Square from, Square to) {
 
     //the position just swapped its sides, so we make the move for the Op
     playMove<Op>(from, to);
+
+    //king cannot be in check
+    assert (MY.attacksToKing().none());
 }
 
 Zobrist Position::generateZobrist() const {

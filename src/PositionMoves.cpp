@@ -122,8 +122,8 @@ void PositionMoves::excludePinnedMoves(VectorPiMask pinnerCandidates) {
 
         assert (::pieceTypeAttack(OP.typeOf(pi), pinFrom)[MY.kingSquare()]);
 
-        Bb pinRay = MY.pinRayFrom(pinFrom);
-        Bb betweenPieces{pinRay & OCCUPIED};
+        const Bb& pinLine = ::between(MY.kingSquare(), pinFrom);
+        Bb betweenPieces = pinLine & OCCUPIED;
         assert (betweenPieces.any());
 
         if (betweenPieces.isSingleton() && (betweenPieces & MY.occupiedSquares()).any()) {
@@ -131,7 +131,7 @@ void PositionMoves::excludePinnedMoves(VectorPiMask pinnerCandidates) {
             Pi pinned{MY.pieceOn(betweenPieces.index())};
 
             //exclude moves except moves over the pin line
-            moves.filter(pinned, pinRay + pinFrom);
+            moves.filter(pinned, pinLine + pinFrom);
         }
     }
 }
@@ -140,7 +140,7 @@ template <Side::_t My>
 void PositionMoves::generateCheckEvasions(Bb attackedSquares) {
     constexpr Side Op{~My};
 
-    VectorPiMask checkers{OP.attacksTo(~MY.kingSquare())};
+    VectorPiMask checkers = OP.attacksToKing();
 
     if (!checkers.isSingleton()) {
         //multiple (double) checker's case: no moves except king's ones are possible
@@ -151,7 +151,7 @@ void PositionMoves::generateCheckEvasions(Bb attackedSquares) {
         Pi checker{checkers.index()};
         Square checkFrom{~OP.squareOf(checker)};
 
-        Bb checkLine = MY.pinRayFrom(checkFrom);
+        const Bb& checkLine = ::between(MY.kingSquare(), checkFrom);
 
         //general case: check evasion moves of all pieces
         moves = MY.allAttacks() & (checkLine + checkFrom);
