@@ -16,7 +16,7 @@ private:
     EvalStage stage;
 
 public:
-    constexpr Evaluation () : pst{0}, stage(Middlegame) {}
+    constexpr Evaluation () : pst{0}, stage{Middlegame} {}
     Evaluation (const Evaluation&) = default;
 
     constexpr explicit operator _t () const { return pst; }

@@ -57,8 +57,8 @@ void Position::updateSliderAttacks(VectorPiMask myAffected, VectorPiMask opAffec
 template <Side::_t My>
 void Position::setStage() {
     constexpr Side Op{~My};
-    //game stage (middlegane or endgame) depends on opponents pieces count
-    MY.setStage(OP.getStage());
+    //game stage (middlegame or endgame) depends on opponents pieces count
+    MY.setStage(OP.generateEvalStage());
 }
 
 template <Side::_t My>

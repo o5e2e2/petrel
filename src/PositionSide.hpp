@@ -112,7 +112,7 @@ public:
     VectorPiMask attacksTo(Square a, Square b) const { return attacks[a] | attacks[b]; }
     VectorPiMask attacksTo(Square a, Square b, Square c) const { return attacks[a] | attacks[b] | attacks[c]; }
 
-    EvalStage getStage() const; //returns whether material for endgame or middlegame
+    EvalStage generateEvalStage() const; //returns whether material for endgame or middlegame
 
     Move createMove(Square from, Square to) const;
 
