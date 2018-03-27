@@ -16,8 +16,8 @@ bool Position::setup() {
     MY.setOpKing(~OP.kingSquare());
     OP.setOpKing(~MY.kingSquare());
     updateSliderAttacks<Op>(OP.alivePieces(), MY.alivePieces());
-    setStage<My>();
-    setStage<Op>();
+    setGamePhase<My>();
+    setGamePhase<Op>();
     return MY.attacksToKing().none(); //not in check
 }
 
@@ -55,17 +55,17 @@ void Position::updateSliderAttacks(VectorPiMask myAffected, VectorPiMask opAffec
 }
 
 template <Side::_t My>
-void Position::setStage() {
+void Position::setGamePhase() {
     constexpr Side Op{~My};
-    //game stage (middlegame or endgame) depends on opponents pieces count
-    MY.setStage(OP.generateEvalStage());
+    //game gamePhase (middlegame or endgame) depends on opponents pieces count
+    MY.setGamePhase(OP.generateGamePhase());
 }
 
 template <Side::_t My>
 void Position::capture(Square from) {
     constexpr Side Op{~My};
     MY.capture(from);
-    setStage<Op>();
+    setGamePhase<Op>();
 }
 
 template <Side::_t My>
@@ -177,7 +177,7 @@ void Position::playPawnMove(Pi pi, Square from, Square to) {
         if (isSlider(ty)) {
             MY.updatePinner(pi);
         }
-        setStage<Op>();
+        setGamePhase<Op>();
 
         if (OP.isOccupied(~promotedTo)) {
             //promotion with capture

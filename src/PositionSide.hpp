@@ -51,7 +51,7 @@ friend class Position;
     void setOpKing(Square sq);
     void setOccupied(const Bb& occupied) { occupiedBb = occupied; }
     void setSliderAttacks(VectorPiMask, Bb occupied);
-    void setStage(EvalStage opStage) { evaluation.setStage(opStage, kingSquare()); }
+    void setGamePhase(GamePhase opGamePhase) { evaluation.setGamePhase(opGamePhase, kingSquare()); }
 
     //used only during initial position setup
     void clear();
@@ -112,7 +112,7 @@ public:
     VectorPiMask attacksTo(Square a, Square b) const { return attacks[a] | attacks[b]; }
     VectorPiMask attacksTo(Square a, Square b, Square c) const { return attacks[a] | attacks[b] | attacks[c]; }
 
-    EvalStage generateEvalStage() const; //returns whether material for endgame or middlegame
+    GamePhase generateGamePhase() const; //returns whether material for endgame or middlegame
 
     Move createMove(Square from, Square to) const;
 

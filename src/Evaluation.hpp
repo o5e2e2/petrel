@@ -13,22 +13,22 @@ public:
 
 private:
     _t pst;
-    EvalStage stage;
+    GamePhase gamePhase;
 
 public:
-    constexpr Evaluation () : pst{0}, stage{Middlegame} {}
+    constexpr Evaluation () : pst{0}, gamePhase{Middlegame} {}
     Evaluation (const Evaluation&) = default;
 
     constexpr explicit operator _t () const { return pst; }
 
-    void setStage(EvalStage evalStage, Square kingFrom) {
-        if (stage == evalStage) {
+    void setGamePhase(GamePhase evalGamePhase, Square kingFrom) {
+        if (gamePhase == evalGamePhase) {
             return;
         }
 
-        clear((stage == Endgame ? KingEndgame : King), kingFrom);
-        stage = evalStage;
-        drop((stage == Endgame ? KingEndgame : King), kingFrom);
+        clear((gamePhase == Endgame ? KingEndgame : King), kingFrom);
+        gamePhase = evalGamePhase;
+        drop((gamePhase == Endgame ? KingEndgame : King), kingFrom);
     }
 
     void drop(PieceType::_t ty, Square to) { pst += pieceSquareTable(ty, to); }
@@ -38,7 +38,7 @@ public:
         assert (from != to);
 
         if (ty == King) {
-            ty = (stage == Endgame ? KingEndgame : King);
+            ty = (gamePhase == Endgame ? KingEndgame : King);
         }
 
         clear(ty, from);

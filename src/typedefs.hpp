@@ -63,8 +63,8 @@ constexpr Rank::_t rankOf(PromoType::_t ty) { return static_cast<Rank::_t>(ty); 
 enum chess_variant_t { Orthodox, Chess960 };
 typedef Index<2, chess_variant_t> ChessVariant;
 
-enum eval_stage_t { Middlegame, Endgame };
-typedef Index<2, eval_stage_t> EvalStage;
+enum game_phase_t { Middlegame, Endgame };
+typedef Index<2, game_phase_t> GamePhase;
 
 typedef std::chrono::milliseconds Milliseconds; //UCI i/o type
 typedef Milliseconds Duration; //internal type
