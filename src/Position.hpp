@@ -36,7 +36,7 @@ public:
     Move createMove(Square from, Square to) const { return side[My].createMove(from, to); }
 
     void playMove(const Position&, Square, Square, Zobrist);
-    void playMove(const Position& parent, Square from, Square to) { playMove(parent, from, to, createZobrist(from, to)); }
+    void playMove(const Position&, Square, Square);
     void playMove(Square, Square);
 
     //initial position setup

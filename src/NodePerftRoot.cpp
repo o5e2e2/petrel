@@ -39,7 +39,7 @@ bool NodePerftRoot::searchIteration() {
 bool NodePerftRoot::iterativeDeepening() {
     MatrixPiBb movesBackup = cloneMoves();
 
-    for (draft = 1; draft <= DEPTH_MAX; ++draft) {
+    for (draft = 1; draft <= DepthMax; ++draft) {
         CUT ( searchIteration() );
 
         moves = movesBackup;

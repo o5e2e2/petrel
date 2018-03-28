@@ -290,6 +290,8 @@ void Position::playMove(Square from, Square to) {
 }
 
 void Position::playMove(const Position& parent, Square from, Square to, Zobrist z) {
+    assert (parent.zobrist == parent.generateZobrist());
+
     zobrist = z;
 
     assert (this != &parent);
@@ -301,9 +303,17 @@ void Position::playMove(const Position& parent, Square from, Square to, Zobrist 
 
     //king cannot be in check
     assert (MY.attacksToKing().none());
+
+    //assert (zobrist == Zobrist{0} || zobrist == generateZobrist());
+}
+
+void Position::playMove(const Position& parent, Square from, Square to) {
+    playMove(parent, from, to, parent.createZobrist(from, to));
 }
 
 void Position::playMove(Square from, Square to) {
+    //assert (zobrist == generateZobrist());
+
     zobrist = createZobrist(from, to);
     PositionSide::swap(MY, OP);
 
@@ -312,6 +322,8 @@ void Position::playMove(Square from, Square to) {
 
     //king cannot be in check
     assert (MY.attacksToKing().none());
+
+    assert (zobrist == generateZobrist());
 }
 
 Zobrist Position::generateZobrist() const {
