@@ -38,8 +38,8 @@ void Position::updateSliderAttacks(VectorPiMask affected) {
     constexpr Side Op{~My};
 
     //sync occupiedBb between sides
-    MY.setOccupied(MY.occupiedSquares() + ~OP.occupiedSquares());
-    OP.setOccupied(OP.occupiedSquares() + ~MY.occupiedSquares());
+    MY.setOpOccupied(~OP.occupiedSquares());
+    OP.setOpOccupied(~MY.occupiedSquares());
 
     //TRICK: attacks calculated without opponent's king for implicit out of check king's moves generation
     MY.setSliderAttacks(affected & MY.sliders(), OCCUPIED - MY.opKingSquare());
@@ -50,7 +50,6 @@ void Position::updateSliderAttacks(VectorPiMask myAffected, VectorPiMask opAffec
     constexpr Side Op{~My};
 
     updateSliderAttacks<My>(myAffected);
-
     OP.setSliderAttacks(opAffected & OP.sliders(), OP.occupied());
 }
 
@@ -66,34 +65,6 @@ void Position::capture(Square from) {
     constexpr Side Op{~My};
     MY.capture(from);
     setGamePhase<Op>();
-}
-
-template <Side::_t My>
-void Position::movePawn(Pi pi, Square from, Square to) {
-    constexpr Side Op{~My};
-
-    MY.assertValid(pi);
-    assert (MY.squareOf(pi).is(from));
-    assert (MY.isPawn(pi));
-
-    MY.movePawn(pi, from, to);
-}
-
-template <Side::_t My>
-void Position::movePiece(Pi pi, Square from, Square to) {
-    constexpr Side Op{~My};
-
-    MY.assertValid(pi);
-    assert (MY.squareOf(pi).is(from));
-    assert (!MY.isPawn(pi));
-
-    PieceType ty{MY.typeOf(pi)};
-    assert (!ty.is(King));
-
-    MY.move(pi, ty, from, to);
-    if (MY.isSlider(pi)) {
-        MY.updatePinner(pi);
-    }
 }
 
 template <Side::_t My>
@@ -117,20 +88,6 @@ void Position::playCastling(Pi rook, Square rookFrom, Square kingFrom) {
 }
 
 template <Side::_t My>
-bool Position::isPinned(Bb allOccupiedWithoutPinned) const {
-    constexpr Side Op{~My};
-
-    for (Pi pinner : MY.pinners()) {
-        Bb pinLine = ::between(MY.opKingSquare(), MY.squareOf(pinner));
-        if ((pinLine & allOccupiedWithoutPinned).none()) {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-template <Side::_t My>
 void Position::setLegalEnPassant(Pi pi) {
     constexpr Side Op{~My};
 
@@ -148,7 +105,7 @@ void Position::setLegalEnPassant(Pi pi) {
         return;
     }
 
-    if (isPinned<My>(OCCUPIED)) {
+    if (MY.isPinned(OCCUPIED)) {
         assert ((MY.attacksToKing() % pi).any());
         return; //discovered check found
     }
@@ -157,7 +114,7 @@ void Position::setLegalEnPassant(Pi pi) {
     for (Square killer : killers) {
         assert (killer.is(Rank4));
 
-        if (!isPinned<My>(OCCUPIED - killer + ep - to)) {
+        if (!MY.isPinned(OCCUPIED - killer + ep - to)) {
             MY.setEnPassantVictim(pi);
             OP.setEnPassantKiller(OP.pieceOn(~killer));
         }
@@ -174,9 +131,6 @@ void Position::playPawnMove(Pi pi, Square from, Square to) {
         Square promotedTo = Square(File(to), Rank8);
 
         MY.promote(pi, ty, from, promotedTo);
-        if (isSlider(ty)) {
-            MY.updatePinner(pi);
-        }
         setGamePhase<Op>();
 
         if (OP.isOccupied(~promotedTo)) {
@@ -195,22 +149,21 @@ void Position::playPawnMove(Pi pi, Square from, Square to) {
         capture<Op>(~to);
 
         if (from.is(Rank5) && to.is(Rank5)) {
-            //en passant move
+            //en passant capture
             Square ep(File{to}, Rank6);
-            movePawn<My>(pi, from, ep);
+            MY.movePawn(pi, from, ep);
             updateSliderAttacks<My>(MY.attacksTo(from, to, ep), OP.attacksTo(~from, ~to, ~ep));
             return;
         }
 
         //simple pawn capture
-        movePawn<My>(pi, from, to);
+        MY.movePawn(pi, from, to);
         updateSliderAttacks<My>(MY.attacksTo(from), OP.attacksTo(~from));
         return;
     }
 
     //simple pawn move
-    movePawn<My>(pi, from, to);
-
+    MY.movePawn(pi, from, to);
     updateSliderAttacks<My>(MY.attacksTo(from, to), OP.attacksTo(~from, ~to));
 
     if (from.is(Rank2) && to.is(Rank4)) {
@@ -221,12 +174,6 @@ void Position::playPawnMove(Pi pi, Square from, Square to) {
 template <Side::_t My>
 void Position::playKingMove(Square from, Square to) {
     constexpr Side Op{~My};
-
-    Pi pi = TheKing;
-
-    MY.assertValid(pi);
-    assert (MY.squareOf(pi).is(from));
-    assert (MY.typeOf(pi).is(King));
 
     MY.moveKing(from, to);
     OP.setOpKing(~to);
@@ -273,7 +220,7 @@ void Position::playMove(Square from, Square to) {
     if (OP.isOccupied(~to)) {
         //simple non-pawn non-king capture
         capture<Op>(~to);
-        movePiece<My>(pi, from, to);
+        MY.move(pi, from, to);
         updateSliderAttacks<My>(MY.attacksTo(from) | pi, OP.attacksTo(~from));
         return;
     }
@@ -285,7 +232,7 @@ void Position::playMove(Square from, Square to) {
     }
 
     //simple non-pawn non-king non-capture move
-    movePiece<My>(pi, from, to);
+    MY.move(pi, from, to);
     updateSliderAttacks<My>(MY.attacksTo(from, to), OP.attacksTo(~from, ~to));
 }
 
@@ -372,11 +319,11 @@ Zobrist Position::createZobrist(Square from, Square to) const {
             Square ep(file, Rank3);
 
             Bb killers = ~OP.occupiedByPawns() & ::pieceTypeAttack(Pawn, ep);
-            if (killers.any() && !isPinned<My>(OCCUPIED - from + ep)) {
+            if (killers.any() && !MY.isPinned(OCCUPIED - from + ep)) {
                 for (Square killer : killers) {
                     assert (killer.is(Rank4));
 
-                    if (!isPinned<My>(OCCUPIED - killer + ep)) {
+                    if (!MY.isPinned(OCCUPIED - killer + ep)) {
                         mz.setEnPassant(file);
                         return Zobrist{oz, mz};
                     }
@@ -447,7 +394,7 @@ bool Position::setEnPassant(File file) {
     if (!OP.isPawn(victim)) { return false; }
 
     //check against illegal en passant set field like "8/5bk1/8/2Pp4/8/1K6/8/8 w - d6"
-    if (isPinned<Op>(OP.occupied() - victimSquare)) {
+    if (OP.isPinned(OP.occupied() - victimSquare)) {
         return false;
     }
 

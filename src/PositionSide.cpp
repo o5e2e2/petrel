@@ -16,6 +16,12 @@
         assert (!types.isPawn(pi) || (!sq.is(Rank1) && !sq.is(Rank8)));
         assert (!types.isPawn(pi) || !types.isEnPassant(pi) || sq.is(Rank4) || sq.is(Rank5));
     }
+
+    void PositionSide::assertValid(Pi pi, PieceType ty, Square sq) const {
+        assertValid(pi);
+        assert (squares.squareOf(pi) == sq);
+        assert (types.typeOf(pi) == ty);
+    }
 #endif
 
 Zobrist PositionSide::generateZobrist() const {
@@ -63,36 +69,9 @@ void PositionSide::move(PieceType ty, Square from, Square to) {
     evaluation.move(ty, from, to);
 }
 
-bool PositionSide::drop(PieceType ty, Square to) {
-    if (piecesBb[to]) { return false; }
-
-    if (ty.is(Pawn)) {
-        if (to.is(Rank1) || to.is(Rank8)) {
-            return false;
-        }
-        pawnsBb += to;
-    }
-    set(ty, to);
-
-    Pi pi = ty.is(King) ? Pi{TheKing} : (alivePieces() | Pi{TheKing}).seekVacant();
-
-    types.drop(pi, ty);
-    squares.drop(pi, to);
-
-    if (isLeaper(ty)) {
-        setLeaperAttack(pi, ty, to);
-    }
-
-    assertValid(pi);
-    return true;
-}
-
 void PositionSide::capture(Square from) {
     Pi pi{pieceOn(from)};
-
     assertValid(pi);
-
-    attacks.clear(pi);
 
     PieceType ty = typeOf(pi);
     assert (!ty.is(King));
@@ -100,41 +79,48 @@ void PositionSide::capture(Square from) {
     clear(ty, from);
     pawnsBb &= piecesBb; //clear if pawn
 
+    attacks.clear(pi);
     squares.clear(pi);
     types.clear(pi);
 }
 
-void PositionSide::move(Pi pi, PieceType ty, Square from, Square to) {
+void PositionSide::move(Pi pi, Square from, Square to) {
+    PieceType ty = typeOf(pi);
+    assertValid(pi, ty, from);
+
     assert (!ty.is(King));
     assert (!ty.is(Pawn));
-    assertValid(pi);
     assert (from != to);
 
     move(ty, from, to);
     squares.move(pi, to);
-    if (isLeaper(ty)) {
-        setLeaperAttack(pi, ty, to);
-    }
-    types.clearCastling(pi);
 
-    assertValid(pi);
+    if (ty.is(Knight)) {
+        setLeaperAttack(pi, Knight, to);
+    }
+    else {
+        updatePinner(pi);
+        types.clearCastling(pi);
+    }
+
+    assertValid(pi, ty, to);
 }
 
 void PositionSide::movePawn(Pi pi, Square from, Square to) {
-    assertValid(pi);
-    assert (isPawn(pi));
+    assertValid(pi, Pawn, from);
     assert (from != to);
 
-    pawnsBb.move(from, to);
     move(Pawn, from, to);
+    pawnsBb.move(from, to);
+
     squares.move(pi, to);
     setLeaperAttack(pi, Pawn, to);
 
-    assertValid(pi);
+    assertValid(pi, Pawn, to);
 }
 
 void PositionSide::moveKing(Square from, Square to) {
-    assertValid(TheKing);
+    assertValid(TheKing, King, from);
     assert (from != to);
 
     move(King, from, to);
@@ -142,14 +128,13 @@ void PositionSide::moveKing(Square from, Square to) {
     setLeaperAttack(TheKing, King, to);
     types.clearCastlings();
 
-    assertValid(TheKing);
+    assertValid(TheKing, King, to);
 }
 
 void PositionSide::castle(Pi rook, Square rookFrom, Square rookTo, Square kingFrom, Square kingTo) {
-    assertValid(rook);
-    assertValid(TheKing);
-    assert (kingSquare().is(kingFrom) && kingFrom.is(Rank1));
-    assert (squareOf(rook).is(rookFrom) && rookFrom.is(Rank1));
+    assertValid(TheKing, King, kingFrom);
+    assertValid(rook, Rook, rookFrom);
+    assert (kingFrom.is(Rank1) && rookFrom.is(Rank1));
 
     clear(Rook, rookFrom);
     clear(King, kingFrom);
@@ -160,20 +145,14 @@ void PositionSide::castle(Pi rook, Square rookFrom, Square rookTo, Square kingFr
     setLeaperAttack(TheKing, King, kingTo);
     types.clearCastlings();
 
-    assertValid(TheKing);
-    assertValid(rook);
-}
-
-GamePhase PositionSide::generateGamePhase() const {
-    auto queensCount = piecesOfType(Queen).count();
-    bool isEndgame = (queensCount == 0) || (queensCount == 1 && types.minors().count() <= 1);
-    return isEndgame ? Endgame : Middlegame;
+    assertValid(TheKing, King, kingTo);
+    assertValid(rook, Rook, rookTo);
+    assert (kingTo.is(Rank1) && rookTo.is(Rank1));
 }
 
 void PositionSide::promote(Pi pi, PromoType ty, Square from, Square to) {
-    assertValid(pi);
-    assert (types.isPawn(pi));
-    assert (from.is(Rank7) && to.is(Rank8));
+    assertValid(pi, Pawn, from);
+    assert (from.is(Rank7));
 
     piecesBb.move(from, to);
     pawnsBb -= from;
@@ -182,71 +161,31 @@ void PositionSide::promote(Pi pi, PromoType ty, Square from, Square to) {
     types.promote(pi, ty);
     evaluation.promote(from, to, ty);
 
-    if (isLeaper(ty)) {
-        assert (ty.is(Knight));
-        setLeaperAttack(pi, static_cast<PieceType>(ty), to);
+    if (ty.is(Knight)) {
+        setLeaperAttack(pi, Knight, to);
+    }
+    else {
+        updatePinner(pi);
     }
 
-    assertValid(pi);
+    assertValid(pi, static_cast<PieceType>(ty), to);
+    assert (to.is(Rank8));
 }
 
 void PositionSide::setLeaperAttack(Pi pi, PieceType ty, Square to) {
-    assertValid(pi);
-    assert (typeOf(pi) == ty);
+    assertValid(pi, ty, to);
     assert (isLeaper(ty));
     attacks.set(pi, ::pieceTypeAttack(ty, to));
 }
 
 void PositionSide::setSliderAttacks(VectorPiMask affectedSliders, Bb occupied) {
-    if (affectedSliders.any()) {
-        ReverseBb blockers{ occupied };
-        for (Pi pi : affectedSliders) {
-            Bb attack = blockers.attack(static_cast<SliderType>(typeOf(pi)), squareOf(pi));
-            attacks.set(pi, attack);
-        }
+    if (affectedSliders.none()) { return; }
+
+    ReverseBb blockers{ occupied };
+    for (Pi pi : affectedSliders) {
+        Bb attack = blockers.attack(static_cast<SliderType>(typeOf(pi)), squareOf(pi));
+        attacks.set(pi, attack);
     }
-}
-
-bool PositionSide::setCastling(Pi pi) {
-    if (isCastling(pi)) { return false; }
-
-    assert (typeOf(pi).is(Rook));
-    assert (squareOf(pi).is(Rank1));
-
-    types.setCastling(pi);
-
-    return true;
-}
-
-bool PositionSide::setCastling(CastlingSide castlingSide) {
-    if (!kingSquare().is(Rank1)) { return false; }
-
-    Square outerSquare{ kingSquare() };
-
-    for (Pi rook : piecesOfType(Rook) & piecesOn(Rank1)) {
-        if (CastlingRules::castlingSide(outerSquare, squareOf(rook)).is(castlingSide)) {
-            outerSquare = squareOf(rook);
-        }
-    }
-
-    if (outerSquare == kingSquare()) { return false; } //no rook found
-
-    return setCastling(pieceOn(outerSquare));
-}
-
-bool PositionSide::setCastling(File file) {
-    if (!kingSquare().is(Rank1)) { return false; }
-
-    Square rookFrom(file, Rank1);
-
-    if (isPieceOn(rookFrom)) {
-        Pi rook { pieceOn(rookFrom) };
-        if (is(rook, Rook)) {
-            return setCastling(rook);
-        }
-    }
-
-    return false;
 }
 
 void PositionSide::setEnPassantVictim(Pi pi) {
@@ -275,6 +214,17 @@ void PositionSide::clearEnPassantKillers() {
     types.clearEnPassants();
 }
 
+bool PositionSide::isPinned(Bb allOccupiedWithoutPinned) const {
+    for (Pi pinner : pinners()) {
+        Bb pinLine = ::between(opKingSquare(), squareOf(pinner));
+        if ((pinLine & allOccupiedWithoutPinned).none()) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 void PositionSide::updatePinner(Pi pi) {
     assert (isSlider(pi));
     Square sq = squareOf(pi);
@@ -287,11 +237,82 @@ void PositionSide::updatePinner(Pi pi) {
     }
 }
 
+bool PositionSide::drop(PieceType ty, Square to) {
+    if (piecesBb[to]) { return false; }
+
+    if (ty.is(Pawn)) {
+        if (to.is(Rank1) || to.is(Rank8)) { return false; }
+        pawnsBb += to;
+    }
+    set(ty, to);
+
+    Pi pi = ty.is(King) ? Pi{TheKing} : (alivePieces() | Pi{TheKing}).seekVacant();
+
+    types.drop(pi, ty);
+    squares.drop(pi, to);
+
+    if (isLeaper(ty)) {
+        setLeaperAttack(pi, ty, to);
+    }
+
+    assertValid(pi, ty, to);
+    return true;
+}
+
+bool PositionSide::setCastling(Pi pi) {
+    if (isCastling(pi)) { return false; }
+
+    assert (typeOf(pi).is(Rook));
+    assert (squareOf(pi).is(Rank1));
+
+    types.setCastling(pi);
+
+    return true;
+}
+
+bool PositionSide::setCastling(CastlingSide castlingSide) {
+    if (!kingSquare().is(Rank1)) { return false; }
+
+    Square outerSquare = kingSquare();
+
+    for (Pi rook : piecesOfType(Rook) & piecesOn(Rank1)) {
+        if (CastlingRules::castlingSide(outerSquare, squareOf(rook)).is(castlingSide)) {
+            outerSquare = squareOf(rook);
+        }
+    }
+
+    if (outerSquare == kingSquare()) { return false; } //no rook found
+
+    return setCastling( pieceOn(outerSquare) );
+}
+
+bool PositionSide::setCastling(File file) {
+    if (!kingSquare().is(Rank1)) { return false; }
+
+    Square rookFrom(file, Rank1);
+    if (!isPieceOn(rookFrom)) { return false; }
+
+    Pi rook = pieceOn(rookFrom);
+    if (!is(rook, Rook)) { return false; }
+
+    return setCastling(rook);
+}
+
+GamePhase PositionSide::generateGamePhase() const {
+    auto queensCount = piecesOfType(Queen).count();
+    bool isEndgame = (queensCount == 0) || (queensCount == 1 && types.minors().count() <= 1);
+    return isEndgame ? Endgame : Middlegame;
+}
+
 void PositionSide::setOpKing(Square sq) {
     opKing = sq;
     for (Pi pi : sliders()) {
         updatePinner(pi);
     }
+}
+
+void PositionSide::setOpOccupied(Bb opPieces) {
+    occupiedBb = piecesBb + opPieces;
 }
 
 Move PositionSide::createMove(Square from, Square to) const {

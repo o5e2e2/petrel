@@ -35,7 +35,7 @@ class PositionSide {
 friend class Position;
     static void swap(PositionSide&, PositionSide&);
 
-    void move(Pi, PieceType, Square, Square);
+    void move(Pi, Square, Square);
     void movePawn(Pi, Square, Square);
     void moveKing(Square, Square);
     void castle(Pi rook, Square rookFrom, Square rookTo, Square kingFrom, Square kingTo);
@@ -48,9 +48,9 @@ friend class Position;
     void clearEnPassantKillers();
 
     void updatePinner(Pi);
-    void setOpKing(Square sq);
-    void setOccupied(const Bb& occupied) { occupiedBb = occupied; }
-    void setSliderAttacks(VectorPiMask, Bb occupied);
+    void setOpKing(Square);
+    void setOpOccupied(Bb);
+    void setSliderAttacks(VectorPiMask, Bb);
     void setGamePhase(GamePhase opGamePhase) { evaluation.setGamePhase(opGamePhase, kingSquare()); }
 
     //used only during initial position setup
@@ -67,8 +67,10 @@ public:
 
     #ifdef NDEBUG
         void assertValid(Pi) const {}
+        void assertValid(Pi, PieceType, Square) const {}
     #else
         void assertValid(Pi) const;
+        void assertValid(Pi, PieceType, Square) const;
     #endif
 
     const Bb& occupied() const { return occupiedBb; }
@@ -106,6 +108,8 @@ public:
     File   enPassantFile()   const { return File{ enPassantSquare() }; }
 
     VectorPiMask pinners() const { return types.pinners(); }
+    bool isPinned(Bb) const;
+
     const MatrixPiBb& allAttacks() const { return attacks; }
     VectorPiMask attacksTo(Square a) const { return attacks[a]; }
     VectorPiMask attacksToKing() const { return attacks[opKing]; }

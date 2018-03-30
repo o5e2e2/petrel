@@ -10,18 +10,15 @@ protected:
     Zobrist zobrist;
 
 private:
-    template <Side::_t> bool isPinned(Bb) const;
-    template <Side::_t> void movePiece(Pi, Square, Square);
-    template <Side::_t> void movePawn(Pi, Square, Square);
     template <Side::_t> void updateSliderAttacks(VectorPiMask);
     template <Side::_t> void updateSliderAttacks(VectorPiMask, VectorPiMask);
     template <Side::_t> void setLegalEnPassant(Pi);
     template <Side::_t> void capture(Square);
-    template <Side::_t> void setGamePhase(); //recalculate game gamePhase for position evaluation
-
+    template <Side::_t> void setGamePhase();
     template <Side::_t> void playKingMove(Square, Square);
     template <Side::_t> void playPawnMove(Pi, Square, Square);
     template <Side::_t> void playCastling(Pi, Square, Square);
+
     template <Side::_t> void playMove(Square, Square);
 
 public:
