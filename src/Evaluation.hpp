@@ -19,7 +19,7 @@ public:
     constexpr Evaluation () : pst{0}, gamePhase{Middlegame} {}
     Evaluation (const Evaluation&) = default;
 
-    constexpr explicit operator _t () const { return pst; }
+    Score evaluate() const { return static_cast<Score>(5 * static_cast<Score>(pst)); }
 
     void setGamePhase(GamePhase evalGamePhase, Square kingFrom) {
         if (gamePhase == evalGamePhase) {

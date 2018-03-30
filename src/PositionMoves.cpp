@@ -205,8 +205,26 @@ void PositionMoves::generateMoves() {
     generateKingMoves<My>(attackedSquares);
 }
 
+void PositionMoves::generateMoves() {
+    generateMoves<My>();
+    movesCount = moves.count();
+
+    if (movesCount > 0) {
+        staticEval = Position::evaluate();
+        return;
+    }
+
+    auto inCheck = OP.attacksTo(~MY.kingSquare()).none();
+    staticEval = inCheck ? Score::Checkmated : Score::Stalemated;
+}
+
 void PositionMoves::playMove(const Position& parent, Square from, Square to, Zobrist z) {
     Position::playMove(parent, from, to, z);
+    generateMoves();
+}
+
+void PositionMoves::playMove(const Position& parent, Square from, Square to) {
+    Position::playMove(parent, from, to);
     generateMoves();
 }
 

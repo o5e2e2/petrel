@@ -31,6 +31,7 @@ public:
     Zobrist generateZobrist() const;
     Zobrist createZobrist(Square, Square) const;
     Move createMove(Square from, Square to) const { return side[My].createMove(from, to); }
+    Score evaluate() const { return static_cast<Score>(side[My].evaluate() - side[Op].evaluate()); }
 
     void playMove(const Position&, Square, Square, Zobrist);
     void playMove(const Position&, Square, Square);

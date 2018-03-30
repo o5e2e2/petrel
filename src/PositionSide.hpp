@@ -116,6 +116,7 @@ public:
     VectorPiMask attacksTo(Square a, Square b, Square c) const { return attacks[a] | attacks[b] | attacks[c]; }
 
     GamePhase generateGamePhase() const; //returns whether material for endgame or middlegame
+    Score evaluate() const { return evaluation.evaluate(); }
 
     Move createMove(Square from, Square to) const;
 

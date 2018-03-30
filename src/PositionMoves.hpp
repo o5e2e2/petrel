@@ -9,6 +9,7 @@ class PositionMoves : public Position {
 protected:
     MatrixPiBb moves; //generated moves from side[My]
     index_t movesCount = 0;
+    Score staticEval = Score::Minimum;
 
 private:
     //legal move generation helpers
@@ -26,8 +27,9 @@ public:
     constexpr PositionMoves () = default;
     PositionMoves (const PositionMoves&) = default;
 
+    void playMove(const Position&, Square, Square);
     void playMove(const Position&, Square, Square, Zobrist);
-    void generateMoves() { generateMoves<My>(); movesCount = moves.count(); }
+    void generateMoves();
 
     const MatrixPiBb& getMoves() const { return moves; }
     MatrixPiBb& getMoves() { return moves; }
