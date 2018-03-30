@@ -7,11 +7,6 @@
 #define OP side[Op]
 #define OCCUPIED side[My].occupied()
 
-void Position::clear() {
-    MY.clear();
-    OP.clear();
-}
-
 bool Position::setup() {
     MY.setOpKing(~OP.kingSquare());
     OP.setOpKing(~MY.kingSquare());

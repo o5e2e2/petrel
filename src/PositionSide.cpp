@@ -38,10 +38,6 @@ Zobrist PositionSide::generateZobrist() const {
     return z;
 }
 
-void PositionSide::clear() {
-    attacks.clear();
-}
-
 void PositionSide::swap(PositionSide& my, PositionSide& op) {
     using std::swap;
     swap(my.attacks, op.attacks);

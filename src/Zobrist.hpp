@@ -18,7 +18,7 @@ private:
     void clear(Index ty, Square from) { drop(ty, from); }
 
 public:
-    constexpr Zobrist (_t z = 0) : _v{z} {}
+    constexpr explicit Zobrist (_t z) : _v{z} {}
     constexpr operator const _t& () const { return _v; }
 
     Zobrist (Arg my, Arg op) : _v{ my._v ^ ::bswap(op._v) } {}

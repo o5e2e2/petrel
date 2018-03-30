@@ -54,7 +54,6 @@ friend class Position;
     void setGamePhase(GamePhase opGamePhase) { evaluation.setGamePhase(opGamePhase, kingSquare()); }
 
     //used only during initial position setup
-    void clear();
     bool drop(PieceType, Square);
     bool setCastling(File);
     bool setCastling(CastlingSide);

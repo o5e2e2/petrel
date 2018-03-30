@@ -72,7 +72,6 @@ bool FenBoard::setPosition(Position& position, Color colorToMove) {
     }
 
     Position pos;
-    pos.clear();
 
     FOR_INDEX(Color, color) {
         Side colorSide = color.is(colorToMove) ? My : Op;

@@ -7,7 +7,7 @@
 class Position {
 protected:
     Side::array<PositionSide> side;
-    Zobrist zobrist;
+    Zobrist zobrist{0};
 
 private:
     template <Side::_t> void updateSliderAttacks(VectorPiMask);
@@ -37,7 +37,6 @@ public:
     void playMove(Square, Square);
 
     //initial position setup
-    void clear();
     bool drop(Side, PieceType, Square);
     bool setCastling(Side, File);
     bool setCastling(Side, CastlingSide);
