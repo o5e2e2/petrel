@@ -11,14 +11,14 @@ namespace io {
     using std::ostream;
 
     typedef ostream::char_type char_type;
-    typedef const char_type* literal_type;
+    typedef const char_type* czstring;
 
     istream& fail_here(istream&);
     istream& fail_char(istream&);
     istream& fail_pos(istream&, std::streampos);
     istream& fail_rewind(istream&);
 
-    bool next(istream&, literal_type);
+    bool next(istream&, czstring);
 
     istream& skip_token(istream&);
     ostream& app_version(ostream&);

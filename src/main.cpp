@@ -27,14 +27,14 @@ const BitReverse bitReverse; //64
 const VectorBitCount bitCount; //48
 constexpr const VectorPiOrder::Sorted VectorPiOrder::sorted; //16
 
-using io::literal_type;
-template <> literal_type PieceType::The_string{"qrbnpk"};
-template <> literal_type PromoType::The_string{"qrbn"};
-template <> literal_type Color::The_string{"wb"};
-template <> literal_type CastlingSide::The_string{"kq"};
-template <> literal_type File::The_string{"abcdefgh"};
-template <> literal_type Rank::The_string{"87654321"};
-template <> literal_type Pi::The_string{"K123456789abcdef"};
+using io::czstring;
+template <> czstring PieceType::The_string{"qrbnpk"};
+template <> czstring PromoType::The_string{"qrbn"};
+template <> czstring Color::The_string{"wb"};
+template <> czstring CastlingSide::The_string{"kq"};
+template <> czstring File::The_string{"abcdefgh"};
+template <> czstring Rank::The_string{"87654321"};
+template <> czstring Pi::The_string{"K123456789abcdef"};
 
 int main(int argc, const char* argv[]) {
     //speed tricks

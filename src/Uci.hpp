@@ -15,7 +15,7 @@ class Uci {
 
     std::istringstream command; //current input command line
 
-    bool next(io::literal_type token) { return io::next(command, token); }
+    bool next(io::czstring token) { return io::next(command, token); }
 
     //UCI command handlers
     void go();

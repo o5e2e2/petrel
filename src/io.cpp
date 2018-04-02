@@ -36,7 +36,7 @@ istream& skip_token(istream& in) {
     * true  -- next stream token is matches to the given token, shift stream cursor past the matched token
     * false -- failed to read stram or failed to match next stream token with the given token, stream state is not changed
     **/
-bool next(istream& in, literal_type token) {
+bool next(istream& in, czstring token) {
     if (token == nullptr) { token = ""; }
 
     auto pos_before = in.tellg();
