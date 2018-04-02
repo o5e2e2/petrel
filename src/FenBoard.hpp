@@ -23,9 +23,10 @@ class FenBoard {
             }
         }
     };
-
     typedef std::set<Square, SquareImportance> Squares;
+
     Color::array< PieceType::array<Squares> > pieces;
+    Color::array<index_t> pieceCount = {{0, 0}};
 
     bool drop(Color, PieceType, Square);
 

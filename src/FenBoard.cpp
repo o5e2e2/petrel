@@ -4,9 +4,6 @@
 io::istream& operator >> (io::istream& in, FenBoard& board) {
     in >> std::ws;
 
-    Color::array<index_t> colorCount;
-    colorCount.fill(0);
-
     File file{FileA}; Rank rank{Rank8};
     for (io::char_type c; in.get(c); ) {
         if (std::isalpha(c) && rank.isOk() && file.isOk()) {
@@ -14,12 +11,9 @@ io::istream& operator >> (io::istream& in, FenBoard& board) {
             c = static_cast<io::char_type>(std::tolower(c));
 
             PieceType ty{PieceType::Begin};
-            if (ty.from_char(c) && colorCount[color] < Pi::Size) {
-                if (board.drop(color, ty, Square(file, rank))) {
-                    ++colorCount[color];
-                    ++file;
-                    continue;
-                }
+            if ( ty.from_char(c) && board.drop(color, ty, Square(file, rank)) ) {
+                ++file;
+                continue;
             }
             io::fail_char(in);
         }
@@ -52,13 +46,16 @@ io::istream& operator >> (io::istream& in, FenBoard& board) {
 }
 
 bool FenBoard::drop(Color color, PieceType ty, Square sq) {
-    if (ty.is(King)) {
-        //the king should be only one per each color
-        if (!pieces[color][King].empty()) {
-            return false;
-        }
+    //our position representaion cannot hold more then 16 pieces per color
+    if (pieceCount[color] == Pi::Size) {
+        return false;
+    }
+    //the king should be only one per each color
+    if (ty.is(King) && !pieces[color][King].empty()) {
+        return false;
     }
 
+    ++pieceCount[color];
     pieces[color][ty].insert(color.is(White) ? sq : ~sq);
     return true;
 }
