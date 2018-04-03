@@ -64,12 +64,14 @@ void UciSearchInfo::isready(bool searchIsReady) const {
 void UciSearchInfo::readyok(node_count_t nodes, const PerftTT& tt) const {
     if (isreadyWaiting) {
         if (outLock.try_lock()) {
-            isreadyWaiting = false;
+            if (isreadyWaiting) {
+                isreadyWaiting = false;
 
-            std::ostringstream ob;
-            info_nps(ob, nodes, tt);
-            ob << "readyok\n";
-            out << ob.str() << std::flush;
+                std::ostringstream ob;
+                info_nps(ob, nodes, tt);
+                ob << "readyok\n";
+                out << ob.str() << std::flush;
+            }
             outLock.unlock();
         }
     }

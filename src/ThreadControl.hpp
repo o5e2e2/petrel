@@ -13,7 +13,7 @@ private:
 
     SpinLock statusLock;
     std::condition_variable_any statusChanged;
-    volatile Status status;
+    Status status;
 
     Sequence sequence;
 
