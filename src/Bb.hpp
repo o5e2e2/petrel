@@ -63,10 +63,10 @@ public:
 
 };
 
-constexpr Bb Square::operator() (signed d_file, signed d_rank) const {
-    return (x88(d_file, d_rank) & 0x88)
+constexpr Bb Square::operator() (signed fileOffset, signed rankOffset) const {
+    return (x88(fileOffset, rankOffset) & 0x88)
         ? Bb{}
-        : Bb{static_cast<_t>((x88(d_file, d_rank) + (x88(d_file, d_rank) & 7)) >> 1)}
+        : Bb{static_cast<_t>((x88(fileOffset, rankOffset) + (x88(fileOffset, rankOffset) & 7)) >> 1)}
     ;
 }
 constexpr Bb Square::horizont() const { return Bb{Rank(*this)} - *this; }

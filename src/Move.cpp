@@ -3,7 +3,7 @@
 
 //convert internal move to long algebraic format
 io::ostream& Move::write(io::ostream& out, Move move, Color colorToMove, ChessVariant chessVariant) {
-    if (move.isNull()) { return out << "0000"; }
+    if (!move) { return out << "0000"; }
 
     Square moveFrom = move.from();
     Square moveTo = move.to();

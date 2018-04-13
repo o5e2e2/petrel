@@ -23,7 +23,6 @@ class Move {
     constexpr Move (Square f, Square t, Type is_special) : _v{static_cast<_t>(f<<FromShift | t<<ToShift | is_special<<SpecialShift)} {}
     constexpr static Move special(Square f, Square t) { return Move{f, t, Special}; }
 
-    constexpr bool isNull() const { return _v == 0; }
     constexpr bool isSpecial() const { return (_v & 1<<SpecialShift) != 0; }
 
 public:
@@ -34,6 +33,8 @@ public:
     constexpr static Move castling(Square f, Square t)  { return Move::special(f, t); }
     constexpr static Move promotion(Square f, Square t) { return Move::special(f, t); }
     constexpr static Move promotion(Square f, Square t, PromoType ty) { return Move::promotion(f, Square(File(t), static_cast<Rank::_t>(+ty))); }
+
+    constexpr operator bool() const { return _v != 0; }
 
     constexpr Square from() const { return static_cast<Square::_t>(_v >>FromShift & Square::Mask); }
     constexpr Square to()   const { return static_cast<Square::_t>(_v >>ToShift & Square::Mask); }

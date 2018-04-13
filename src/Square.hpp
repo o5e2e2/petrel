@@ -20,13 +20,13 @@ struct Square : Index<64, square_t> {
 
     using Index::Index;
     constexpr Square () = default;
-    constexpr Square (File f, Rank r) : Index{static_cast<_t>(f + (r << RankShift))} {}
+    constexpr Square (File file, Rank rank) : Index{static_cast<_t>(file + (rank << RankShift))} {}
 
     constexpr explicit operator File() const { return static_cast<File::_t>(this->_v & File::Mask); }
     constexpr explicit operator Rank() const { return static_cast<Rank::_t>(static_cast<unsigned>(this->_v) >> RankShift); }
     constexpr explicit operator PromoType() const { return static_cast<PromoType::_t>(+Rank(*this)); }
 
-    Square& flip() { this->_v = static_cast<_t>(this->_v ^ RankMask); return *this; }
+    constexpr Square& flip() { this->_v = static_cast<_t>(this->_v ^ RankMask); return *this; }
     constexpr Square operator ~ () const { return static_cast<_t>(this->_v ^ RankMask); }
     constexpr Square rankForward() const { return static_cast<_t>(this->_v - A7 + A8); }
 
@@ -38,10 +38,10 @@ struct Square : Index<64, square_t> {
     constexpr Bb vertical() const;
     constexpr Bb diagonal() const;
     constexpr Bb antidiag() const;
-    constexpr Bb operator() (signed d_file, signed d_rank) const;
+    constexpr Bb operator() (signed fileOffset, signed rankOffset) const;
 
-    constexpr signed x88(signed d_file, signed d_rank) const {
-        return static_cast<signed>(this->_v + (this->_v & 070)) + d_file + 16*d_rank;
+    constexpr signed x88(signed fileOffset, signed rankOffset) const {
+        return static_cast<signed>(this->_v + (this->_v & 070)) + fileOffset + 16*rankOffset;
     }
 
     friend io::ostream& operator << (io::ostream& out, Square sq) {
