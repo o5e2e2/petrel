@@ -22,7 +22,7 @@ public:
     static Element& fetch(const Handle& iterator) { return *std::next(iterator); }
 
     Handle acquire() {
-        Lock lock(listLock);
+        Lock lock{listLock};
 
         if (ready.empty()) {
             used.emplace_front();
@@ -37,7 +37,7 @@ public:
     //return the used element to the ready list
     void release(Handle&& element) {
         if (element != ready.end()) {
-            Lock lock(listLock);
+            Lock lock{listLock};
 
             ready.splice_after(ready.before_begin(), used, element);
             element = ready.end();

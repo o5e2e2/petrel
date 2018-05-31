@@ -29,7 +29,6 @@ class PositionSide {
     void clear(PieceType, Square);
     void set(PieceType, Square);
     void move(PieceType, Square, Square);
-    bool setCastling(Pi);
     void setLeaperAttack(Pi, PieceType, Square);
 
 friend class Position;

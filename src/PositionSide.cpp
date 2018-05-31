@@ -255,31 +255,22 @@ bool PositionSide::drop(PieceType ty, Square to) {
     return true;
 }
 
-bool PositionSide::setCastling(Pi pi) {
-    if (isCastling(pi)) { return false; }
-
-    assert (typeOf(pi).is(Rook));
-    assert (squareOf(pi).is(Rank1));
-
-    types.setCastling(pi);
-
-    return true;
-}
-
 bool PositionSide::setCastling(CastlingSide castlingSide) {
     if (!kingSquare().is(Rank1)) { return false; }
 
     Square outerSquare = kingSquare();
-
     for (Pi rook : piecesOfType(Rook) & piecesOn(Rank1)) {
         if (CastlingRules::castlingSide(outerSquare, squareOf(rook)).is(castlingSide)) {
             outerSquare = squareOf(rook);
         }
     }
-
     if (outerSquare == kingSquare()) { return false; } //no rook found
 
-    return setCastling( pieceOn(outerSquare) );
+    Pi rook = pieceOn(outerSquare);
+    if (isCastling(rook)) { return false; }
+
+    types.setCastling(rook);
+    return true;
 }
 
 bool PositionSide::setCastling(File file) {
@@ -290,8 +281,10 @@ bool PositionSide::setCastling(File file) {
 
     Pi rook = pieceOn(rookFrom);
     if (!is(rook, Rook)) { return false; }
+    if (isCastling(rook)) { return false; }
 
-    return setCastling(rook);
+    types.setCastling(rook);
+    return true;
 }
 
 GamePhase PositionSide::generateGamePhase() const {

@@ -26,7 +26,7 @@ ThreadControl::ThreadControl () : status{Status::Ready}, sequence{Sequence::None
 
 template <typename Condition>
 void ThreadControl::wait(Condition condition) {
-    std::unique_lock<decltype(statusLock)> lock(statusLock);
+    std::unique_lock<decltype(statusLock)> lock{statusLock};
 
     if (!condition()) {
         statusChanged.wait(lock, condition);
@@ -36,7 +36,7 @@ void ThreadControl::wait(Condition condition) {
 template <typename Condition>
 void ThreadControl::signal(Status to, Condition condition) {
     {
-        std::unique_lock<decltype(statusLock)> lock(statusLock);
+        std::unique_lock<decltype(statusLock)> lock{statusLock};
 
         if (!condition()) {
             return;
@@ -53,7 +53,7 @@ ThreadControl::Sequence ThreadControl::signalSequence(Status to, Condition condi
     Sequence result;
 
     {
-        std::unique_lock<decltype(statusLock)> lock(statusLock);
+        std::unique_lock<decltype(statusLock)> lock{statusLock};
 
         if (!condition()) {
             return Sequence::None;
