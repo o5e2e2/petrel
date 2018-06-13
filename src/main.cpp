@@ -43,8 +43,8 @@ int main(int argc, const char* argv[]) {
     std::cerr.tie(nullptr);
 
     if (argc == 1) {
-        Uci uci(std::cout, std::cerr);
-        uci(std::cin);
+        Uci uci(std::cout);
+        uci(std::cin, std::cerr);
         return 0;
     }
 

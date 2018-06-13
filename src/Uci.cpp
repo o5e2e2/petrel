@@ -1,15 +1,15 @@
 #include "Uci.hpp"
 
-Uci::Uci (io::ostream& out, io::ostream& err):
+Uci::Uci (io::ostream& out):
     positionFen{},
     searchLimit{},
-    info(positionFen, out, err),
+    info(positionFen, out),
     searchControl(info)
 {
     ucinewgame();
 }
 
-void Uci::operator() (io::istream& in) {
+void Uci::operator() (io::istream& in, io::ostream& err) {
     for (std::string commandLine; std::getline(in, commandLine); ) {
         command.clear(); //clear errors from the previous command
         command.str(std::move(commandLine));
@@ -25,8 +25,10 @@ void Uci::operator() (io::istream& in) {
         else if (next("uci"))       { info.uciok( searchControl.tt() ); }
         else if (next("quit"))      { break; }
 
-        //error if something left unparsed
-        if (!next("")) { info.error(command); }
+        //report error if something left unparsed
+        if (!next("")) {
+            err << "parsing error: " << command.rdbuf() << '\n';
+        }
     }
 }
 

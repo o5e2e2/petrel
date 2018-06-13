@@ -25,9 +25,8 @@ namespace {
     }
 }
 
-UciSearchInfo::UciSearchInfo (const PositionFen& p, io::ostream& o, io::ostream& e) :
+UciSearchInfo::UciSearchInfo (const PositionFen& p, io::ostream& o) :
     out(o),
-    err(e),
     pos(p),
     isreadyWaiting{false},
     lastInfoNodes{0}
@@ -121,14 +120,6 @@ void UciSearchInfo::info_fen() const {
     ob << "info fen " << pos;
     //ob << " key 0x" << pos.getZobrist();
     ob << '\n';
-}
-
-void UciSearchInfo::error(io::istream& in) const {
-    OutputBuffer<decltype(outLock)>(err, outLock) << "parsing error: " << in.rdbuf() << '\n';
-}
-
-void UciSearchInfo::error(const std::string& str) const {
-    OutputBuffer<decltype(outLock)>(err, outLock) << str << '\n';
 }
 
 void UciSearchInfo::bestmove(Move bestMove, node_count_t nodes, const PerftTT& tt) const {

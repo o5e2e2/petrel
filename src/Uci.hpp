@@ -27,8 +27,8 @@ class Uci {
     void quit();
 
 public:
-    Uci (io::ostream&, io::ostream&);
-    void operator() (io::istream&);
+    Uci (io::ostream&);
+    void operator() (io::istream&, io::ostream& = std::cerr);
 };
 
 #endif

@@ -13,7 +13,6 @@ class PerftTT;
 
 class UciSearchInfo {
     io::ostream& out; //output stream
-    io::ostream& err; //error output stream
     const PositionFen& pos;
 
     TimePoint fromSearchStart;
@@ -27,15 +26,12 @@ class UciSearchInfo {
     void info_nps(io::ostream&, node_count_t, const PerftTT&) const;
 
 public:
-    UciSearchInfo (const PositionFen&, io::ostream&, io::ostream& = std::cerr);
+    UciSearchInfo (const PositionFen&, io::ostream&);
 
     //called from Uci
     void isready(bool) const;
     void uciok(const PerftTT&) const;
     void info_fen() const;
-
-    void error(io::istream&) const;
-    void error(const std::string&) const;
 
     //called from Search
     void clear();
