@@ -46,6 +46,8 @@ public:
     const PerftTT& tt() const { return transpositionTable; }
     PerftTT& tt() { return transpositionTable; }
 
+    void setHash(io::istream&);
+
     void go(const SearchLimit&);
 
     void nextIteration();

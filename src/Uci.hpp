@@ -14,17 +14,13 @@ class Uci {
     SearchControl searchControl;
 
     std::istringstream command; //current input command line
-
     bool next(io::czstring token) { return io::next(command, token); }
 
     //UCI command handlers
-    void go();
-    void setoption();
-    void startpos();
-    void position();
     void ucinewgame();
-    void setHash();
-    void quit();
+    void setoption();
+    void position();
+    void go();
 
 public:
     Uci (io::ostream&);
