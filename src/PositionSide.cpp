@@ -175,6 +175,7 @@ void PositionSide::setLeaperAttack(Pi pi, PieceType ty, Square to) {
 }
 
 void PositionSide::setSliderAttacks(VectorPiMask affectedSliders, Bb occupied) {
+    affectedSliders &= sliders();
     if (affectedSliders.none()) { return; }
 
     ReverseBb blockers{ occupied };
@@ -212,7 +213,7 @@ void PositionSide::clearEnPassantKillers() {
 
 bool PositionSide::isPinned(Bb allOccupiedWithoutPinned) const {
     for (Pi pinner : pinners()) {
-        Bb pinLine = ::between(opKingSquare(), squareOf(pinner));
+        Bb pinLine = ::between(opKing, squareOf(pinner));
         if ((pinLine & allOccupiedWithoutPinned).none()) {
             return true;
         }

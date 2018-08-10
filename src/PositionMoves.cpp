@@ -209,13 +209,13 @@ void PositionMoves::generateMoves() {
     generateMoves<My>();
     movesCount = moves.count();
 
-    if (movesCount > 0) {
-        staticEval = Position::evaluate();
+    if (movesCount == 0) {
+        bool inCheck = OP.attacksToKing().any();
+        staticEval = inCheck ? Score::Checkmated : Score::Draw;
         return;
     }
 
-    auto inCheck = OP.attacksTo(~MY.kingSquare()).none();
-    staticEval = inCheck ? Score::Checkmated : Score::Stalemated;
+    staticEval = evaluate();
 }
 
 void PositionMoves::playMove(const Position& parent, Square from, Square to, Zobrist z) {

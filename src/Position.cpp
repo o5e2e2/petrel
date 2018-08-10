@@ -37,7 +37,7 @@ void Position::updateSliderAttacks(VectorPiMask affected) {
     OP.setOpOccupied(~MY.occupiedSquares());
 
     //TRICK: attacks calculated without opponent's king for implicit out of check king's moves generation
-    MY.setSliderAttacks(affected & MY.sliders(), OCCUPIED - MY.opKingSquare());
+    MY.setSliderAttacks(affected, OCCUPIED - MY.opKingSquare());
 }
 
 template <Side::_t My>
@@ -45,13 +45,13 @@ void Position::updateSliderAttacks(VectorPiMask myAffected, VectorPiMask opAffec
     constexpr Side Op{~My};
 
     updateSliderAttacks<My>(myAffected);
-    OP.setSliderAttacks(opAffected & OP.sliders(), OP.occupied());
+    OP.setSliderAttacks(opAffected, OP.occupied());
 }
 
 template <Side::_t My>
 void Position::setGamePhase() {
     constexpr Side Op{~My};
-    //game gamePhase (middlegame or endgame) depends on opponents pieces count
+    //game phase (middlegame or endgame) depends on opponents pieces count
     MY.setGamePhase(OP.generateGamePhase());
 }
 

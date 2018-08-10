@@ -27,7 +27,7 @@ typedef std::int16_t score_t;
 enum Score : score_t {
     Minimum = std::numeric_limits<score_t>::min(),
     Checkmated = Minimum + 1,
-    Stalemated = 0
+    Draw = 0
 };
 
 inline Score operator - (Score s) {

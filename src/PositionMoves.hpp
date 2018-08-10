@@ -9,7 +9,7 @@ class PositionMoves : public Position {
 protected:
     MatrixPiBb moves; //generated moves from side[My]
     index_t movesCount = 0;
-    Score staticEval = Score::Minimum;
+    Score staticEval = Score::Draw;
 
 private:
     //legal move generation helpers
