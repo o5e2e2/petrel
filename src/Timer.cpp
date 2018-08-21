@@ -3,13 +3,13 @@
 
 void TimerThread::thread_body() {
     std::this_thread::sleep_for(duration);
-    thread->stop(sequence);
+    thread->stop(threadId);
     pool->release(std::move(handle));
 }
 
-void Timer::start(Duration duration, ThreadControl& thread, ThreadControl::Sequence sequence) {
+void Timer::start(Duration duration, ThreadControl& thread, ThreadControl::ThreadId threadId) {
     //zero duration means no timer
-    if (sequence == decltype(sequence)::None || duration == Duration::zero()) {
+    if (threadId == decltype(threadId)::None || duration == Duration::zero()) {
         return;
     }
 
@@ -20,7 +20,7 @@ void Timer::start(Duration duration, ThreadControl& thread, ThreadControl::Seque
     timer.pool = this;
     timer.handle = handle;
     timer.thread = &thread;
-    timer.sequence = sequence;
+    timer.threadId = threadId;
     timer.duration = duration;
 
     timer.start();

@@ -26,7 +26,7 @@ private:
     unsigned nodesQuota; //number of remaining nodes before slow checking for terminate
 
     SearchThread searchThread;
-    SearchThread::Sequence searchSequence;
+    SearchThread::ThreadId currentSearchId;
 
     PerftTT transpositionTable;
     Timer timer;
@@ -44,7 +44,7 @@ public:
 
     bool isReady() const { return searchThread.isReady(); }
     bool isStopped() const { return searchThread.isStopped(); }
-    void stop() { searchThread.stop(searchSequence); }
+    void stop() { searchThread.stop(currentSearchId); }
 
     const PerftTT& tt() const { return transpositionTable; }
     PerftTT& tt() { return transpositionTable; }

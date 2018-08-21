@@ -2,18 +2,18 @@
 #include "ThreadControl.hpp"
 
 namespace {
-    using Sequence = ThreadControl::Sequence;
-    Sequence& operator++ (Sequence& seq) {
-        seq = static_cast<Sequence>( static_cast< std::underlying_type_t<Sequence> >(seq)+1 );
-        if (seq == Sequence::None) {
-            //wrap around Sequence::None
-            seq = static_cast<Sequence>( static_cast< std::underlying_type_t<Sequence> >(Sequence::None)+1 );
+    using Id = ThreadControl::ThreadId;
+    Id& operator++ (Id& id) {
+        id = static_cast<Id>( static_cast< std::underlying_type_t<Id> >(id)+1 );
+        if (id == Id::None) {
+            //wrap around Id::None
+            id = static_cast<Id>( static_cast< std::underlying_type_t<Id> >(Id::None)+1 );
         }
-        return seq;
+        return id;
     }
 }
 
-ThreadControl::ThreadControl () : status{Status::Ready}, sequence{Sequence::None} {
+ThreadControl::ThreadControl () : status{Status::Ready}, threadId{ThreadId::None} {
     auto infiniteLoop = [this] {
         for (;;) {
             wait(Status::Run);
@@ -49,18 +49,18 @@ void ThreadControl::signal(Status to, Condition condition) {
 }
 
 template <typename Condition>
-ThreadControl::Sequence ThreadControl::signalSequence(Status to, Condition condition) {
-    Sequence result;
+ThreadControl::ThreadId ThreadControl::signalSequence(Status to, Condition condition) {
+    ThreadId result;
 
     {
         std::unique_lock<decltype(statusLock)> lock{statusLock};
 
         if (!condition()) {
-            return Sequence::None;
+            return ThreadId::None;
         }
 
-        ++sequence;
-        result = sequence;
+        ++threadId;
+        result = threadId;
         status = to;
     }
 
@@ -76,14 +76,14 @@ void ThreadControl::signal(Status from, Status to) {
     signal(to, [this, from]() { return isStatus(from); });
 }
 
-void ThreadControl::signal(Sequence seq, Status from, Status to) {
-    if (seq == Sequence::None) {
+void ThreadControl::signal(ThreadId id, Status from, Status to) {
+    if (id == ThreadId::None) {
         return;
     }
-    signal(to, [this, seq, from]() { return seq == sequence && isStatus(from); });
+    signal(to, [this, id, from]() { return id == this->threadId && isStatus(from); });
 }
 
-ThreadControl::Sequence ThreadControl::signalSequence(Status from, Status to) {
+ThreadControl::ThreadId ThreadControl::signalSequence(Status from, Status to) {
     return signalSequence(to, [this, from]() { return isStatus(from); });
 }
 

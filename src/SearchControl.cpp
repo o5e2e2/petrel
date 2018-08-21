@@ -23,10 +23,10 @@ void SearchControl::go() {
     transpositionTable.clearCounter();
 
     auto duration = searchLimit.getThinkingTime();
-    auto sequence = searchThread.start( std::make_unique<NodePerftRoot>(searchLimit, *this) );
+    auto searchId = searchThread.start( std::make_unique<NodePerftRoot>(searchLimit, *this) );
 
-    searchSequence = sequence;
-    timer.start(duration, searchThread, sequence);
+    currentSearchId = searchId;
+    timer.start(duration, searchThread, searchId);
 }
 
 bool SearchControl::refreshQuota() {
