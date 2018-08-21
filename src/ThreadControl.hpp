@@ -9,6 +9,11 @@ public:
     enum class ThreadId : unsigned { None };
 
 private:
+    /**
+     * Ready: the thread is idle
+     * Run: the thread is running job with current jobId
+     * Abort: the thread is running but going to finish soon and became Ready again
+     **/
     enum class Status { Ready, Run, Abort };
 
     SpinLock statusLock;
@@ -39,7 +44,8 @@ public:
     bool isStopped() const { return isStatus(Status::Abort); }
 
     ThreadId start() { return signalSequence(Status::Ready, Status::Run); }
-    void stop(ThreadId id) { signal(id, Status::Run, Status::Abort); wait(Status::Ready); }
+    void stop() { signal(Status::Run, Status::Abort); wait(Status::Ready); }
+    void abort(ThreadId id) { signal(id, Status::Run, Status::Abort); }
 };
 
 #endif

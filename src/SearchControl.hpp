@@ -26,7 +26,6 @@ private:
     unsigned nodesQuota; //number of remaining nodes before slow checking for terminate
 
     SearchThread searchThread;
-    SearchThread::ThreadId currentSearchId;
 
     PerftTT transpositionTable;
     Timer timer;
@@ -38,13 +37,17 @@ private:
 
 public:
     SearchControl (UciSearchInfo&);
+
+    /**
+     * Running search uses pointer this object, so we should stop any running search
+     **/
    ~SearchControl () { stop(); }
 
     void newGame();
 
     bool isReady() const { return searchThread.isReady(); }
     bool isStopped() const { return searchThread.isStopped(); }
-    void stop() { searchThread.stop(currentSearchId); }
+    void stop() { searchThread.stop(); }
 
     const PerftTT& tt() const { return transpositionTable; }
     PerftTT& tt() { return transpositionTable; }

@@ -3,7 +3,7 @@
 
 void TimerThread::thread_body() {
     std::this_thread::sleep_for(duration);
-    thread->stop(threadId);
+    thread->abort(threadId);
     pool->release(std::move(handle));
 }
 
