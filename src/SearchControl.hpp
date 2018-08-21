@@ -53,7 +53,7 @@ public:
 
     void nextIteration();
 
-    node_count_t getNodes() const {
+    node_count_t getNodesVisited() const {
         assert (nodes >= nodesQuota);
         return nodes - nodesQuota;
     }

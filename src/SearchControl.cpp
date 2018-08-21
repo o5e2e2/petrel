@@ -15,9 +15,10 @@ void SearchControl::nextIteration() {
 }
 
 void SearchControl::go() {
+    nodesLimit = searchLimit.getNodesLimit();
     nodes = 0;
-    nodesLimit = searchLimit.getNodes();
     nodesQuota = 0;
+
     info.clear();
     transpositionTable.clearCounter();
 

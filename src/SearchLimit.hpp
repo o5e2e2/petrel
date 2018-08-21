@@ -28,11 +28,11 @@ class SearchLimit {
 public:
     SearchLimit ();
 
-    depth_t      getDepth() const { return depth; }
-    node_count_t getNodes() const { return nodes; }
+    depth_t      getDepthLimit() const { return depth; }
+    node_count_t getNodesLimit() const { return nodes; }
     bool         isDivide() const { return divide; }
 
-    const PositionFen& getPositionMoves() const { return positionMoves; }
+    const PositionFen& getMovesLimit() const { return positionMoves; }
 
     Duration getThinkingTime() const;
 };

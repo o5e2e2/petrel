@@ -8,7 +8,7 @@
 #include "UciSearchInfo.hpp"
 
 NodePerftRoot::NodePerftRoot (const SearchLimit& l, SearchControl& c):
-    NodePerft(l.getPositionMoves(), c, l.getDepth()),
+    NodePerft(l.getMovesLimit(), c, l.getDepthLimit()),
     isDivide(l.isDivide())
 {}
 
@@ -32,7 +32,7 @@ bool NodePerftRoot::searchIteration() {
         }
     }
 
-    control.info.report_perft_depth(draft, perft, control.getNodes(), control.tt());
+    control.info.report_perft_depth(draft, perft, control.getNodesVisited(), control.tt());
     return false;
 }
 
@@ -58,6 +58,6 @@ bool NodePerftRoot::visitChildren() {
         iterativeDeepening();
     }
 
-    control.info.bestmove({}, control.getNodes(), control.tt());
+    control.info.bestmove({}, control.getNodesVisited(), control.tt());
     return false;
 }
