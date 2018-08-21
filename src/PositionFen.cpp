@@ -8,13 +8,13 @@
 #define OP side[Op]
 
 class WriteFenBoard {
-    const PositionSide& whiteSide;
-    const PositionSide& blackSide;
+    const PositionSide& whitePieces;
+    const PositionSide& blackPieces;
 
 public:
-    WriteFenBoard (const PositionFen& pos) :
-        whiteSide(pos[White]),
-        blackSide(pos[Black])
+    WriteFenBoard (const PositionSide& w, const PositionSide& b) :
+        whitePieces{w},
+        blackPieces{b}
         {}
 
     friend io::ostream& operator << (io::ostream& out, const WriteFenBoard& fen) {
@@ -24,15 +24,15 @@ public:
             FOR_INDEX(File, file) {
                 Square sq(file,rank);
 
-                if (fen.whiteSide.isOccupied(sq)) {
+                if (fen.whitePieces.isOccupied(sq)) {
                     if (emptySqCount != 0) { out << emptySqCount; emptySqCount = 0; }
-                    out << static_cast<io::char_type>(std::toupper( fen.whiteSide.typeOf(sq).to_char() ));
+                    out << static_cast<io::char_type>(std::toupper( fen.whitePieces.typeOf(sq).to_char() ));
                     continue;
                 }
 
-                if (fen.blackSide.isOccupied(~sq)) {
+                if (fen.blackPieces.isOccupied(~sq)) {
                     if (emptySqCount != 0) { out << emptySqCount; emptySqCount = 0; }
-                    out << fen.blackSide.typeOf(~sq).to_char();
+                    out << fen.blackPieces.typeOf(~sq).to_char();
                     continue;
                 }
 
@@ -74,9 +74,9 @@ class WriteFenCastling {
     }
 
 public:
-    WriteFenCastling (const PositionFen& pos) {
-        insert(pos[White], White, pos.getChessVariant());
-        insert(pos[Black], Black, pos.getChessVariant());
+    WriteFenCastling (const PositionSide& whitePieces, const PositionSide& blackPieces, ChessVariant chessVariant) {
+        insert(whitePieces, White, chessVariant);
+        insert(blackPieces, Black, chessVariant);
     }
 
     friend io::ostream& operator << (io::ostream& out, const WriteFenCastling& fen) {
@@ -102,11 +102,15 @@ void PositionFen::fenEnPassant(io::ostream& out) const {
 }
 
 io::ostream& operator << (io::ostream& out, const PositionFen& pos) {
-    out << WriteFenBoard(pos)
+    auto whiteSide = pos.colorToMove.is(White) ? My : Op;
+    auto& whitePieces = pos.side[whiteSide];
+    auto& blackPieces = pos.side[~whiteSide];
+
+    out << WriteFenBoard(whitePieces, blackPieces)
         << ' '
         << pos.colorToMove
         << ' '
-        << WriteFenCastling(pos)
+        << WriteFenCastling(whitePieces, blackPieces, pos.chessVariant)
         << ' ';
     pos.fenEnPassant(out);
     return out;

@@ -1,12 +1,12 @@
 #ifndef SEARCH_CONTROL_HPP
 #define SEARCH_CONTROL_HPP
 
+#include "SearchLimit.hpp"
 #include "SearchThread.hpp"
 #include "PerftTT.hpp"
 #include "Timer.hpp"
 
 class UciSearchInfo;
-class SearchLimit;
 
 /**
  * Shared data to all search threads (currently the only one)
@@ -14,6 +14,9 @@ class SearchLimit;
 class SearchControl {
 public:
     UciSearchInfo& info; //virtual
+
+protected:
+    SearchLimit searchLimit;
 
 private:
     node_count_t nodes;
@@ -46,9 +49,7 @@ public:
     const PerftTT& tt() const { return transpositionTable; }
     PerftTT& tt() { return transpositionTable; }
 
-    void setHash(io::istream&);
-
-    void go(const SearchLimit&);
+    void go();
 
     void nextIteration();
 

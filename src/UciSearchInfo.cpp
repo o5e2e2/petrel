@@ -25,12 +25,18 @@ namespace {
     }
 }
 
-UciSearchInfo::UciSearchInfo (const PositionFen& p, io::ostream& o) :
+UciSearchInfo::UciSearchInfo (io::ostream& o, Color& c, ChessVariant& v) :
     out(o),
-    pos(p),
+    colorToMove(c),
+    chessVariant(v),
     isreadyWaiting{false},
     lastInfoNodes{0}
 {}
+
+void UciSearchInfo::operator() (io::ostream& o) const {
+    OUTPUT(ob);
+    ob << o.rdbuf();
+}
 
 void UciSearchInfo::clear() {
     lastInfoNodes = 0;
@@ -39,7 +45,7 @@ void UciSearchInfo::clear() {
 
 void UciSearchInfo::uciok(const PerftTT& tt) const {
     auto hashInfo = tt.getInfo();
-    bool isChess960 = pos.getChessVariant().is(Chess960);
+    bool isChess960 = chessVariant.is(Chess960);
 
     OUTPUT(ob);
     ob << "id name petrel\n";
@@ -77,7 +83,7 @@ void UciSearchInfo::readyok(node_count_t nodes, const PerftTT& tt) const {
 }
 
 void UciSearchInfo::write(io::ostream& ob, const Move& move) const {
-    Move::write(ob, move, pos.getColorToMove(), pos.getChessVariant());
+    Move::write(ob, move, colorToMove, chessVariant);
 }
 
 void UciSearchInfo::nps(io::ostream& ob, node_count_t nodes, const PerftTT& tt) const {
@@ -113,13 +119,6 @@ void UciSearchInfo::info_nps(io::ostream& ob, node_count_t nodes, const PerftTT&
     if (!buffer.str().empty()) {
         ob << "info" << buffer.str() << '\n';
     }
-}
-
-void UciSearchInfo::info_fen() const {
-    OUTPUT(ob);
-    ob << "info fen " << pos;
-    //ob << " key 0x" << pos.getZobrist();
-    ob << '\n';
 }
 
 void UciSearchInfo::bestmove(Move bestMove, node_count_t nodes, const PerftTT& tt) const {

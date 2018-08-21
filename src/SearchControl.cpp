@@ -3,7 +3,7 @@
 #include "UciSearchInfo.hpp"
 #include "SearchLimit.hpp"
 
-SearchControl::SearchControl (UciSearchInfo& i) : info{i} {}
+SearchControl::SearchControl (UciSearchInfo& i) : info{i}, searchLimit{} {}
 
 void SearchControl::newGame() {
     info.clear();
@@ -14,39 +14,7 @@ void SearchControl::nextIteration() {
     transpositionTable.nextAge();
 }
 
-void SearchControl::setHash(io::istream& command) {
-    if (!this->isReady()) {
-        io::fail_rewind(command);
-        return;
-    }
-
-    size_t quantity = 0;
-    command >> quantity;
-    if (!command) {
-        io::fail_rewind(command);
-        return;
-    }
-
-    io::char_type unit = 'm';
-    command >> unit;
-
-    switch (std::tolower(unit)) {
-        case 't': quantity *= 1024;
-        case 'g': quantity *= 1024;
-        case 'm': quantity *= 1024;
-        case 'k': quantity *= 1024;
-        case 'b': break;
-
-        default: {
-            io::fail_rewind(command);
-            return;
-        }
-    }
-
-    tt().resize(quantity);
-}
-
-void SearchControl::go(const SearchLimit& searchLimit) {
+void SearchControl::go() {
     nodes = 0;
     nodesLimit = searchLimit.getNodes();
     nodesQuota = 0;

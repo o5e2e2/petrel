@@ -22,11 +22,11 @@ class PositionFen : public PositionMoves {
 public:
     constexpr PositionFen() : PositionMoves{}, colorToMove{White}, chessVariant{Orthodox} {}
 
-    constexpr ChessVariant getChessVariant() const { return chessVariant; }
+    constexpr ChessVariant& getChessVariant() { return chessVariant; }
     constexpr void setChessVariant(ChessVariant v) { chessVariant = v; }
 
     constexpr Color getColorToMove() const { return colorToMove; }
-    constexpr const PositionSide& operator[] (Color color) const { return side[colorToMove.is(color) ? My : Op];}
+    constexpr Color& getColorToMove() { return colorToMove; }
 
     void readUci(io::istream&);
     void setStartpos();

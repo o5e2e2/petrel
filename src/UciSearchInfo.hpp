@@ -13,7 +13,8 @@ class PerftTT;
 
 class UciSearchInfo {
     io::ostream& out; //output stream
-    const PositionFen& pos;
+    Color& colorToMove;
+    ChessVariant& chessVariant;
 
     TimePoint fromSearchStart;
 
@@ -26,12 +27,12 @@ class UciSearchInfo {
     void info_nps(io::ostream&, node_count_t, const PerftTT&) const;
 
 public:
-    UciSearchInfo (const PositionFen&, io::ostream&);
+    UciSearchInfo (io::ostream&, Color&, ChessVariant&);
 
     //called from Uci
     void isready(bool) const;
     void uciok(const PerftTT&) const;
-    void info_fen() const;
+    void operator() (io::ostream&) const;
 
     //called from Search
     void clear();

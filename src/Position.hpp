@@ -39,10 +39,10 @@ public:
 
     //initial position setup
     bool drop(Side, PieceType, Square);
+    bool afterDrop();
     bool setCastling(Side, File);
     bool setCastling(Side, CastlingSide);
     bool setEnPassant(File);
-    bool setup();
 };
 
 #endif

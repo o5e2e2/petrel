@@ -1,11 +1,12 @@
 #ifndef SEARCH_LIMIT_HPP
 #define SEARCH_LIMIT_HPP
 
-#include "io.hpp"
 #include "typedefs.hpp"
 #include "PositionFen.hpp"
 
 class SearchLimit {
+    friend class UciSearchControl;
+
     PositionFen positionMoves;
 
     Side::array<Duration> time;
@@ -24,8 +25,6 @@ class SearchLimit {
     bool perft;
     bool divide;
 
-    void clear();
-
 public:
     SearchLimit ();
 
@@ -36,8 +35,6 @@ public:
     const PositionFen& getPositionMoves() const { return positionMoves; }
 
     Duration getThinkingTime() const;
-
-    void readUci(io::istream&, const PositionFen&);
 };
 
 #endif

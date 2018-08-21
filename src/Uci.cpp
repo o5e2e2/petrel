@@ -2,8 +2,7 @@
 
 Uci::Uci (io::ostream& out):
     positionFen{},
-    searchLimit{},
-    info(positionFen, out),
+    info(out, positionFen.getColorToMove(), positionFen.getChessVariant()),
     searchControl(info)
 {
     ucinewgame();
@@ -65,7 +64,9 @@ void Uci::setoption() {
 
 void Uci::position() {
     if (next("")) {
-        info.info_fen();
+        std::stringstream ob;
+        ob << "info fen " << positionFen << '\n';
+        info(ob);
         return;
     }
 
@@ -78,6 +79,5 @@ void Uci::go() {
         return;
     }
 
-    searchLimit.readUci(command, positionFen);
-    searchControl.go(searchLimit);
+    searchControl.go(command, positionFen);
 }

@@ -86,7 +86,7 @@ bool FenBoard::setPosition(Position& position, Color colorToMove) {
         }
     }
 
-    if (!pos.setup()) {
+    if (!pos.afterDrop()) {
         return false;
     }
 

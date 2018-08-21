@@ -7,7 +7,7 @@
 #define OP side[Op]
 #define OCCUPIED side[My].occupied()
 
-bool Position::setup() {
+bool Position::afterDrop() {
     MY.setOpKing(~OP.kingSquare());
     OP.setOpKing(~MY.kingSquare());
     updateSliderAttacks<Op>(OP.alivePieces(), MY.alivePieces());
