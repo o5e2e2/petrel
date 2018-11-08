@@ -99,13 +99,13 @@ ostream& app_version(ostream& out) {
 #endif
 
 #ifdef GIT_ORIGIN
-    out << ' ' << GIT_ORIGIN;
+    out << ' ' << GIT_ORIGIN << ' ';
 #else
     out << " https://bitbucket.org/alekspeshkov/petrel/src/";
 #endif
 
 #ifdef GIT_HASH
-    out << ' ' << GIT_HASH;
+    out << GIT_HASH;
 #endif
 
     out << '\n';
