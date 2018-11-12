@@ -25,8 +25,10 @@ enum : depth_t {
 
 typedef std::int16_t score_t;
 enum Score : score_t {
-    Minimum = std::numeric_limits<score_t>::min(),
-    Checkmated = Minimum + 1,
+    None = std::numeric_limits<score_t>::min(),
+    Maximum = std::numeric_limits<score_t>::max(),
+    Minimum = -Maximum,
+    Checkmated = Minimum,
     Draw = 0
 };
 
