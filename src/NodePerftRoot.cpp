@@ -32,7 +32,7 @@ bool NodePerftRoot::searchIteration() {
         }
     }
 
-    control.info.report_perft_depth(draft, perft, control.getNodesVisited(), control.tt());
+    control.info.report_perft_depth(draft, bestMove, bestScore, perft, control.getNodesVisited(), control.tt());
     return false;
 }
 
@@ -44,6 +44,9 @@ bool NodePerftRoot::iterativeDeepening() {
 
         moves = movesBackup;
         perft = 0;
+        bestMove = {};
+        bestScore = Score::Minimum;
+
         control.nextIteration();
     }
 
@@ -58,6 +61,6 @@ bool NodePerftRoot::visitChildren() {
         iterativeDeepening();
     }
 
-    control.info.bestmove({}, control.getNodesVisited(), control.tt());
+    control.info.bestmove(bestMove, bestScore, control.getNodesVisited(), control.tt());
     return false;
 }

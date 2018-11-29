@@ -16,5 +16,14 @@ bool NodePerft::visit(Square from, Square to) {
     }
 
     updateParentPerft();
+
+    auto& p = static_cast<NodePerft&>(parent);
+    if (-bestScore > p.bestScore) {
+        p.bestScore = -bestScore;
+        p.bestMove = p.createMove(from, to);
+    }
+
+    bestScore = Score::Minimum;
+    bestMove = {};
     return false;
 }

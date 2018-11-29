@@ -12,6 +12,11 @@ protected:
     Node& parent; //virtual
     SearchControl& control;
 
+public:
+    Score bestScore = Score::Minimum;
+    Move bestMove = {};
+
+protected:
     Node (Node& n) : PositionMoves{}, parent{n}, control{n.control} {}
     Node (const PositionMoves& p, SearchControl& c) : PositionMoves{p}, parent{*this}, control{c} {}
 

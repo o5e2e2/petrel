@@ -38,10 +38,10 @@ public:
     void clear();
 
     void readyok(node_count_t, const PerftTT&) const;
-    void bestmove(Move, node_count_t, const PerftTT&) const;
+    void bestmove(Move, Score, node_count_t, const PerftTT&) const;
 
-    void report_perft_divide(Move, index_t, node_count_t, node_count_t, const PerftTT&) const;
-    void report_perft_depth(depth_t, node_count_t, node_count_t, const PerftTT&) const;
+    void report_perft_divide(Move, Move, Score, index_t, node_count_t, node_count_t, const PerftTT&) const;
+    void report_perft_depth(depth_t, Move, Score, node_count_t, node_count_t, const PerftTT&) const;
 
 };
 
