@@ -2,189 +2,190 @@ setoption hash 16
 uci
 
 go depth 1 divide
-;info currmovenumber 1 currmove b1a3 *score 1
-;info currmovenumber 2 currmove b1c3 *score 1
-;info currmovenumber 3 currmove g1f3 *score 1
-;info currmovenumber 4 currmove g1h3 *score 1
-;info currmovenumber 5 currmove d2d4 *score 1
-;info currmovenumber 6 currmove d2d3 *score 1
-;info currmovenumber 7 currmove e2e4 *score 1
-;info currmovenumber 8 currmove e2e3 *score 1
-;info currmovenumber 9 currmove c2c4 *score 1
-;info currmovenumber 10 currmove c2c3 *score 1
-;info currmovenumber 11 currmove f2f4 *score 1
-;info currmovenumber 12 currmove f2f3 *score 1
-;info currmovenumber 13 currmove b2b4 *score 1
-;info currmovenumber 14 currmove b2b3 *score 1
-;info currmovenumber 15 currmove g2g4 *score 1
-;info currmovenumber 16 currmove g2g3 *score 1
-;info currmovenumber 17 currmove a2a4 *score 1
-;info currmovenumber 18 currmove a2a3 *score 1
-;info currmovenumber 19 currmove h2h4 *score 1
-;info currmovenumber 20 currmove h2h3 *score 1
-;info depth 1 score 20
-;bestmove 0000
+;info currmovenumber 1 currmove b1a3 * perft 1
+;info currmovenumber 2 currmove b1c3 * perft 1
+;info currmovenumber 3 currmove g1f3 * perft 1
+;info currmovenumber 4 currmove g1h3 * perft 1
+;info currmovenumber 5 currmove d2d4 * perft 1
+;info currmovenumber 6 currmove d2d3 * perft 1
+;info currmovenumber 7 currmove e2e4 * perft 1
+;info currmovenumber 8 currmove e2e3 * perft 1
+;info currmovenumber 9 currmove c2c4 * perft 1
+;info currmovenumber 10 currmove c2c3 * perft 1
+;info currmovenumber 11 currmove f2f4 * perft 1
+;info currmovenumber 12 currmove f2f3 * perft 1
+;info currmovenumber 13 currmove b2b4 * perft 1
+;info currmovenumber 14 currmove b2b3 * perft 1
+;info currmovenumber 15 currmove g2g4 * perft 1
+;info currmovenumber 16 currmove g2g3 * perft 1
+;info currmovenumber 17 currmove a2a4 * perft 1
+;info currmovenumber 18 currmove a2a3 * perft 1
+;info currmovenumber 19 currmove h2h4 * perft 1
+;info currmovenumber 20 currmove h2h3 * perft 1
+;info depth 1* perft 20
+;bestmove *
 
 position fen 6kr///////6K1 b k
 go
-;* depth 6 * score 325293
+;info depth 6 * perft 325293
 stop
 
 position fen 5kr1///////5K2 b k
 go
-;* depth 6 * score 401634
+;info depth 6 * perft 401634
 stop
 
 position fen 4kr2///////4K3 b k
 go
-;* depth 6 * score 459256
+;info depth 6 * perft 459256
 stop
 
 position fen 3kr3///////3K4 b k
 go
-;* depth 6 * score 539692
+;info depth 6 * perft 539692
 stop
 
 position fen rnbqkb1r/pp1p1ppp/2p5/4P3/2B5/8/PPP1NnPP/RNBQK2R w KQkq - 0 6
 go
-;* depth 3 * score 53392
+;info depth 3 * perft 53392
 stop
 
 position fen 8/5bk1/8/2Pp4/8/1K6/8/8 w - d6 0 1
 go
-;* depth 6 * score 824064
+;info depth 6 * perft 824064
 stop
 
 position fen 8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1
 go
-;* depth 7 * score 178633661
+;info depth 7 * perft 178633661
 stop
 
 position fen 8/8/8/2rk/2p1p/5R/QP1P2B/2KR w - -
 go
-;* depth 6 * score 102040304
+;info depth 6 * perft 102040304
 stop
 
 position fen rnbqkbnr/pppppppp///4P//PPPP1PPP/RNBQKBNR b qkQK e3 0 1 moves g8h6 e4e5 f7f5
 go
-;* depth 5 * score 11139762
+;info depth 5 * perft 11139762
 position
 ;info fen rnbqkb1r/ppppp1pp/7n/4Pp2/8/8/PPPP1PPP/RNBQKBNR w KQkq f6
 stop
 
 position fen 8/7p/p5pb/4k3/P1pPn3/8/P5PP/1rB2RK1 b - d3 0 28
 go
-;* depth 6 * score 38633283
+;info depth 6 * perft 38633283
 stop
 
 position fen 8/PPP4k/8/8/8/8/4Kppp/8 w - - 0 1
 go depth 6
-;info depth 6 * score 34336777
-;bestmove 0000
+;info depth 6 * perft 34336777
+;bestmove *
 
 position fen 2rkr3/5PP1/8/5Q2/5q2/8/5pp1/2RKR3 w KQkq - 0 1
 go
-;* depth 5 * score 94370149
+;info depth 5 * perft 94370149
 stop
 
 position fen bnrbnkrq/pppppppp/8/8/8/8/PPPPPPPP/BNRBNKRQ w CGkq - 0 1
 go
-;* depth 6 * score 145999259
+;info depth 6 * perft 145999259
 stop
 
 position fen rbknqnbr/pppppppp/8/8/8/8/PPPPPPPP/RBKNQNBR w ahKQ - 0 1
 go
-;* depth 6 * score 126480040
+;info depth 6 * perft 126480040
 stop
 
 position fen qbrnnkbr/pppppppp/8/8/8/8/PPPPPPPP/QBRNNKBR w KQkq - 0 1
 go
-;* depth 6 * score 121613156
+;info depth 6 * perft 121613156
 stop
 
 position fen nqbnrbkr/pppppppp/8/8/8/8/PPPPPPPP/NQBNRBKR w KQkq - 0 1
 go
-;* depth 6 * score 93888956
+;info depth 6 * perft 93888956
 stop
 
 position fen nrnkbqrb/pppppppp/8/8/8/8/PPPPPPPP/NRNKBQRB w KQkq - 0 1
 go
-;* depth 6 * score 97044730
+;info depth 6 * perft 97044730
 stop
 
 position fen rbbknnqr/pppppppp/8/8/8/8/PPPPPPPP/RBBKNNQR w KQkq - 0 1
 go
-;* depth 6 * score 124381396
+;info depth 6 * perft 124381396
 stop
 
 position fen r1k1r2q/p1ppp1pp/8/8/8/8/P1PPP1PP/R1K1R2Q w KQkq -
 go
-;* depth 6 * score 172843489
+;info depth 6 * perft 172843489
 stop
 
 position fen r1k2r1q/p1ppp1pp/8/8/8/8/P1PPP1PP/R1K2R1Q w KQkq - 0 1
 go
-;* depth 6 * score 418430598
+;info depth 6 * perft 418430598
 stop
 
 position fen 8/8/8/4B2b/6nN/8/5P2/2R1K2k w Q - 0 1
 go
-;* depth 6 * score 44554839
+;info depth 6 * perft 44554839
 stop
 
 position fen 2r5/8/8/8/8/8/6PP/k2KR3 w K - 0 1
 go
-;* depth 7 * score 259604208
+;info depth 7 * perft 259604208
 stop
 
 position fen 4r3/3k4/8/8/8/8/6PP/qR1K1R2 w KQ - 0 1
 go
-;* depth 6 * score 281330710
+;info depth 6 * perft 281330710
 stop
 
 position fen 8/3K4/2p5/p2b2r1/5k2/8/8/1q6 b - - 1 67
 go
-;* depth 7 * score 493407574
+;info depth 7 * perft 493407574
 stop
 
 position fen 8/p7/8/1P6/K1k3p1/6P1/7P/8 w - -
 go
-;* depth 8 * score 8103790
+;info depth 8 * perft 8103790
 stop
 
 position fen r3k2r/p6p/8/B7/1pp1p3/3b4/P6P/R3K2R w KQkq -
 go
-;* depth 6 * score 77054993
+;info depth 6 * perft 77054993
 stop
 
 position fen 8/5p2/8/2k3P1/p3K3/8/1P6/8 b - -
 go
-;* depth 8 * score 64451405
+;info depth 8 * perft 64451405
 stop
 
 position fen r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1
 go
-;* depth 6 * score 706045033
+;info depth 6 * perft 706045033
 stop
 
 position startpos moves e2e4 e7e5 f1c4 g8f6 d2d4 c7c6 d4e5 f6e4 g1e2 e4f2 e5e6 f8e7 e6d7 e8f8
 position
 ;info fen rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ -
 go
-;* depth 5 * score 89941194
+;info depth 5 * perft 89941194
 stop
 
 position fen r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 25
 
 go nodes 100000000
-;* depth 5 * score 193690690
+;info depth 5 * perft 193690690
 
 isready
 ;info *
 ;readyok
 
-;* depth 6 * score 8031647685
+;info depth 6 * perft 8031647685
 
-;* nodes 100000000 *
-;bestmove 0000
+;info nodes 100000000 *
+;bestmove *
+
 quit

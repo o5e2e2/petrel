@@ -28,6 +28,7 @@ class Move {
 public:
     constexpr Move () : _v{0} {} //null move
     constexpr Move (Square f, Square t) : _v{static_cast<_t>(f<<FromShift | t<<ToShift)} {}
+    constexpr Move operator ~ () const { return Move{~from(), ~to(), static_cast<Move::Type>(isSpecial())}; }
 
     constexpr static Move enPassant(Square f, Square t) { return Move::special(f, t); }
     constexpr static Move castling(Square f, Square t)  { return Move::special(f, t); }

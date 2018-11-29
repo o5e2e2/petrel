@@ -30,17 +30,16 @@ io::ostream& Move::write(io::ostream& out, Move move, Color colorToMove, ChessVa
     if (move.from().is(Rank1)) {
         //castling move internally encoded as the rook captures the king
         switch (chessVariant) {
+            case Chess960:
+                return out << moveTo << moveFrom;
+
             case Orthodox:
                 if (moveFrom.is(FileA)) {
                     return out << moveTo << Square{FileC, Rank{moveTo}};
                 }
-                else {
-                    assert (moveFrom.is(FileH));
+                if (moveFrom.is(FileH)) {
                     return out << moveTo << Square{FileG, Rank{moveTo}};
                 }
-
-            case Chess960:
-                return out << moveTo << moveFrom;
         }
     }
 

@@ -131,7 +131,7 @@ void UciSearchInfo::report_perft_depth(depth_t draft, node_count_t perftNodes, n
     OUTPUT(ob);
     ob << "info depth " << draft;
     nps(ob, nodes, tt);
-    ob << " score " << perftNodes << '\n';
+    ob << " perft " << perftNodes << '\n';
 }
 
 void UciSearchInfo::report_perft_divide(Move currmove, index_t currmovenumber, node_count_t perftNodes, node_count_t nodes, const PerftTT& tt) const {
@@ -139,7 +139,7 @@ void UciSearchInfo::report_perft_divide(Move currmove, index_t currmovenumber, n
     ob << "info currmovenumber " << currmovenumber;
     ob << " currmove "; write(ob, currmove);
     nps(ob, nodes, tt);
-    ob << " score " << perftNodes << '\n';
+    ob << " perft " << perftNodes << '\n';
 }
 
 #undef OUTPUT
