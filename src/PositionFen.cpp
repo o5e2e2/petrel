@@ -98,7 +98,7 @@ void PositionFen::fenEnPassant(io::ostream& out) const {
         return;
     }
 
-    out << Square(OP.enPassantFile(), colorToMove.is(White) ? Rank6 : Rank3);
+    out << Square{OP.enPassantFile(), colorToMove.is(White) ? Rank6 : Rank3};
 }
 
 io::ostream& operator << (io::ostream& out, const PositionFen& pos) {
@@ -138,8 +138,8 @@ Move PositionFen::readMove(io::istream& in) const {
                     in.clear(); //promotion piece is optional
                     return Move::promotion(moveFrom, moveTo, promo);
                 }
-                if (moveFrom.is(Rank5) && OP.hasEnPassant() && OP.enPassantFile().is(File(moveTo))) {
-                    return Move::enPassant(moveFrom, Square{File(moveTo), Rank5});
+                if (moveFrom.is(Rank5) && OP.hasEnPassant() && OP.enPassantFile().is(File{moveTo})) {
+                    return Move::enPassant(moveFrom, Square{File{moveTo}, Rank5});
                 }
             }
             else if (pi.is(TheKing)) {
@@ -294,14 +294,6 @@ void PositionFen::readFen(io::istream& in) {
 void PositionFen::setStartpos() {
     std::istringstream startpos{"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"};
     readFen(startpos);
-}
-
-void PositionFen::readUci(io::istream& command) {
-    if (io::next(command, "startpos")) { setStartpos(); }
-    if (io::next(command, "fen")) { readFen(command); }
-
-    io::next(command, "moves");
-    playMoves(command);
 }
 
 #undef MY

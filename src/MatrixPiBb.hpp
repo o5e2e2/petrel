@@ -39,7 +39,7 @@ public:
     }
 
     void clear(Pi pi, Square sq) {
-        matrix[Rank(sq)] -= VectorPiRank{File(sq)} & VectorPiMask{pi};
+        matrix[Rank{sq}] -= VectorPiRank{File{sq}} & VectorPiMask{pi};
     }
 
     void clear(Pi pi) {

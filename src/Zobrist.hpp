@@ -28,7 +28,7 @@ public:
 
     void setCastling(Square sq)  { assert (sq.is(Rank1)); drop(Castling, sq); }
     void setEnPassant(Square sq) { assert (sq.is(Rank4)); drop(EnPassant, sq); }
-    void setEnPassant(File fileFrom) { setEnPassant(Square(fileFrom, Rank4)); }
+    void setEnPassant(File fileFrom) { setEnPassant(Square{fileFrom, Rank4}); }
 
     void clearCastling(Square sq) { setCastling(sq); }
     void clearEnPassant(Square sq) { setEnPassant(sq); }

@@ -11,7 +11,7 @@ io::istream& operator >> (io::istream& in, FenBoard& board) {
             c = static_cast<io::char_type>(std::tolower(c));
 
             PieceType ty{PieceType::Begin};
-            if ( ty.from_char(c) && board.drop(color, ty, Square(file, rank)) ) {
+            if ( ty.from_char(c) && board.drop(color, ty, Square{file, rank}) ) {
                 ++file;
                 continue;
             }

@@ -49,7 +49,7 @@ public:
     friend io::ostream& operator << (io::ostream& out, Bb bb) {
         FOR_INDEX(Rank, rank) {
             FOR_INDEX(File, file) {
-                if (bb[Square(file, rank)]) {
+                if (bb[Square{file, rank}]) {
                     out << file;
                 }
                 else {
@@ -69,9 +69,9 @@ constexpr Bb Square::operator() (signed fileOffset, signed rankOffset) const {
         : Bb{static_cast<_t>((x88(fileOffset, rankOffset) + (x88(fileOffset, rankOffset) & 7)) >> 1)}
     ;
 }
-constexpr Bb Square::horizont() const { return Bb{Rank(*this)} - *this; }
-constexpr Bb Square::vertical() const { return Bb{File(*this)} - *this; }
-constexpr Bb Square::diagonal() const { return Bb{BB(0x0102040810204080), 8*(Rank(*this) + File(*this) - 7)} - *this; }
-constexpr Bb Square::antidiag() const { return Bb{BB(0x8040201008040201), 8*(Rank(*this) - File(*this))} - *this; }
+constexpr Bb Square::horizont() const { return Bb{Rank{*this}} - *this; }
+constexpr Bb Square::vertical() const { return Bb{File{*this}} - *this; }
+constexpr Bb Square::diagonal() const { return Bb{BB(0x0102040810204080), 8*(Rank{*this} + File{*this} - 7)} - *this; }
+constexpr Bb Square::antidiag() const { return Bb{BB(0x8040201008040201), 8*(Rank{*this} - File{*this})} - *this; }
 
 #endif

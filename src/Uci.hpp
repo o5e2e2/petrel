@@ -2,23 +2,26 @@
 #define UCI_HPP
 
 #include "io.hpp"
-#include "UciSearchControl.hpp"
+#include "SearchControl.hpp"
 #include "UciSearchInfo.hpp"
 #include "PositionFen.hpp"
 
 class Uci {
     PositionFen positionFen; //root position between 'position' and 'go' commands
     UciSearchInfo info; //output with multithread synchronization
-    UciSearchControl searchControl;
+    SearchControl searchControl;
 
     std::istringstream command; //current input command line
     bool next(io::czstring token) { return io::next(command, token); }
 
     //UCI command handlers
-    void ucinewgame();
-    void setoption();
-    void position();
     void go();
+    void position();
+    void readyok();
+    void setHash();
+    void setoption();
+    void ucinewgame();
+    void uciok();
 
 public:
     Uci (io::ostream&);

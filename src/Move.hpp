@@ -32,7 +32,9 @@ public:
     constexpr static Move enPassant(Square f, Square t) { return Move::special(f, t); }
     constexpr static Move castling(Square f, Square t)  { return Move::special(f, t); }
     constexpr static Move promotion(Square f, Square t) { return Move::special(f, t); }
-    constexpr static Move promotion(Square f, Square t, PromoType ty) { return Move::promotion(f, Square(File(t), static_cast<Rank::_t>(+ty))); }
+    constexpr static Move promotion(Square f, Square t, PromoType ty) {
+        return Move::promotion(f, Square{File{t}, static_cast<Rank::_t>(+ty)});
+    }
 
     constexpr operator bool() const { return _v != 0; }
 

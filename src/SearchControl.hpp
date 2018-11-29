@@ -16,6 +16,7 @@ public:
     UciSearchInfo& info; //virtual
 
 protected:
+    friend class Uci;
     SearchLimit searchLimit;
 
 private:

@@ -19,7 +19,7 @@ io::ostream& Move::write(io::ostream& out, Move move, Color colorToMove, ChessVa
 
     if (move.from().is(Rank7)) {
         //the type of a promoted pawn piece encoded in place of to's rank
-        Square promotedTo(File(moveTo), colorToMove.is(White) ? Rank8 : Rank1);
+        Square promotedTo(File{moveTo}, colorToMove.is(White) ? Rank8 : Rank1);
         return out << moveFrom << promotedTo << move.promoType();
     }
     if (move.from().is(Rank5)) {

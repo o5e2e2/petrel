@@ -5,7 +5,7 @@
 #include "PositionFen.hpp"
 
 class SearchLimit {
-    friend class UciSearchControl;
+    friend class Uci;
 
     PositionFen positionMoves;
 

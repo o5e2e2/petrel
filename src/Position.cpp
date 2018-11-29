@@ -123,7 +123,7 @@ void Position::playPawnMove(Pi pi, Square from, Square to) {
     if (from.is(Rank7)) {
         //decoding promotion piece type and destination square
         PromoType ty{to};
-        Square promotedTo = Square(File(to), Rank8);
+        Square promotedTo = Square{File{to}, Rank8};
 
         MY.promote(pi, ty, from, promotedTo);
         setGamePhase<Op>();
@@ -292,7 +292,7 @@ Zobrist Position::createZobrist(Square from, Square to) const {
 
     if (ty.is(Pawn)) {
         if (from.is(Rank7)) {
-            Square promotedTo = Square(File(to), Rank8);
+            Square promotedTo = Square{File{to}, Rank8};
             mz.clear(Pawn, from);
             mz.drop(static_cast<PieceType>(PromoType{to}), promotedTo);
 
@@ -379,8 +379,8 @@ Zobrist Position::createZobrist(Square from, Square to) const {
 
 bool Position::setEnPassant(File file) {
     if (MY.hasEnPassant() || OP.hasEnPassant()) { return false; }
-    if (OCCUPIED[Square(file, Rank7)]) { return false; }
-    if (OCCUPIED[Square(file, Rank6)]) { return false; }
+    if (OCCUPIED[Square{file, Rank7}]) { return false; }
+    if (OCCUPIED[Square{file, Rank6}]) { return false; }
 
     Square victimSquare(file, Rank4);
     if (!OP.isPieceOn(victimSquare)) { return false; }

@@ -11,7 +11,7 @@ ReverseBb::Singleton::Singleton () {
 
 ReverseBb::Direction::Direction () {
     FOR_INDEX(Square, sq) {
-        Square reversedSq{~File(sq), ~Rank(sq)};
+        Square reversedSq{~File{sq}, ~Rank{sq}};
 
         (*this)[Queen][sq][Horizont] = ::combine(sq.horizont(), reversedSq.horizont());
         (*this)[Queen][sq][Vertical] = ::combine(sq.vertical(), reversedSq.vertical());

@@ -16,8 +16,6 @@ class PositionFen : public PositionMoves {
     void setBoard(io::istream&);
     io::istream& setCastling(io::istream&);
     io::istream& setEnPassant(io::istream&);
-    void readFen(io::istream&);
-    void playMoves(io::istream&);
 
 public:
     constexpr PositionFen() : PositionMoves{}, colorToMove{White}, chessVariant{Orthodox} {}
@@ -28,8 +26,9 @@ public:
     constexpr Color getColorToMove() const { return colorToMove; }
     constexpr Color& getColorToMove() { return colorToMove; }
 
-    void readUci(io::istream&);
     void setStartpos();
+    void readFen(io::istream&);
+    void playMoves(io::istream&);
 
     void limitMoves(io::istream&);
 

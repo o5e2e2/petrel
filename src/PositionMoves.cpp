@@ -15,7 +15,7 @@ void PositionMoves::generateEnPassantMoves() {
     assert (OP.hasEnPassant());
 
     File epFile = OP.enPassantFile();
-    assert (MY.enPassantPawns() <= ( MY.pawns() & MY.attacksTo(Square(epFile, Rank6)) ));
+    assert (MY.enPassantPawns() <= ( MY.pawns() & MY.attacksTo(Square{epFile, Rank6}) ));
 
     moves[Rank5] |= VectorPiRank(epFile) & VectorPiRank{MY.enPassantPawns()};
 }
@@ -94,7 +94,7 @@ void PositionMoves::correctCheckEvasionsByPawns(Bb checkLine, Square checkFrom) 
 
         for (Square from : MY.occupiedByPawns() & badPawnsPlaces) {
             Pi pi{MY.pieceOn(from)};
-            Rank rankTo = ::rankForward(Rank(from));
+            Rank rankTo = ::rankForward(Rank{from});
 
             Bb bb = (Bb{from.rankForward()} & checkLine) + (::pieceTypeAttack(Pawn, from) & checkFrom);
             moves.set(pi, rankTo, bb[rankTo]);
