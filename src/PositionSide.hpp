@@ -48,7 +48,8 @@ friend class Position;
 
     void updatePinner(Pi);
     void setOpKing(Square);
-    void setOpOccupied(Bb);
+    void setOpOccupied(Bb opPieces) { occupiedBb = piecesBb + opPieces; }
+
     void setSliderAttacks(VectorPiMask, Bb);
     void setGamePhase(GamePhase opGamePhase) { evaluation.setGamePhase(opGamePhase, kingSquare()); }
 

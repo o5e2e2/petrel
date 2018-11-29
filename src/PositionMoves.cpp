@@ -218,14 +218,127 @@ void PositionMoves::generateMoves() {
     staticEval = evaluate();
 }
 
-void PositionMoves::playMove(const Position& parent, Square from, Square to, Zobrist z) {
-    Position::playMove(parent, from, to, z);
+void PositionMoves::playMove(Square from, Square to) {
+    zobrist = createZobrist(from, to);
+    Position::playMove(from, to);
+    assert (zobrist == generateZobrist());
     generateMoves();
 }
 
-void PositionMoves::playMove(const Position& parent, Square from, Square to) {
+void PositionMoves::playMove(const Position& parent, Square from, Square to, Zobrist z) {
+    zobrist = z;
     Position::playMove(parent, from, to);
+    assert (zobrist == Zobrist{0} || zobrist == generateZobrist());
     generateMoves();
+}
+
+Zobrist PositionMoves::generateZobrist() const {
+    auto mz = MY.generateZobrist();
+    auto oz = OP.generateZobrist();
+
+    if (OP.hasEnPassant()) {
+        oz.setEnPassant(OP.enPassantSquare());
+    }
+
+    return Zobrist(mz, oz);
+}
+
+Zobrist PositionMoves::createZobrist(Square from, Square to) const {
+    Zobrist mz{zobrist};
+    Zobrist oz{0};
+
+    if (OP.hasEnPassant()) {
+        oz.clearEnPassant(OP.enPassantSquare());
+    }
+
+    Pi pi {MY.pieceOn(from)};
+    PieceType ty {MY.typeOf(pi)};
+
+    if (ty.is(Pawn)) {
+        if (from.is(Rank7)) {
+            Square promotedTo = Square{File{to}, Rank8};
+            mz.clear(Pawn, from);
+            mz.drop(static_cast<PieceType>(PromoType{to}), promotedTo);
+
+            if (OP.isOccupied(~promotedTo)) {
+                Pi victim {OP.pieceOn(~promotedTo)};
+
+                if (OP.isCastling(victim)) {
+                    oz.clearCastling(~promotedTo);
+                }
+                oz.clear(OP.typeOf(victim), ~promotedTo);
+            }
+            return Zobrist{oz, mz};
+        }
+
+        if (from.is(Rank2) && to.is(Rank4)) {
+            mz.move(ty, from, to);
+
+            File file = File{from};
+            Square ep(file, Rank3);
+
+            Bb killers = ~OP.occupiedByPawns() & ::pieceTypeAttack(Pawn, ep);
+            if (killers.any() && !MY.isPinned(OCCUPIED - from + ep)) {
+                for (Square killer : killers) {
+                    assert (killer.is(Rank4));
+
+                    if (!MY.isPinned(OCCUPIED - killer + ep)) {
+                        mz.setEnPassant(file);
+                        return Zobrist{oz, mz};
+                    }
+                }
+            }
+            return Zobrist{oz, mz};
+        }
+
+        if (from.is(Rank5) && to.is(Rank5)) {
+            Square ep(File{to}, Rank6);
+            mz.move(Pawn, from, ep);
+            oz.clear(Pawn, ~to);
+            return Zobrist{oz, mz};
+        }
+
+        //the rest of pawns moves (non-promotion, non en passant, non double push)
+    }
+    else if (MY.kingSquare().is(to)) {
+        //castling move encoded as rook moves over own king's square
+        for (Pi rook : MY.castlingRooks()) {
+            mz.clearCastling(MY.squareOf(rook));
+        }
+
+        Square kingFrom = to;
+        Square rookFrom = from;
+        Square kingTo = CastlingRules::castlingSide(kingFrom, rookFrom).is(QueenSide) ? C1 : G1;
+        Square rookTo = CastlingRules::castlingSide(kingFrom, rookFrom).is(QueenSide) ? D1 : F1;
+
+        mz.clear(King, kingFrom);
+        mz.clear(Rook, rookFrom);
+        mz.drop(King, kingTo);
+        mz.drop(Rook, rookTo);
+        return Zobrist{oz, mz};
+    }
+    else if (ty.is(King)) {
+        for (Pi rook : MY.castlingRooks()) {
+            mz.clearCastling(MY.squareOf(rook));
+        }
+    }
+    else if (MY.isCastling(pi)) {
+        //move of the rook with castling rights
+        assert (ty.is(Rook));
+        mz.clearCastling(from);
+    }
+
+    if (OP.isOccupied(~to)) {
+        Pi victim {OP.pieceOn(~to)};
+        oz.clear(OP.typeOf(victim), ~to);
+
+        if (OP.isCastling(victim)) {
+            oz.clearCastling(~to);
+        }
+    }
+
+    mz.move(ty, from, to);
+    return Zobrist{oz, mz};
 }
 
 #undef MY

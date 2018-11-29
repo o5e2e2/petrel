@@ -8,6 +8,7 @@
 class PositionMoves : public Position {
 protected:
     MatrixPiBb moves; //generated moves from side[My]
+    Zobrist zobrist{0};
     index_t movesCount = 0;
     Score staticEval = Score::Draw;
 
@@ -27,8 +28,11 @@ public:
     constexpr PositionMoves () = default;
     PositionMoves (const PositionMoves&) = default;
 
-    void playMove(const Position&, Square, Square);
+    void playMove(Square, Square);
     void playMove(const Position&, Square, Square, Zobrist);
+
+    Zobrist generateZobrist() const;
+    Zobrist createZobrist(Square, Square) const;
     void generateMoves();
 
     const MatrixPiBb& getMoves() const { return moves; }

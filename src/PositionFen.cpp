@@ -209,8 +209,7 @@ void PositionFen::playMoves(io::istream& in) {
             Pi pi{ side[My].pieceOn(from) };
 
             if (isLegalMove(pi, to)) {
-                Position::playMove(from, to);
-                generateMoves();
+                playMove(from, to);
                 colorToMove.flip();
                 continue;
             }

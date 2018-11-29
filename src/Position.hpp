@@ -2,12 +2,10 @@
 #define POSITION_HPP
 
 #include "PositionSide.hpp"
-#include "Zobrist.hpp"
 
 class Position {
 protected:
     Side::array<PositionSide> side;
-    Zobrist zobrist{0};
 
 private:
     template <Side::_t> void updateSliderAttacks(VectorPiMask);
@@ -28,12 +26,9 @@ public:
     VectorPiMask alivePieces() const { return side[My].alivePieces(); }
     Square squareOf(Pi pi) const { return side[My].squareOf(pi); }
 
-    Zobrist generateZobrist() const;
-    Zobrist createZobrist(Square, Square) const;
     Move createMove(Square from, Square to) const { return side[My].createMove(from, to); }
     Score evaluate() const { return static_cast<Score>(side[My].evaluate() - side[Op].evaluate()); }
 
-    void playMove(const Position&, Square, Square, Zobrist);
     void playMove(const Position&, Square, Square);
     void playMove(Square, Square);
 

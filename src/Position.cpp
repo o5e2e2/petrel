@@ -116,6 +116,26 @@ void Position::setLegalEnPassant(Pi pi) {
     }
 }
 
+bool Position::setEnPassant(File file) {
+    if (MY.hasEnPassant() || OP.hasEnPassant()) { return false; }
+    if (OCCUPIED[Square{file, Rank7}]) { return false; }
+    if (OCCUPIED[Square{file, Rank6}]) { return false; }
+
+    Square victimSquare(file, Rank4);
+    if (!OP.isPieceOn(victimSquare)) { return false; }
+
+    Pi victim{OP.pieceOn(victimSquare)};
+    if (!OP.isPawn(victim)) { return false; }
+
+    //check against illegal en passant set field like "8/5bk1/8/2Pp4/8/1K6/8/8 w - d6"
+    if (OP.isPinned(OP.occupied() - victimSquare)) {
+        return false;
+    }
+
+    setLegalEnPassant<Op>(victim);
+    return true;
+}
+
 template <Side::_t My>
 void Position::playPawnMove(Pi pi, Square from, Square to) {
     constexpr Side Op{~My};
@@ -231,11 +251,7 @@ void Position::playMove(Square from, Square to) {
     updateSliderAttacks<My>(MY.attacksTo(from, to), OP.attacksTo(~from, ~to));
 }
 
-void Position::playMove(const Position& parent, Square from, Square to, Zobrist z) {
-    assert (parent.zobrist == parent.generateZobrist());
-
-    zobrist = z;
-
+void Position::playMove(const Position& parent, Square from, Square to) {
     assert (this != &parent);
     MY = parent.OP;
     OP = parent.MY;
@@ -243,158 +259,18 @@ void Position::playMove(const Position& parent, Square from, Square to, Zobrist 
     //current position flipped its sides relative to parent, so we make the move inplace for the Op
     playMove<Op>(from, to);
 
-    //king cannot be in check
+    //king cannot be left in check
     assert (MY.attacksToKing().none());
-
-    //assert (zobrist == Zobrist{0} || zobrist == generateZobrist());
-}
-
-void Position::playMove(const Position& parent, Square from, Square to) {
-    playMove(parent, from, to, parent.createZobrist(from, to));
 }
 
 void Position::playMove(Square from, Square to) {
-    //assert (zobrist == generateZobrist());
-
-    zobrist = createZobrist(from, to);
     PositionSide::swap(MY, OP);
 
     //the position just swapped its sides, so we make the move for the Op
     playMove<Op>(from, to);
 
-    //king cannot be in check
+    //king cannot be left in check
     assert (MY.attacksToKing().none());
-
-    assert (zobrist == generateZobrist());
-}
-
-Zobrist Position::generateZobrist() const {
-    auto mz = MY.generateZobrist();
-    auto oz = OP.generateZobrist();
-
-    if (OP.hasEnPassant()) {
-        oz.setEnPassant(OP.enPassantSquare());
-    }
-
-    return Zobrist(mz, oz);
-}
-
-Zobrist Position::createZobrist(Square from, Square to) const {
-    Zobrist mz{zobrist};
-    Zobrist oz{0};
-
-    if (OP.hasEnPassant()) {
-        oz.clearEnPassant(OP.enPassantSquare());
-    }
-
-    Pi pi {MY.pieceOn(from)};
-    PieceType ty {MY.typeOf(pi)};
-
-    if (ty.is(Pawn)) {
-        if (from.is(Rank7)) {
-            Square promotedTo = Square{File{to}, Rank8};
-            mz.clear(Pawn, from);
-            mz.drop(static_cast<PieceType>(PromoType{to}), promotedTo);
-
-            if (OP.isOccupied(~promotedTo)) {
-                Pi victim {OP.pieceOn(~promotedTo)};
-
-                if (OP.isCastling(victim)) {
-                    oz.clearCastling(~promotedTo);
-                }
-                oz.clear(OP.typeOf(victim), ~promotedTo);
-            }
-            return Zobrist{oz, mz};
-        }
-
-        if (from.is(Rank2) && to.is(Rank4)) {
-            mz.move(ty, from, to);
-
-            File file = File{from};
-            Square ep(file, Rank3);
-
-            Bb killers = ~OP.occupiedByPawns() & ::pieceTypeAttack(Pawn, ep);
-            if (killers.any() && !MY.isPinned(OCCUPIED - from + ep)) {
-                for (Square killer : killers) {
-                    assert (killer.is(Rank4));
-
-                    if (!MY.isPinned(OCCUPIED - killer + ep)) {
-                        mz.setEnPassant(file);
-                        return Zobrist{oz, mz};
-                    }
-                }
-            }
-            return Zobrist{oz, mz};
-        }
-
-        if (from.is(Rank5) && to.is(Rank5)) {
-            Square ep(File{to}, Rank6);
-            mz.move(Pawn, from, ep);
-            oz.clear(Pawn, ~to);
-            return Zobrist{oz, mz};
-        }
-
-        //the rest of pawns moves (non-promotion, non en passant, non double push)
-    }
-    else if (MY.kingSquare().is(to)) {
-        //castling move encoded as rook moves over own king's square
-        for (Pi rook : MY.castlingRooks()) {
-            mz.clearCastling(MY.squareOf(rook));
-        }
-
-        Square kingFrom = to;
-        Square rookFrom = from;
-        Square kingTo = CastlingRules::castlingSide(kingFrom, rookFrom).is(QueenSide) ? C1 : G1;
-        Square rookTo = CastlingRules::castlingSide(kingFrom, rookFrom).is(QueenSide) ? D1 : F1;
-
-        mz.clear(King, kingFrom);
-        mz.clear(Rook, rookFrom);
-        mz.drop(King, kingTo);
-        mz.drop(Rook, rookTo);
-        return Zobrist{oz, mz};
-    }
-    else if (ty.is(King)) {
-        for (Pi rook : MY.castlingRooks()) {
-            mz.clearCastling(MY.squareOf(rook));
-        }
-    }
-    else if (MY.isCastling(pi)) {
-        //move of the rook with castling rights
-        assert (ty.is(Rook));
-        mz.clearCastling(from);
-    }
-
-    if (OP.isOccupied(~to)) {
-        Pi victim {OP.pieceOn(~to)};
-        oz.clear(OP.typeOf(victim), ~to);
-
-        if (OP.isCastling(victim)) {
-            oz.clearCastling(~to);
-        }
-    }
-
-    mz.move(ty, from, to);
-    return Zobrist{oz, mz};
-}
-
-bool Position::setEnPassant(File file) {
-    if (MY.hasEnPassant() || OP.hasEnPassant()) { return false; }
-    if (OCCUPIED[Square{file, Rank7}]) { return false; }
-    if (OCCUPIED[Square{file, Rank6}]) { return false; }
-
-    Square victimSquare(file, Rank4);
-    if (!OP.isPieceOn(victimSquare)) { return false; }
-
-    Pi victim{OP.pieceOn(victimSquare)};
-    if (!OP.isPawn(victim)) { return false; }
-
-    //check against illegal en passant set field like "8/5bk1/8/2Pp4/8/1K6/8/8 w - d6"
-    if (OP.isPinned(OP.occupied() - victimSquare)) {
-        return false;
-    }
-
-    setLegalEnPassant<Op>(victim);
-    return true;
 }
 
 #undef MY

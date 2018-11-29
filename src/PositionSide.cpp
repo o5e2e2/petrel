@@ -301,10 +301,6 @@ void PositionSide::setOpKing(Square sq) {
     }
 }
 
-void PositionSide::setOpOccupied(Bb opPieces) {
-    occupiedBb = piecesBb + opPieces;
-}
-
 Move PositionSide::createMove(Square from, Square to) const {
     if (kingSquare().is(to)) {
         return Move::castling(from, to);
