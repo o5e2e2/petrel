@@ -125,15 +125,13 @@ void Uci::go() {
         return;
     }
 
-    auto& l = searchControl.searchLimit;
-    l = {};
-
     Color colorToMove = positionFen.getColorToMove();
     auto whiteSide = colorToMove.is(White) ? My : Op;
     auto blackSide = ~whiteSide;
 
-    l.positionMoves = positionFen;
+    SearchLimit l;
     l.perft = true; //DEBUG
+    l.positionMoves = positionFen;
 
     while (command) {
         if      (next("depth"))    { command >> l.depth; l.depth = std::min(l.depth, static_cast<depth_t>(DepthMax)); }
@@ -153,6 +151,7 @@ void Uci::go() {
         else { break; }
     }
 
+    searchControl.searchLimit = l;
     searchControl.go();
 }
 
