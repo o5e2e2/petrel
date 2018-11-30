@@ -130,7 +130,6 @@ void Uci::go() {
     auto blackSide = ~whiteSide;
 
     SearchLimit l;
-    l.perft = true; //DEBUG
     l.positionMoves = positionFen;
 
     while (command) {

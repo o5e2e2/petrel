@@ -9,25 +9,23 @@ class SearchLimit {
 
     PositionFen positionMoves;
 
-    Side::array<Duration> time;
-    Side::array<Duration> inc;
+    Side::array<Duration> time = {{ Duration::zero(), Duration::zero() }};
+    Side::array<Duration> inc = {{ Duration::zero(), Duration::zero() }};
 
-    Duration movetime;
+    Duration movetime = Duration::zero();
 
-    node_count_t nodes;
-    index_t movestogo;
-    depth_t depth;
-    index_t mate;
+    node_count_t nodes = NodeCountMax;
+    index_t movestogo = 0;
+    depth_t depth = 0;
+    index_t mate = 0;
 
-    bool ponder;
-    bool infinite;
+    bool ponder = false;
+    bool infinite = false;
 
-    bool perft;
-    bool divide;
+    bool perft = true;
+    bool divide = false;
 
 public:
-    SearchLimit ();
-
     depth_t      getDepthLimit() const { return depth; }
     node_count_t getNodesLimit() const { return nodes; }
     bool         isDivide() const { return divide; }
