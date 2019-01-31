@@ -33,9 +33,9 @@ UciSearchInfo::UciSearchInfo (io::ostream& o, Color& c, ChessVariant& v) :
     lastInfoNodes{0}
 {}
 
-void UciSearchInfo::operator() (io::ostream& o) const {
+void UciSearchInfo::position(const PositionFen& positionFen) const {
     OUTPUT(ob);
-    ob << o.rdbuf();
+    ob << "info fen " << positionFen << '\n';
 }
 
 void UciSearchInfo::clear() {

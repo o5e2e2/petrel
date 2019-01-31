@@ -108,9 +108,7 @@ void Uci::setHash() {
 
 void Uci::position() {
     if (nextNone()) {
-        std::stringstream ob;
-        ob << "info fen " << positionFen << '\n';
-        info(ob);
+        info.position(positionFen);
         return;
     }
 
