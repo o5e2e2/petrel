@@ -14,6 +14,10 @@ void SearchControl::nextIteration() {
     transpositionTable.nextAge();
 }
 
+void SearchControl::uciok() const {
+    info.uciok(transpositionTable.getInfo());
+}
+
 void SearchControl::go() {
     nodesLimit = searchLimit.getNodesLimit();
     nodes = 0;

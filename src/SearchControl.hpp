@@ -50,6 +50,7 @@ public:
     bool isStopped() const { return searchThread.isStopped(); }
     void stop() { searchThread.stop(); }
 
+    void uciok() const;
     const PerftTT& tt() const { return transpositionTable; }
     PerftTT& tt() { return transpositionTable; }
 

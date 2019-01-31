@@ -160,5 +160,5 @@ void Uci::isready() {
 }
 
 void Uci::uciok() {
-    info.uciok(searchControl.tt());
+    searchControl.uciok();
 }

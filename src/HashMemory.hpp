@@ -4,14 +4,12 @@
 
 #include "Zobrist.hpp"
 
+struct HashInfo {
+    size_t currentSize = 0;
+    size_t maxSize = 0;
+};
+
 class HashMemory {
-public:
-
-    struct Info {
-        size_t currentSize = 0;
-        size_t maxSize = 0;
-    };
-
 private:
     const size_t BucketSize;
     const size_t PageSize;
@@ -19,7 +17,7 @@ private:
     void* hash = nullptr;
     std::uintptr_t mask;
 
-    Info info = {0, 0};
+    HashInfo info = {0, 0};
 
     HashMemory (const HashMemory&) = delete;
     HashMemory& operator = (const HashMemory&) = delete;
@@ -32,7 +30,7 @@ public:
     HashMemory (size_t bucketSize);
    ~HashMemory () { free(); }
 
-    const Info& getInfo() const { return info; }
+    const HashInfo& getInfo() const { return info; }
 
     size_t getTotalRecords() const { return info.currentSize / BucketSize; }
 

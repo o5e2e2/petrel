@@ -43,8 +43,7 @@ void UciSearchInfo::clear() {
     fromSearchStart = {};
 }
 
-void UciSearchInfo::uciok(const PerftTT& tt) const {
-    auto hashInfo = tt.getInfo();
+void UciSearchInfo::uciok(const HashInfo& hashInfo) const {
     bool isChess960 = chessVariant.is(Chess960);
 
     OUTPUT(ob);

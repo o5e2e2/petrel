@@ -7,8 +7,8 @@
 #include "SpinLock.hpp"
 #include "TimePoint.hpp"
 
+class HashInfo;
 class PositionFen;
-class SearchControl;
 class PerftTT;
 
 class UciSearchInfo {
@@ -31,8 +31,8 @@ public:
 
     //called from Uci
     void isready(bool) const;
-    void uciok(const PerftTT&) const;
-    void operator() (io::ostream&) const;
+    void position(const PositionFen&) const;
+    void uciok(const HashInfo&) const;
 
     //called from Search
     void clear();
