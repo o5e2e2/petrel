@@ -3,7 +3,7 @@
 #include "UciSearchInfo.hpp"
 #include "SearchLimit.hpp"
 
-SearchControl::SearchControl (UciSearchInfo& i) : info{i}, searchLimit{} {}
+SearchControl::SearchControl (UciSearchInfo& i) : info{i} {}
 
 void SearchControl::newGame() {
     info.clear();
@@ -18,7 +18,7 @@ void SearchControl::uciok() const {
     info.uciok(transpositionTable.getInfo());
 }
 
-void SearchControl::go() {
+void SearchControl::go(const SearchLimit& searchLimit) {
     nodesLimit = searchLimit.getNodesLimit();
     nodes = 0;
     nodesQuota = 0;

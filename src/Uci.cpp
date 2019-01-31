@@ -1,4 +1,5 @@
 #include "Uci.hpp"
+#include "SearchLimit.hpp"
 
 namespace {
     io::istream& operator >> (io::istream& in, Duration& duration) {
@@ -151,8 +152,7 @@ void Uci::go() {
         else { break; }
     }
 
-    searchControl.searchLimit = l;
-    searchControl.go();
+    searchControl.go(l);
 }
 
 void Uci::isready() {
