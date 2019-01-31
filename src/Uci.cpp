@@ -19,9 +19,10 @@ Uci::Uci (io::ostream& out):
 }
 
 void Uci::operator() (io::istream& in, io::ostream& err) {
-    for (std::string commandLine; std::getline(in, commandLine); ) {
+    std::string currentLine;
+    while (std::getline(in, currentLine)) {
         command.clear(); //clear errors from the previous command
-        command.str(std::move(commandLine));
+        command.str(std::move(currentLine));
         command >> std::ws;
 
         if      (next("go"))        { go(); }
@@ -35,7 +36,7 @@ void Uci::operator() (io::istream& in, io::ostream& err) {
         else if (next("quit"))      { break; }
 
         //report error if something left unparsed
-        if (!next("")) {
+        if (!nextNone()) {
             err << "parsing error: " << command.rdbuf() << '\n';
         }
     }
@@ -105,7 +106,7 @@ void Uci::setHash() {
 }
 
 void Uci::position() {
-    if (next("")) {
+    if (nextNone()) {
         std::stringstream ob;
         ob << "info fen " << positionFen << '\n';
         info(ob);

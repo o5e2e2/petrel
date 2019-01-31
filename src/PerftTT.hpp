@@ -26,7 +26,7 @@ public:
     const Counter& getCounter() const { return counter; }
 
     const HashAge& getAge() const { return hashAge; }
-    void nextAge() { hashAge.next(); }
+    void nextAge() { hashAge.nextAge(); }
 
     const HashMemory::Info& getInfo() const { return hashMemory.getInfo(); }
     void resize(size_t bytes) { hashMemory.resize(bytes); }

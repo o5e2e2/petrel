@@ -19,6 +19,7 @@ namespace io {
     istream& fail_rewind(istream&);
 
     bool next(istream&, czstring);
+    bool nextNone(istream&);
 
     istream& skip_token(istream&);
     ostream& app_version(ostream&);

@@ -13,7 +13,7 @@ public:
     constexpr HashAge () : _v(1) {}
     constexpr operator const _t& () { return _v; }
 
-    void next() {
+    void nextAge() {
         //there are "AgeMask" ages, not "1 << AgeBits", because of:
         //1) we want to break 4*n ply transposition pattern
         //2) make sure that initally clear entry is never hidden

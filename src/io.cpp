@@ -61,6 +61,11 @@ bool next(istream& in, czstring token) {
     return false;
 }
 
+bool nextNone(istream& in) {
+    in >> std::ws;
+    return in.eof();
+}
+
 ostream& app_version(ostream& out) {
 
 #ifdef GIT_DATE
