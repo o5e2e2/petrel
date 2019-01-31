@@ -149,6 +149,7 @@ void Uci::go() {
         else if (next("perft"))    { l.perft = true; }
         else if (next("divide"))   { l.divide = true; }
         else if (next("searchmoves")) { l.positionMoves.limitMoves(command); }
+        else if (!nextNone())      { io::fail_here(command); return; }
         else { break; }
     }
 
