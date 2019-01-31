@@ -18,7 +18,7 @@ class Uci {
     //UCI command handlers
     void go();
     void position();
-    void readyok();
+    void isready();
     void setHash();
     void setoption();
     void ucinewgame();
