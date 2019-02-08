@@ -3,13 +3,13 @@
 
 #include "io.hpp"
 #include "typedefs.hpp"
-#include "Move.hpp"
 #include "SpinLock.hpp"
 #include "TimePoint.hpp"
 
 class HashInfo;
-class PositionFen;
+class Move;
 class PerftTT;
+class PositionFen;
 
 class UciSearchInfo {
     io::ostream& out; //output stream
@@ -38,10 +38,10 @@ public:
     void clear();
 
     void readyok(node_count_t, const PerftTT&) const;
-    void bestmove(Move, Score, node_count_t, const PerftTT&) const;
+    void bestmove(const Move&, Score, node_count_t, const PerftTT&) const;
 
-    void report_perft_divide(Move, Move, Score, index_t, node_count_t, node_count_t, const PerftTT&) const;
-    void report_perft_depth(depth_t, Move, Score, node_count_t, node_count_t, const PerftTT&) const;
+    void report_perft_divide(const Move&, const Move&, Score, index_t, node_count_t, node_count_t, const PerftTT&) const;
+    void report_perft_depth(depth_t, const Move&, Score, node_count_t, node_count_t, const PerftTT&) const;
 
 };
 

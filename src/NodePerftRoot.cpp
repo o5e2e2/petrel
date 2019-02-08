@@ -61,6 +61,6 @@ bool NodePerftRoot::visitChildren() {
         iterativeDeepening();
     }
 
-    control.info.bestmove(bestMove, bestScore, control.getNodesVisited(), control.tt());
+    control.bestmove(bestMove, bestScore);
     return false;
 }

@@ -35,6 +35,10 @@ void SearchControl::go(const SearchLimit& searchLimit) {
     timer.start(duration, searchThread, currentSearchId);
 }
 
+void SearchControl::bestmove(const Move& bestMove, Score bestScore) const {
+    info.bestmove(bestMove, bestScore, getNodesVisited(), transpositionTable);
+}
+
 bool SearchControl::refreshQuota() {
     static_assert (TickLimit > 0, "TickLimit should be a positive number");
 

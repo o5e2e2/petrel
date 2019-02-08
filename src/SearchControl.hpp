@@ -5,8 +5,9 @@
 #include "PerftTT.hpp"
 #include "Timer.hpp"
 
-class UciSearchInfo;
+class Move;
 class SearchLimit;
+class UciSearchInfo;
 
 /**
  * Shared data to all search threads (currently the only one)
@@ -54,6 +55,8 @@ public:
     PerftTT& tt() { return transpositionTable; }
 
     void nextIteration();
+
+    void bestmove(const Move&, Score) const;
 
     node_count_t getNodesVisited() const {
         assert (nodes >= nodesQuota);
