@@ -26,9 +26,9 @@ bool NodePerftRootDivide::visit(Square from, Square to) {
     }
 
     ++moveCount;
-    auto n = p.perft - parentPerftBefore;
+    auto movePerft = p.perft - parentPerftBefore;
     Move move = p.createMove(from, to);
-    control.info.report_perft_divide(move, p.bestMove, p.bestScore, moveCount, n, control.getNodesVisited(), control.tt());
+    control.perftMove(moveCount, move, movePerft, p.bestMove, p.bestScore);
 
     bestScore = Score::Minimum;
     bestMove = {};

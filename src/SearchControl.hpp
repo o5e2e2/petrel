@@ -13,10 +13,8 @@ class UciSearchInfo;
  * Shared data to all search threads (currently the only one)
  */
 class SearchControl {
-public:
     UciSearchInfo& info; //virtual
 
-private:
     node_count_t nodes;
     node_count_t nodesLimit; //search limit
 
@@ -59,6 +57,7 @@ public:
 
     void bestmove(const Move&, Score) const;
     void perftDepth(depth_t, node_count_t, const Move&, Score) const;
+    void perftMove(index_t moveCount, const Move& currentMove, node_count_t, const Move&, Score) const;
 
     node_count_t getNodesVisited() const {
         assert (nodes >= nodesQuota);
