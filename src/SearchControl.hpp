@@ -47,10 +47,11 @@ public:
     void stop() { searchThread.stop(); }
 
     void uciok() const;
+    void readyok() const;
+    void go(const SearchLimit&);
+
     const PerftTT& tt() const { return transpositionTable; }
     PerftTT& tt() { return transpositionTable; }
-
-    void go(const SearchLimit&);
 
     void nextIteration();
 

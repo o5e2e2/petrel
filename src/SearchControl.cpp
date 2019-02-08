@@ -18,6 +18,10 @@ void SearchControl::uciok() const {
     info.uciok(transpositionTable.getInfo());
 }
 
+void SearchControl::readyok() const {
+    info.isready(this->isReady());
+}
+
 void SearchControl::go(const SearchLimit& searchLimit) {
     nodesLimit = searchLimit.getNodesLimit();
     nodes = 0;

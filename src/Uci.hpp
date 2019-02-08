@@ -2,9 +2,9 @@
 #define UCI_HPP
 
 #include "io.hpp"
+#include "PositionFen.hpp"
 #include "SearchControl.hpp"
 #include "UciSearchInfo.hpp"
-#include "PositionFen.hpp"
 
 class Uci {
     PositionFen positionFen; //root position between 'position' and 'go' commands
@@ -18,11 +18,9 @@ class Uci {
     //UCI command handlers
     void go();
     void position();
-    void isready();
     void setHash();
     void setoption();
     void ucinewgame();
-    void uciok();
 
 public:
     Uci (io::ostream&);

@@ -29,11 +29,11 @@ void Uci::operator() (io::istream& in, io::ostream& err) {
         if      (next("go"))        { go(); }
         else if (next("position"))  { position(); }
         else if (next("stop"))      { searchControl.stop(); }
-        else if (next("isready"))   { isready(); }
+        else if (next("isready"))   { searchControl.readyok(); }
         else if (next("setoption")) { setoption(); }
         else if (next("set"))       { setoption(); }
         else if (next("ucinewgame")){ ucinewgame(); }
-        else if (next("uci"))       { uciok(); }
+        else if (next("uci"))       { searchControl.uciok(); }
         else if (next("quit"))      { break; }
         else if (next("exit"))      { break; }
 
@@ -153,12 +153,4 @@ void Uci::go() {
     }
 
     searchControl.go(l);
-}
-
-void Uci::isready() {
-    info.isready(searchControl.isReady());
-}
-
-void Uci::uciok() {
-    searchControl.uciok();
 }
