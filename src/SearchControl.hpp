@@ -20,8 +20,9 @@ private:
     node_count_t nodes;
     node_count_t nodesLimit; //search limit
 
-    enum : unsigned { TickLimit = 5000 }; // ~1 msec
-    unsigned nodesQuota; //number of remaining nodes before slow checking for terminate
+    typedef unsigned nodes_quota_t;
+    enum : nodes_quota_t { TickLimit = 5000 }; // ~1 msec
+    nodes_quota_t nodesQuota; //number of remaining nodes before slow checking for terminate
 
     SearchThread searchThread;
 
@@ -57,6 +58,7 @@ public:
     void nextIteration();
 
     void bestmove(const Move&, Score) const;
+    void perftDepth(depth_t, node_count_t, const Move&, Score) const;
 
     node_count_t getNodesVisited() const {
         assert (nodes >= nodesQuota);

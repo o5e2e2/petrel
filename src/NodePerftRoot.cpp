@@ -32,7 +32,7 @@ bool NodePerftRoot::searchIteration() {
         }
     }
 
-    control.info.report_perft_depth(draft, bestMove, bestScore, perft, control.getNodesVisited(), control.tt());
+    control.perftDepth(draft, perft, bestMove, bestScore);
     return false;
 }
 

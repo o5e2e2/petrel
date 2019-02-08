@@ -39,6 +39,10 @@ void SearchControl::bestmove(const Move& bestMove, Score bestScore) const {
     info.bestmove(bestMove, bestScore, getNodesVisited(), transpositionTable);
 }
 
+void SearchControl::perftDepth(depth_t draft, node_count_t perft, const Move& bestMove, Score bestScore) const {
+    info.report_perft_depth(draft, bestMove, bestScore, perft, getNodesVisited(), transpositionTable);
+}
+
 bool SearchControl::refreshQuota() {
     static_assert (TickLimit > 0, "TickLimit should be a positive number");
 
