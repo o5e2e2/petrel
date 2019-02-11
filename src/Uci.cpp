@@ -104,7 +104,7 @@ void Uci::setHash() {
         }
     }
 
-    searchControl.tt().resize(quantity);
+    searchControl.setHash(quantity);
 }
 
 void Uci::position() {

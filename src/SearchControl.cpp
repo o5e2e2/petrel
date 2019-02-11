@@ -47,6 +47,10 @@ void SearchControl::perftMove(index_t moveCount, const Move& currentMove, node_c
     info.report_perft_divide(currentMove, bestMove, bestScore, moveCount, perft, getNodesVisited(), transpositionTable);
 }
 
+void SearchControl::setHash(size_t bytes) {
+    transpositionTable.resize(bytes);
+}
+
 bool SearchControl::refreshQuota() {
     static_assert (TickLimit > 0, "TickLimit should be a positive number");
 
@@ -72,7 +76,7 @@ bool SearchControl::refreshQuota() {
         return true;
     }
 
-    info.readyok(nodes, tt());
+    info.readyok(nodes, transpositionTable);
 
     assert (nodesQuota > 0);
     nodes += nodesQuota;

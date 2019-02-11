@@ -49,6 +49,7 @@ public:
     void uciok() const;
     void readyok() const;
     void go(const SearchLimit&);
+    void setHash(size_t);
 
     const PerftTT& tt() const { return transpositionTable; }
     PerftTT& tt() { return transpositionTable; }
