@@ -1,6 +1,7 @@
 #ifndef MOVE_HPP
 #define MOVE_HPP
 
+#include "io.hpp"
 #include "typedefs.hpp"
 #include "Square.hpp"
 

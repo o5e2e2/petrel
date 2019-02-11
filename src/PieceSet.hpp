@@ -1,6 +1,10 @@
 #ifndef PIECE_SET_HPP
 #define PIECE_SET_HPP
 
+#include "io.hpp"
+#include "typedefs.hpp"
+#include "BitSet.hpp"
+
 /**
  * class used for enumeration of piece vectors
  */

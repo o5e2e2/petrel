@@ -1,6 +1,7 @@
 #ifndef BB_HPP
 #define BB_HPP
 
+#include "io.hpp"
 #include "bitops.hpp"
 #include "BitSet.hpp"
 #include "BitRank.hpp"

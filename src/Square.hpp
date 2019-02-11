@@ -1,6 +1,7 @@
 #ifndef SQUARE_HPP
 #define SQUARE_HPP
 
+#include "io.hpp"
 #include "Index.hpp"
 
 enum square_t {
