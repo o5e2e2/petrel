@@ -70,7 +70,6 @@ void Position::playCastling(Pi rook, Square rookFrom, Square kingFrom) {
     Square rookTo = CastlingRules::castlingSide(kingFrom, rookFrom).is(QueenSide) ? D1 : F1;
 
     MY.castle(rook, rookFrom, rookTo, kingFrom, kingTo);
-    MY.updatePinner(rook);
     OP.setOpKing(~kingTo);
 
     //TRICK: castling should not affect opponent's sliders, otherwise it is check or pin

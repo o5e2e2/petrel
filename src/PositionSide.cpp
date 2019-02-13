@@ -141,6 +141,8 @@ void PositionSide::castle(Pi rook, Square rookFrom, Square rookTo, Square kingFr
     setLeaperAttack(TheKing, King, kingTo);
     types.clearCastlings();
 
+    updatePinner(rook);
+
     assertValid(TheKing, King, kingTo);
     assertValid(rook, Rook, rookTo);
     assert (kingTo.is(Rank1) && rookTo.is(Rank1));

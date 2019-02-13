@@ -30,6 +30,7 @@ class PositionSide {
     void set(PieceType, Square);
     void move(PieceType, Square, Square);
     void setLeaperAttack(Pi, PieceType, Square);
+    void updatePinner(Pi);
 
 friend class Position;
     static void swap(PositionSide&, PositionSide&);
@@ -46,7 +47,6 @@ friend class Position;
     void clearEnPassantVictim();
     void clearEnPassantKillers();
 
-    void updatePinner(Pi);
     void setOpKing(Square);
     void setOpOccupied(Bb opPieces) { occupiedBb = piecesBb + opPieces; }
 
