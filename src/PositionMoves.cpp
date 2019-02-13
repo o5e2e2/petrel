@@ -205,7 +205,7 @@ void PositionMoves::generateMoves() {
     generateKingMoves<My>(attackedSquares);
 }
 
-void PositionMoves::generateMoves() {
+void PositionMoves::setMoves() {
     generateMoves<My>();
     movesCount = moves.count();
 
@@ -219,17 +219,17 @@ void PositionMoves::generateMoves() {
 }
 
 void PositionMoves::playMove(Square from, Square to) {
-    zobrist = createZobrist(from, to);
+    setZobrist(*this, from, to);
     Position::playMove(from, to);
+    setMoves();
     assert (zobrist == generateZobrist());
-    generateMoves();
 }
 
 void PositionMoves::playMove(const Position& parent, Square from, Square to, Zobrist z) {
     zobrist = z;
     Position::playMove(parent, from, to);
+    setMoves();
     assert (zobrist == Zobrist{0} || zobrist == generateZobrist());
-    generateMoves();
 }
 
 Zobrist PositionMoves::generateZobrist() const {

@@ -5,10 +5,10 @@
 bool NodePerftTT::visit(Square from, Square to) {
     auto& p = static_cast<NodePerft&>(parent);
 
-    zobrist = p.createZobrist(from, to);
+    setZobrist(p, from, to);
 
     {
-        auto n = control.tt().get(zobrist, draft-2);
+        auto n = control.tt().get(getZobrist(), draft-2);
 
         if (n != NodeCountNone) {
             perft = n;
@@ -21,7 +21,7 @@ bool NodePerftTT::visit(Square from, Square to) {
     CUT ( NodePerft::visit(from, to) );
     auto n = p.perft - parentPerftBefore;
 
-    control.tt().set(zobrist, draft-2, n);
+    control.tt().set(getZobrist(), draft-2, n);
 
     return false;
 }

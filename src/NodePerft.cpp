@@ -3,7 +3,7 @@
 #include "NodePerftTT.hpp"
 
 bool NodePerft::visit(Square from, Square to) {
-    playMove(parent, from, to, zobrist);
+    playMove(parent, from, to, getZobrist());
 
     switch (draft) {
         case 2:

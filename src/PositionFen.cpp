@@ -176,7 +176,7 @@ void PositionFen::limitMoves(io::istream& in) {
             Square to{ move.to() } ;
             Pi pi{ MY.pieceOn(from) };
 
-            if (moves.is(pi, to) && !searchMoves.is(pi, to)) {
+            if (getMoves().is(pi, to) && !searchMoves.is(pi, to)) {
                 searchMoves.set(pi, to);
                 ++limit;
                 continue;
@@ -188,7 +188,7 @@ void PositionFen::limitMoves(io::istream& in) {
     }
 
     if (limit > 0) {
-        moves = searchMoves;
+        setMoves(searchMoves);
         in.clear();
         return;
     }
@@ -279,8 +279,8 @@ void PositionFen::readFen(io::istream& in) {
     setBoard(in);
     setCastling(in);
     setEnPassant(in);
-    zobrist = generateZobrist();
-    generateMoves();
+    setZobrist();
+    setMoves();
 
     if (in) {
         unsigned _fifty;

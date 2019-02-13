@@ -9,10 +9,11 @@ bool NodePerftLeaf::visit(Square from, Square to) {
 
     //updateParentPerft:
     auto& p = static_cast<NodePerft&>(parent);
-    p.perft += movesCount;
+    p.perft += getMovesCount();
 
-    if (-staticEval > p.bestScore) {
-        p.bestScore = -staticEval;
+    auto score = -getStaticEval();
+    if (score > p.bestScore) {
+        p.bestScore = score;
         p.bestMove = p.createMove(from, to);
     }
 

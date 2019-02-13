@@ -6,8 +6,8 @@
 #include "Zobrist.hpp"
 
 class PositionMoves : public Position {
-protected:
     MatrixPiBb moves; //generated moves from side[My]
+
     Zobrist zobrist{0};
     index_t movesCount = 0;
     Score staticEval = Score::Draw;
@@ -24,19 +24,31 @@ private:
     template <Side::_t> void generateCheckEvasions(Bb attackedSquares);
     template <Side::_t> void generateMoves();
 
+    Zobrist createZobrist(Square, Square) const;
+
+protected:
+    void playMove(Square, Square);
+    void playMove(const Position&, Square, Square, Zobrist);
+
+    void setMoves();
+
+    void clearMove(Pi pi, Square sq) { moves.clear(pi, sq); }
+    void setMoves(const MatrixPiBb& m) { moves = m; }
+
+    void setZobrist(const PositionMoves& p, Square from, Square to) { zobrist = p.createZobrist(from, to); }
+    void setZobrist() { zobrist = generateZobrist(); }
+
 public:
     constexpr PositionMoves () = default;
     PositionMoves (const PositionMoves&) = default;
 
-    void playMove(Square, Square);
-    void playMove(const Position&, Square, Square, Zobrist);
-
     Zobrist generateZobrist() const;
-    Zobrist createZobrist(Square, Square) const;
-    void generateMoves();
+
+    const Zobrist& getZobrist() const { return zobrist; }
+    index_t getMovesCount() const { return movesCount; }
+    Score getStaticEval() const { return staticEval; }
 
     const MatrixPiBb& getMoves() const { return moves; }
-    MatrixPiBb& getMoves() { return moves; }
     MatrixPiBb cloneMoves() const { return MatrixPiBb{moves}; }
 
     bool isLegalMove(Pi pi, Square to) const { return moves.is(pi, to); }

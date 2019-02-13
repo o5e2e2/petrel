@@ -9,7 +9,7 @@ bool Node::visitChildren() {
 
         for (Square to : parentMoves[pi]) {
             CUT (control.countNode());
-            parentMoves.clear(pi, to);
+            parent.clearMove(pi, to);
             CUT (visit(from, to));
         }
     }

@@ -19,7 +19,7 @@ bool NodePerftRoot::searchIteration() {
     else {
         switch (draft) {
             case 1:
-                perft += movesCount;
+                perft += getMovesCount();
                 break;
 
             case 2:
@@ -42,7 +42,7 @@ bool NodePerftRoot::iterativeDeepening() {
     for (draft = 1; draft <= DepthMax; ++draft) {
         CUT ( searchIteration() );
 
-        moves = movesBackup;
+        setMoves(movesBackup);
         perft = 0;
         bestMove = {};
         bestScore = Score::Minimum;
