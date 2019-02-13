@@ -2,7 +2,7 @@
 #include "ThreadControl.hpp"
 
 namespace {
-    using Id = ThreadControl::ThreadId;
+    using Id = ThreadControl::RunId;
     Id& operator++ (Id& id) {
         id = static_cast<Id>( static_cast< std::underlying_type_t<Id> >(id)+1 );
         if (id == Id::None) {
@@ -13,7 +13,7 @@ namespace {
     }
 }
 
-ThreadControl::ThreadControl () : status{Status::Ready}, threadId{ThreadId::None} {
+ThreadControl::ThreadControl () : status{Status::Ready}, runId{RunId::None} {
     auto infiniteLoop = [this] {
         for (;;) {
             wait(Status::Run);
@@ -49,18 +49,18 @@ void ThreadControl::signal(Status to, Condition condition) {
 }
 
 template <typename Condition>
-ThreadControl::ThreadId ThreadControl::signalSequence(Status to, Condition condition) {
-    ThreadId result;
+ThreadControl::RunId ThreadControl::signalSequence(Status to, Condition condition) {
+    RunId result;
 
     {
         std::unique_lock<decltype(statusLock)> lock{statusLock};
 
         if (!condition()) {
-            return ThreadId::None;
+            return RunId::None;
         }
 
-        ++threadId;
-        result = threadId;
+        ++runId;
+        result = runId;
         status = to;
     }
 
@@ -76,14 +76,14 @@ void ThreadControl::signal(Status from, Status to) {
     signal(to, [this, from]() { return isStatus(from); });
 }
 
-void ThreadControl::signal(ThreadId id, Status from, Status to) {
-    if (id == ThreadId::None) {
+void ThreadControl::signal(RunId id, Status from, Status to) {
+    if (id == RunId::None) {
         return;
     }
-    signal(to, [this, id, from]() { return id == this->threadId && isStatus(from); });
+    signal(to, [this, id, from]() { return id == this->runId && isStatus(from); });
 }
 
-ThreadControl::ThreadId ThreadControl::signalSequence(Status from, Status to) {
+ThreadControl::RunId ThreadControl::signalSequence(Status from, Status to) {
     return signalSequence(to, [this, from]() { return isStatus(from); });
 }
 

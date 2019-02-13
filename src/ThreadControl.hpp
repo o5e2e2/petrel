@@ -6,7 +6,7 @@
 
 class ThreadControl {
 public:
-    enum class ThreadId : unsigned { None };
+    enum class RunId : unsigned { None };
 
 private:
     /**
@@ -20,19 +20,19 @@ private:
     std::condition_variable_any statusChanged;
     Status status;
 
-    ThreadId threadId;
+    RunId runId;
 
     bool isStatus(Status to) const { return status == to; }
 
     template <typename Condition> void wait(Condition);
     template <typename Condition> void signal(Status, Condition);
-    template <typename Condition> ThreadId signalSequence(Status,  Condition);
+    template <typename Condition> RunId signalSequence(Status,  Condition);
 
     void wait(Status to);
     void signal(Status to);
     void signal(Status from, Status to);
-    void signal(ThreadId id, Status from, Status to);
-    ThreadId signalSequence(Status from, Status to);
+    void signal(RunId id, Status from, Status to);
+    RunId signalSequence(Status from, Status to);
 
     virtual void run() = 0;
 
@@ -44,9 +44,9 @@ public:
     bool isRunning() const { return isStatus(Status::Run); }
     bool isStopped() const { return isStatus(Status::Abort); }
 
-    ThreadId start() { return signalSequence(Status::Ready, Status::Run); }
+    RunId start() { return signalSequence(Status::Ready, Status::Run); }
     void stop() { signal(Status::Run, Status::Abort); wait(Status::Ready); }
-    void abort(ThreadId id) { signal(id, Status::Run, Status::Abort); }
+    void abort(RunId id) { signal(id, Status::Run, Status::Abort); }
 };
 
 #endif

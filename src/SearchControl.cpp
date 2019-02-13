@@ -31,8 +31,8 @@ void SearchControl::go(const SearchLimit& searchLimit) {
     transpositionTable.clearCounter();
 
     auto duration = searchLimit.getThinkingTime();
-    auto currentSearchId = searchThread.start( std::make_unique<NodePerftRoot>(searchLimit, *this) );
-    timer.start(duration, searchThread, currentSearchId);
+    auto searchId = searchThread.start( std::make_unique<NodePerftRoot>(searchLimit, *this) );
+    timer.start(duration, searchThread, searchId);
 }
 
 void SearchControl::bestmove(const Move& bestMove, Score bestScore) const {

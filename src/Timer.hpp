@@ -14,7 +14,7 @@ class TimerThread : private ThreadControl {
     TimerPool* pool;
     TimerPool::Handle handle;
     ThreadControl* thread;
-    ThreadControl::ThreadId threadId;
+    ThreadControl::RunId runId;
     Duration duration;
 
     void run() override;
@@ -22,7 +22,7 @@ class TimerThread : private ThreadControl {
 
 class Timer : private TimerPool {
 public:
-    void start(Duration, ThreadControl&, ThreadControl::ThreadId);
+    void start(Duration, ThreadControl&, ThreadControl::RunId);
 };
 
 #endif
