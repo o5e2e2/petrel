@@ -8,7 +8,7 @@ class Node;
 class SearchThread : public ThreadControl {
     std::unique_ptr<Node> node;
 
-    void thread_body() override;
+    void run() override;
 
 public:
     SearchThread ();

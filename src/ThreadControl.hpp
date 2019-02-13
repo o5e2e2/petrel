@@ -34,13 +34,14 @@ private:
     void signal(ThreadId id, Status from, Status to);
     ThreadId signalSequence(Status from, Status to);
 
-    virtual void thread_body() = 0;
+    virtual void run() = 0;
 
 public:
     ThreadControl ();
     virtual ~ThreadControl() = default;
 
     bool isReady()   const { return isStatus(Status::Ready); }
+    bool isRunning() const { return isStatus(Status::Run); }
     bool isStopped() const { return isStatus(Status::Abort); }
 
     ThreadId start() { return signalSequence(Status::Ready, Status::Run); }

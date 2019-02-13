@@ -17,7 +17,7 @@ ThreadControl::ThreadControl () : status{Status::Ready}, threadId{ThreadId::None
     auto infiniteLoop = [this] {
         for (;;) {
             wait(Status::Run);
-            this->thread_body();
+            this->run();
             signal(Status::Ready);
         }
     };

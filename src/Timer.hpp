@@ -17,7 +17,7 @@ class TimerThread : private ThreadControl {
     ThreadControl::ThreadId threadId;
     Duration duration;
 
-    void thread_body() override;
+    void run() override;
 };
 
 class Timer : private TimerPool {

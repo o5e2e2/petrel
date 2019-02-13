@@ -1,7 +1,7 @@
 #include <thread>
 #include "Timer.hpp"
 
-void TimerThread::thread_body() {
+void TimerThread::run() {
     std::this_thread::sleep_for(duration);
     thread->abort(threadId);
     pool->release(std::move(handle));
