@@ -10,17 +10,17 @@ typedef int index_t; //small numbers [0..N) with a known upper bound
 
 #define FOR_INDEX(Index, i) for (Index i{Index::Begin}; i.isOk(); ++i)
 
-template <int _Limit, typename _Value = unsigned int>
+template <size_t _Size, typename _Value_type = unsigned int, typename _Storage_type = unsigned int>
 class Index {
     static io::czstring The_string;
 public:
-    typedef _Value _t;
+    typedef _Value_type _t;
 
-    enum { Mask = _Limit-1, Size = _Limit };
+    enum { Size = _Size, Mask = Size-1 };
     static const _t Begin = static_cast<_t>(0);
 
 protected:
-    unsigned int _v;
+    _Storage_type _v;
 
 public:
     constexpr Index () : _v{Size} {}
@@ -29,7 +29,7 @@ public:
     constexpr operator _t () const { return static_cast<_t>(_v); }
 
     constexpr void assertValid() const { assert (isOk()); }
-    constexpr bool isOk() const { return static_cast<unsigned>(_v) < static_cast<unsigned>(Size); }
+    constexpr bool isOk() const { return static_cast<_Storage_type>(_v) < static_cast<_Storage_type>(Size); }
 
     constexpr bool is(_t v) const { return _v == v; }
 
@@ -53,7 +53,7 @@ public:
     constexpr Index operator ~ () const { return Index{*this}.flip(); }
 
     bool from_char(io::char_type c) {
-        if (const void* p = std::memchr(The_string, c, _Limit)) {
+        if (const void* p = std::memchr(The_string, c, Size)) {
             this->_v = static_cast<_t>(static_cast<io::czstring>(p) - The_string);
             assert (c == to_char());
             return true;
