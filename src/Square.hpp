@@ -62,6 +62,20 @@ struct Square : Index<64, square_t> {
         return in;
     }
 
+    static Square read(io::istream& in) {
+        auto before = in.tellg();
+
+        File file{File::Begin};
+        Rank rank{Rank::Begin};
+
+        if (in >> file >> rank) {
+            return Square{file, rank};
+        }
+
+        io::fail_pos(in, before);
+        return {};
+    }
+
 };
 
 #endif

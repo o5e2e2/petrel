@@ -119,47 +119,55 @@ io::ostream& operator << (io::ostream& out, const PositionFen& pos) {
 Move PositionFen::readMove(io::istream& in) const {
     auto before = in.tellg();
 
-    Square moveFrom{Square::Begin};
-    Square moveTo{Square::Begin};
-    if (in >> std::ws >> moveFrom >> moveTo) {
-        if (colorToMove.is(Black)) {
-            moveFrom.flip();
-            moveTo.flip();
-        }
+    in >> std::ws;
 
-        if (MY.isPieceOn(moveFrom)) {
-            Pi pi{MY.pieceOn(moveFrom)};
+    Square moveFrom = Square::read(in);
+    Square moveTo = Square::read(in);
 
-            //convert special moves (castling, promotion, ep) to the internal move format
-            if (MY.isPawn(pi)) {
-                if (moveFrom.is(Rank7)) {
-                    PromoType promo{Queen};
-                    in >> promo;
-                    in.clear(); //promotion piece is optional
-                    return Move::promotion(moveFrom, moveTo, promo);
-                }
-                if (moveFrom.is(Rank5) && OP.hasEnPassant() && OP.enPassantFile().is(File{moveTo})) {
-                    return Move::enPassant(moveFrom, Square{File{moveTo}, Rank5});
-                }
-            }
-            else if (pi.is(TheKing)) {
-                if (MY.isPieceOn(moveTo)) { //Chess960 castling encoding
-                    return Move::castling(moveTo, moveFrom);
-                }
-                if (moveFrom.is(E1) && moveTo.is(G1) && MY.isPieceOn(H1)) {
-                    return Move::castling(H1, E1);
-                }
-                if (moveFrom.is(E1) && moveTo.is(C1) && MY.isPieceOn(A1)) {
-                    return Move::castling(A1, E1);
-                }
-            }
-
-            return Move(moveFrom, moveTo);
-        }
+    if (!in) {
+        io::fail_pos(in, before);
+        return {};
     }
 
-    io::fail_pos(in, before);
-    return Move{};
+    if (colorToMove.is(Black)) {
+        moveFrom.flip();
+        moveTo.flip();
+    }
+
+    if (!MY.isPieceOn(moveFrom)) {
+        io::fail_pos(in, before);
+        return {};
+    }
+
+    Pi pi{MY.pieceOn(moveFrom)};
+
+    //convert special moves (castling, promotion, ep) to the internal move format
+    if (MY.isPawn(pi)) {
+        if (moveFrom.is(Rank7)) {
+            PromoType promo{Queen};
+            in >> promo;
+            in.clear(); //promotion piece is optional
+            return Move::promotion(moveFrom, moveTo, promo);
+        }
+        if (moveFrom.is(Rank5) && OP.hasEnPassant() && OP.enPassantFile().is(File{moveTo})) {
+            return Move::enPassant(moveFrom, Square{File{moveTo}, Rank5});
+        }
+        //else normal pawn move
+    }
+    else if (pi.is(TheKing)) {
+        if (MY.isPieceOn(moveTo)) { //Chess960 castling encoding
+            return Move::castling(moveTo, moveFrom);
+        }
+        if (moveFrom.is(E1) && moveTo.is(G1) && MY.isPieceOn(H1)) {
+            return Move::castling(H1, E1);
+        }
+        if (moveFrom.is(E1) && moveTo.is(C1) && MY.isPieceOn(A1)) {
+            return Move::castling(A1, E1);
+        }
+        //else normal king move
+    }
+
+    return Move(moveFrom, moveTo);
 }
 
 void PositionFen::limitMoves(io::istream& in) {
@@ -231,7 +239,10 @@ void PositionFen::setBoard(io::istream& in) {
 
 io::istream& PositionFen::setCastling(io::istream& in) {
     in >> std::ws;
-    if (in.peek() == '-') { in.ignore(); return in; }
+    if (in.peek() == '-') {
+        in.ignore();
+        return in;
+    }
 
     for (io::char_type c; in.get(c) && !std::isblank(c); ) {
         if (std::isalpha(c)) {
@@ -262,12 +273,15 @@ io::istream& PositionFen::setCastling(io::istream& in) {
 
 io::istream& PositionFen::setEnPassant(io::istream& in) {
     in >> std::ws;
-    if (in.peek() == '-') { in.ignore(); return in; }
+    if (in.peek() == '-') {
+        in.ignore();
+        return in;
+    }
 
     auto before = in.tellg();
 
-    Square ep{Square::Begin};
-    if (in >> ep) {
+    Square ep = Square::read(in);
+    if (in) {
         if (!ep.is(colorToMove.is(White) ? Rank6 : Rank3) || !Position::setEnPassant(File{ep})) {
             io::fail_pos(in, before);
         }
