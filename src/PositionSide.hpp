@@ -30,10 +30,15 @@ class PositionSide {
     void set(PieceType, Square);
     void move(PieceType, Square, Square);
     void setLeaperAttack(Pi, PieceType, Square);
+    void setOpKing(Square);
     void updatePinner(Pi);
+    void setOpOccupied(Bb opPieces) { occupiedBb = piecesBb + opPieces; }
 
 friend class Position;
     static void swap(PositionSide&, PositionSide&);
+    static void setOpKings(PositionSide&, PositionSide&);
+    static void updateOccupied(PositionSide&, PositionSide&);
+    static void setGamePhase(PositionSide&, PositionSide&);
 
     void move(Pi, Square, Square);
     void movePawn(Pi, Square, Square);
@@ -46,9 +51,6 @@ friend class Position;
     void setEnPassantKiller(Pi);
     void clearEnPassantVictim();
     void clearEnPassantKillers();
-
-    void setOpKing(Square);
-    void setOpOccupied(Bb opPieces) { occupiedBb = piecesBb + opPieces; }
 
     void setSliderAttacks(VectorPiMask, Bb);
     void setGamePhase(GamePhase opGamePhase) { evaluation.setGamePhase(opGamePhase, kingSquare()); }

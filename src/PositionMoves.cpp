@@ -308,8 +308,8 @@ Zobrist PositionMoves::createZobrist(Square from, Square to) const {
 
         Square kingFrom = to;
         Square rookFrom = from;
-        Square kingTo = CastlingRules::castlingSide(kingFrom, rookFrom).is(QueenSide) ? C1 : G1;
-        Square rookTo = CastlingRules::castlingSide(kingFrom, rookFrom).is(QueenSide) ? D1 : F1;
+        Square kingTo = CastlingRules::castlingKingTo(kingFrom, rookFrom);
+        Square rookTo = CastlingRules::castlingRookTo(kingFrom, rookFrom);
 
         mz.clear(King, kingFrom);
         mz.clear(Rook, rookFrom);

@@ -51,6 +51,14 @@ public:
         return (rook < king) ? QueenSide : KingSide;
     }
 
+    static constexpr Square castlingKingTo(Square king, Square rook) {
+        return castlingSide(king, rook).is(QueenSide) ? C1 : G1;
+    }
+
+    static constexpr Square castlingRookTo(Square king, Square rook) {
+        return castlingSide(king, rook).is(QueenSide) ? D1 : F1;
+    }
+
 };
 
 extern const CastlingRules castlingRules;

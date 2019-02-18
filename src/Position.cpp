@@ -7,15 +7,6 @@
 #define OP side[Op]
 #define OCCUPIED side[My].occupied()
 
-bool Position::afterDrop() {
-    MY.setOpKing(~OP.kingSquare());
-    OP.setOpKing(~MY.kingSquare());
-    updateSliderAttacks<Op>(OP.alivePieces(), MY.alivePieces());
-    setGamePhase<My>();
-    setGamePhase<Op>();
-    return MY.attacksToKing().none(); //not in check
-}
-
 bool Position::drop(Side My, PieceType ty, Square to) {
     return MY.drop(ty, to);
 }
@@ -28,13 +19,19 @@ bool Position::setCastling(Side My, CastlingSide castlingSide) {
     return MY.setCastling(castlingSide);
 }
 
+bool Position::afterDrop() {
+    PositionSide::setOpKings(MY, OP);
+    PositionSide::setGamePhase(MY, OP);
+    updateSliderAttacks<Op>(OP.alivePieces(), MY.alivePieces());
+    return MY.attacksToKing().none(); //not in check
+}
+
 template <Side::_t My>
 void Position::updateSliderAttacks(VectorPiMask affected) {
     constexpr Side Op{~My};
 
     //sync occupiedBb between sides
-    MY.setOpOccupied(~OP.occupiedSquares());
-    OP.setOpOccupied(~MY.occupiedSquares());
+    PositionSide::updateOccupied(MY, OP);
 
     //TRICK: attacks calculated without opponent's king for implicit out of check king's moves generation
     MY.setSliderAttacks(affected, OCCUPIED - MY.opKingSquare());
@@ -66,8 +63,8 @@ template <Side::_t My>
 void Position::playCastling(Pi rook, Square rookFrom, Square kingFrom) {
     constexpr Side Op{~My};
 
-    Square kingTo = CastlingRules::castlingSide(kingFrom, rookFrom).is(QueenSide) ? C1 : G1;
-    Square rookTo = CastlingRules::castlingSide(kingFrom, rookFrom).is(QueenSide) ? D1 : F1;
+    Square kingTo = CastlingRules::castlingKingTo(kingFrom, rookFrom);
+    Square rookTo = CastlingRules::castlingRookTo(kingFrom, rookFrom);
 
     MY.castle(rook, rookFrom, rookTo, kingFrom, kingTo);
     OP.setOpKing(~kingTo);

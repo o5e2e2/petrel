@@ -50,6 +50,21 @@ void PositionSide::swap(PositionSide& my, PositionSide& op) {
     swap(my.evaluation, op.evaluation);
 }
 
+void PositionSide::setOpKings(PositionSide& my, PositionSide& op) {
+    my.setOpKing(~op.kingSquare());
+    op.setOpKing(~my.kingSquare());
+}
+
+void PositionSide::updateOccupied(PositionSide& my, PositionSide& op) {
+    my.setOpOccupied(~op.occupiedSquares());
+    op.setOpOccupied(~my.occupiedSquares());
+}
+
+void PositionSide::setGamePhase(PositionSide& my, PositionSide& op) {
+    my.setGamePhase(op.generateGamePhase());
+    op.setGamePhase(my.generateGamePhase());
+}
+
 void PositionSide::clear(PieceType ty, Square from) {
     piecesBb -= from;
     evaluation.clear(ty, from);
