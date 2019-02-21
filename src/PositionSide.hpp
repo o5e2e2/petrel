@@ -30,16 +30,16 @@ class PositionSide {
     void set(PieceType, Square);
     void move(PieceType, Square, Square);
     void setLeaperAttack(Pi, PieceType, Square);
-    void setOpKing(Square);
-    void updatePinner(Pi);
-    void setOpOccupied(Bb opPieces) { occupiedBb = piecesBb + opPieces; }
+    void updatePinner(Pi, Square);
+    GamePhase generateGamePhase() const; //returns whether material for endgame or middlegame
 
 friend class Position;
     static void swap(PositionSide&, PositionSide&);
     static void setOpKings(PositionSide&, PositionSide&);
-    static void updateOccupied(PositionSide&, PositionSide&);
+    static void syncOccupied(PositionSide&, PositionSide&);
     static void setGamePhase(PositionSide&, PositionSide&);
 
+    void setOpKing(Square);
     void move(Pi, Square, Square);
     void movePawn(Pi, Square, Square);
     void moveKing(Square, Square);
@@ -53,16 +53,18 @@ friend class Position;
     void clearEnPassantKillers();
 
     void setSliderAttacks(VectorPiMask, Bb);
-    void setGamePhase(GamePhase opGamePhase) { evaluation.setGamePhase(opGamePhase, kingSquare()); }
+    void setGamePhase(const PositionSide&);
 
     //used only during initial position setup
-    bool drop(PieceType, Square);
-    bool setCastling(File);
-    bool setCastling(CastlingSide);
+    bool dropValid(PieceType, Square);
+    bool setValidCastling(File);
+    bool setValidCastling(CastlingSide);
 
 public:
     constexpr PositionSide () = default;
     PositionSide (const PositionSide&) = default;
+
+    static Score evaluate(const PositionSide&, const PositionSide&);
 
     Zobrist generateZobrist() const; //calculate Zobrist key from scratch
 
@@ -116,9 +118,6 @@ public:
     VectorPiMask attacksToKing() const { return attacks[opKing]; }
     VectorPiMask attacksTo(Square a, Square b) const { return attacks[a] | attacks[b]; }
     VectorPiMask attacksTo(Square a, Square b, Square c) const { return attacks[a] | attacks[b] | attacks[c]; }
-
-    GamePhase generateGamePhase() const; //returns whether material for endgame or middlegame
-    Score evaluate() const { return evaluation.evaluate(); }
 
     Move createMove(Square from, Square to) const;
 

@@ -55,14 +55,29 @@ void PositionSide::setOpKings(PositionSide& my, PositionSide& op) {
     op.setOpKing(~my.kingSquare());
 }
 
-void PositionSide::updateOccupied(PositionSide& my, PositionSide& op) {
-    my.setOpOccupied(~op.occupiedSquares());
-    op.setOpOccupied(~my.occupiedSquares());
+void PositionSide::syncOccupied(PositionSide& my, PositionSide& op) {
+    my.occupiedBb = my.piecesBb + ~op.piecesBb;
+    op.occupiedBb = op.piecesBb + ~my.piecesBb;
+}
+
+GamePhase PositionSide::generateGamePhase() const {
+    auto queensCount = piecesOfType(Queen).count();
+    bool isEndgame = (queensCount == 0) || (queensCount == 1 && types.minors().count() <= 1);
+    return isEndgame ? Endgame : Middlegame;
+}
+
+void PositionSide::setGamePhase(const PositionSide& op) {
+    auto opGamePhase = op.generateGamePhase();
+    evaluation.setGamePhase(opGamePhase, kingSquare());
 }
 
 void PositionSide::setGamePhase(PositionSide& my, PositionSide& op) {
-    my.setGamePhase(op.generateGamePhase());
-    op.setGamePhase(my.generateGamePhase());
+    my.setGamePhase(op);
+    op.setGamePhase(my);
+}
+
+Score PositionSide::evaluate(const PositionSide& my, const PositionSide& op) {
+    return my.evaluation.evaluate() - op.evaluation.evaluate();
 }
 
 void PositionSide::clear(PieceType ty, Square from) {
@@ -73,11 +88,6 @@ void PositionSide::clear(PieceType ty, Square from) {
 void PositionSide::set(PieceType ty, Square to) {
     piecesBb += to;
     evaluation.drop(ty, to);
-}
-
-void PositionSide::move(PieceType ty, Square from, Square to) {
-    piecesBb.move(from, to);
-    evaluation.move(ty, from, to);
 }
 
 void PositionSide::capture(Square from) {
@@ -95,6 +105,11 @@ void PositionSide::capture(Square from) {
     types.clear(pi);
 }
 
+void PositionSide::move(PieceType ty, Square from, Square to) {
+    piecesBb.move(from, to);
+    evaluation.move(ty, from, to);
+}
+
 void PositionSide::move(Pi pi, Square from, Square to) {
     PieceType ty = typeOf(pi);
     assertValid(pi, ty, from);
@@ -110,7 +125,7 @@ void PositionSide::move(Pi pi, Square from, Square to) {
         setLeaperAttack(pi, Knight, to);
     }
     else {
-        updatePinner(pi);
+        updatePinner(pi, to);
         types.clearCastling(pi);
     }
 
@@ -121,9 +136,9 @@ void PositionSide::movePawn(Pi pi, Square from, Square to) {
     assertValid(pi, Pawn, from);
     assert (from != to);
 
-    move(Pawn, from, to);
     pawnsBb.move(from, to);
 
+    move(Pawn, from, to);
     squares.move(pi, to);
     setLeaperAttack(pi, Pawn, to);
 
@@ -134,10 +149,11 @@ void PositionSide::moveKing(Square from, Square to) {
     assertValid(TheKing, King, from);
     assert (from != to);
 
+    types.clearCastlings();
+
     move(King, from, to);
     squares.move(TheKing, to);
     setLeaperAttack(TheKing, King, to);
-    types.clearCastlings();
 
     assertValid(TheKing, King, to);
 }
@@ -156,7 +172,7 @@ void PositionSide::castle(Pi rook, Square rookFrom, Square rookTo, Square kingFr
     setLeaperAttack(TheKing, King, kingTo);
     types.clearCastlings();
 
-    updatePinner(rook);
+    updatePinner(rook, rookTo);
 
     assertValid(TheKing, King, kingTo);
     assertValid(rook, Rook, rookTo);
@@ -178,7 +194,7 @@ void PositionSide::promote(Pi pi, PromoType ty, Square from, Square to) {
         setLeaperAttack(pi, Knight, to);
     }
     else {
-        updatePinner(pi);
+        updatePinner(pi, to);
     }
 
     assertValid(pi, static_cast<PieceType>(ty), to);
@@ -189,6 +205,25 @@ void PositionSide::setLeaperAttack(Pi pi, PieceType ty, Square to) {
     assertValid(pi, ty, to);
     assert (isLeaper(ty));
     attacks.set(pi, ::pieceTypeAttack(ty, to));
+}
+
+void PositionSide::updatePinner(Pi pi, Square sq) {
+    assert (isSlider(pi));
+    assert (sq == squareOf(pi));
+
+    if (::pieceTypeAttack(typeOf(pi), sq)[opKing] && ::between(opKing, sq).any()) {
+        types.setPinner(pi);
+    }
+    else {
+        types.clearPinner(pi);
+    }
+}
+
+void PositionSide::setOpKing(Square sq) {
+    opKing = sq;
+    for (Pi pi : sliders()) {
+        updatePinner(pi, squareOf(pi));
+    }
 }
 
 void PositionSide::setSliderAttacks(VectorPiMask affectedSliders, Bb occupied) {
@@ -239,19 +274,7 @@ bool PositionSide::isPinned(Bb allOccupiedWithoutPinned) const {
     return false;
 }
 
-void PositionSide::updatePinner(Pi pi) {
-    assert (isSlider(pi));
-    Square sq = squareOf(pi);
-
-    if (::pieceTypeAttack(typeOf(pi), sq)[opKing] && ::between(opKing, sq).any()) {
-        types.setPinner(pi);
-    }
-    else {
-        types.clearPinner(pi);
-    }
-}
-
-bool PositionSide::drop(PieceType ty, Square to) {
+bool PositionSide::dropValid(PieceType ty, Square to) {
     if (piecesBb[to]) { return false; }
 
     if (ty.is(Pawn)) {
@@ -273,7 +296,7 @@ bool PositionSide::drop(PieceType ty, Square to) {
     return true;
 }
 
-bool PositionSide::setCastling(CastlingSide castlingSide) {
+bool PositionSide::setValidCastling(CastlingSide castlingSide) {
     if (!kingSquare().is(Rank1)) { return false; }
 
     Square outerSquare = kingSquare();
@@ -291,7 +314,7 @@ bool PositionSide::setCastling(CastlingSide castlingSide) {
     return true;
 }
 
-bool PositionSide::setCastling(File file) {
+bool PositionSide::setValidCastling(File file) {
     if (!kingSquare().is(Rank1)) { return false; }
 
     Square rookFrom(file, Rank1);
@@ -303,19 +326,6 @@ bool PositionSide::setCastling(File file) {
 
     types.setCastling(rook);
     return true;
-}
-
-GamePhase PositionSide::generateGamePhase() const {
-    auto queensCount = piecesOfType(Queen).count();
-    bool isEndgame = (queensCount == 0) || (queensCount == 1 && types.minors().count() <= 1);
-    return isEndgame ? Endgame : Middlegame;
-}
-
-void PositionSide::setOpKing(Square sq) {
-    opKing = sq;
-    for (Pi pi : sliders()) {
-        updatePinner(pi);
-    }
 }
 
 Move PositionSide::createMove(Square from, Square to) const {
@@ -331,5 +341,7 @@ Move PositionSide::createMove(Square from, Square to) const {
             return Move::enPassant(from, to);
         }
     }
+
+    //the rest are common moves
     return Move(from, to);
 }

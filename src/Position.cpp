@@ -8,15 +8,15 @@
 #define OCCUPIED side[My].occupied()
 
 bool Position::drop(Side My, PieceType ty, Square to) {
-    return MY.drop(ty, to);
+    return MY.dropValid(ty, to);
 }
 
 bool Position::setCastling(Side My, File file) {
-    return MY.setCastling(file);
+    return MY.setValidCastling(file);
 }
 
 bool Position::setCastling(Side My, CastlingSide castlingSide) {
-    return MY.setCastling(castlingSide);
+    return MY.setValidCastling(castlingSide);
 }
 
 bool Position::afterDrop() {
@@ -31,7 +31,7 @@ void Position::updateSliderAttacks(VectorPiMask affected) {
     constexpr Side Op{~My};
 
     //sync occupiedBb between sides
-    PositionSide::updateOccupied(MY, OP);
+    PositionSide::syncOccupied(MY, OP);
 
     //TRICK: attacks calculated without opponent's king for implicit out of check king's moves generation
     MY.setSliderAttacks(affected, OCCUPIED - MY.opKingSquare());
@@ -46,17 +46,10 @@ void Position::updateSliderAttacks(VectorPiMask myAffected, VectorPiMask opAffec
 }
 
 template <Side::_t My>
-void Position::setGamePhase() {
-    constexpr Side Op{~My};
-    //game phase (middlegame or endgame) depends on opponents pieces count
-    MY.setGamePhase(OP.generateGamePhase());
-}
-
-template <Side::_t My>
 void Position::capture(Square from) {
     constexpr Side Op{~My};
     MY.capture(from);
-    setGamePhase<Op>();
+    OP.setGamePhase(MY);
 }
 
 template <Side::_t My>
@@ -142,7 +135,7 @@ void Position::playPawnMove(Pi pi, Square from, Square to) {
         Square promotedTo = Square{File{to}, Rank8};
 
         MY.promote(pi, ty, from, promotedTo);
-        setGamePhase<Op>();
+        OP.setGamePhase(MY);
 
         if (OP.isOccupied(~promotedTo)) {
             //promotion with capture

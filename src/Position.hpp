@@ -12,7 +12,6 @@ private:
     template <Side::_t> void updateSliderAttacks(VectorPiMask, VectorPiMask);
     template <Side::_t> void setLegalEnPassant(Pi);
     template <Side::_t> void capture(Square);
-    template <Side::_t> void setGamePhase();
     template <Side::_t> void playKingMove(Square, Square);
     template <Side::_t> void playPawnMove(Pi, Square, Square);
     template <Side::_t> void playCastling(Pi, Square, Square);
@@ -27,7 +26,7 @@ public:
     Square squareOf(Pi pi) const { return side[My].squareOf(pi); }
 
     Move createMove(Square from, Square to) const { return side[My].createMove(from, to); }
-    Score evaluate() const { return static_cast<Score>(side[My].evaluate() - side[Op].evaluate()); }
+    Score evaluate() const { return PositionSide::evaluate(side[My], side[Op]); }
 
     void playMove(const Position&, Square, Square);
     void playMove(Square, Square);
