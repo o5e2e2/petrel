@@ -255,7 +255,7 @@ Zobrist PositionMoves::createZobrist(Square from, Square to) const {
     PieceType ty {MY.typeOf(pi)};
 
     if (ty.is(Pawn)) {
-        if (from.is(Rank7)) {
+        if (from.on(Rank7)) {
             Square promotedTo = Square{File{to}, Rank8};
             mz.clear(Pawn, from);
             mz.drop(static_cast<PieceType>(PromoType{to}), promotedTo);
@@ -271,7 +271,7 @@ Zobrist PositionMoves::createZobrist(Square from, Square to) const {
             return Zobrist{oz, mz};
         }
 
-        if (from.is(Rank2) && to.is(Rank4)) {
+        if (from.on(Rank2) && to.on(Rank4)) {
             mz.move(ty, from, to);
 
             File file = File{from};
@@ -280,7 +280,7 @@ Zobrist PositionMoves::createZobrist(Square from, Square to) const {
             Bb killers = ~OP.occupiedByPawns() & ::pieceTypeAttack(Pawn, ep);
             if (killers.any() && !MY.isPinned(OCCUPIED - from + ep)) {
                 for (Square killer : killers) {
-                    assert (killer.is(Rank4));
+                    assert (killer.on(Rank4));
 
                     if (!MY.isPinned(OCCUPIED - killer + ep)) {
                         mz.setEnPassant(file);
@@ -291,7 +291,7 @@ Zobrist PositionMoves::createZobrist(Square from, Square to) const {
             return Zobrist{oz, mz};
         }
 
-        if (from.is(Rank5) && to.is(Rank5)) {
+        if (from.on(Rank5) && to.on(Rank5)) {
             Square ep(File{to}, Rank6);
             mz.move(Pawn, from, ep);
             oz.clear(Pawn, ~to);

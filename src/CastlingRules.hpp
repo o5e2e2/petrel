@@ -41,8 +41,8 @@ public:
     }
 
     bool isLegal(Square king, Square rook, Bb occupied, Bb attacked) const {
-        assert (king.is(Rank1));
-        assert (rook.is(Rank1));
+        assert (king.on(Rank1));
+        assert (rook.on(Rank1));
         assert (king != rook);
         return (occupied & castlingRules[File{king}][File{rook}].unimpeded).none() && (attacked & castlingRules[File{king}][File{rook}].unattacked).none();
     }

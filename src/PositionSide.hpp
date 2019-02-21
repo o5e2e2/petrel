@@ -107,7 +107,7 @@ public:
 
     VectorPiMask enPassantPawns() const { return types.enPassantPawns(); }
     bool hasEnPassant() const { return enPassantPawns().any(); }
-    Square enPassantSquare() const { Square ep = squareOf(types.getEnPassant()); assert (ep.is(Rank4)); return ep; }
+    Square enPassantSquare() const { Square ep = squareOf(types.getEnPassant()); assert (ep.on(Rank4)); return ep; }
     File   enPassantFile()   const { return File{ enPassantSquare() }; }
 
     VectorPiMask pinners() const { return types.pinners(); }

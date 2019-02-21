@@ -46,7 +46,7 @@ public:
     }
 
     void promote(Square from, Square to, PromoType::_t ty) {
-        assert (from.is(Rank7) && to.is(Rank8));
+        assert (from.on(Rank7) && to.on(Rank8));
         clear(Pawn, from);
         drop(ty, to);
     }

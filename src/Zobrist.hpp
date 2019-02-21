@@ -26,8 +26,8 @@ public:
     void drop(PieceType::_t ty, Square to) { drop(Index{ty}, to); }
     void clear(PieceType::_t ty, Square from) { drop(ty, from); }
 
-    void setCastling(Square sq)  { assert (sq.is(Rank1)); drop(Castling, sq); }
-    void setEnPassant(Square sq) { assert (sq.is(Rank4)); drop(EnPassant, sq); }
+    void setCastling(Square sq)  { assert (sq.on(Rank1)); drop(Castling, sq); }
+    void setEnPassant(Square sq) { assert (sq.on(Rank4)); drop(EnPassant, sq); }
     void setEnPassant(File fileFrom) { setEnPassant(Square{fileFrom, Rank4}); }
 
     void clearCastling(Square sq) { setCastling(sq); }
@@ -40,7 +40,7 @@ public:
     }
 
     void promote(Square from, Square to, PromoType::_t ty) {
-        assert (from.is(Rank7) && to.is(Rank8));
+        assert (from.on(Rank7) && to.on(Rank8));
         clear(Pawn, from);
         drop(ty, to);
     }

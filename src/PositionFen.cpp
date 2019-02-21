@@ -143,13 +143,13 @@ Move PositionFen::readMove(io::istream& in) const {
 
     //convert special moves (castling, promotion, ep) to the internal move format
     if (MY.isPawn(pi)) {
-        if (moveFrom.is(Rank7)) {
+        if (moveFrom.on(Rank7)) {
             PromoType promo{Queen};
             in >> promo;
             in.clear(); //promotion piece is optional
             return Move::promotion(moveFrom, moveTo, promo);
         }
-        if (moveFrom.is(Rank5) && OP.hasEnPassant() && OP.enPassantFile().is(File{moveTo})) {
+        if (moveFrom.on(Rank5) && OP.hasEnPassant() && OP.enPassantFile().is(File{moveTo})) {
             return Move::enPassant(moveFrom, Square{File{moveTo}, Rank5});
         }
         //else normal pawn move
@@ -282,7 +282,7 @@ io::istream& PositionFen::setEnPassant(io::istream& in) {
 
     Square ep = Square::read(in);
     if (in) {
-        if (!ep.is(colorToMove.is(White) ? Rank6 : Rank3) || !Position::setEnPassant(File{ep})) {
+        if (!ep.on(colorToMove.is(White) ? Rank6 : Rank3) || !Position::setEnPassant(File{ep})) {
             io::fail_pos(in, before);
         }
     }

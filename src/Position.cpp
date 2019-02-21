@@ -82,7 +82,7 @@ void Position::setLegalEnPassant(Pi pi) {
     Square from(File{to}, Rank2);
     Square ep(File{to}, Rank3);
 
-    assert (to.is(Rank4));
+    assert (to.on(Rank4));
 
     Bb killers = ~OP.occupiedByPawns() & ::pieceTypeAttack(Pawn, ep);
     if (killers.none()) {
@@ -96,7 +96,7 @@ void Position::setLegalEnPassant(Pi pi) {
     assert ((MY.attacksToKing() % pi).none());
 
     for (Square killer : killers) {
-        assert (killer.is(Rank4));
+        assert (killer.on(Rank4));
 
         if (!MY.isPinned(OCCUPIED - killer + ep - to)) {
             MY.setEnPassantVictim(pi);
@@ -129,7 +129,7 @@ template <Side::_t My>
 void Position::playPawnMove(Pi pi, Square from, Square to) {
     constexpr Side Op{~My};
 
-    if (from.is(Rank7)) {
+    if (from.on(Rank7)) {
         //decoding promotion piece type and destination square
         PromoType ty{to};
         Square promotedTo = Square{File{to}, Rank8};
@@ -152,7 +152,7 @@ void Position::playPawnMove(Pi pi, Square from, Square to) {
     if (OP.isOccupied(~to)) {
         capture<Op>(~to);
 
-        if (from.is(Rank5) && to.is(Rank5)) {
+        if (from.on(Rank5) && to.on(Rank5)) {
             //en passant capture
             Square ep(File{to}, Rank6);
             MY.movePawn(pi, from, ep);
@@ -170,7 +170,7 @@ void Position::playPawnMove(Pi pi, Square from, Square to) {
     MY.movePawn(pi, from, to);
     updateSliderAttacks<My>(MY.attacksTo(from, to), OP.attacksTo(~from, ~to));
 
-    if (from.is(Rank2) && to.is(Rank4)) {
+    if (from.on(Rank2) && to.on(Rank4)) {
         setLegalEnPassant<My>(pi);
     }
 }

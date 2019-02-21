@@ -13,8 +13,8 @@
         assert (piecesBb[sq]);
 
         assert (!types.isPawn(pi) || pawnsBb[sq]);
-        assert (!types.isPawn(pi) || (!sq.is(Rank1) && !sq.is(Rank8)));
-        assert (!types.isPawn(pi) || !types.isEnPassant(pi) || sq.is(Rank4) || sq.is(Rank5));
+        assert (!types.isPawn(pi) || (!sq.on(Rank1) && !sq.on(Rank8)));
+        assert (!types.isPawn(pi) || !types.isEnPassant(pi) || sq.on(Rank4) || sq.on(Rank5));
     }
 
     void PositionSide::assertValid(Pi pi, PieceType ty, Square sq) const {
@@ -161,7 +161,7 @@ void PositionSide::moveKing(Square from, Square to) {
 void PositionSide::castle(Pi rook, Square rookFrom, Square rookTo, Square kingFrom, Square kingTo) {
     assertValid(TheKing, King, kingFrom);
     assertValid(rook, Rook, rookFrom);
-    assert (kingFrom.is(Rank1) && rookFrom.is(Rank1));
+    assert (kingFrom.on(Rank1) && rookFrom.on(Rank1));
 
     clear(Rook, rookFrom);
     clear(King, kingFrom);
@@ -176,12 +176,12 @@ void PositionSide::castle(Pi rook, Square rookFrom, Square rookTo, Square kingFr
 
     assertValid(TheKing, King, kingTo);
     assertValid(rook, Rook, rookTo);
-    assert (kingTo.is(Rank1) && rookTo.is(Rank1));
+    assert (kingTo.on(Rank1) && rookTo.on(Rank1));
 }
 
 void PositionSide::promote(Pi pi, PromoType ty, Square from, Square to) {
     assertValid(pi, Pawn, from);
-    assert (from.is(Rank7));
+    assert (from.on(Rank7));
 
     piecesBb.move(from, to);
     pawnsBb -= from;
@@ -198,7 +198,7 @@ void PositionSide::promote(Pi pi, PromoType ty, Square from, Square to) {
     }
 
     assertValid(pi, static_cast<PieceType>(ty), to);
-    assert (to.is(Rank8));
+    assert (to.on(Rank8));
 }
 
 void PositionSide::setLeaperAttack(Pi pi, PieceType ty, Square to) {
@@ -239,14 +239,14 @@ void PositionSide::setSliderAttacks(VectorPiMask affectedSliders, Bb occupied) {
 
 void PositionSide::setEnPassantVictim(Pi pi) {
     assert (isPawn(pi));
-    assert (squareOf(pi).is(Rank4));
+    assert (squareOf(pi).on(Rank4));
     assert (!hasEnPassant() || types.isEnPassant(pi));
     types.setEnPassant(pi);
 }
 
 void PositionSide::setEnPassantKiller(Pi pi) {
     assert (isPawn(pi));
-    assert (squareOf(pi).is(Rank5));
+    assert (squareOf(pi).on(Rank5));
     types.setEnPassant(pi);
 }
 
@@ -278,7 +278,7 @@ bool PositionSide::dropValid(PieceType ty, Square to) {
     if (piecesBb[to]) { return false; }
 
     if (ty.is(Pawn)) {
-        if (to.is(Rank1) || to.is(Rank8)) { return false; }
+        if (to.on(Rank1) || to.on(Rank8)) { return false; }
         pawnsBb += to;
     }
     set(ty, to);
@@ -297,7 +297,7 @@ bool PositionSide::dropValid(PieceType ty, Square to) {
 }
 
 bool PositionSide::setValidCastling(CastlingSide castlingSide) {
-    if (!kingSquare().is(Rank1)) { return false; }
+    if (!kingSquare().on(Rank1)) { return false; }
 
     Square outerSquare = kingSquare();
     for (Pi rook : piecesOfType(Rook) & piecesOn(Rank1)) {
@@ -315,7 +315,7 @@ bool PositionSide::setValidCastling(CastlingSide castlingSide) {
 }
 
 bool PositionSide::setValidCastling(File file) {
-    if (!kingSquare().is(Rank1)) { return false; }
+    if (!kingSquare().on(Rank1)) { return false; }
 
     Square rookFrom(file, Rank1);
     if (!isPieceOn(rookFrom)) { return false; }
@@ -334,10 +334,10 @@ Move PositionSide::createMove(Square from, Square to) const {
     }
 
     if (isPawn(pieceOn(from))) {
-        if (from.is(Rank7)) {
+        if (from.on(Rank7)) {
             return Move::promotion(from, to);
         }
-        if (from.is(Rank5) && to.is(Rank5)) {
+        if (from.on(Rank5) && to.on(Rank5)) {
             return Move::enPassant(from, to);
         }
     }

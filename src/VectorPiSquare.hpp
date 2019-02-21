@@ -61,8 +61,8 @@ public:
     void castle(Pi p1, Square s1, Pi p2, Square s2) {
         assert (!isEmpty(p1) && !isEmpty(p2));
         assert (p1 != p2 && s1 != s2);
-        assert (squareOf(p1).is(Rank1) && squareOf(p2).is(Rank1));
-        assert (s1.is(Rank1) && s2.is(Rank1));
+        assert (squareOf(p1).on(Rank1) && squareOf(p2).on(Rank1));
+        assert (s1.on(Rank1) && s2.on(Rank1));
 
         _v.set(p1, s1);
         _v.set(p2, s2);
