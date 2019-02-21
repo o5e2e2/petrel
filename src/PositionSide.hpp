@@ -43,7 +43,7 @@ friend class Position;
     void move(Pi, Square, Square);
     void movePawn(Pi, Square, Square);
     void moveKing(Square, Square);
-    void castle(Pi rook, Square rookFrom, Square rookTo, Square kingFrom, Square kingTo);
+    void castle(Square kingFrom, Square kingTo, Pi rook, Square rookFrom, Square rookTo);
     void promote(Pi, PromoType, Square, Square);
     void capture(Square);
 

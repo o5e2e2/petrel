@@ -158,7 +158,7 @@ void PositionSide::moveKing(Square from, Square to) {
     assertValid(TheKing, King, to);
 }
 
-void PositionSide::castle(Pi rook, Square rookFrom, Square rookTo, Square kingFrom, Square kingTo) {
+void PositionSide::castle(Square kingFrom, Square kingTo, Pi rook, Square rookFrom, Square rookTo) {
     assertValid(TheKing, King, kingFrom);
     assertValid(rook, Rook, rookFrom);
     assert (kingFrom.on(Rank1) && rookFrom.on(Rank1));
@@ -168,7 +168,7 @@ void PositionSide::castle(Pi rook, Square rookFrom, Square rookTo, Square kingFr
     set(King, kingTo);
     set(Rook, rookTo);
 
-    squares.castle(rook, rookTo, TheKing, kingTo);
+    squares.castle(kingTo, rook, rookTo);
     setLeaperAttack(TheKing, King, kingTo);
     types.clearCastlings();
 

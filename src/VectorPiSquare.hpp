@@ -58,14 +58,14 @@ public:
         _v.set(pi, sq);
     }
 
-    void castle(Pi p1, Square s1, Pi p2, Square s2) {
-        assert (!isEmpty(p1) && !isEmpty(p2));
-        assert (p1 != p2 && s1 != s2);
-        assert (squareOf(p1).on(Rank1) && squareOf(p2).on(Rank1));
-        assert (s1.on(Rank1) && s2.on(Rank1));
+    void castle(Square kingTo, Pi rook, Square rookTo) {
+        assert (!isEmpty(TheKing) && !isEmpty(rook));
+        assert (TheKing != rook && kingTo != rookTo);
+        assert (squareOf(TheKing).on(Rank1) && squareOf(rook).on(Rank1));
+        assert (kingTo.on(Rank1) && rookTo.on(Rank1));
 
-        _v.set(p1, s1);
-        _v.set(p2, s2);
+        _v.set(TheKing, kingTo);
+        _v.set(rook, rookTo);
     }
 
     friend io::ostream& operator << (io::ostream& out, VectorPiSquare squares) {
