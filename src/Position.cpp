@@ -7,24 +7,6 @@
 #define OP side[Op]
 #define OCCUPIED side[My].occupied()
 
-bool Position::drop(Side My, PieceType ty, Square to) {
-    return MY.dropValid(ty, to);
-}
-
-bool Position::setCastling(Side My, File file) {
-    return MY.setValidCastling(file);
-}
-
-bool Position::setCastling(Side My, CastlingSide castlingSide) {
-    return MY.setValidCastling(castlingSide);
-}
-
-bool Position::afterDrop() {
-    PositionSide::finalSetup(MY, OP);
-    updateSliderAttacks<Op>(OP.alivePieces(), MY.alivePieces());
-    return MY.attacksToKing().none(); //not in check
-}
-
 template <Side::_t My>
 void Position::updateSliderAttacks(VectorPiMask affected) {
     constexpr Side Op{~My};
@@ -102,26 +84,6 @@ void Position::setLegalEnPassant(Pi pi) {
             OP.setEnPassantKiller(OP.pieceOn(~killer));
         }
     }
-}
-
-bool Position::setEnPassant(File file) {
-    if (MY.hasEnPassant() || OP.hasEnPassant()) { return false; }
-    if (OCCUPIED[Square{file, Rank7}]) { return false; }
-    if (OCCUPIED[Square{file, Rank6}]) { return false; }
-
-    Square victimSquare(file, Rank4);
-    if (!OP.isPieceOn(victimSquare)) { return false; }
-
-    Pi victim{OP.pieceOn(victimSquare)};
-    if (!OP.isPawn(victim)) { return false; }
-
-    //check against illegal en passant set field like "8/5bk1/8/2Pp4/8/1K6/8/8 w - d6"
-    if (OP.isPinned(OP.occupied() - victimSquare)) {
-        return false;
-    }
-
-    setLegalEnPassant<Op>(victim);
-    return true;
 }
 
 template <Side::_t My>
@@ -259,6 +221,44 @@ void Position::playMove(Square from, Square to) {
 
     //king cannot be left in check
     assert (MY.attacksToKing().none());
+}
+
+bool Position::drop(Side My, PieceType ty, Square to) {
+    return MY.dropValid(ty, to);
+}
+
+bool Position::setCastling(Side My, File file) {
+    return MY.setValidCastling(file);
+}
+
+bool Position::setCastling(Side My, CastlingSide castlingSide) {
+    return MY.setValidCastling(castlingSide);
+}
+
+bool Position::afterDrop() {
+    PositionSide::finalSetup(MY, OP);
+    updateSliderAttacks<Op>(OP.alivePieces(), MY.alivePieces());
+    return MY.attacksToKing().none(); //not in check
+}
+
+bool Position::setEnPassant(File file) {
+    if (MY.hasEnPassant() || OP.hasEnPassant()) { return false; }
+    if (OCCUPIED[Square{file, Rank7}]) { return false; }
+    if (OCCUPIED[Square{file, Rank6}]) { return false; }
+
+    Square victimSquare(file, Rank4);
+    if (!OP.isPieceOn(victimSquare)) { return false; }
+
+    Pi victim{OP.pieceOn(victimSquare)};
+    if (!OP.isPawn(victim)) { return false; }
+
+    //check against illegal en passant set field like "8/5bk1/8/2Pp4/8/1K6/8/8 w - d6"
+    if (OP.isPinned(OP.occupied() - victimSquare)) {
+        return false;
+    }
+
+    setLegalEnPassant<Op>(victim);
+    return true;
 }
 
 #undef MY

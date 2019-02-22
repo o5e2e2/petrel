@@ -22,8 +22,8 @@ public:
     constexpr Position () = default;
     Position (const Position&) = default;
 
-    VectorPiMask alivePieces() const { return side[My].alivePieces(); }
-    Square squareOf(Pi pi) const { return side[My].squareOf(pi); }
+    VectorPiMask myAlivePieces() const { return side[My].alivePieces(); }
+    Square mySquareOf(Pi pi) const { return side[My].squareOf(pi); }
 
     Move createMove(Square from, Square to) const { return side[My].createMove(from, to); }
     Score evaluate() const { return PositionSide::evaluate(side[My], side[Op]); }
