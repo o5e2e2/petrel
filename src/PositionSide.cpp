@@ -50,9 +50,12 @@ void PositionSide::swap(PositionSide& my, PositionSide& op) {
     swap(my.evaluation, op.evaluation);
 }
 
-void PositionSide::setOpKings(PositionSide& my, PositionSide& op) {
+void PositionSide::finalSetup(PositionSide& my, PositionSide& op) {
     my.setOpKing(~op.kingSquare());
     op.setOpKing(~my.kingSquare());
+
+    my.setGamePhase(op);
+    op.setGamePhase(my);
 }
 
 void PositionSide::syncOccupied(PositionSide& my, PositionSide& op) {
@@ -71,23 +74,8 @@ void PositionSide::setGamePhase(const PositionSide& op) {
     evaluation.setGamePhase(opGamePhase, kingSquare());
 }
 
-void PositionSide::setGamePhase(PositionSide& my, PositionSide& op) {
-    my.setGamePhase(op);
-    op.setGamePhase(my);
-}
-
 Score PositionSide::evaluate(const PositionSide& my, const PositionSide& op) {
     return my.evaluation.evaluate() - op.evaluation.evaluate();
-}
-
-void PositionSide::clear(PieceType ty, Square from) {
-    piecesBb -= from;
-    evaluation.clear(ty, from);
-}
-
-void PositionSide::set(PieceType ty, Square to) {
-    piecesBb += to;
-    evaluation.drop(ty, to);
 }
 
 void PositionSide::capture(Square from) {
@@ -97,29 +85,30 @@ void PositionSide::capture(Square from) {
     PieceType ty = typeOf(pi);
     assert (!ty.is(King));
 
-    clear(ty, from);
+    piecesBb -= from;
     pawnsBb &= piecesBb; //clear if pawn
 
+    evaluation.clear(ty, from);
     attacks.clear(pi);
     squares.clear(pi);
     types.clear(pi);
 }
 
-void PositionSide::move(PieceType ty, Square from, Square to) {
+void PositionSide::move(Pi pi, PieceType ty, Square from, Square to) {
+    assertValid(pi, ty, from);
+    assert (from != to);
+
     piecesBb.move(from, to);
     evaluation.move(ty, from, to);
+    squares.move(pi, to);
 }
 
 void PositionSide::move(Pi pi, Square from, Square to) {
     PieceType ty = typeOf(pi);
-    assertValid(pi, ty, from);
-
     assert (!ty.is(King));
     assert (!ty.is(Pawn));
-    assert (from != to);
 
-    move(ty, from, to);
-    squares.move(pi, to);
+    move(pi, ty, from, to);
 
     if (ty.is(Knight)) {
         setLeaperAttack(pi, Knight, to);
@@ -133,55 +122,17 @@ void PositionSide::move(Pi pi, Square from, Square to) {
 }
 
 void PositionSide::movePawn(Pi pi, Square from, Square to) {
-    assertValid(pi, Pawn, from);
-    assert (from != to);
-
+    move(pi, Pawn, from, to);
     pawnsBb.move(from, to);
-
-    move(Pawn, from, to);
-    squares.move(pi, to);
     setLeaperAttack(pi, Pawn, to);
 
     assertValid(pi, Pawn, to);
 }
 
-void PositionSide::moveKing(Square from, Square to) {
-    assertValid(TheKing, King, from);
-    assert (from != to);
-
-    types.clearCastlings();
-
-    move(King, from, to);
-    squares.move(TheKing, to);
-    setLeaperAttack(TheKing, King, to);
-
-    assertValid(TheKing, King, to);
-}
-
-void PositionSide::castle(Square kingFrom, Square kingTo, Pi rook, Square rookFrom, Square rookTo) {
-    assertValid(TheKing, King, kingFrom);
-    assertValid(rook, Rook, rookFrom);
-    assert (kingFrom.on(Rank1) && rookFrom.on(Rank1));
-
-    clear(Rook, rookFrom);
-    clear(King, kingFrom);
-    set(King, kingTo);
-    set(Rook, rookTo);
-
-    squares.castle(kingTo, rook, rookTo);
-    setLeaperAttack(TheKing, King, kingTo);
-    types.clearCastlings();
-
-    updatePinner(rook, rookTo);
-
-    assertValid(TheKing, King, kingTo);
-    assertValid(rook, Rook, rookTo);
-    assert (kingTo.on(Rank1) && rookTo.on(Rank1));
-}
-
 void PositionSide::promote(Pi pi, PromoType ty, Square from, Square to) {
     assertValid(pi, Pawn, from);
     assert (from.on(Rank7));
+    assert (to.on(Rank8));
 
     piecesBb.move(from, to);
     pawnsBb -= from;
@@ -198,7 +149,36 @@ void PositionSide::promote(Pi pi, PromoType ty, Square from, Square to) {
     }
 
     assertValid(pi, static_cast<PieceType>(ty), to);
-    assert (to.on(Rank8));
+}
+
+void PositionSide::moveKing(Square from, Square to) {
+    move(TheKing, King, from, to);
+    types.clearCastlings();
+    setLeaperAttack(TheKing, King, to);
+
+    assertValid(TheKing, King, to);
+}
+
+void PositionSide::castle(Square kingFrom, Square kingTo, Pi rook, Square rookFrom, Square rookTo) {
+    assertValid(TheKing, King, kingFrom);
+    assertValid(rook, Rook, rookFrom);
+    assert (kingFrom.on(Rank1) && rookFrom.on(Rank1));
+
+    piecesBb -= kingFrom;
+    piecesBb -= rookFrom;
+    piecesBb += kingTo;
+    piecesBb += rookTo;
+
+    evaluation.castle(kingFrom, rookFrom, rookFrom, rookTo);
+    squares.castle(kingTo, rook, rookTo);
+    setLeaperAttack(TheKing, King, kingTo);
+    types.clearCastlings();
+
+    updatePinner(rook, rookTo);
+
+    assertValid(TheKing, King, kingTo);
+    assertValid(rook, Rook, rookTo);
+    assert (kingTo.on(Rank1) && rookTo.on(Rank1));
 }
 
 void PositionSide::setLeaperAttack(Pi pi, PieceType ty, Square to) {
@@ -276,15 +256,16 @@ bool PositionSide::isPinned(Bb allOccupiedWithoutPinned) const {
 
 bool PositionSide::dropValid(PieceType ty, Square to) {
     if (piecesBb[to]) { return false; }
+    piecesBb += to;
 
     if (ty.is(Pawn)) {
         if (to.on(Rank1) || to.on(Rank8)) { return false; }
         pawnsBb += to;
     }
-    set(ty, to);
 
     Pi pi = ty.is(King) ? Pi{TheKing} : (alivePieces() | Pi{TheKing}).seekVacant();
 
+    evaluation.drop(ty, to);
     types.drop(pi, ty);
     squares.drop(pi, to);
 

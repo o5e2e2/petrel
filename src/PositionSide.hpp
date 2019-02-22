@@ -26,18 +26,15 @@ class PositionSide {
 
     Evaluation evaluation;
 
-    void clear(PieceType, Square);
-    void set(PieceType, Square);
-    void move(PieceType, Square, Square);
+    void move(Pi, PieceType, Square, Square);
     void setLeaperAttack(Pi, PieceType, Square);
     void updatePinner(Pi, Square);
     GamePhase generateGamePhase() const; //returns whether material for endgame or middlegame
 
 friend class Position;
     static void swap(PositionSide&, PositionSide&);
-    static void setOpKings(PositionSide&, PositionSide&);
+    static void finalSetup(PositionSide&, PositionSide&);
     static void syncOccupied(PositionSide&, PositionSide&);
-    static void setGamePhase(PositionSide&, PositionSide&);
 
     void setOpKing(Square);
     void move(Pi, Square, Square);

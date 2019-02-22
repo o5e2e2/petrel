@@ -20,8 +20,7 @@ bool Position::setCastling(Side My, CastlingSide castlingSide) {
 }
 
 bool Position::afterDrop() {
-    PositionSide::setOpKings(MY, OP);
-    PositionSide::setGamePhase(MY, OP);
+    PositionSide::finalSetup(MY, OP);
     updateSliderAttacks<Op>(OP.alivePieces(), MY.alivePieces());
     return MY.attacksToKing().none(); //not in check
 }
