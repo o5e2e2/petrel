@@ -101,6 +101,7 @@ public:
 
     VectorPiMask castlingRooks() const { return types.castlingRooks(); }
     bool isCastling(Pi pi) const { assertValid(pi); return types.isCastling(pi); }
+    bool isCastling(Square sq) const { return isCastling(pieceOn(sq)); }
 
     VectorPiMask enPassantPawns() const { return types.enPassantPawns(); }
     bool hasEnPassant() const { return enPassantPawns().any(); }
