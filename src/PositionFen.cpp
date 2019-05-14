@@ -4,8 +4,8 @@
 #include "FenBoard.hpp"
 #include "CastlingRules.hpp"
 
-#define MY side[My]
-#define OP side[Op]
+#define MY (this->ps)[My]
+#define OP (this->ps)[Op]
 
 class WriteFenBoard {
     const PositionSide& whitePieces;
@@ -50,18 +50,18 @@ public:
 class WriteFenCastling {
     std::set<io::char_type> castlingSet;
 
-    void insert(const PositionSide& side, Color color, ChessVariant chessVariant) {
-        for (Pi pi : side.castlingRooks()) {
+    void insert(const PositionSide& positionSide, Color color, ChessVariant chessVariant) {
+        for (Pi pi : positionSide.castlingRooks()) {
             io::char_type castlingSymbol;
 
             switch (chessVariant) {
                 case Chess960:
-                    castlingSymbol = File{side.squareOf(pi)}.to_char();
+                    castlingSymbol = File{positionSide.squareOf(pi)}.to_char();
                     break;
 
                 case Orthodox:
                 default:
-                    castlingSymbol = CastlingRules::castlingSide(side.kingSquare(), side.squareOf(pi)).to_char();
+                    castlingSymbol = CastlingRules::castlingSide(positionSide.kingSquare(), positionSide.squareOf(pi)).to_char();
                     break;
             }
 
@@ -102,9 +102,9 @@ void PositionFen::fenEnPassant(io::ostream& out) const {
 }
 
 io::ostream& operator << (io::ostream& out, const PositionFen& pos) {
-    auto whiteSide = pos.colorToMove.is(White) ? My : Op;
-    auto& whitePieces = pos.side[whiteSide];
-    auto& blackPieces = pos.side[~whiteSide];
+    auto whiteSide = pos.getColorSide(White);
+    auto& whitePieces = pos.ps[whiteSide];
+    auto& blackPieces = pos.ps[~whiteSide];
 
     out << WriteFenBoard(whitePieces, blackPieces)
         << ' '
@@ -230,9 +230,8 @@ void PositionFen::playMoves(io::istream& in) {
         if (in) {
             Square from{ move.from() };
             Square to{ move.to() } ;
-            Pi pi{ side[My].pieceOn(from) };
 
-            if (isLegalMove(pi, to)) {
+            if (isLegalMove(from, to)) {
                 playMove(from, to);
                 colorToMove.flip();
                 continue;
@@ -263,20 +262,20 @@ io::istream& PositionFen::setCastling(io::istream& in) {
     for (io::char_type c; in.get(c) && !std::isblank(c); ) {
         if (std::isalpha(c)) {
             Color color = std::isupper(c) ? White : Black;
-            Side colorSide = color.is(colorToMove) ? My : Op;
+            Side side = getColorSide(color);
 
             c = static_cast<io::char_type>(std::tolower(c));
 
             CastlingSide castlingSide{CastlingSide::Begin};
             if (castlingSide.from_char(c)) {
-                if (Position::setCastling(colorSide, castlingSide)) {
+                if (Position::setCastling(side, castlingSide)) {
                     continue;
                 }
             }
             else {
                 File file{File::Begin};
                 if (file.from_char(c)) {
-                    if (Position::setCastling(colorSide, file)) {
+                    if (Position::setCastling(side, file)) {
                         continue;
                     }
                 }

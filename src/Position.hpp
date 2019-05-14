@@ -5,7 +5,7 @@
 
 class Position {
 protected:
-    Side::array<PositionSide> side;
+    Side::array<PositionSide> ps;
 
 private:
     template <Side::_t> void updateSliderAttacks(VectorPiMask);
@@ -22,11 +22,11 @@ public:
     constexpr Position () = default;
     Position (const Position&) = default;
 
-    VectorPiMask myAlivePieces() const { return side[My].alivePieces(); }
-    Square mySquareOf(Pi pi) const { return side[My].squareOf(pi); }
+    VectorPiMask myAlivePieces() const { return ps[My].alivePieces(); }
+    Square mySquareOf(Pi pi) const { return ps[My].squareOf(pi); }
 
-    Move createMove(Square from, Square to) const { return side[My].createMove(from, to); }
-    Score evaluate() const { return PositionSide::evaluate(side[My], side[Op]); }
+    Move createMove(Square from, Square to) const { return ps[My].createMove(from, to); }
+    Score evaluate() const { return PositionSide::evaluate(ps[My], ps[Op]); }
 
     void playMove(const Position&, Square, Square);
     void playMove(Square, Square);

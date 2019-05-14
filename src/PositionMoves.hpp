@@ -6,7 +6,7 @@
 #include "Zobrist.hpp"
 
 class PositionMoves : public Position {
-    MatrixPiBb moves; //generated moves from side[My]
+    MatrixPiBb moves; //generated moves from My side
 
     Zobrist zobrist{0};
     index_t movesCount = 0;
@@ -35,7 +35,7 @@ protected:
     void clearMove(Pi pi, Square sq) { moves.clear(pi, sq); }
     void setMoves(const MatrixPiBb& m) { moves = m; }
 
-    void setZobrist(const PositionMoves& p, Square from, Square to) { zobrist = p.createZobrist(from, to); }
+    void setZobrist(const PositionMoves& parent, Square from, Square to) { zobrist = parent.createZobrist(from, to); }
     void setZobrist() { zobrist = generateZobrist(); }
 
 public:
@@ -51,7 +51,7 @@ public:
     const MatrixPiBb& getMoves() const { return moves; }
     MatrixPiBb cloneMoves() const { return MatrixPiBb{moves}; }
 
-    bool isLegalMove(Pi pi, Square to) const { return moves.is(pi, to); }
+    bool isLegalMove(Square from, Square to) const;
 };
 
 #endif

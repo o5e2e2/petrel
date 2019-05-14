@@ -71,13 +71,13 @@ bool FenBoard::setPosition(Position& position, Color colorToMove) {
     Position pos;
 
     FOR_INDEX(Color, color) {
-        Side colorSide = colorToMove.is(color) ? My : Op;
+        Side side = colorToMove.is(color) ? My : Op;
 
         FOR_INDEX(PieceType, ty) {
             while (!pieces[color][ty].empty()) {
                 auto piece = pieces[color][ty].begin();
 
-                if (!pos.drop(colorSide, ty, *piece)) {
+                if (!pos.drop(side, ty, *piece)) {
                     return false;
                 }
 

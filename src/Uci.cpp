@@ -117,9 +117,8 @@ void Uci::go() {
         return;
     }
 
-    Color colorToMove = positionFen.getColorToMove();
-    auto whiteSide = colorToMove.is(White) ? My : Op;
-    auto blackSide = ~whiteSide;
+    auto whiteSide = positionFen.getColorSide(White);
+    auto blackSide = positionFen.getColorSide(Black);
 
     SearchLimit l;
     l.positionMoves = positionFen;

@@ -38,29 +38,29 @@ Zobrist PositionSide::generateZobrist() const {
     return z;
 }
 
-void PositionSide::swap(PositionSide& my, PositionSide& op) {
+void PositionSide::swap(PositionSide& MY, PositionSide& OP) {
     using std::swap;
-    swap(my.attacks, op.attacks);
-    swap(my.types, op.types);
-    swap(my.squares, op.squares);
-    swap(my.occupiedBb, op.occupiedBb);
-    swap(my.piecesBb, op.piecesBb);
-    swap(my.pawnsBb, op.pawnsBb);
-    swap(my.opKing, op.opKing);
-    swap(my.evaluation, op.evaluation);
+    swap(MY.attacks, OP.attacks);
+    swap(MY.types, OP.types);
+    swap(MY.squares, OP.squares);
+    swap(MY.occupiedBb, OP.occupiedBb);
+    swap(MY.piecesBb, OP.piecesBb);
+    swap(MY.pawnsBb, OP.pawnsBb);
+    swap(MY.opKing, OP.opKing);
+    swap(MY.evaluation, OP.evaluation);
 }
 
-void PositionSide::finalSetup(PositionSide& my, PositionSide& op) {
-    my.setOpKing(~op.kingSquare());
-    op.setOpKing(~my.kingSquare());
+void PositionSide::finalSetup(PositionSide& MY, PositionSide& OP) {
+    MY.setOpKing(~OP.kingSquare());
+    OP.setOpKing(~MY.kingSquare());
 
-    my.setGamePhase(op);
-    op.setGamePhase(my);
+    MY.setGamePhase(OP);
+    OP.setGamePhase(MY);
 }
 
-void PositionSide::syncOccupied(PositionSide& my, PositionSide& op) {
-    my.occupiedBb = my.piecesBb + ~op.piecesBb;
-    op.occupiedBb = op.piecesBb + ~my.piecesBb;
+void PositionSide::syncOccupied(PositionSide& MY, PositionSide& OP) {
+    MY.occupiedBb = MY.piecesBb + ~OP.piecesBb;
+    OP.occupiedBb = OP.piecesBb + ~MY.piecesBb;
 }
 
 GamePhase PositionSide::generateGamePhase() const {
@@ -69,13 +69,13 @@ GamePhase PositionSide::generateGamePhase() const {
     return isEndgame ? Endgame : Middlegame;
 }
 
-void PositionSide::setGamePhase(const PositionSide& op) {
-    auto opGamePhase = op.generateGamePhase();
+void PositionSide::setGamePhase(const PositionSide& OP) {
+    auto opGamePhase = OP.generateGamePhase();
     evaluation.setGamePhase(opGamePhase, kingSquare());
 }
 
-Score PositionSide::evaluate(const PositionSide& my, const PositionSide& op) {
-    return my.evaluation.evaluate() - op.evaluation.evaluate();
+Score PositionSide::evaluate(const PositionSide& MY, const PositionSide& OP) {
+    return MY.evaluation.evaluate() - OP.evaluation.evaluate();
 }
 
 void PositionSide::capture(Square from) {

@@ -3,9 +3,9 @@
 #include "CastlingRules.hpp"
 #include "PieceTypeAttack.hpp"
 
-#define MY side[My]
-#define OP side[Op]
-#define OCCUPIED side[My].occupied()
+#define MY (this->ps)[My]
+#define OP (this->ps)[Op]
+#define OCCUPIED (this->ps)[My].occupied()
 
 template <Side::_t My>
 void Position::updateSliderAttacks(VectorPiMask affected) {
@@ -203,8 +203,8 @@ void Position::playMove(Square from, Square to) {
 
 void Position::playMove(const Position& parent, Square from, Square to) {
     assert (this != &parent);
-    MY = parent.OP;
-    OP = parent.MY;
+    MY = parent.ps[Op];
+    OP = parent.ps[My];
 
     //current position flipped its sides relative to parent, so we make the move inplace for the Op
     playMove<Op>(from, to);

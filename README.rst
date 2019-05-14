@@ -43,7 +43,7 @@ order inside bitboard and switches ranks inside squares.
 * Bb bb: BitBoard -- bitset of bits for each square of the chessboard
 * Pi pi: Piece Index -- one of 16 piece slots in a byte vector; {TheKing} = slot dedicated to the king
 * VectorPi v: Vector of piece data
-* Side si: {My, Op} -- side to move, opposite side
+* Side side: {My, Op} -- side to move, opposite side
 * Color color: {White, Black}
 * PieceType ty: {Queen, Rook, Bishop, Knight, Pawn, King} -- colorless kind of chess piece
 

@@ -7,8 +7,8 @@
 #include "Move.hpp"
 
 class PositionFen : public PositionMoves {
-    Color colorToMove; //root position color for moves long algebraic format output
-    ChessVariant chessVariant; //format of castling moves output
+    Color colorToMove = White; //root position color for moves long algebraic format output
+    ChessVariant chessVariant = Orthodox; //format of castling moves output
 
     Move readMove(io::istream&) const;
     void fenEnPassant(io::ostream&) const;
@@ -18,9 +18,9 @@ class PositionFen : public PositionMoves {
     io::istream& setEnPassant(io::istream&);
 
 public:
-    constexpr PositionFen() : PositionMoves{}, colorToMove{White}, chessVariant{Orthodox} {}
+    constexpr PositionFen() = default;
 
-    constexpr Color getColorToMove() const { return colorToMove; }
+    constexpr Side getColorSide(Color color) const { return colorToMove.is(color) ? My : Op; }
     constexpr bool isChess960() const { return chessVariant.is(Chess960); }
 
     void setChessVariant(ChessVariant v) { chessVariant = v; }

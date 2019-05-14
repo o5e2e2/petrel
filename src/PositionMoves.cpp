@@ -3,9 +3,9 @@
 #include "CastlingRules.hpp"
 #include "PieceTypeAttack.hpp"
 
-#define MY side[My]
-#define OP side[Op]
-#define OCCUPIED side[My].occupied()
+#define MY (this->ps)[My]
+#define OP (this->ps)[Op]
+#define OCCUPIED (this->ps)[My].occupied()
 
 template <Side::_t My>
 void PositionMoves::generateEnPassantMoves() {
@@ -216,6 +216,11 @@ void PositionMoves::setMoves() {
     }
 
     staticEval = evaluate();
+}
+
+bool PositionMoves::isLegalMove(Square from, Square to) const {
+    auto pi = MY.pieceOn(from);
+    return moves.is(pi, to);
 }
 
 void PositionMoves::playMove(Square from, Square to) {
