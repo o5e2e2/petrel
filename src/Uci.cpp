@@ -4,7 +4,7 @@
 
 Uci::Uci (io::ostream& out):
     positionFen{},
-    info(out, positionFen.getColorToMove(), positionFen.getChessVariant()),
+    info(out, positionFen),
     searchControl(info)
 {
     ucinewgame();
@@ -100,7 +100,7 @@ void Uci::setHash() {
 
 void Uci::position() {
     if (nextNone()) {
-        info.position(positionFen);
+        info.position();
         return;
     }
 

@@ -20,19 +20,17 @@ class PositionFen : public PositionMoves {
 public:
     constexpr PositionFen() : PositionMoves{}, colorToMove{White}, chessVariant{Orthodox} {}
 
-    constexpr ChessVariant& getChessVariant() { return chessVariant; }
-    constexpr void setChessVariant(ChessVariant v) { chessVariant = v; }
-
     constexpr Color getColorToMove() const { return colorToMove; }
-    constexpr Color& getColorToMove() { return colorToMove; }
+    constexpr bool isChess960() const { return chessVariant.is(Chess960); }
 
+    void setChessVariant(ChessVariant v) { chessVariant = v; }
     void setStartpos();
     void readFen(io::istream&);
     void playMoves(io::istream&);
-
     void limitMoves(io::istream&);
 
     friend io::ostream& operator << (io::ostream&, const PositionFen&);
+    void writeMove(io::ostream&, Move) const;
 };
 
 #endif

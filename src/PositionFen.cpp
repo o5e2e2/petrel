@@ -116,6 +116,10 @@ io::ostream& operator << (io::ostream& out, const PositionFen& pos) {
     return out;
 }
 
+void PositionFen::writeMove(io::ostream& out, Move move) const {
+    Move::write(out, move, colorToMove, chessVariant);
+}
+
 Move PositionFen::readMove(io::istream& in) const {
     auto before = in.tellg();
 

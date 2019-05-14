@@ -13,8 +13,7 @@ class PositionFen;
 
 class UciSearchInfo {
     io::ostream& out; //output stream
-    Color& colorToMove;
-    ChessVariant& chessVariant;
+    const PositionFen& positionFen; //current position
 
     TimePoint fromSearchStart;
 
@@ -27,11 +26,11 @@ class UciSearchInfo {
     void info_nps(io::ostream&, node_count_t, const PerftTT&) const;
 
 public:
-    UciSearchInfo (io::ostream&, Color&, ChessVariant&);
+    UciSearchInfo (io::ostream&, const PositionFen&);
 
     //called from Uci
     void isready(bool) const;
-    void position(const PositionFen&) const;
+    void position() const;
     void uciok(const HashInfo&) const;
 
     //called from Search

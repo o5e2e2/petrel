@@ -15,15 +15,14 @@ namespace {
     constexpr T permil(T n, T m) { return (n * 1000) / m; }
 }
 
-UciSearchInfo::UciSearchInfo (io::ostream& o, Color& c, ChessVariant& v) :
+UciSearchInfo::UciSearchInfo (io::ostream& o, const PositionFen& p) :
     out(o),
-    colorToMove(c),
-    chessVariant(v),
+    positionFen(p),
     isreadyWaiting{false},
     lastInfoNodes{0}
 {}
 
-void UciSearchInfo::position(const PositionFen& positionFen) const {
+void UciSearchInfo::position() const {
     OUTPUT(ob);
     ob << "info fen " << positionFen << '\n';
 }
@@ -34,7 +33,7 @@ void UciSearchInfo::clear() {
 }
 
 void UciSearchInfo::uciok(const HashInfo& hashInfo) const {
-    bool isChess960 = chessVariant.is(Chess960);
+    bool isChess960 = positionFen.isChess960();
 
     OUTPUT(ob);
     ob << "id name petrel\n";
@@ -72,7 +71,7 @@ void UciSearchInfo::readyok(node_count_t nodes, const PerftTT& tt) const {
 }
 
 void UciSearchInfo::write(io::ostream& ob, const Move& move) const {
-    Move::write(ob, move, colorToMove, chessVariant);
+    positionFen.writeMove(ob, move);
 }
 
 void UciSearchInfo::nps(io::ostream& ob, node_count_t nodes, const PerftTT& tt) const {
