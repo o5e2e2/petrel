@@ -1,7 +1,7 @@
 #ifndef TIMER_HPP
 #define TIMER_HPP
 
-#include "typedefs.hpp"
+#include "Duration.hpp"
 #include "Pool.hpp"
 #include "ThreadControl.hpp"
 

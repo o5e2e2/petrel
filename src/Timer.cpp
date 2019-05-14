@@ -1,5 +1,6 @@
 #include <thread>
 #include "Timer.hpp"
+#include "typedefs.hpp"
 
 void TimerThread::run() {
     std::this_thread::sleep_for(duration);

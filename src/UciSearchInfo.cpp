@@ -1,7 +1,8 @@
 #include "UciSearchInfo.hpp"
-#include "PerftTT.hpp"
+#include "Milliseconds.hpp"
 #include "Move.hpp"
 #include "OutputBuffer.hpp"
+#include "PerftTT.hpp"
 #include "PositionFen.hpp"
 
 #define OUTPUT(ob) OutputBuffer<decltype(outLock)> ob(out, outLock)
@@ -12,17 +13,6 @@ namespace {
 
     template <typename T>
     constexpr T permil(T n, T m) { return (n * 1000) / m; }
-
-    template <typename duration_type>
-    auto milliseconds(duration_type duration)
-        -> decltype(duration_cast<Milliseconds>(duration).count()) {
-        return duration_cast<Milliseconds>(duration).count();
-    }
-
-    template <typename nodes_type, typename duration_type>
-    nodes_type nps(nodes_type nodes, duration_type duration) {
-        return (nodes * duration_type::period::den) / (static_cast<nodes_type>(duration.count()) * duration_type::period::num);
-    }
 }
 
 UciSearchInfo::UciSearchInfo (io::ostream& o, Color& c, ChessVariant& v) :

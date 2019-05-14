@@ -46,10 +46,7 @@ std::string basename(const std::string& path) {
 #endif
 
     auto pos = path.find_last_of(The_path_separator);
-    if (pos == std::string::npos ) {
-        return path;
-    }
-    return path.substr(pos + 1);
+    return (pos != std::string::npos ) ? path.substr(pos + 1) : path;
 }
 
 int main(int argc, const char* argv[]) {

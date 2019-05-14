@@ -2,6 +2,7 @@
 #define SEARCH_LIMIT_HPP
 
 #include "typedefs.hpp"
+#include "Duration.hpp"
 #include "PositionFen.hpp"
 
 class SearchLimit {

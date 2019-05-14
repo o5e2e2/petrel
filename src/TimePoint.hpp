@@ -1,7 +1,7 @@
 #ifndef TIME_POINT_HPP
 #define TIME_POINT_HPP
 
-#include "typedefs.hpp"
+#include "Duration.hpp"
 
 class TimePoint {
     typedef std::chrono::steady_clock clock_type;

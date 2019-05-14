@@ -1,15 +1,6 @@
 #include "Uci.hpp"
+#include "Milliseconds.hpp"
 #include "SearchLimit.hpp"
-
-namespace {
-    io::istream& operator >> (io::istream& in, Duration& duration) {
-        unsigned long milliseconds;
-        if (in >> milliseconds) {
-            duration = duration_cast<Duration>(Milliseconds{milliseconds});
-        }
-        return in;
-    }
-}
 
 Uci::Uci (io::ostream& out):
     positionFen{},
