@@ -83,11 +83,20 @@ void Uci::setHash() {
     command >> unit;
 
     switch (std::tolower(unit)) {
-        case 't': quantity *= 1024;
-        case 'g': quantity *= 1024;
-        case 'm': quantity *= 1024;
-        case 'k': quantity *= 1024;
-        case 'b': break;
+        case 't':
+            quantity *= 1024;
+            /* fallthrough */
+        case 'g':
+            quantity *= 1024;
+            /* fallthrough */
+        case 'm':
+            quantity *= 1024;
+            /* fallthrough */
+        case 'k':
+            quantity *= 1024;
+            /* fallthrough */
+        case 'b':
+            break;
 
         default: {
             io::fail_rewind(command);

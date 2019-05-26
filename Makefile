@@ -27,7 +27,7 @@ OPTIONS  = -std=c++14 -mssse3 -march=native -mtune=native
 OPTIONS += -fno-rtti -fno-common -fno-exceptions
 
 WARNINGS += -pedantic -Wall -Wextra -Wuninitialized -Wpointer-arith -Wcast-qual -Wcast-align
-WARNINGS += -Wconversion -Wshadow
+WARNINGS += -Wconversion -Wshadow -Wno-ignored-attributes
 
 CXXFLAGS += $(OPTIONS) $(OPTIMIZATIONS) $(WARNINGS)
 CXXFLAGS += -DGIT_DATE=\"$(GIT_DATE)\" -DGIT_HASH=\"$(GIT_HASH)\" -DGIT_ORIGIN=\"$(GIT_ORIGIN)\"
