@@ -4,7 +4,6 @@
 #include "NodePerftTT.hpp"
 #include "Move.hpp"
 #include "SearchControl.hpp"
-#include "UciSearchInfo.hpp"
 
 NodePerftRootDivide::NodePerftRootDivide(NodePerftRoot& n) : Node(n) {}
 

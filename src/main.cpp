@@ -38,52 +38,43 @@ template <> czstring File::The_string{"abcdefgh"};
 template <> czstring Rank::The_string{"87654321"};
 template <> czstring Pi::The_string{"K123456789abcdef"};
 
-std::string basename(const std::string& path) {
-#if defined(WIN32) || defined(_WIN32)
-    const auto The_path_separator = "/\\";
-#else
-    const auto The_path_separator = '/';
-#endif
-
-    auto pos = path.find_last_of(The_path_separator);
-    return (pos != std::string::npos ) ? path.substr(pos + 1) : path;
-}
-
 int main(int argc, const char* argv[]) {
-    //speed tricks
-    std::ios_base::sync_with_stdio(false);
-    std::cin.tie(nullptr);
-    std::cerr.tie(nullptr);
-
     if (argc == 1) {
+        //speed tricks
+        std::ios_base::sync_with_stdio(false);
+        std::cin.tie(nullptr);
+        std::cerr.tie(nullptr);
+
         Uci uci(std::cout);
         uci(std::cin, std::cerr);
-        return 0;
-    }
 
-    std::string command = basename(argv[0]);
+        //TRICK: return 0; does not work
+        std::exit(0);
+    }
 
     if (argc == 2) {
         std::string option = argv[1];
 
         if (option == "--help" || option == "-h") {
             std::cout
-                << "Usage: " << command << " [OPTION]\n"
-                << "UCI Chess engine. Plays the game of chess.\n"
-                << "\n"
-                << "  -h, --help        display this help and exit\n"
-                << "  -v, --version     output version information and exit\n"
+                << "petrel [-hv]\n"
+                << "    Petrel UCI chess engine. Plays the game of chess.\n\n"
+                << "    Options:\n"
+                << "      -h, --help        display this help and exit\n"
+                << "      -v, --version     output version information and exit\n"
             ;
             return 0;
         }
 
         if (option == "--version" || option == "-v") {
-            std::cout << "petrel " << io::app_version << "Written by Aleks Peshkov\n";
+            std::cout
+                << "petrel " << io::app_version << '\n'
+                << "written by Aleks Peshkov (aleks.peshkov@gmail.com)\n"
+            ;
             return 0;
         }
     }
 
-    std::cerr << command << ": invalid option\n";
-    std::cerr << "Try '" << command <<" --help' for more information.\n";
+    std::cerr << "petrel: invalid option\n";
     return EINVAL;
 }

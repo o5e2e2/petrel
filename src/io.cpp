@@ -68,6 +68,8 @@ bool nextNone(istream& in) {
 
 ostream& app_version(ostream& out) {
 
+    out << "build ";
+
 #ifdef GIT_DATE
     out << GIT_DATE;
 #else
@@ -96,7 +98,7 @@ ostream& app_version(ostream& out) {
 
     char_type day[] {((__DATE__[4] == ' ') ? '0' : __DATE__[4]), __DATE__[5], '\0'};
 
-    out << "build " << year << '-' << month << '-' << day;
+    out << year << '-' << month << '-' << day;
 #endif
 
 #ifndef NDEBUG
@@ -112,8 +114,6 @@ ostream& app_version(ostream& out) {
 #ifdef GIT_HASH
     out << GIT_HASH;
 #endif
-
-    out << '\n';
 
     return out;
 }
