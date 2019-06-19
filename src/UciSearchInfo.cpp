@@ -17,9 +17,7 @@ namespace {
 
 UciSearchInfo::UciSearchInfo (io::ostream& o, const PositionFen& p) :
     out(o),
-    positionFen(p),
-    isreadyWaiting{false},
-    lastInfoNodes{0}
+    positionFen(p)
 {}
 
 void UciSearchInfo::position() const {

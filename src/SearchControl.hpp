@@ -35,11 +35,6 @@ class SearchControl {
 public:
     SearchControl (UciSearchInfo&);
 
-    /**
-     * Running search uses pointer this object, so we should stop any running search
-     **/
-   ~SearchControl () { stop(); }
-
     void newGame();
 
     bool isReady() const { return searchThread.isReady(); }

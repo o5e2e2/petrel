@@ -18,8 +18,8 @@ class UciSearchInfo {
     TimePoint fromSearchStart;
 
     mutable SpinLock outLock;
-    mutable bool isreadyWaiting; //set when got 'isready' command while thinking
-    mutable node_count_t lastInfoNodes;
+    mutable bool isreadyWaiting = false; //set when got 'isready' command while thinking
+    mutable node_count_t lastInfoNodes = 0;
 
     void write(io::ostream&, const Move&) const;
     void nps(io::ostream&, node_count_t, const PerftTT&) const;

@@ -2,7 +2,7 @@
 #include "Node.hpp"
 
 SearchThread::SearchThread() = default;
-SearchThread::~SearchThread() = default;
+SearchThread::~SearchThread() { stop(); }
 
 ThreadControl::RunId SearchThread::start(std::unique_ptr<Node> n) {
     assert (isReady());
