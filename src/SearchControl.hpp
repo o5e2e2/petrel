@@ -37,7 +37,7 @@ public:
 
     void newGame();
 
-    bool isReady() const { return searchThread.isReady(); }
+    bool isBusy() const { return !searchThread.isIdle(); }
     bool isStopped() const { return searchThread.isStopped(); }
     void stop() { searchThread.stop(); }
 

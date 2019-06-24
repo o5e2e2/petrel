@@ -36,7 +36,7 @@ void Uci::operator() (io::istream& in, io::ostream& err) {
 }
 
 void Uci::ucinewgame() {
-    if (!searchControl.isReady()) {
+    if (searchControl.isBusy()) {
         io::fail_rewind(command);
         return;
     }
@@ -67,7 +67,7 @@ void Uci::setoption() {
 }
 
 void Uci::setHash() {
-    if (!searchControl.isReady()) {
+    if (searchControl.isBusy()) {
         io::fail_rewind(command);
         return;
     }
@@ -121,7 +121,7 @@ void Uci::position() {
 }
 
 void Uci::go() {
-    if (!searchControl.isReady()) {
+    if (searchControl.isBusy()) {
         io::fail_rewind(command);
         return;
     }

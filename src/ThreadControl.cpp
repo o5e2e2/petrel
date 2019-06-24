@@ -2,7 +2,7 @@
 #include "ThreadControl.hpp"
 
 namespace {
-    using Id = ThreadControl::RunId;
+    using Id = ThreadControl::TaskId;
     Id& operator++ (Id& id) {
         id = static_cast<Id>( static_cast< std::underlying_type_t<Id> >(id)+1 );
         if (id == Id::None) {
@@ -13,12 +13,12 @@ namespace {
     }
 }
 
-ThreadControl::ThreadControl () : status{Status::Ready}, runId{RunId::None} {
+ThreadControl::ThreadControl () : status{Status::Idle}, taskId{TaskId::None} {
     auto infiniteLoop = [this] {
         for (;;) {
-            wait(Status::Run);
+            wait(Status::Working);
             this->run();
-            signal(Status::Ready);
+            signal(Status::Idle);
         }
     };
     std::thread(infiniteLoop).detach();
@@ -49,18 +49,18 @@ void ThreadControl::signal(Status to, Condition condition) {
 }
 
 template <typename Condition>
-ThreadControl::RunId ThreadControl::signalSequence(Status to, Condition condition) {
-    RunId result;
+ThreadControl::TaskId ThreadControl::signalSequence(Status to, Condition condition) {
+    TaskId result;
 
     {
         std::unique_lock<decltype(statusLock)> lock{statusLock};
 
         if (!condition()) {
-            return RunId::None;
+            return TaskId::None;
         }
 
-        ++runId;
-        result = runId;
+        ++taskId;
+        result = taskId;
         status = to;
     }
 
@@ -76,14 +76,14 @@ void ThreadControl::signal(Status from, Status to) {
     signal(to, [this, from]() { return isStatus(from); });
 }
 
-void ThreadControl::signal(RunId id, Status from, Status to) {
-    if (id == RunId::None) {
+void ThreadControl::signal(TaskId id, Status from, Status to) {
+    if (id == TaskId::None) {
         return;
     }
-    signal(to, [this, id, from]() { return id == this->runId && isStatus(from); });
+    signal(to, [this, id, from]() { return id == this->taskId && isStatus(from); });
 }
 
-ThreadControl::RunId ThreadControl::signalSequence(Status from, Status to) {
+ThreadControl::TaskId ThreadControl::signalSequence(Status from, Status to) {
     return signalSequence(to, [this, from]() { return isStatus(from); });
 }
 

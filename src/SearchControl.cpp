@@ -19,7 +19,7 @@ void SearchControl::uciok() const {
 }
 
 void SearchControl::readyok() const {
-    info.isready(this->isReady());
+    info.isready(!isBusy());
 }
 
 void SearchControl::go(const SearchLimit& searchLimit) {

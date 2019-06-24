@@ -4,8 +4,8 @@
 SearchThread::SearchThread() = default;
 SearchThread::~SearchThread() { stop(); }
 
-ThreadControl::RunId SearchThread::start(std::unique_ptr<Node> n) {
-    assert (isReady());
+ThreadControl::TaskId SearchThread::start(std::unique_ptr<Node> n) {
+    assert (isIdle());
     assert (!node);
 
     node = std::move(n);

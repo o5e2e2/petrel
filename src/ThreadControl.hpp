@@ -6,33 +6,33 @@
 
 class ThreadControl {
 public:
-    enum class RunId : unsigned { None };
+    enum class TaskId : unsigned { None };
 
 private:
     /**
-     * Ready: the thread is idle
-     * Run: the thread is running job with current jobId
-     * Abort: the thread is running but going to finish soon and became Ready again
+     * Idle: the thread is idle
+     * Working: the thread is started working on a task with the current TaskId
+     * Stopping: the thread is working but going to finish soon and became Idle again
      **/
-    enum class Status { Ready, Run, Abort };
+    enum class Status { Idle, Working, Stopping };
 
     SpinLock statusLock;
     std::condition_variable_any statusChanged;
     Status status;
 
-    RunId runId;
+    TaskId taskId;
 
     bool isStatus(Status to) const { return status == to; }
 
     template <typename Condition> void wait(Condition);
     template <typename Condition> void signal(Status, Condition);
-    template <typename Condition> RunId signalSequence(Status,  Condition);
+    template <typename Condition> TaskId signalSequence(Status,  Condition);
 
     void wait(Status to);
     void signal(Status to);
     void signal(Status from, Status to);
-    void signal(RunId id, Status from, Status to);
-    RunId signalSequence(Status from, Status to);
+    void signal(TaskId id, Status from, Status to);
+    TaskId signalSequence(Status from, Status to);
 
     virtual void run() = 0;
 
@@ -40,13 +40,13 @@ public:
     ThreadControl ();
     virtual ~ThreadControl() = default;
 
-    bool isReady()   const { return isStatus(Status::Ready); }
-    bool isRunning() const { return isStatus(Status::Run); }
-    bool isStopped() const { return isStatus(Status::Abort); }
+    bool isIdle()   const { return isStatus(Status::Idle); }
+    bool isRunning() const { return isStatus(Status::Working); }
+    bool isStopped() const { return isStatus(Status::Stopping); }
 
-    RunId start() { return signalSequence(Status::Ready, Status::Run); }
-    void stop() { signal(Status::Run, Status::Abort); wait(Status::Ready); }
-    void abort(RunId id) { signal(id, Status::Run, Status::Abort); }
+    TaskId start() { return signalSequence(Status::Idle, Status::Working); }
+    void stop() { signal(Status::Working, Status::Stopping); wait(Status::Idle); }
+    void stop(TaskId id) { signal(id, Status::Working, Status::Stopping); }
 };
 
 #endif
