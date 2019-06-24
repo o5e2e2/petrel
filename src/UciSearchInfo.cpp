@@ -54,13 +54,13 @@ void UciSearchInfo::isready(bool searchIsReady) const {
 
 void UciSearchInfo::readyok(node_count_t nodes, const PerftTT& tt) const {
     if (isreadyWaiting) {
+        std::ostringstream ob;
+        info_nps(ob, nodes, tt);
+        ob << "readyok\n";
+
         if (outLock.try_lock()) {
             if (isreadyWaiting) {
                 isreadyWaiting = false;
-
-                std::ostringstream ob;
-                info_nps(ob, nodes, tt);
-                ob << "readyok\n";
                 out << ob.str() << std::flush;
             }
             outLock.unlock();
@@ -68,42 +68,42 @@ void UciSearchInfo::readyok(node_count_t nodes, const PerftTT& tt) const {
     }
 }
 
-void UciSearchInfo::write(io::ostream& ob, const Move& move) const {
-    positionFen.writeMove(ob, move);
+void UciSearchInfo::write(io::ostream& o, const Move& move) const {
+    positionFen.writeMove(o, move);
 }
 
-void UciSearchInfo::nps(io::ostream& ob, node_count_t nodes, const PerftTT& tt) const {
+void UciSearchInfo::nps(io::ostream& o, node_count_t nodes, const PerftTT& tt) const {
     if (lastInfoNodes == nodes) {
         return;
     }
     lastInfoNodes = nodes;
 
-    ob << " nodes " << nodes;
+    o << " nodes " << nodes;
 
     auto duration = fromSearchStart.getDuration();
     if (duration >= Milliseconds{1}) {
-        ob << " time " << ::milliseconds(duration);
+        o << " time " << ::milliseconds(duration);
 
         if (duration >= Milliseconds{20}) {
-            ob << " nps " << ::nps(nodes, duration);
+            o << " nps " << ::nps(nodes, duration);
         }
     }
 
     auto& counter = tt.getCounter();
     if (counter.reads > 0) {
-        ob << " hhits " << counter.hits;
-        ob << " hreads " << counter.reads;
-        ob << " hhitratio " << ::permil(counter.hits, counter.reads);
-        ob << " hwrites " << counter.writes;
+        o << " hhits " << counter.hits;
+        o << " hreads " << counter.reads;
+        o << " hhitratio " << ::permil(counter.hits, counter.reads);
+        o << " hwrites " << counter.writes;
     }
 }
 
-void UciSearchInfo::info_nps(io::ostream& ob, node_count_t nodes, const PerftTT& tt) const {
+void UciSearchInfo::info_nps(io::ostream& o, node_count_t nodes, const PerftTT& tt) const {
     std::ostringstream buffer;
     nps(buffer, nodes, tt);
 
     if (!buffer.str().empty()) {
-        ob << "info" << buffer.str() << '\n';
+        o << "info" << buffer.str() << '\n';
     }
 }
 

@@ -17,6 +17,7 @@ private:
     enum class Status { Idle, Working, Stopping };
 
     SpinLock statusLock;
+    typedef std::unique_lock<decltype(statusLock)> Guard;
     std::condition_variable_any statusChanged;
     Status status;
 

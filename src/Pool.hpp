@@ -2,27 +2,27 @@
 #define POOL_HPP
 
 #include <forward_list>
-#include "SpinLock.hpp"
+#include <mutex>
 
 /**
  * Generic object pool pattern
  **/
-template <class Element>
+template <class Element, class BasicLockable>
 class Pool {
     typedef std::forward_list<Element> List;
     List used;
     List ready;
 
-    SpinLock listLock;
-    typedef SpinLock::Guard Lock;
+    BasicLockable listLock;
+    typedef std::lock_guard<decltype(listLock)> Guard;
 
 public:
-    typedef typename List::iterator Handle;
+    typedef typename List::iterator Iterator;
 
-    static Element& fetch(const Handle& iterator) { return *std::next(iterator); }
+    static Element& fetch(const Iterator& iterator) { return *std::next(iterator); }
 
-    Handle acquire() {
-        Lock lock{listLock};
+    Iterator acquire() {
+        Guard g{listLock};
 
         if (ready.empty()) {
             used.emplace_front();
@@ -35,10 +35,10 @@ public:
     }
 
     //return the used element to the ready list
-    void release(Handle&& element) {
-        if (element != ready.end()) {
-            Lock lock{listLock};
+    void release(Iterator&& element) {
+        Guard g{listLock};
 
+        if (element != ready.end()) {
             ready.splice_after(ready.before_begin(), used, element);
             element = ready.end();
         }

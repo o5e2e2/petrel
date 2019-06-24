@@ -26,17 +26,17 @@ ThreadControl::ThreadControl () : status{Status::Idle}, taskId{TaskId::None} {
 
 template <typename Condition>
 void ThreadControl::wait(Condition condition) {
-    std::unique_lock<decltype(statusLock)> lock{statusLock};
+    Guard g{statusLock};
 
     if (!condition()) {
-        statusChanged.wait(lock, condition);
+        statusChanged.wait(g, condition);
     }
 }
 
 template <typename Condition>
 void ThreadControl::signal(Status to, Condition condition) {
     {
-        std::unique_lock<decltype(statusLock)> lock{statusLock};
+        Guard g{statusLock};
 
         if (!condition()) {
             return;
@@ -53,7 +53,7 @@ ThreadControl::TaskId ThreadControl::signalSequence(Status to, Condition conditi
     TaskId result;
 
     {
-        std::unique_lock<decltype(statusLock)> lock{statusLock};
+        Guard g{statusLock};
 
         if (!condition()) {
             return TaskId::None;

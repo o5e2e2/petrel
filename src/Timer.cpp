@@ -5,7 +5,7 @@
 void TimerThread::run() {
     std::this_thread::sleep_for(duration);
     thread->stop(taskId);
-    pool->release(std::move(handle));
+    pool->release(std::move(iterator));
 }
 
 void Timer::start(Duration duration, ThreadControl& thread, ThreadControl::TaskId taskId) {
@@ -14,12 +14,12 @@ void Timer::start(Duration duration, ThreadControl& thread, ThreadControl::TaskI
         return;
     }
 
-    auto handle = acquire();
-    auto& timer = fetch(handle);
+    auto iterator = acquire();
+    auto& timer = fetch(iterator);
     assert (timer.isIdle());
 
     timer.pool = this;
-    timer.handle = handle;
+    timer.iterator = iterator;
     timer.thread = &thread;
     timer.taskId = taskId;
     timer.duration = duration;

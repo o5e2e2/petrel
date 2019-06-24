@@ -3,16 +3,17 @@
 
 #include "Duration.hpp"
 #include "Pool.hpp"
+#include "SpinLock.hpp"
 #include "ThreadControl.hpp"
 
 class TimerThread;
-typedef Pool<TimerThread> TimerPool;
+typedef Pool<TimerThread, SpinLock> TimerPool;
 
 class TimerThread : private ThreadControl {
     friend class Timer;
 
     TimerPool* pool;
-    TimerPool::Handle handle;
+    TimerPool::Iterator iterator;
     ThreadControl* thread;
     TaskId taskId;
     Duration duration;
