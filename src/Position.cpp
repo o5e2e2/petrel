@@ -65,7 +65,7 @@ void Position::setLegalEnPassant(Pi pi) {
 
     assert (to.on(Rank4));
 
-    Bb killers = ~OP.pawnsSquares() & ::attackSquaresOf(Pawn, ep);
+    Bb killers = ~OP.pawnsSquares() & ::attacksFrom(Pawn, ep);
     if (killers.none()) {
         return;
     }

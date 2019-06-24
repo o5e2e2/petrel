@@ -20,7 +20,7 @@ private:
     template <Side::_t> void generateEnPassantMoves();
     template <Side::_t> void generatePawnMoves();
     template <Side::_t> void generateCastlingMoves(Bb attackedSquares);
-    template <Side::_t> void generateKingMoves(Bb attackedSquares);
+    template <Side::_t> void generateLegalKingMoves(Bb attackedSquares);
     template <Side::_t> void generateCheckEvasions(Bb attackedSquares);
     template <Side::_t> void generateMoves();
 
@@ -48,7 +48,7 @@ public:
     index_t getMovesCount() const { return movesCount; }
     Score getStaticEval() const { return staticEval; }
 
-    const MatrixPiBb& getMoves() const { return moves; }
+    const MatrixPiBb& movesMatrix() const { return moves; }
     MatrixPiBb cloneMoves() const { return MatrixPiBb{moves}; }
 
     bool isLegalMove(Square from, Square to) const;

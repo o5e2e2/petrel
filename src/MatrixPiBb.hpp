@@ -73,7 +73,7 @@ public:
         }
     }
 
-    bool is(Pi pi, Square sq) const {
+    bool has(Pi pi, Square sq) const {
         return (matrix[Rank{sq}] & VectorPiRank{File{sq}} & VectorPiMask{pi}).any();
     }
 

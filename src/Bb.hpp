@@ -30,7 +30,6 @@ public:
 
     constexpr explicit Bb (File::_t f) : Bb{BB(0x0101010101010101) << f} {}
     constexpr explicit Bb (Rank::_t r) : Bb{BB(0xff) << 8*r} {}
-    constexpr Bb (BitRank br, Rank::_t r) : Bb{static_cast<_t>(static_cast<BitRank::_t>(br)) << 8*r} {}
 
     //bidirectional signed shift
     constexpr Bb (_t v, signed offset) : Bb( (offset >= 0) ? (v << offset) : (v >> -offset) ) {}

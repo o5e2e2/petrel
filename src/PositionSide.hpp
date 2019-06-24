@@ -74,7 +74,7 @@ public:
     #endif
 
     const Bb& occupied() const { return occupiedBb; }
-    const Bb& occupiedSquares() const { return piecesBb; }
+    const Bb& sideSquares() const { return piecesBb; }
     bool isOccupied(Square sq) const { return piecesBb.has(sq); }
     VectorPiMask alivePieces() const { assert (squares.alivePieces() == types.alivePieces()); return squares.alivePieces(); }
 

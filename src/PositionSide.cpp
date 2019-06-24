@@ -184,14 +184,14 @@ void PositionSide::castle(Square kingFrom, Square kingTo, Pi rook, Square rookFr
 void PositionSide::setLeaperAttack(Pi pi, PieceType ty, Square to) {
     assertValid(pi, ty, to);
     assert (isLeaper(ty));
-    attacks.set(pi, ::attackSquaresOf(ty, to));
+    attacks.set(pi, ::attacksFrom(ty, to));
 }
 
 void PositionSide::updatePinner(Pi pi, Square sq) {
     assert (isSlider(pi));
     assert (sq == squareOf(pi));
 
-    if (::attackSquaresOf(typeOf(pi), sq).has(opKing) && ::between(opKing, sq).any()) {
+    if (::attacksFrom(typeOf(pi), sq).has(opKing) && ::between(opKing, sq).any()) {
         types.setPinner(pi);
     }
     else {

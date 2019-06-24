@@ -33,6 +33,6 @@ public:
     }
 };
 
-extern const PieceTypeAttack attackSquaresOf;
+extern const PieceTypeAttack attacksFrom;
 
 #endif

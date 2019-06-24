@@ -2,7 +2,7 @@
 #include "SearchControl.hpp"
 
 bool Node::visitChildren() {
-    auto& parentMoves = parent.getMoves();
+    auto& parentMoves = parent.movesMatrix();
 
     for (Pi pi : parent.myAlivePieces()) {
         Square from = parent.mySquareOf(pi);

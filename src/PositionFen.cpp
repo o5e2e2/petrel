@@ -196,11 +196,11 @@ void PositionFen::limitMoves(io::istream& in) {
 
         Move move = readMove(in);
         if (in) {
-            Square from{ move.from() };
-            Square to{ move.to() } ;
-            Pi pi{ MY.pieceOn(from) };
+            Square from = move.from();
+            Pi pi = MY.pieceOn(from);
+            Square to = move.to();
 
-            if (getMoves().is(pi, to) && !searchMoves.is(pi, to)) {
+            if (movesMatrix().has(pi, to) && !searchMoves.has(pi, to)) {
                 searchMoves.set(pi, to);
                 ++limit;
                 continue;
