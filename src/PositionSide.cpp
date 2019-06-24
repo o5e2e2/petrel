@@ -10,9 +10,9 @@
         squares.assertValid(pi);
 
         Square sq = squares.squareOf(pi);
-        assert (piecesBb[sq]);
+        assert (piecesBb.has(sq));
 
-        assert (!types.isPawn(pi) || pawnsBb[sq]);
+        assert (!types.isPawn(pi) || pawnsBb.has(sq));
         assert (!types.isPawn(pi) || (!sq.on(Rank1) && !sq.on(Rank8)));
         assert (!types.isPawn(pi) || !types.isEnPassant(pi) || sq.on(Rank4) || sq.on(Rank5));
     }
@@ -184,14 +184,14 @@ void PositionSide::castle(Square kingFrom, Square kingTo, Pi rook, Square rookFr
 void PositionSide::setLeaperAttack(Pi pi, PieceType ty, Square to) {
     assertValid(pi, ty, to);
     assert (isLeaper(ty));
-    attacks.set(pi, ::pieceTypeAttack(ty, to));
+    attacks.set(pi, ::attackSquaresOf(ty, to));
 }
 
 void PositionSide::updatePinner(Pi pi, Square sq) {
     assert (isSlider(pi));
     assert (sq == squareOf(pi));
 
-    if (::pieceTypeAttack(typeOf(pi), sq)[opKing] && ::between(opKing, sq).any()) {
+    if (::attackSquaresOf(typeOf(pi), sq).has(opKing) && ::between(opKing, sq).any()) {
         types.setPinner(pi);
     }
     else {
@@ -255,7 +255,7 @@ bool PositionSide::isPinned(Bb allOccupiedWithoutPinned) const {
 }
 
 bool PositionSide::dropValid(PieceType ty, Square to) {
-    if (piecesBb[to]) { return false; }
+    if (piecesBb.has(to)) { return false; }
     piecesBb += to;
 
     if (ty.is(Pawn)) {

@@ -29,10 +29,10 @@ public:
         return PieceSet( static_cast<PieceSet::_t>(_mm_movemask_epi8(this->_v)) );
     }
 
-    bool operator[] (Pi pi) const { return PieceSet{*this}[pi]; }
-
+    bool has(Pi pi) const { return PieceSet{*this}.has(pi); }
     bool none() const { return PieceSet{*this}.none(); }
     bool isSingleton() const { return PieceSet{*this}.isSingleton(); }
+
     Pi index() const { return PieceSet{*this}.index(); }
     Pi smallestOne() const { return PieceSet{*this}.smallestOne(); }
     Pi largestOne() const { return PieceSet{*this}.largestOne(); }

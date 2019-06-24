@@ -9,10 +9,10 @@
 #include "Zobrist.hpp"
 
 /******************************************************************************
- * static information about pieces of one player's side (either on move or opponent)
+ * static information about pieces of the single player's side (either on move or opponent)
  */
 
-//TRICK: all squares are relative to the own side (so king piece is initially on E1 square regardless color)
+//TRICK: all squares are relative to its own side (so the king piece is initially on E1 square regardless color)
 class PositionSide {
     MatrixPiBb attacks; //squares attacked by a piece and pieces attacking to a square
     VectorPiType types; //type of each alive piece, rooks with castling rights, pawns affected by en passant
@@ -75,14 +75,14 @@ public:
 
     const Bb& occupied() const { return occupiedBb; }
     const Bb& occupiedSquares() const { return piecesBb; }
-    bool isOccupied(Square sq) const { return piecesBb[sq]; }
+    bool isOccupied(Square sq) const { return piecesBb.has(sq); }
     VectorPiMask alivePieces() const { assert (squares.alivePieces() == types.alivePieces()); return squares.alivePieces(); }
 
     Square squareOf(Pi pi) const { assertValid(pi); return squares.squareOf(pi); }
     Square kingSquare() const { return squareOf(TheKing); }
     const Square& opKingSquare() const { return opKing; }
 
-    bool isPieceOn(Square sq) const { assert (piecesBb[sq] == squares.isPieceOn(sq)); return squares.isPieceOn(sq); }
+    bool isPieceOn(Square sq) const { assert (piecesBb.has(sq) == squares.isPieceOn(sq)); return squares.isPieceOn(sq); }
     Pi pieceOn(Square sq) const { Pi pi = squares.pieceOn(sq); assertValid(pi); return pi; }
     VectorPiMask piecesOn(Square sq) const { return squares.piecesOn(sq); }
     VectorPiMask piecesOn(Rank rank) const { return squares.piecesOn(rank); }
@@ -92,7 +92,7 @@ public:
     PieceType typeOf(Pi pi) const { assertValid(pi); return types.typeOf(pi); }
     PieceType typeOf(Square sq) const { return typeOf(pieceOn(sq)); }
 
-    const Bb& occupiedByPawns() const { return pawnsBb; }
+    const Bb& pawnsSquares() const { return pawnsBb; }
     VectorPiMask pawns() const { return types.piecesOfType(Pawn); }
     bool isPawn(Pi pi) const { assertValid(pi); return types.isPawn(pi); }
 
@@ -111,11 +111,11 @@ public:
     VectorPiMask pinners() const { return types.pinners(); }
     bool isPinned(Bb) const;
 
-    const MatrixPiBb& allAttacks() const { return attacks; }
-    VectorPiMask attacksTo(Square a) const { return attacks[a]; }
-    VectorPiMask attacksToKing() const { return attacks[opKing]; }
-    VectorPiMask attacksTo(Square a, Square b) const { return attacks[a] | attacks[b]; }
-    VectorPiMask attacksTo(Square a, Square b, Square c) const { return attacks[a] | attacks[b] | attacks[c]; }
+    const MatrixPiBb& attacksMatrix() const { return attacks; }
+    VectorPiMask attackersTo(Square a) const { return attacks[a]; }
+    VectorPiMask attackersTo(Square a, Square b) const { return attacks[a] | attacks[b]; }
+    VectorPiMask attackersTo(Square a, Square b, Square c) const { return attacks[a] | attacks[b] | attacks[c]; }
+    VectorPiMask checkers() const { return attacks[opKing]; }
 
     Move createMove(Square from, Square to) const;
 

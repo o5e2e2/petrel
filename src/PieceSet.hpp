@@ -31,7 +31,7 @@ public:
 
         out << std::hex;
         FOR_INDEX(Pi, pi) {
-            out << (v[pi] ? pi : '.');
+            out << (v.has(pi) ? pi : '.');
         }
 
         out.flags(flags);

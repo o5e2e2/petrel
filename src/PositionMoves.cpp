@@ -15,7 +15,7 @@ void PositionMoves::generateEnPassantMoves() {
     assert (OP.hasEnPassant());
 
     File epFile = OP.enPassantFile();
-    assert (MY.enPassantPawns() <= ( MY.pawns() & MY.attacksTo(Square{epFile, Rank6}) ));
+    assert (MY.enPassantPawns() <= ( MY.pawns() & MY.attackersTo(Square{epFile, Rank6}) ));
 
     moves[Rank5] |= VectorPiRank(epFile) & VectorPiRank{MY.enPassantPawns()};
 }
@@ -26,10 +26,10 @@ void PositionMoves::populateUnderpromotions() {
 
     //add underpromotions for each already generated legal queen promotion
     //TRICK: promoted piece type encoded inside pawn destination square rank
-    VectorPiRank promotions = moves[::rankOf(Queen)] & VectorPiRank{MY.pawns()};
-    moves[::rankOf(Rook)]   += promotions;
-    moves[::rankOf(Bishop)] += promotions;
-    moves[::rankOf(Knight)] += promotions;
+    VectorPiRank promotionFiles = moves[Rank8] & VectorPiRank{MY.pawns()};
+    moves[::rankOf(Rook)]   += promotionFiles;
+    moves[::rankOf(Bishop)] += promotionFiles;
+    moves[::rankOf(Knight)] += promotionFiles;
 }
 
 template <Side::_t My>
@@ -37,7 +37,7 @@ void PositionMoves::generateKingMoves(Bb attackedSquares) {
     constexpr Side Op{~My};
 
     //TRICK: our attacks do not hide under attacked king shadow
-    Bb kingMoves = ::pieceTypeAttack(King, MY.kingSquare()) % (MY.occupiedSquares() | attackedSquares);
+    Bb kingMoves = ::attackSquaresOf(King, MY.kingSquare()) % (MY.occupiedSquares() | attackedSquares);
     moves.set(TheKing, kingMoves);
 }
 
@@ -92,11 +92,11 @@ void PositionMoves::correctCheckEvasionsByPawns(Bb checkLine, Square checkFrom) 
         badPawnsPlaces |= (checkLine << 9) % Bb{FileA};
         badPawnsPlaces |= (checkLine << 7) % Bb{FileH};
 
-        for (Square from : MY.occupiedByPawns() & badPawnsPlaces) {
+        for (Square from : MY.pawnsSquares() & badPawnsPlaces) {
             Pi pi{MY.pieceOn(from)};
             Rank rankTo = ::rankForward(Rank{from});
 
-            Bb bb = (Bb{from.rankForward()} & checkLine) + (::pieceTypeAttack(Pawn, from) & checkFrom);
+            Bb bb = (Bb{from.rankForward()} & checkLine) + (::attackSquaresOf(Pawn, from) & checkFrom);
             moves.set(pi, rankTo, bb[rankTo]);
         }
     }
@@ -104,7 +104,7 @@ void PositionMoves::correctCheckEvasionsByPawns(Bb checkLine, Square checkFrom) 
     //pawns double push over check line
     {
         Bb badPawnsPlaces{ Bb{Rank2} & (checkLine << 16) % (Bb{OCCUPIED} << 8)  };
-        for (Square from : MY.occupiedByPawns() & badPawnsPlaces) {
+        for (Square from : MY.pawnsSquares() & badPawnsPlaces) {
             Pi pi{MY.pieceOn(from)};
             moves.add(pi, Rank4, File{from});
         }
@@ -120,7 +120,7 @@ void PositionMoves::excludePinnedMoves(VectorPiMask pinnerCandidates) {
     for (Pi pi : pinnerCandidates) {
         Square pinFrom{~OP.squareOf(pi)};
 
-        assert (::pieceTypeAttack(OP.typeOf(pi), pinFrom)[MY.kingSquare()]);
+        assert (::attackSquaresOf(OP.typeOf(pi), pinFrom).has(MY.kingSquare()));
 
         const Bb& pinLine = ::between(MY.kingSquare(), pinFrom);
         Bb betweenPieces = pinLine & OCCUPIED;
@@ -140,7 +140,7 @@ template <Side::_t My>
 void PositionMoves::generateCheckEvasions(Bb attackedSquares) {
     constexpr Side Op{~My};
 
-    VectorPiMask checkers = OP.attacksToKing();
+    VectorPiMask checkers = OP.checkers();
 
     if (!checkers.isSingleton()) {
         //multiple (double) checker's case: no moves except king's ones are possible
@@ -154,7 +154,7 @@ void PositionMoves::generateCheckEvasions(Bb attackedSquares) {
         const Bb& checkLine = ::between(MY.kingSquare(), checkFrom);
 
         //general case: check evasion moves of all pieces
-        moves = MY.allAttacks() & (checkLine + checkFrom);
+        moves = MY.attacksMatrix() & (checkLine + checkFrom);
 
         //pawns moves are special case
         correctCheckEvasionsByPawns<My>(checkLine, checkFrom);
@@ -178,15 +178,15 @@ void PositionMoves::generateMoves() {
     constexpr Side Op{~My};
 
     //squares attacked by opponent pieces
-    Bb attackedSquares = ~OP.allAttacks().gather();
+    Bb attackedSquares = ~OP.attacksMatrix().gather();
 
-    if ( attackedSquares[MY.kingSquare()] ) {
+    if ( attackedSquares.has(MY.kingSquare()) ) {
         generateCheckEvasions<My>(attackedSquares);
         return;
     }
 
     //the most general case: captures and non captures for all pieces
-    moves = MY.allAttacks() % MY.occupiedSquares();
+    moves = MY.attacksMatrix() % MY.occupiedSquares();
 
     //pawns moves treated separately
     generatePawnMoves<My>();
@@ -210,7 +210,7 @@ void PositionMoves::setMoves() {
     movesCount = moves.count();
 
     if (movesCount == 0) {
-        bool inCheck = OP.attacksToKing().any();
+        bool inCheck = OP.checkers().any();
         staticEval = inCheck ? Score::Checkmated : Score::Draw;
         return;
     }
@@ -282,7 +282,7 @@ Zobrist PositionMoves::createZobrist(Square from, Square to) const {
             File file = File{from};
             Square ep(file, Rank3);
 
-            Bb killers = ~OP.occupiedByPawns() & ::pieceTypeAttack(Pawn, ep);
+            Bb killers = ~OP.pawnsSquares() & ::attackSquaresOf(Pawn, ep);
             if (killers.any() && !MY.isPinned(OCCUPIED - from + ep)) {
                 for (Square killer : killers) {
                     assert (killer.on(Rank4));

@@ -19,7 +19,7 @@
 const BetweenSquares between; //32k
 const ReverseBb::Direction ReverseBb::direction; //12k
 const ReverseBb::Singleton ReverseBb::singleton; //1k
-const PieceTypeAttack pieceTypeAttack; //3k
+const PieceTypeAttack attackSquaresOf; //3k
 constexpr const VectorOf vectorOfAll; //4k
 const VectorPiSingle vectorPiSingle; //256
 constexpr const PieceSquareTable Evaluation::pieceSquareTable; //7*64

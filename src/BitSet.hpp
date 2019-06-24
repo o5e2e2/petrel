@@ -22,7 +22,7 @@ public:
 
     constexpr _t withoutLsb() const { return ::withoutLsb(this->_v); }
 
-    constexpr bool operator [] (Index i) const { return (self() & Self{i}).any(); }
+    constexpr bool has(Index i) const { return (self() & Self{i}).any(); }
     bool isSingleton() const { assert (self().any()); return withoutLsb() == 0; }
 
     constexpr Index smallestOne() const { return static_cast<typename Index::_t>(::bsf(this->_v)); }
@@ -35,20 +35,6 @@ public:
 
     constexpr Self begin() const { return self(); }
     constexpr Self end() const { return Self{}; }
-
-    friend bool operator >> (Self& self, Index& i) {
-        if (self.none()) { return false; }
-        i = *self;
-        ++self;
-        return true;
-    }
-
-    friend bool operator << (Index& i, Self& self) {
-        if (self.none()) { return false; }
-        i = self.largestOne();
-        self -= i;
-        return true;
-    }
 
 };
 

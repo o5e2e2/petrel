@@ -9,10 +9,10 @@ BetweenSquares::BetweenSquares () {
 
             Bb betweenArea = (belowFrom ^ belowTo) % to;
 
-            if      (from.horizont()[to]) { between[from][to] = betweenArea & from.horizont(); }
-            else if (from.vertical()[to]) { between[from][to] = betweenArea & from.vertical(); }
-            else if (from.diagonal()[to]) { between[from][to] = betweenArea & from.diagonal(); }
-            else if (from.antidiag()[to]) { between[from][to] = betweenArea & from.antidiag(); }
+            if      (from.horizont().has(to)) { between[from][to] = betweenArea & from.horizont(); }
+            else if (from.vertical().has(to)) { between[from][to] = betweenArea & from.vertical(); }
+            else if (from.diagonal().has(to)) { between[from][to] = betweenArea & from.diagonal(); }
+            else if (from.antidiag().has(to)) { between[from][to] = betweenArea & from.antidiag(); }
             else                          { between[from][to] = Bb{}; }
         }
     }

@@ -41,7 +41,6 @@ public:
 
     void move(Square from, Square to) { assert (from != to); *this -= from; *this += to; }
 
-    using BitSet::operator[];
     constexpr BitRank operator[] (Rank r) const { return BitRank(small_cast<BitRank::_t>(this->_v >> 8*r)); }
 
     constexpr friend Bb operator << (Bb bb, unsigned offset) { return Bb{static_cast<_t>(bb) << offset}; }
@@ -50,7 +49,7 @@ public:
     friend io::ostream& operator << (io::ostream& out, Bb bb) {
         FOR_INDEX(Rank, rank) {
             FOR_INDEX(File, file) {
-                if (bb[Square{file, rank}]) {
+                if (bb.has(Square{file, rank})) {
                     out << file;
                 }
                 else {
