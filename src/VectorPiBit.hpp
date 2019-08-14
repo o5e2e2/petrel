@@ -20,6 +20,8 @@ protected:
     static _t singleVector(index_type _Bit) { return ::vectorOfAll[single(_Bit)]; }
     static _t exceptSingleVector(index_type _Bit) { return ::vectorOfAll[exceptSingle(_Bit)]; }
 
+    static _t cmpeq(_t a, _t b) { return _mm_cmpeq_epi8(a, b); }
+
 public:
     using Base::Base;
 
@@ -35,16 +37,16 @@ public:
 
     VectorPiMask anyOf(index_type _Bit) const {
         _t mask = singleVector(_Bit);
-        return _mm_cmpeq_epi8(mask, this->_v & mask);
+        return cmpeq(mask, this->_v & mask);
     }
 
     VectorPiMask anyOf(element_type bitmask) const {
         _t mask = ::vectorOfAll[bitmask];
-        return VectorPiMask::negate(_mm_cmpeq_epi8(this->_v & mask, ::vectorOfAll[0]));
+        return VectorPiMask::negate(cmpeq(this->_v & mask, ::vectorOfAll[0]));
     }
 
     VectorPiMask notEmpty() const {
-        return VectorPiMask::negate(_mm_cmpeq_epi8(this->_v, ::vectorOfAll[0]));
+        return VectorPiMask::negate(cmpeq(this->_v, ::vectorOfAll[0]));
     }
 
     void clear(index_type _Bit) {
@@ -68,7 +70,7 @@ public:
 
     //clear 'cleanBit' only where any of 'ifAnyMask' bits are set
     void clearIf(index_type cleanBit, element_type ifAnyMask) {
-        this->_v &= exceptSingleVector(cleanBit) | _mm_cmpeq_epi8(this->_v & ::vectorOfAll[ifAnyMask], ::vectorOfAll[0]);
+        this->_v &= exceptSingleVector(cleanBit) | cmpeq(this->_v & ::vectorOfAll[ifAnyMask], ::vectorOfAll[0]);
     }
 
 };

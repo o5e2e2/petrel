@@ -26,15 +26,14 @@ public:
     }
 #endif
 
-    Square squareOf(Pi pi) const { assertValid(pi); return _v[pi]; }
-    bool isPieceOn(Square sq) const { return piecesOn(sq).any(); }
-    Pi pieceOn(Square sq) const { assert (isPieceOn(sq)); return piecesOn(sq).index(); }
-
     VectorPiMask alivePieces() const { return _v.notEmpty(); }
-
     VectorPiMask piecesOn(Square sq) const { return _v == sq; }
     VectorPiMask leftForward(Square sq) const { return _v < sq; }
     VectorPiMask rightBackward(Square sq) const { return _v > sq; }
+
+    Square squareOf(Pi pi) const { assertValid(pi); return _v[pi]; }
+    bool hasPieceOn(Square sq) const { return piecesOn(sq).any(); }
+    Pi pieceOn(Square sq) const { assert (hasPieceOn(sq)); return piecesOn(sq).index(); }
 
     VectorPiMask piecesOn(Rank rank) const {
         return _mm_cmpeq_epi8(

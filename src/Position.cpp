@@ -170,7 +170,7 @@ void Position::playMove(Square from, Square to) {
     assert (!MY.hasEnPassant());
     assert (!OP.hasEnPassant());
 
-    Pi pi{MY.pieceOn(from)};
+    Pi pi = MY.pieceOn(from);
 
     if (MY.isPawn(pi)) {
         playPawnMove<My>(pi, from, to);
@@ -247,9 +247,9 @@ bool Position::setEnPassant(File file) {
     if (OCCUPIED.has(Square{file, Rank6})) { return false; }
 
     Square victimSquare(file, Rank4);
-    if (!OP.isPieceOn(victimSquare)) { return false; }
+    if (!OP.hasPieceOn(victimSquare)) { return false; }
 
-    Pi victim{OP.pieceOn(victimSquare)};
+    Pi victim = OP.pieceOn(victimSquare);
     if (!OP.isPawn(victim)) { return false; }
 
     //check against illegal en passant set field like "8/5bk1/8/2Pp4/8/1K6/8/8 w - d6"

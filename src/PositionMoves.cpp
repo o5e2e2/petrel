@@ -83,7 +83,7 @@ void PositionMoves::correctCheckEvasionsByPawns(Bb checkLine, Square checkFrom) 
     constexpr Side Op{~My};
 
     //simple pawn push over check line
-    Bb potencialEvasions = checkLine << 8; 
+    Bb potencialEvasions = checkLine << 8;
 
     //the general case generates invalid diagonal moves to empty squares
     Bb invalidDiagonalMoves = (checkLine << 9) % Bb{FileA} | (checkLine << 7) % Bb{FileH};
@@ -119,7 +119,7 @@ void PositionMoves::excludePinnedMoves(VectorPiMask pinnerCandidates) {
 
         if (betweenPieces.isSingleton() && (betweenPieces & MY.sideSquares()).any()) {
             //we discovered a true pinned piece
-            Pi pinned{MY.pieceOn(betweenPieces.index())};
+            Pi pinned = MY.pieceOn(betweenPieces.index());
 
             //exclude moves except moves over the pin line
             moves.filter(pinned, pinLine + pinFrom);
@@ -139,7 +139,7 @@ void PositionMoves::generateCheckEvasions(Bb attackedSquares) {
     }
     else {
         //single checker case
-        Pi checker{checkers.index()};
+        Pi checker = checkers.index();
         Square checkFrom{~OP.squareOf(checker)};
 
         const Bb& checkLine = ::between(MY.kingSquare(), checkFrom);
@@ -248,7 +248,7 @@ Zobrist PositionMoves::createZobrist(Square from, Square to) const {
         oz.clearEnPassant(OP.enPassantSquare());
     }
 
-    Pi pi {MY.pieceOn(from)};
+    Pi pi = MY.pieceOn(from);
     PieceType ty {MY.typeOf(pi)};
 
     if (ty.is(Pawn)) {
@@ -258,7 +258,7 @@ Zobrist PositionMoves::createZobrist(Square from, Square to) const {
             mz.drop(static_cast<PieceType>(PromoType{to}), promotedTo);
 
             if (OP.isOccupied(~promotedTo)) {
-                Pi victim {OP.pieceOn(~promotedTo)};
+                Pi victim = OP.pieceOn(~promotedTo);
 
                 if (OP.isCastling(victim)) {
                     oz.clearCastling(~promotedTo);
@@ -326,7 +326,7 @@ Zobrist PositionMoves::createZobrist(Square from, Square to) const {
     }
 
     if (OP.isOccupied(~to)) {
-        Pi victim {OP.pieceOn(~to)};
+        Pi victim = OP.pieceOn(~to);
         oz.clear(OP.typeOf(victim), ~to);
 
         if (OP.isCastling(victim)) {

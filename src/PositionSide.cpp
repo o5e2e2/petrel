@@ -79,7 +79,7 @@ Score PositionSide::evaluate(const PositionSide& MY, const PositionSide& OP) {
 }
 
 void PositionSide::capture(Square from) {
-    Pi pi{pieceOn(from)};
+    Pi pi = pieceOn(from);
     assertValid(pi);
 
     PieceType ty = typeOf(pi);
@@ -299,10 +299,10 @@ bool PositionSide::setValidCastling(File file) {
     if (!kingSquare().on(Rank1)) { return false; }
 
     Square rookFrom(file, Rank1);
-    if (!isPieceOn(rookFrom)) { return false; }
+    if (!hasPieceOn(rookFrom)) { return false; }
 
     Pi rook = pieceOn(rookFrom);
-    if (!is(rook, Rook)) { return false; }
+    if (!isOfType(rook, Rook)) { return false; }
     if (isCastling(rook)) { return false; }
 
     types.setCastling(rook);

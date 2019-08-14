@@ -138,12 +138,12 @@ Move PositionFen::readMove(io::istream& in) const {
         moveTo.flip();
     }
 
-    if (!MY.isPieceOn(moveFrom)) {
+    if (!MY.hasPieceOn(moveFrom)) {
         io::fail_pos(in, before);
         return {};
     }
 
-    Pi pi{MY.pieceOn(moveFrom)};
+    Pi pi = MY.pieceOn(moveFrom);
 
     //convert special moves (castling, promotion, ep) to the internal move format
     if (MY.isPawn(pi)) {
@@ -159,7 +159,7 @@ Move PositionFen::readMove(io::istream& in) const {
         //else normal pawn move
     }
     else if (pi.is(TheKing)) {
-        if (MY.isPieceOn(moveTo)) { //Chess960 castling encoding
+        if (MY.hasPieceOn(moveTo)) { //Chess960 castling encoding
             if (!MY.isCastling(moveTo)) {
                 io::fail_pos(in, before);
                 return {};
@@ -167,14 +167,14 @@ Move PositionFen::readMove(io::istream& in) const {
             return Move::castling(moveTo, moveFrom);
         }
         if (moveFrom.is(E1) && moveTo.is(G1)) {
-            if (!MY.isPieceOn(H1) || !MY.isCastling(H1)) {
+            if (!MY.hasPieceOn(H1) || !MY.isCastling(H1)) {
                 io::fail_pos(in, before);
                 return {};
             }
             return Move::castling(H1, E1);
         }
         if (moveFrom.is(E1) && moveTo.is(C1)) {
-            if (!MY.isPieceOn(A1) || !MY.isCastling(A1)) {
+            if (!MY.hasPieceOn(A1) || !MY.isCastling(A1)) {
                 io::fail_pos(in, before);
                 return {};
             }

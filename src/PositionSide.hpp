@@ -82,12 +82,12 @@ public:
     Square kingSquare() const { return squareOf(TheKing); }
     const Square& opKingSquare() const { return opKing; }
 
-    bool isPieceOn(Square sq) const { assert (piecesBb.has(sq) == squares.isPieceOn(sq)); return squares.isPieceOn(sq); }
+    bool hasPieceOn(Square sq) const { assert (piecesBb.has(sq) == squares.hasPieceOn(sq)); return squares.hasPieceOn(sq); }
     Pi pieceOn(Square sq) const { Pi pi = squares.pieceOn(sq); assertValid(pi); return pi; }
     VectorPiMask piecesOn(Square sq) const { return squares.piecesOn(sq); }
     VectorPiMask piecesOn(Rank rank) const { return squares.piecesOn(rank); }
 
-    bool is(Pi pi, PieceType ty) const { assertValid(pi); return types.is(pi, ty); }
+    bool isOfType(Pi pi, PieceType ty) const { assertValid(pi); return types.isOfType(pi, ty); }
     VectorPiMask piecesOfType(PieceType ty) const { return types.piecesOfType(ty); }
     PieceType typeOf(Pi pi) const { assertValid(pi); return types.typeOf(pi); }
     PieceType typeOf(Square sq) const { return typeOf(pieceOn(sq)); }

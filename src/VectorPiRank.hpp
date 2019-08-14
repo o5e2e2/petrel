@@ -30,7 +30,7 @@ struct VectorPiRank : VectorPiBit<VectorPiRank, File> {
 
     VectorPiMask operator [] (File file) const {
         _t file_vector = ::vectorOfAll[BitRank{file}];
-        return _mm_cmpeq_epi8(file_vector, this->_v & file_vector);
+        return cmpeq(file_vector, this->_v & file_vector);
     }
 
 };
