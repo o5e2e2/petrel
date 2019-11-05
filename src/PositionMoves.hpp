@@ -27,6 +27,7 @@ private:
     template <Side::_t> void generateMoves();
 
     Zobrist createZobrist(Square, Square) const;
+    Zobrist generateZobrist() const;
 
 protected:
     void playMove(Square, Square);
@@ -44,13 +45,10 @@ public:
     constexpr PositionMoves () = default;
     PositionMoves (const PositionMoves&) = default;
 
-    Zobrist generateZobrist() const;
-
     const Zobrist& getZobrist() const { return zobrist; }
     index_t getMovesCount() const { return movesCount; }
     Score getStaticEval() const { return staticEval; }
 
-    const MatrixPiBb& getMoves() const { return moves; }
     MatrixPiBb cloneMoves() const { return MatrixPiBb{moves}; }
 
     bool isLegalMove(Square from, Square to) const;

@@ -4,7 +4,7 @@
 #include "Index.hpp"
 #include "Square.hpp"
 
-//http://chessprogramming.wikispaces.com/Simplified+evaluation+function
+//https://www.chessprogramming.org/Simplified_Evaluation_Function
 class PieceSquareTable {
     typedef PieceEvalType Index;
 

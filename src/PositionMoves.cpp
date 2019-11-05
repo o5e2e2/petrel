@@ -210,8 +210,10 @@ void PositionMoves::generateMoves() {
 }
 
 bool PositionMoves::isLegalMove(Square from, Square to) const {
-    auto pi = MY.pieceOn(from);
-    return moves.has(pi, to);
+    if (!MY.hasPieceOn(from)) {
+        return false;
+    }
+    return moves.has(MY.pieceOn(from), to);
 }
 
 void PositionMoves::playMove(Square from, Square to) {
