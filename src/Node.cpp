@@ -2,14 +2,14 @@
 #include "SearchControl.hpp"
 
 bool Node::visitChildren() {
-    auto& parentMoves = parent.movesMatrix();
+    auto parentMoves = parent.cloneMoves();
 
     for (Pi pi : parent.myAlivePieces()) {
         Square from = parent.mySquareOf(pi);
 
         for (Square to : parentMoves[pi]) {
             CUT (control.countNode());
-            parent.clearMove(pi, to);
+            parentMoves.clear(pi, to);
             CUT (visit(from, to));
         }
     }

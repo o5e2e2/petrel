@@ -36,15 +36,12 @@ bool NodePerftRoot::searchIteration() {
 }
 
 bool NodePerftRoot::iterativeDeepening() {
-    MatrixPiBb movesBackup = cloneMoves();
-
     for (draft = 1; draft <= DepthMax; ++draft) {
         CUT ( searchIteration() );
 
-        setMoves(movesBackup);
         perft = 0;
         bestMove = {};
-        bestScore = Score::Minimum;
+        bestScore = Score::None;
 
         control.nextIteration();
     }

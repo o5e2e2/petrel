@@ -199,7 +199,7 @@ void PositionFen::limitMoves(io::istream& in) {
             Pi pi = MY.pieceOn(from);
             Square to = move.to();
 
-            if (movesMatrix().has(pi, to) && !searchMoves.has(pi, to)) {
+            if (getMoves().has(pi, to) && !searchMoves.has(pi, to)) {
                 searchMoves.set(pi, to);
                 ++limit;
                 continue;
@@ -310,7 +310,7 @@ void PositionFen::readFen(io::istream& in) {
     setCastling(in);
     setEnPassant(in);
     setZobrist();
-    setMoves();
+    generateMoves();
 
     if (in) {
         unsigned _fifty;

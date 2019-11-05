@@ -33,7 +33,7 @@ void PositionMoves::populateUnderpromotions() {
 }
 
 template <Side::_t My>
-void PositionMoves::generateLegalKingMoves(Bb attackedSquares) {
+void PositionMoves::generateLegalKingMoves() {
     constexpr Side Op{~My};
 
     //TRICK: our attacks do not hide under attacked king shadow
@@ -42,7 +42,7 @@ void PositionMoves::generateLegalKingMoves(Bb attackedSquares) {
 }
 
 template <Side::_t My>
-void PositionMoves::generateCastlingMoves(Bb attackedSquares) {
+void PositionMoves::generateCastlingMoves() {
     constexpr Side Op{~My};
 
     for (Pi pi : MY.castlingRooks()) {
@@ -128,7 +128,7 @@ void PositionMoves::excludePinnedMoves(VectorPiMask pinnerCandidates) {
 }
 
 template <Side::_t My>
-void PositionMoves::generateCheckEvasions(Bb attackedSquares) {
+void PositionMoves::generateCheckEvasions() {
     constexpr Side Op{~My};
 
     VectorPiMask checkers = OP.checkers();
@@ -160,7 +160,7 @@ void PositionMoves::generateCheckEvasions(Bb attackedSquares) {
         }
     }
 
-    generateLegalKingMoves<My>(attackedSquares);
+    generateLegalKingMoves<My>();
 }
 
 //generate all legal moves from the current position for the current side to move
@@ -168,12 +168,11 @@ template <Side::_t My>
 void PositionMoves::generateMoves() {
     constexpr Side Op{~My};
 
-    //squares attacked by all opponent pieces
-    Bb attackedSquares = ~OP.attacksMatrix().gather();
+    attackedSquares = ~OP.attacksMatrix().gather();
+    inCheck = attackedSquares.has(MY.kingSquare());
 
-    bool inCheck = attackedSquares.has(MY.kingSquare());
     if (inCheck) {
-        generateCheckEvasions<My>(attackedSquares);
+        generateCheckEvasions<My>();
         return;
     }
 
@@ -183,7 +182,7 @@ void PositionMoves::generateMoves() {
     //pawns moves treated separately
     generatePawnMoves<My>();
 
-    generateCastlingMoves<My>(attackedSquares);
+    generateCastlingMoves<My>();
 
     //TRICK: castling encoded as a rook move, so we implicitly cover the case of pinned castling in Chess960
     excludePinnedMoves<My>(OP.pinners());
@@ -194,20 +193,20 @@ void PositionMoves::generateMoves() {
         generateEnPassantMoves<My>();
     }
 
-    generateLegalKingMoves<My>(attackedSquares);
+    generateLegalKingMoves<My>();
 }
 
-void PositionMoves::setMoves() {
+void PositionMoves::generateMoves() {
     generateMoves<My>();
-    movesCount = moves.count();
 
-    if (movesCount == 0) {
-        bool inCheck = OP.checkers().any();
+    movesCount = moves.count();
+    if (movesCount > 0) {
+        staticEval = evaluate();
+    }
+    else {
         staticEval = inCheck ? Score::Checkmated : Score::Draw;
-        return;
     }
 
-    staticEval = evaluate();
 }
 
 bool PositionMoves::isLegalMove(Square from, Square to) const {
@@ -218,14 +217,14 @@ bool PositionMoves::isLegalMove(Square from, Square to) const {
 void PositionMoves::playMove(Square from, Square to) {
     setZobrist(*this, from, to);
     Position::playMove(from, to);
-    setMoves();
+    generateMoves();
     assert (zobrist == generateZobrist());
 }
 
 void PositionMoves::playMove(const Position& parent, Square from, Square to, Zobrist z) {
     zobrist = z;
     Position::playMove(parent, from, to);
-    setMoves();
+    generateMoves();
     assert (zobrist == Zobrist{0} || zobrist == generateZobrist());
 }
 
@@ -249,11 +248,11 @@ Zobrist PositionMoves::createZobrist(Square from, Square to) const {
     }
 
     Pi pi = MY.pieceOn(from);
-    PieceType ty {MY.typeOf(pi)};
+    PieceType ty = MY.typeOf(pi);
 
     if (ty.is(Pawn)) {
         if (from.on(Rank7)) {
-            Square promotedTo = Square{File{to}, Rank8};
+            Square promotedTo(File{to}, Rank8);
             mz.clear(Pawn, from);
             mz.drop(static_cast<PieceType>(PromoType{to}), promotedTo);
 

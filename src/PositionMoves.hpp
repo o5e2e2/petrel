@@ -7,10 +7,12 @@
 
 class PositionMoves : public Position {
     MatrixPiBb moves; //generated moves from My side
+    Bb attackedSquares; //squares attacked by all opponent pieces
 
     Zobrist zobrist{0};
+    Score staticEval = Score::None;
     index_t movesCount = 0;
-    Score staticEval = Score::Draw;
+    bool inCheck = false;
 
 private:
     //legal move generation helpers
@@ -19,9 +21,9 @@ private:
     template <Side::_t> void populateUnderpromotions();
     template <Side::_t> void generateEnPassantMoves();
     template <Side::_t> void generatePawnMoves();
-    template <Side::_t> void generateCastlingMoves(Bb attackedSquares);
-    template <Side::_t> void generateLegalKingMoves(Bb attackedSquares);
-    template <Side::_t> void generateCheckEvasions(Bb attackedSquares);
+    template <Side::_t> void generateCastlingMoves();
+    template <Side::_t> void generateLegalKingMoves();
+    template <Side::_t> void generateCheckEvasions();
     template <Side::_t> void generateMoves();
 
     Zobrist createZobrist(Square, Square) const;
@@ -30,7 +32,7 @@ protected:
     void playMove(Square, Square);
     void playMove(const Position&, Square, Square, Zobrist);
 
-    void setMoves();
+    void generateMoves();
 
     void clearMove(Pi pi, Square sq) { moves.clear(pi, sq); }
     void setMoves(const MatrixPiBb& m) { moves = m; }
@@ -48,7 +50,7 @@ public:
     index_t getMovesCount() const { return movesCount; }
     Score getStaticEval() const { return staticEval; }
 
-    const MatrixPiBb& movesMatrix() const { return moves; }
+    const MatrixPiBb& getMoves() const { return moves; }
     MatrixPiBb cloneMoves() const { return MatrixPiBb{moves}; }
 
     bool isLegalMove(Square from, Square to) const;
