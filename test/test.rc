@@ -45,6 +45,11 @@ go
 ;info depth 6 * perft 539692
 stop
 
+position fen r3k2r/8/8/8/8/8/8/R3K2R w KQkq
+go
+;info depth 6 * perft 179862938
+stop
+
 position fen rnbqkb1r/pp1p1ppp/2p5/4P3/2B5/8/PPP1NnPP/RNBQK2R w KQkq - 0 6
 go
 ;info depth 3 * perft 53392
@@ -64,6 +69,149 @@ position fen 8/8/8/2rk/2p1p/5R/QP1P2B/2KR w - -
 go
 ;info depth 6 * perft 102040304
 stop
+
+#avoid illegal en passant capture:
+position fen 8/5bk1/8/2Pp4/8/1K6/8/8 w - d6 0 1
+go
+;info depth 6 * perft 824064
+stop
+
+#complex ep case
+position fen 3k4/8/8/K1Pp3r/8/8/8/8 w - d6 0 1
+go
+;info depth 6 * perft 1020480
+stop
+
+#en passant capture checks opponent:
+position fen 8/8/1k6/2b5/2pP4/8/5K2/8 b - d3 0 1
+go
+;info depth 6 * perft 1440467
+stop
+
+#short castling gives check:
+position fen 5k2/8/8/8/8/8/8/4K2R w K - 0 1
+go
+;info depth 6 * perft 661072
+stop
+
+#long castling gives check:
+position fen r3k3/8/8/8/8/8/8/3K4 b q - 0 1
+go
+;info depth 6 * perft 803711
+stop
+
+#castling (including losing cr due to rook capture):
+r3k2r/1b4bq/8/8/8/8/7B/R3K2R w KQkq - 0 1 perft 4 = 1274206
+position fen r3k2r/7b/8/8/8/8/1B4BQ/R3K2R b KQkq - 0 1
+go
+;info depth 4 * perft 1274206
+stop
+
+#castling prevented:
+position fen r3k2r/8/3Q4/8/8/5q2/8/R3K2R b KQkq - 0 1
+go
+;info depth 4 * perft 1720476
+stop
+
+#promote out of check:
+position fen 3K4/8/8/8/8/8/4p3/2k2R2 b - - 0 1
+go
+;info depth 6 * perft 3821001
+stop
+
+#discovered check:
+position fen 8/8/1P2K3/8/2n5/1q6/8/5k2 b - - 0 1
+go
+;info depth 5 * perft 1004658
+stop
+
+#promote to give check:
+position fen 4k3/1P6/8/8/8/8/K7/8 w - - 0 1
+go
+;info depth 6 * perft 217342
+stop
+
+#underpromote to check:
+position fen 8/P1k5/K7/8/8/8/8/8 w - - 0 1
+go
+;info depth 6 * perft 92683
+stop
+
+#self stalemate:
+position fen 8/8/8/8/8/p7/8/k1K5 b - - 0 1
+go
+;info depth 6 * perft 2217
+stop
+
+#stalemate/checkmate:
+position fen 8/k1P5/8/1K6/8/8/8/8 w - - 0 1
+go
+;info depth 7 * perft 567584
+stop
+
+#double check:
+position fen 8/5k2/8/5N2/5Q2/2K5/8/8 w - - 0 1
+go
+;info depth 4 * perft 23527
+stop
+
+position fen 4k2r/8/8/7r/8/8/1B6/1K6 w k - 0 1
+go
+;info depth 5 * perft 1063513
+stop
+
+position fen 1k6/8/8/8/R7/1n6/8/R3K3 b Q - 0 1
+go
+;info depth 5 * perft 346695
+stop
+
+position fen r3k2r/8/8/8/3pPp2/8/8/R3K1RR b KQkq e3 0 1
+go depth 6
+;info depth 6 * perft 485647607
+
+position fen r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1
+go depth 6
+;info depth 6 * perft 706045033
+
+position fen 8/7p/p5pb/4k3/P1pPn3/8/P5PP/1rB2RK1 b - d3 0 28
+go depth 6
+;* perft 38633283
+
+position fen 8/3K4/2p5/p2b2r1/5k2/8/8/1q6 b - - 1 67
+go depth 7
+;* perft 493407574
+
+position fen rnbqkb1r/ppppp1pp/7n/4Pp2/8/8/PPPP1PPP/RNBQKBNR w KQkq f6 0 3
+go depth 6
+;* perft 244063299
+
+position fen 8/p7/8/1P6/K1k3p1/6P1/7P/8 w - -
+go depth 8
+;* perft 8103790
+
+position fen n1n5/PPPk4/8/8/8/8/4Kppp/5N1N b - -
+go depth 6
+;* perft 71179139
+
+position fen r3k2r/p6p/8/B7/1pp1p3/3b4/P6P/R3K2R w KQkq -
+go depth 6
+;* perft 77054993
+
+position fen 8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - -
+go depth 7
+;* perft 178633661
+
+position fen 8/5p2/8/2k3P1/p3K3/8/1P6/8 b - -
+go depth 8
+;* perft 64451405
+
+position fen r3k2r/pb3p2/5npp/n2p4/1p1PPB2/6P1/P2N1PBP/R3K2R w KQkq -
+go depth 5
+;* perft 29179893
+
+position fen 8/7p/p5pb/4k3/P1pPn3/8/P5PP/1rB2RK1 b - d3 0 28
+go depth 6
+;* perft 38633283
 
 position fen rnbqkbnr/pppppppp///4P//PPPP1PPP/RNBQKBNR b qkQK e3 0 1 moves g8h6 e4e5 f7f5
 go

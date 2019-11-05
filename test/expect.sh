@@ -29,6 +29,12 @@ do
         continue
     fi
 
+    #skip comment lines
+    if [[ $line = \#* ]]
+    then
+        continue
+    fi
+
     #collect expect lines together
     if [[ $line = \;* ]]
     then
