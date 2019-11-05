@@ -26,17 +26,26 @@ void SearchControl::infoPosition() const {
     info.position();
 }
 
-void SearchControl::go(const SearchLimit& searchLimit) {
-    nodesLimit = searchLimit.getNodesLimit();
+void SearchControl::go(const SearchLimit& limit) {
+    nodesLimit = limit.nodes;
     nodes = 0;
     nodesQuota = 0;
 
     info.clear();
     transpositionTable.clearCounter();
 
-    auto duration = searchLimit.getThinkingTime();
-    auto searchId = searchThread.start( std::make_unique<NodePerftRoot>(searchLimit, *this) );
+    auto duration = getThinkingTime(limit);
+    auto searchId = searchThread.start( std::make_unique<NodePerftRoot>(limit, *this) );
     timer.start(duration, searchThread, searchId);
+}
+
+Duration SearchControl::getThinkingTime(const SearchLimit& limit) const {
+    if (limit.movetime != Duration::zero()) { return limit.movetime; }
+
+    auto moves = limit.movestogo ? limit.movestogo : 60;
+    auto average = (limit.time[My] + (moves-1)*limit.inc[My]) / moves;
+
+    return std::min(limit.time[My], average);
 }
 
 void SearchControl::bestmove(const Move& bestMove, Score bestScore) const {

@@ -6,9 +6,9 @@
 #include "SearchControl.hpp"
 #include "SearchLimit.hpp"
 
-NodePerftRoot::NodePerftRoot (const SearchLimit& l, SearchControl& c):
-    NodePerft(l.getMovesLimit(), c, l.getDepthLimit()),
-    isDivide(l.isDivide())
+NodePerftRoot::NodePerftRoot (const SearchLimit& limit, SearchControl& searchControl):
+    NodePerft(limit.positionMoves, searchControl, limit.depth),
+    isDivide(limit.isDivide)
 {}
 
 bool NodePerftRoot::searchIteration() {

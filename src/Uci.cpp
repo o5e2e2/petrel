@@ -132,27 +132,27 @@ void Uci::go() {
     auto whiteSide = positionFen.getColorSide(White);
     auto blackSide = positionFen.getColorSide(Black);
 
-    SearchLimit l;
-    l.positionMoves = positionFen;
+    SearchLimit limit;
+    limit.positionMoves = positionFen;
 
     while (command) {
-        if      (next("depth"))    { command >> l.depth; l.depth = std::min(l.depth, static_cast<depth_t>(DepthMax)); }
-        else if (next("wtime"))    { command >> l.time[whiteSide]; }
-        else if (next("btime"))    { command >> l.time[blackSide]; }
-        else if (next("winc"))     { command >> l.inc[whiteSide]; }
-        else if (next("binc"))     { command >> l.inc[blackSide]; }
-        else if (next("movestogo")){ command >> l.movestogo; }
-        else if (next("nodes"))    { command >> l.nodes; l.nodes = std::min(l.nodes, static_cast<node_count_t>(NodeCountMax)); }
-        else if (next("movetime")) { command >> l.movetime; }
-        else if (next("mate"))     { command >> l.mate; }
-        else if (next("ponder"))   { l.ponder = true; }
-        else if (next("infinite")) { l.infinite = true; }
-        else if (next("perft"))    { l.perft = true; }
-        else if (next("divide"))   { l.divide = true; }
-        else if (next("searchmoves")) { l.positionMoves.limitMoves(command); }
+        if      (next("depth"))    { command >> limit.depth; limit.depth = std::min(limit.depth, static_cast<depth_t>(DepthMax)); }
+        else if (next("wtime"))    { command >> limit.time[whiteSide]; }
+        else if (next("btime"))    { command >> limit.time[blackSide]; }
+        else if (next("winc"))     { command >> limit.inc[whiteSide]; }
+        else if (next("binc"))     { command >> limit.inc[blackSide]; }
+        else if (next("movestogo")){ command >> limit.movestogo; }
+        else if (next("nodes"))    { command >> limit.nodes; limit.nodes = std::min(limit.nodes, static_cast<node_count_t>(NodeCountMax)); }
+        else if (next("movetime")) { command >> limit.movetime; }
+        else if (next("mate"))     { command >> limit.mate; }
+        else if (next("ponder"))   { limit.isPonder = true; }
+        else if (next("infinite")) { limit.isInfinite = true; }
+        else if (next("perft"))    { limit.isPerft = true; }
+        else if (next("divide"))   { limit.isDivide = true; }
+        else if (next("searchmoves")) { limit.positionMoves.limitMoves(command); }
         else if (!nextNone())      { io::fail_here(command); return; }
         else { break; }
     }
 
-    searchControl.go(l);
+    searchControl.go(limit);
 }
