@@ -2,31 +2,24 @@
 
 namespace io {
 
-istream& fail_here(istream& in) {
+istream& fail(istream& in) {
     in.setstate(std::ios::failbit);
     return in;
 }
 
 istream& fail_char(istream& in) {
     in.unget();
-    return fail_here(in);
+    return fail(in);
 }
 
-istream& fail_pos(istream& in, std::streampos before) {
+istream& fail_pos(istream& in, std::streampos here) {
     in.clear();
-    in.seekg(before);
-    return fail_here(in);
+    in.seekg(here);
+    return fail(in);
 }
 
 istream& fail_rewind(istream& in) {
     return fail_pos(in, 0);
-}
-
-istream& skip_token(istream& in) {
-    while (in && !std::isspace(in.peek())) {
-        in.ignore();
-    }
-    return in;
 }
 
 /**

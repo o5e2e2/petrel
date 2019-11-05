@@ -49,30 +49,19 @@ struct Square : Index<64, square_t> {
     }
 
     friend io::istream& operator >> (io::istream& in, Square& sq) {
-        auto before = in.tellg();
-        File file{File::Begin}; Rank rank{Rank::Begin};
-
-        if (in >> file >> rank) {
-            sq = Square{file, rank};
-        }
-        else {
-            io::fail_pos(in, before);
-        }
-        return in;
-    }
-
-    static Square read(io::istream& in) {
-        auto before = in.tellg();
+        auto here = in.tellg();
 
         File file{File::Begin};
         Rank rank{Rank::Begin};
+        in >> file >> rank;
 
-        if (in >> file >> rank) {
-            return Square{file, rank};
+        if (in) {
+            sq = Square{file, rank};
         }
-
-        io::fail_pos(in, before);
-        return {};
+        else {
+            io::fail_pos(in, here);
+        }
+        return in;
     }
 
 };

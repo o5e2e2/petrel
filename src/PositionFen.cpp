@@ -121,15 +121,14 @@ void PositionFen::writeMove(io::ostream& out, Move move) const {
 }
 
 Move PositionFen::readMove(io::istream& in) const {
-    auto before = in.tellg();
+    Square moveFrom;
+    Square moveTo;
 
-    in >> std::ws;
-
-    Square moveFrom = Square::read(in);
-    Square moveTo = Square::read(in);
+    auto here = in.tellg();
+    in >> std::ws >> moveFrom >> moveTo;
 
     if (!in) {
-        io::fail_pos(in, before);
+        io::fail_pos(in, here);
         return {};
     }
 
@@ -139,7 +138,7 @@ Move PositionFen::readMove(io::istream& in) const {
     }
 
     if (!MY.hasPieceOn(moveFrom)) {
-        io::fail_pos(in, before);
+        io::fail_pos(in, here);
         return {};
     }
 
@@ -161,21 +160,21 @@ Move PositionFen::readMove(io::istream& in) const {
     else if (pi.is(TheKing)) {
         if (MY.hasPieceOn(moveTo)) { //Chess960 castling encoding
             if (!MY.isCastling(moveTo)) {
-                io::fail_pos(in, before);
+                io::fail_pos(in, here);
                 return {};
             }
             return Move::castling(moveTo, moveFrom);
         }
         if (moveFrom.is(E1) && moveTo.is(G1)) {
             if (!MY.hasPieceOn(H1) || !MY.isCastling(H1)) {
-                io::fail_pos(in, before);
+                io::fail_pos(in, here);
                 return {};
             }
             return Move::castling(H1, E1);
         }
         if (moveFrom.is(E1) && moveTo.is(C1)) {
             if (!MY.hasPieceOn(A1) || !MY.isCastling(A1)) {
-                io::fail_pos(in, before);
+                io::fail_pos(in, here);
                 return {};
             }
             return Move::castling(A1, E1);
@@ -192,7 +191,7 @@ void PositionFen::limitMoves(io::istream& in) {
     index_t limit = 0;
 
     while (in) {
-        auto before = in.tellg();
+        auto here = in.tellg();
 
         Move move = readMove(in);
         if (in) {
@@ -208,7 +207,7 @@ void PositionFen::limitMoves(io::istream& in) {
 
         }
 
-        io::fail_pos(in, before);
+        io::fail_pos(in, here);
     }
 
     if (limit > 0) {
@@ -224,7 +223,7 @@ void PositionFen::limitMoves(io::istream& in) {
 
 void PositionFen::playMoves(io::istream& in) {
     while (in) {
-        auto before = in.tellg();
+        auto here = in.tellg();
 
         Move move = readMove(in);
         if (in) {
@@ -238,7 +237,7 @@ void PositionFen::playMoves(io::istream& in) {
             }
         }
 
-        io::fail_pos(in, before);
+        io::fail_pos(in, here);
     }
 }
 
@@ -293,12 +292,14 @@ io::istream& PositionFen::setEnPassant(io::istream& in) {
         return in;
     }
 
-    auto before = in.tellg();
+    Square ep;
 
-    Square ep = Square::read(in);
+    auto here = in.tellg();
+    in >> ep;
+
     if (in) {
         if (!ep.on(colorToMove.is(White) ? Rank6 : Rank3) || !Position::setEnPassant(File{ep})) {
-            io::fail_pos(in, before);
+            io::fail_pos(in, here);
         }
     }
     return in;

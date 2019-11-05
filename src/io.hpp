@@ -13,7 +13,7 @@ namespace io {
     typedef ostream::char_type char_type;
     typedef const char_type* czstring;
 
-    istream& fail_here(istream&);
+    istream& fail(istream&);
     istream& fail_char(istream&);
     istream& fail_pos(istream&, std::streampos);
     istream& fail_rewind(istream&);
@@ -21,7 +21,6 @@ namespace io {
     bool next(istream&, czstring);
     bool nextNone(istream&);
 
-    istream& skip_token(istream&);
     ostream& app_version(ostream&);
 }
 

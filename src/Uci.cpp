@@ -150,8 +150,8 @@ void Uci::go() {
         else if (next("perft"))    { limit.isPerft = true; }
         else if (next("divide"))   { limit.isDivide = true; }
         else if (next("searchmoves")) { limit.positionMoves.limitMoves(command); }
-        else if (!nextNone())      { io::fail_here(command); return; }
-        else { break; }
+        else if (nextNone())       { break; }
+        else { io::fail(command); return; }
     }
 
     searchControl.go(limit);
