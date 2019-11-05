@@ -43,6 +43,7 @@ public:
 
     void uciok() const;
     void readyok() const;
+    void infoPosition() const;
     void go(const SearchLimit&);
     void setHash(size_t);
 

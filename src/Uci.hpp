@@ -22,6 +22,8 @@ class Uci {
     void setoption();
     void ucinewgame();
 
+    void reportError(io::ostream&);
+
 public:
     Uci (io::ostream&);
     void operator() (io::istream&, io::ostream& = std::cerr);

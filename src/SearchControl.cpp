@@ -22,6 +22,10 @@ void SearchControl::readyok() const {
     info.isready(!isBusy());
 }
 
+void SearchControl::infoPosition() const {
+    info.position();
+}
+
 void SearchControl::go(const SearchLimit& searchLimit) {
     nodesLimit = searchLimit.getNodesLimit();
     nodes = 0;

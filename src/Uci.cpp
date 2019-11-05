@@ -11,8 +11,7 @@ Uci::Uci (io::ostream& out):
 }
 
 void Uci::operator() (io::istream& in, io::ostream& err) {
-    std::string currentLine;
-    while (std::getline(in, currentLine)) {
+    for (std::string currentLine; std::getline(in, currentLine); ) {
         command.clear(); //clear errors from the previous command
         command.str(std::move(currentLine));
         command >> std::ws;
@@ -28,11 +27,15 @@ void Uci::operator() (io::istream& in, io::ostream& err) {
         else if (next("quit"))      { break; }
         else if (next("exit"))      { break; }
 
-        //report error if something left unparsed
         if (!nextNone()) {
-            err << "parsing error: " << command.rdbuf() << '\n';
+            //parsing error if something left unparsed
+            reportError(err);
         }
     }
+}
+
+void Uci::reportError(io::ostream& err) {
+    err << "parsing error: " << command.rdbuf() << '\n';
 }
 
 void Uci::ucinewgame() {
@@ -109,7 +112,7 @@ void Uci::setHash() {
 
 void Uci::position() {
     if (nextNone()) {
-        info.position();
+        searchControl.infoPosition();
         return;
     }
 
