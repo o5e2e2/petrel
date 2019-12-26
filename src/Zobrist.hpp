@@ -5,7 +5,6 @@
 #include "ZobristKey.hpp"
 
 class Zobrist {
-    static const ZobristKey zobristKey;
     typedef ZobristKey::Index Index;
 
 public:
@@ -14,7 +13,7 @@ public:
 
 private:
     _t _v;
-    void drop(Index ty, Square to) { _v ^= zobristKey(ty, to); }
+    void drop(Index ty, Square to) { _v ^= ::zobristKey(ty, to); }
     void clear(Index ty, Square from) { drop(ty, from); }
 
 public:

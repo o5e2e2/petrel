@@ -16,18 +16,18 @@
 /**
 * Startup constant initialization
 */
-const BetweenSquares between; //32k
-const ReverseBb::Direction ReverseBb::direction; //12k
-const ReverseBb::Singleton ReverseBb::singleton; //1k
-const PieceTypeAttack attacksFrom; //3k
+constexpr const BetweenSquares between; //32k
+constexpr const DirectionBb directionBb; //12k
+constexpr const SingletonBb singletonBb; //1k
+constexpr const PieceTypeAttack attacksFrom; //3k
 constexpr const VectorOf vectorOfAll; //4k
-const VectorPiSingle vectorPiSingle; //256
-constexpr const PieceSquareTable Evaluation::pieceSquareTable; //7*64
-constexpr const ZobristKey Zobrist::zobristKey; //64
-const CastlingRules castlingRules; //128
+constexpr const VectorPiSingle vectorPiSingle; //256
+constexpr const PieceSquareTable pieceSquareTable; //7*64
+constexpr const ZobristKey zobristKey; //64
+constexpr const CastlingRules castlingRules; //128
 const BitReverse bitReverse; //64
 const VectorBitCount bitCount; //48
-constexpr const VectorPiOrder::Sorted VectorPiOrder::sorted; //16
+const VectorPiOrder::Sorted VectorPiOrder::sorted; //16
 
 using io::czstring;
 template <> czstring PieceType::The_string{"qrbnpk"};

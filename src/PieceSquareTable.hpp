@@ -96,4 +96,6 @@ public:
     constexpr const _t& operator() (Index::_t ty, Square sq) const { return pst[ty][sq]; }
 };
 
+extern const PieceSquareTable pieceSquareTable;
+
 #endif

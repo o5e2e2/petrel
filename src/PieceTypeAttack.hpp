@@ -7,7 +7,7 @@
 class PieceTypeAttack {
     PieceType::static_array< Square::static_array<Bb> > attack;
 public:
-    PieceTypeAttack () {
+    constexpr PieceTypeAttack () {
         FOR_INDEX (Square, sq) {
             attack[Rook][sq] = sq.vertical() + sq.horizont();
             attack[Bishop][sq] = sq.diagonal() + sq.antidiag();
@@ -28,7 +28,7 @@ public:
         }
     }
 
-    const Bb& operator() (PieceType ty, Square sq) const {
+    constexpr const Bb& operator() (PieceType ty, Square sq) const {
         return attack[ty][sq];
     }
 };

@@ -6,8 +6,6 @@
 #include "PieceSquareTable.hpp"
 
 class Evaluation {
-    static const PieceSquareTable pieceSquareTable;
-
 public:
     typedef index_t _t;
 

@@ -22,7 +22,7 @@ private:
         Extra  = 0x03ac4dfb48546797ull
     };
 
-    const Index::static_array<_t> key = {{
+    const Index::array<_t> key = {{
         Queen, Rook, Bishop, Knight, Pawn, King,
         Extra ^ Rook, //castling
         Extra ^ Pawn //en passant
@@ -32,5 +32,7 @@ public:
     constexpr _t operator() (Index i, Square sq) const { return rol(key[i], sq); }
 
 };
+
+extern const ZobristKey zobristKey;
 
 #endif

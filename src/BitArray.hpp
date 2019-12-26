@@ -17,8 +17,8 @@ protected:
     constexpr void operator &= (B b) { _v &= b._v; }
     constexpr void operator |= (B b) { _v |= b._v; }
     constexpr void operator ^= (B b) { _v ^= b._v; }
-    void operator %= (B b) { _v |= b._v; _v ^= b._v; }  //"and not"
-    bool operator == (B b) { return _v == b._v; }
+    constexpr void operator %= (B b) { _v |= b._v; _v ^= b._v; }  //"and not"
+    constexpr bool operator == (B b) { return _v == b._v; }
 
 };
 

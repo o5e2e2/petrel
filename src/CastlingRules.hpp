@@ -13,7 +13,7 @@ class CastlingRules {
     File::static_array< File::static_array<Rules> > castlingRules;
 
 public:
-    CastlingRules () {
+    constexpr CastlingRules () {
         FOR_INDEX(File, kingFile) {
             FOR_INDEX(File, rookFile) {
                 Square king(kingFile, Rank1);
