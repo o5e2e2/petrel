@@ -4,7 +4,7 @@
 #include "typedefs.hpp"
 #include "Square.hpp"
 
-class CACHE_ALIGN ZobristKey {
+class ZobristKey {
 public:
     typedef std::uint64_t _t;
     typedef ::Index<8, piece_type_t> Index;
@@ -22,7 +22,7 @@ private:
         Extra  = 0x03ac4dfb48546797ull
     };
 
-    const Index::array<_t> key = {{
+    const Index::static_array<_t> key = {{
         Queen, Rook, Bishop, Knight, Pawn, King,
         Extra ^ Rook, //castling
         Extra ^ Pawn //en passant

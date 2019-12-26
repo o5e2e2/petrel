@@ -3,9 +3,9 @@
 #include "CastlingRules.hpp"
 #include "PieceTypeAttack.hpp"
 
-#define MY (this->ps)[My]
-#define OP (this->ps)[Op]
-#define OCCUPIED (this->ps)[My].occupied()
+#define MY (*this)[My]
+#define OP (*this)[Op]
+#define OCCUPIED (*this)[My].occupied()
 
 template <Side::_t My>
 void PositionMoves::generateEnPassantMoves() {
@@ -60,8 +60,8 @@ void PositionMoves::generatePawnMoves() {
     for (Pi pi : MY.pawns()) {
         Square from{ MY.squareOf(pi) };
 
-        Rank rankTo{ ::rankForward(Rank{from}) };
-        BitRank fileTo{File{from}};
+        Rank rankTo{ ::rankForward(Rank(from)) };
+        BitRank fileTo = File(from);
 
         //push to free square
         fileTo %= OCCUPIED[rankTo];
@@ -90,15 +90,15 @@ void PositionMoves::correctCheckEvasionsByPawns(Bb checkLine, Square checkFrom) 
 
     Bb affectedPawns = MY.pawnsSquares() & (potencialEvasions | invalidDiagonalMoves);
     for (Square from : affectedPawns) {
-        Rank rankTo = ::rankForward(Rank{from});
         Bb bb = (Bb{from.rankForward()} & checkLine) + (::attacksFrom(Pawn, from) & checkFrom);
+        Rank rankTo = ::rankForward(Rank(from));
         moves.set(MY.pieceOn(from), rankTo, bb[rankTo]);
     }
 
     //pawns double push over check line
     Bb pawnJumpEvasions = MY.pawnsSquares() & Bb{Rank2} & (checkLine << 16) % (OCCUPIED << 8);
     for (Square from : pawnJumpEvasions) {
-        moves.add(MY.pieceOn(from), Rank4, File{from});
+        moves.add(MY.pieceOn(from), Rank4, File(from));
     }
 
 }
@@ -254,9 +254,9 @@ Zobrist PositionMoves::createZobrist(Square from, Square to) const {
 
     if (ty.is(Pawn)) {
         if (from.on(Rank7)) {
-            Square promotedTo(File{to}, Rank8);
+            Square promotedTo{File(to), Rank8};
             mz.clear(Pawn, from);
-            mz.drop(static_cast<PieceType>(PromoType{to}), promotedTo);
+            mz.drop(static_cast<PieceType>(PromoType(to)), promotedTo);
 
             if (OP.isOccupied(~promotedTo)) {
                 Pi victim = OP.pieceOn(~promotedTo);
@@ -272,7 +272,7 @@ Zobrist PositionMoves::createZobrist(Square from, Square to) const {
         if (from.on(Rank2) && to.on(Rank4)) {
             mz.move(ty, from, to);
 
-            File file = File{from};
+            File file = File(from);
             Square ep(file, Rank3);
 
             Bb killers = ~OP.pawnsSquares() & ::attacksFrom(Pawn, ep);
@@ -290,7 +290,7 @@ Zobrist PositionMoves::createZobrist(Square from, Square to) const {
         }
 
         if (from.on(Rank5) && to.on(Rank5)) {
-            Square ep(File{to}, Rank6);
+            Square ep{File(to), Rank6};
             mz.move(Pawn, from, ep);
             oz.clear(Pawn, ~to);
             return Zobrist{oz, mz};

@@ -3,9 +3,9 @@
 #include "CastlingRules.hpp"
 #include "PieceTypeAttack.hpp"
 
-#define MY (this->ps)[My]
-#define OP (this->ps)[Op]
-#define OCCUPIED (this->ps)[My].occupied()
+#define MY (*this)[My]
+#define OP (*this)[Op]
+#define OCCUPIED (*this)[My].occupied()
 
 template <Side::_t My>
 void Position::updateSliderAttacks(VectorPiMask affected) {
@@ -60,8 +60,8 @@ void Position::setLegalEnPassant(Pi pi) {
     assert (!OP.hasEnPassant());
 
     Square to{MY.squareOf(pi)};
-    Square from(File{to}, Rank2);
-    Square ep(File{to}, Rank3);
+    Square from(File(to), Rank2);
+    Square ep(File(to), Rank3);
 
     assert (to.on(Rank4));
 
@@ -92,8 +92,8 @@ void Position::playPawnMove(Pi pi, Square from, Square to) {
 
     if (from.on(Rank7)) {
         //decoding promotion piece type and destination square
-        PromoType ty{to};
-        Square promotedTo = Square{File{to}, Rank8};
+        PromoType ty(to);
+        Square promotedTo{File(to), Rank8};
 
         MY.promote(pi, ty, from, promotedTo);
         OP.setGamePhase(MY);
@@ -115,7 +115,7 @@ void Position::playPawnMove(Pi pi, Square from, Square to) {
 
         if (from.on(Rank5) && to.on(Rank5)) {
             //en passant capture
-            Square ep(File{to}, Rank6);
+            Square ep{File(to), Rank6};
             MY.movePawn(pi, from, ep);
             updateSliderAttacks<My>(MY.attackersTo(from, to, ep), OP.attackersTo(~from, ~to, ~ep));
             return;
@@ -203,8 +203,8 @@ void Position::playMove(Square from, Square to) {
 
 void Position::playMove(const Position& parent, Square from, Square to) {
     assert (this != &parent);
-    MY = parent.ps[Op];
-    OP = parent.ps[My];
+    MY = parent[Op];
+    OP = parent[My];
 
     //current position flipped its sides relative to parent, so we make the move inplace for the Op
     playMove<Op>(from, to);

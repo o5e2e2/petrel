@@ -4,8 +4,8 @@
 #include "FenBoard.hpp"
 #include "CastlingRules.hpp"
 
-#define MY (this->ps)[My]
-#define OP (this->ps)[Op]
+#define MY (*this)[My]
+#define OP (*this)[Op]
 
 class WriteFenBoard {
     const PositionSide& whitePieces;
@@ -56,7 +56,7 @@ class WriteFenCastling {
 
             switch (chessVariant) {
                 case Chess960:
-                    castlingSymbol = File{positionSide.squareOf(pi)}.to_char();
+                    castlingSymbol = File(positionSide.squareOf(pi)).to_char();
                     break;
 
                 case Orthodox:
@@ -103,8 +103,8 @@ void PositionFen::fenEnPassant(io::ostream& out) const {
 
 io::ostream& operator << (io::ostream& out, const PositionFen& pos) {
     auto whiteSide = pos.getColorSide(White);
-    auto& whitePieces = pos.ps[whiteSide];
-    auto& blackPieces = pos.ps[~whiteSide];
+    auto& whitePieces = pos[whiteSide];
+    auto& blackPieces = pos[~whiteSide];
 
     out << WriteFenBoard(whitePieces, blackPieces)
         << ' '
@@ -152,8 +152,8 @@ Move PositionFen::readMove(io::istream& in) const {
             in.clear(); //promotion piece is optional
             return Move::promotion(moveFrom, moveTo, promo);
         }
-        if (moveFrom.on(Rank5) && OP.hasEnPassant() && OP.enPassantFile().is(File{moveTo})) {
-            return Move::enPassant(moveFrom, Square{File{moveTo}, Rank5});
+        if (moveFrom.on(Rank5) && OP.hasEnPassant() && OP.enPassantFile().is(File(moveTo))) {
+            return Move::enPassant(moveFrom, Square{File(moveTo), Rank5});
         }
         //else normal pawn move
     }
@@ -298,7 +298,7 @@ io::istream& PositionFen::setEnPassant(io::istream& in) {
     in >> ep;
 
     if (in) {
-        if (!ep.on(colorToMove.is(White) ? Rank6 : Rank3) || !Position::setEnPassant(File{ep})) {
+        if (!ep.on(colorToMove.is(White) ? Rank6 : Rank3) || !Position::setEnPassant( File(ep) )) {
             io::fail_pos(in, here);
         }
     }

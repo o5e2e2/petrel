@@ -39,7 +39,7 @@ public:
     }
 
     void clear(Pi pi, Square sq) {
-        matrix[Rank{sq}] -= VectorPiRank{File{sq}} & VectorPiMask{pi};
+        matrix[Rank(sq)] -= VectorPiRank{File(sq)} & VectorPiMask{pi};
     }
 
     void clear(Pi pi) {
@@ -64,7 +64,7 @@ public:
     }
 
     void add(Pi pi, Square sq) {
-        add(pi, Rank{sq}, File{sq});
+        add(pi, Rank(sq), File(sq));
     }
 
     void add(Pi pi, Bb bb) {
@@ -74,7 +74,7 @@ public:
     }
 
     bool has(Pi pi, Square sq) const {
-        return (matrix[Rank{sq}] & VectorPiRank{File{sq}} & VectorPiMask{pi}).any();
+        return (matrix[Rank(sq)] & VectorPiRank{File(sq)} & VectorPiMask{pi}).any();
     }
 
     const VectorPiRank& operator[] (Rank rank) const {
@@ -87,7 +87,7 @@ public:
 
     //pieces affecting the given square
     VectorPiMask operator[] (Square sq) const {
-        return matrix[Rank{sq}][File{sq}];
+        return matrix[Rank(sq)][File(sq)];
     }
 
     //bitboard of the given piece

@@ -4,10 +4,8 @@
 #include "PositionSide.hpp"
 
 class Position {
-protected:
     Side::array<PositionSide> ps;
 
-private:
     template <Side::_t> void updateSliderAttacks(VectorPiMask);
     template <Side::_t> void updateSliderAttacks(VectorPiMask, VectorPiMask);
     template <Side::_t> void setLegalEnPassant(Pi);
@@ -15,18 +13,22 @@ private:
     template <Side::_t> void playKingMove(Square, Square);
     template <Side::_t> void playPawnMove(Pi, Square, Square);
     template <Side::_t> void playCastling(Pi, Square, Square);
-
     template <Side::_t> void playMove(Square, Square);
+
+protected:
+    constexpr PositionSide& operator[] (Side side) { return (this->ps)[side]; }
 
 public:
     constexpr Position () = default;
     Position (const Position&) = default;
 
-    VectorPiMask myAlivePieces() const { return ps[My].alivePieces(); }
-    Square mySquareOf(Pi pi) const { return ps[My].squareOf(pi); }
+    constexpr const PositionSide& operator[] (Side side) const { return (this->ps)[side]; }
 
-    Move createMove(Square from, Square to) const { return ps[My].createMove(from, to); }
-    Score evaluate() const { return PositionSide::evaluate(ps[My], ps[Op]); }
+    VectorPiMask myAlivePieces() const { return (*this)[My].alivePieces(); }
+    Square mySquareOf(Pi pi) const { return (*this)[My].squareOf(pi); }
+
+    Move createMove(Square from, Square to) const { return (*this)[My].createMove(from, to); }
+    Score evaluate() const { return PositionSide::evaluate((*this)[My], (*this)[Op]); }
 
     void playMove(const Position&, Square, Square);
     void playMove(Square, Square);

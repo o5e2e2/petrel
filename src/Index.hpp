@@ -77,20 +77,9 @@ public:
     template <typename T> using array = std::array<T, Size>;
 
     template <typename T> struct CACHE_ALIGN static_array : array<T> {
-        using Base = array<T>;
-        typedef Index index_type;
-
         constexpr static_array () = default;
         static_array (const static_array&) = delete;
         static_array& operator = (const static_array&) = delete;
-
-        constexpr const T& operator[] (index_type i) const {
-            return Base::operator[](i);
-        }
-
-        constexpr T& operator[] (index_type i) {
-            return const_cast<T&>( static_cast<Base const&>(*this).operator[](i) );
-        }
     };
 
 };

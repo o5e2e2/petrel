@@ -29,22 +29,22 @@ public:
         return PieceSet( static_cast<PieceSet::_t>(_mm_movemask_epi8(this->_v)) );
     }
 
-    bool has(Pi pi) const { return PieceSet{*this}.has(pi); }
-    bool none() const { return PieceSet{*this}.none(); }
-    bool isSingleton() const { return PieceSet{*this}.isSingleton(); }
+    bool has(Pi pi) const { return PieceSet(*this).has(pi); }
+    bool none() const { return PieceSet(*this).none(); }
+    bool isSingleton() const { return PieceSet(*this).isSingleton(); }
 
-    Pi index() const { return PieceSet{*this}.index(); }
-    Pi smallestOne() const { return PieceSet{*this}.smallestOne(); }
-    Pi largestOne() const { return PieceSet{*this}.largestOne(); }
-    Pi seekVacant() const { return PieceSet{*this}.seekVacant(); }
+    Pi index() const { return PieceSet(*this).index(); }
+    Pi smallestOne() const { return PieceSet(*this).smallestOne(); }
+    Pi largestOne() const { return PieceSet(*this).largestOne(); }
+    Pi seekVacant() const { return PieceSet(*this).seekVacant(); }
 
-    index_t count() const { return PieceSet{*this}.count(); }
+    index_t count() const { return PieceSet(*this).count(); }
 
     PieceSet begin() const { return *this; }
     PieceSet end() const { return {}; }
 
     friend io::ostream& operator << (io::ostream& out, VectorPiMask v) {
-        return out << PieceSet{v};
+        return out << PieceSet(v);
     }
 
 };

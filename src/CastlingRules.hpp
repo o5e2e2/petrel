@@ -44,7 +44,7 @@ public:
         assert (king.on(Rank1));
         assert (rook.on(Rank1));
         assert (king != rook);
-        return (occupied & castlingRules[File{king}][File{rook}].unimpeded).none() && (attacked & castlingRules[File{king}][File{rook}].unattacked).none();
+        return (occupied & castlingRules[File(king)][File(rook)].unimpeded).none() && (attacked & castlingRules[File(king)][File(rook)].unattacked).none();
     }
 
     static constexpr CastlingSide castlingSide(Square king, Square rook) {

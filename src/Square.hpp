@@ -25,7 +25,7 @@ struct Square : Index<64, square_t> {
 
     constexpr explicit operator File() const { return static_cast<File::_t>(this->_v & File::Mask); }
     constexpr explicit operator Rank() const { return static_cast<Rank::_t>(static_cast<unsigned>(this->_v) >> RankShift); }
-    constexpr explicit operator PromoType() const { return static_cast<PromoType::_t>(+Rank{*this}); }
+    constexpr explicit operator PromoType() const { return static_cast<PromoType::_t>(+Rank(*this)); }
 
     constexpr Square& flip() { this->_v = static_cast<_t>(this->_v ^ RankMask); return *this; }
     constexpr Square operator ~ () const { return static_cast<_t>(this->_v ^ RankMask); }
@@ -45,7 +45,7 @@ struct Square : Index<64, square_t> {
     }
 
     friend io::ostream& operator << (io::ostream& out, Square sq) {
-        return out << File{sq} << Rank{sq};
+        return out << File(sq) << Rank(sq);
     }
 
     friend io::istream& operator >> (io::istream& in, Square& sq) {

@@ -35,14 +35,14 @@ public:
     constexpr static Move castling(Square f, Square t)  { return Move::special(f, t); }
     constexpr static Move promotion(Square f, Square t) { return Move::special(f, t); }
     constexpr static Move promotion(Square f, Square t, PromoType ty) {
-        return Move::promotion(f, Square{File{t}, static_cast<Rank::_t>(+ty)});
+        return Move::promotion(f, Square{File(t), static_cast<Rank::_t>(+ty)});
     }
 
     constexpr operator bool() const { return _v != 0; }
 
     constexpr Square from() const { return static_cast<Square::_t>(_v >>FromShift & Square::Mask); }
     constexpr Square to()   const { return static_cast<Square::_t>(_v >>ToShift & Square::Mask); }
-    constexpr PromoType promoType() const { return PromoType{to()}; }
+    constexpr PromoType promoType() const { return PromoType(to()); }
 
     static io::ostream& write(io::ostream&, Move, Color, ChessVariant = Orthodox);
 };
