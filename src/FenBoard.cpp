@@ -60,7 +60,7 @@ bool FenBoard::drop(Color color, PieceType ty, Square sq) {
     return true;
 }
 
-bool FenBoard::setPosition(Position& position, Color colorToMove) {
+bool FenBoard::dropPieces(Position& position, Color colorToMove) {
     //each side should have one king
     FOR_INDEX(Color, color) {
         if (pieces[color][King].empty()) {
@@ -84,10 +84,6 @@ bool FenBoard::setPosition(Position& position, Color colorToMove) {
                 pieces[color][ty].erase(piece);
             }
         }
-    }
-
-    if (!pos.afterDrop()) {
-        return false;
     }
 
     position = pos;

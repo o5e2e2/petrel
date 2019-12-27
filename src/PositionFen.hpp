@@ -17,6 +17,10 @@ class PositionFen : public PositionMoves {
     io::istream& setCastling(io::istream&);
     io::istream& setEnPassant(io::istream&);
 
+    bool setCastling(Side, File);
+    bool setCastling(Side, CastlingSide);
+    bool setEnPassant(File);
+
 public:
     constexpr PositionFen() = default;
 

@@ -52,6 +52,8 @@ friend class Position;
 
     //used only during initial position setup
     bool dropValid(PieceType, Square);
+
+friend class PositionFen;
     bool setValidCastling(File);
     bool setValidCastling(CastlingSide);
 

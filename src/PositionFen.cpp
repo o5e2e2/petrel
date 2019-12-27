@@ -6,6 +6,7 @@
 
 #define MY (*this)[My]
 #define OP (*this)[Op]
+#define MY_OCCUPIED (*this).occupiedBb[My]
 
 class WriteFenBoard {
     const PositionSide& whitePieces;
@@ -246,9 +247,20 @@ void PositionFen::setBoard(io::istream& in) {
 
     in >> board >> std::ws >> colorToMove;
 
-    if (in && !board.setPosition(*this, colorToMove)) {
-        io::fail_char(in);
+    if (in) {
+        if (!board.dropPieces(*this, colorToMove) || !afterDrop()) {
+            io::fail(in);
+        }
     }
+
+}
+
+bool PositionFen::setCastling(Side My, File file) {
+    return MY.setValidCastling(file);
+}
+
+bool PositionFen::setCastling(Side My, CastlingSide castlingSide) {
+    return MY.setValidCastling(castlingSide);
 }
 
 io::istream& PositionFen::setCastling(io::istream& in) {
@@ -267,14 +279,14 @@ io::istream& PositionFen::setCastling(io::istream& in) {
 
             CastlingSide castlingSide{CastlingSide::Begin};
             if (castlingSide.from_char(c)) {
-                if (Position::setCastling(side, castlingSide)) {
+                if (setCastling(side, castlingSide)) {
                     continue;
                 }
             }
             else {
                 File file{File::Begin};
                 if (file.from_char(c)) {
-                    if (Position::setCastling(side, file)) {
+                    if (setCastling(side, file)) {
                         continue;
                     }
                 }
@@ -283,6 +295,26 @@ io::istream& PositionFen::setCastling(io::istream& in) {
         io::fail_char(in);
     }
     return in;
+}
+
+bool PositionFen::setEnPassant(File file) {
+    if (MY.hasEnPassant() || OP.hasEnPassant()) { return false; }
+    if (MY_OCCUPIED.has(Square{file, Rank7})) { return false; }
+    if (MY_OCCUPIED.has(Square{file, Rank6})) { return false; }
+
+    Square victimSquare(file, Rank4);
+    if (!OP.hasPieceOn(victimSquare)) { return false; }
+
+    Pi victim = OP.pieceOn(victimSquare);
+    if (!OP.isPawn(victim)) { return false; }
+
+    //check against illegal en passant set field like "8/5bk1/8/2Pp4/8/1K6/8/8 w - d6"
+    if (OP.isPinned((*this).occupiedBb[Op] - victimSquare)) {
+        return false;
+    }
+
+    setLegalEnPassant<Op>(victim);
+    return true;
 }
 
 io::istream& PositionFen::setEnPassant(io::istream& in) {
@@ -298,7 +330,7 @@ io::istream& PositionFen::setEnPassant(io::istream& in) {
     in >> ep;
 
     if (in) {
-        if (!ep.on(colorToMove.is(White) ? Rank6 : Rank3) || !Position::setEnPassant( File(ep) )) {
+        if (!ep.on(colorToMove.is(White) ? Rank6 : Rank3) || !setEnPassant( File(ep) )) {
             io::fail_pos(in, here);
         }
     }
@@ -327,3 +359,4 @@ void PositionFen::setStartpos() {
 
 #undef MY
 #undef OP
+#undef MY_OCCUPIED

@@ -8,7 +8,6 @@ class Position {
 
     template <Side::_t> void updateSliderAttacks(VectorPiMask);
     template <Side::_t> void updateSliderAttacks(VectorPiMask, VectorPiMask);
-    template <Side::_t> void setLegalEnPassant(Pi);
     template <Side::_t> void capture(Square);
     template <Side::_t> void playKingMove(Square, Square);
     template <Side::_t> void playPawnMove(Pi, Square, Square);
@@ -34,9 +33,7 @@ public:
     //initial position setup
     bool drop(Side, PieceType, Square);
     bool afterDrop();
-    bool setCastling(Side, File);
-    bool setCastling(Side, CastlingSide);
-    bool setEnPassant(File);
+    template <Side::_t> void setLegalEnPassant(Pi);
 };
 
 #endif

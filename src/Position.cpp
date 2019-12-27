@@ -228,38 +228,10 @@ bool Position::drop(Side My, PieceType ty, Square to) {
     return MY.dropValid(ty, to);
 }
 
-bool Position::setCastling(Side My, File file) {
-    return MY.setValidCastling(file);
-}
-
-bool Position::setCastling(Side My, CastlingSide castlingSide) {
-    return MY.setValidCastling(castlingSide);
-}
-
 bool Position::afterDrop() {
     PositionSide::finalSetup(MY, OP);
     updateSliderAttacks<Op>(OP.alivePieces(), MY.alivePieces());
     return MY.checkers().none(); //not in check
-}
-
-bool Position::setEnPassant(File file) {
-    if (MY.hasEnPassant() || OP.hasEnPassant()) { return false; }
-    if (MY_OCCUPIED.has(Square{file, Rank7})) { return false; }
-    if (MY_OCCUPIED.has(Square{file, Rank6})) { return false; }
-
-    Square victimSquare(file, Rank4);
-    if (!OP.hasPieceOn(victimSquare)) { return false; }
-
-    Pi victim = OP.pieceOn(victimSquare);
-    if (!OP.isPawn(victim)) { return false; }
-
-    //check against illegal en passant set field like "8/5bk1/8/2Pp4/8/1K6/8/8 w - d6"
-    if (OP.isPinned((*this).occupiedBb[Op] - victimSquare)) {
-        return false;
-    }
-
-    setLegalEnPassant<Op>(victim);
-    return true;
 }
 
 #undef MY
