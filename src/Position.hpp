@@ -16,17 +16,14 @@ class Position {
     template <Side::_t> void playMove(Square, Square);
 
 protected:
-    constexpr PositionSide& operator[] (Side side) { return (this->ps)[side]; }
     Side::array<Bb> occupiedBb; //all occupied squares by both sides, updated by combining both PositionSide::piecesBb
+    constexpr PositionSide& operator[] (Side side) { return (this->ps)[side]; }
 
 public:
     constexpr Position () = default;
     Position (const Position&) = default;
 
     constexpr const PositionSide& operator[] (Side side) const { return (this->ps)[side]; }
-
-    VectorPiMask myAlivePieces() const { return (*this)[My].alivePieces(); }
-    Square mySquareOf(Pi pi) const { return (*this)[My].squareOf(pi); }
 
     Move createMove(Square from, Square to) const { return (*this)[My].createMove(from, to); }
     Score evaluate() const { return PositionSide::evaluate((*this)[My], (*this)[Op]); }

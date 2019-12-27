@@ -4,8 +4,8 @@
 bool Node::visitChildren() {
     auto parentMoves = parent.cloneMoves();
 
-    for (Pi pi : parent.myAlivePieces()) {
-        Square from = parent.mySquareOf(pi);
+    for (Pi pi : parent[My].alivePieces()) {
+        Square from = parent[My].squareOf(pi);
 
         for (Square to : parentMoves[pi]) {
             CUT (control.countNode());
