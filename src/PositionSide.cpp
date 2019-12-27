@@ -43,7 +43,6 @@ void PositionSide::swap(PositionSide& MY, PositionSide& OP) {
     swap(MY.attacks, OP.attacks);
     swap(MY.types, OP.types);
     swap(MY.squares, OP.squares);
-    swap(MY.occupiedBb, OP.occupiedBb);
     swap(MY.piecesBb, OP.piecesBb);
     swap(MY.pawnsBb, OP.pawnsBb);
     swap(MY.opKing, OP.opKing);
@@ -56,11 +55,6 @@ void PositionSide::finalSetup(PositionSide& MY, PositionSide& OP) {
 
     MY.setGamePhase(OP);
     OP.setGamePhase(MY);
-}
-
-void PositionSide::syncOccupied(PositionSide& MY, PositionSide& OP) {
-    MY.occupiedBb = MY.piecesBb + ~OP.piecesBb;
-    OP.occupiedBb = OP.piecesBb + ~MY.piecesBb;
 }
 
 GamePhase PositionSide::generateGamePhase() const {

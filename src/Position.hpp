@@ -17,6 +17,7 @@ class Position {
 
 protected:
     constexpr PositionSide& operator[] (Side side) { return (this->ps)[side]; }
+    Side::array<Bb> occupiedBb; //all occupied squares by both sides, updated by combining both PositionSide::piecesBb
 
 public:
     constexpr Position () = default;

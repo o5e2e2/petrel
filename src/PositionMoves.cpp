@@ -5,7 +5,7 @@
 
 #define MY (*this)[My]
 #define OP (*this)[Op]
-#define OCCUPIED (*this)[My].occupied()
+#define MY_OCCUPIED (*this).occupiedBb[My]
 
 template <Side::_t My>
 void PositionMoves::generateEnPassantMoves() {
@@ -46,7 +46,7 @@ void PositionMoves::generateCastlingMoves() {
     constexpr Side Op{~My};
 
     for (Pi pi : MY.castlingRooks()) {
-        if ( ::castlingRules.isLegal(MY.kingSquare(), MY.squareOf(pi), OCCUPIED, attackedSquares) ) {
+        if ( ::castlingRules.isLegal(MY.kingSquare(), MY.squareOf(pi), MY_OCCUPIED, attackedSquares) ) {
             //castling encoded as the rook moves over the own king square
             moves.add(pi, MY.kingSquare());
         }
@@ -64,15 +64,15 @@ void PositionMoves::generatePawnMoves() {
         BitRank fileTo = File(from);
 
         //push to free square
-        fileTo %= OCCUPIED[rankTo];
+        fileTo %= MY_OCCUPIED[rankTo];
 
         //double push
-        if ((rankTo.is(Rank3)) && (fileTo % OCCUPIED[Rank4]).any()) {
+        if ((rankTo.is(Rank3)) && (fileTo % MY_OCCUPIED[Rank4]).any()) {
             moves.set(pi, Rank4, fileTo);
         }
 
         //remove "captures" of free squares from default generated moves
-        fileTo += moves[rankTo][pi] & OCCUPIED[rankTo];
+        fileTo += moves[rankTo][pi] & MY_OCCUPIED[rankTo];
 
         moves.set(pi, rankTo, fileTo);
     }
@@ -96,7 +96,7 @@ void PositionMoves::correctCheckEvasionsByPawns(Bb checkLine, Square checkFrom) 
     }
 
     //pawns double push over check line
-    Bb pawnJumpEvasions = MY.pawnsSquares() & Bb{Rank2} & (checkLine << 16) % (OCCUPIED << 8);
+    Bb pawnJumpEvasions = MY.pawnsSquares() & Bb{Rank2} & (checkLine << 16) % (MY_OCCUPIED << 8);
     for (Square from : pawnJumpEvasions) {
         moves.add(MY.pieceOn(from), Rank4, File(from));
     }
@@ -114,7 +114,7 @@ void PositionMoves::excludePinnedMoves(VectorPiMask pinnerCandidates) {
         assert (::attacksFrom(OP.typeOf(pi), pinFrom).has(MY.kingSquare()));
 
         const Bb& pinLine = ::between(MY.kingSquare(), pinFrom);
-        Bb betweenPieces = pinLine & OCCUPIED;
+        Bb betweenPieces = pinLine & MY_OCCUPIED;
         assert (betweenPieces.any());
 
         if (betweenPieces.isSingleton() && (betweenPieces & MY.sideSquares()).any()) {
@@ -276,11 +276,11 @@ Zobrist PositionMoves::createZobrist(Square from, Square to) const {
             Square ep(file, Rank3);
 
             Bb killers = ~OP.pawnsSquares() & ::attacksFrom(Pawn, ep);
-            if (killers.any() && !MY.isPinned(OCCUPIED - from + ep)) {
+            if (killers.any() && !MY.isPinned(MY_OCCUPIED - from + ep)) {
                 for (Square killer : killers) {
                     assert (killer.on(Rank4));
 
-                    if (!MY.isPinned(OCCUPIED - killer + ep)) {
+                    if (!MY.isPinned(MY_OCCUPIED - killer + ep)) {
                         mz.setEnPassant(file);
                         return Zobrist{oz, mz};
                     }
@@ -341,4 +341,4 @@ Zobrist PositionMoves::createZobrist(Square from, Square to) const {
 
 #undef MY
 #undef OP
-#undef OCCUPIED
+#undef MY_OCCUPIED

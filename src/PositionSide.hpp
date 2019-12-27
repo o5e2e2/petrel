@@ -18,7 +18,6 @@ class PositionSide {
     VectorPiType types; //type of each alive piece, rooks with castling rights, pawns affected by en passant
     VectorPiSquare squares; //onboard square locations of the alive pieces or 'NoSquare' special value
 
-    Bb occupiedBb; //all occupied squares by both sides, updated by combining piecesBb of both sides
     Bb piecesBb; //all pieces of the current side, incrementally updated
     Bb pawnsBb; //pawns of the current side, incrementally updated
 
@@ -34,7 +33,6 @@ class PositionSide {
 friend class Position;
     static void swap(PositionSide&, PositionSide&);
     static void finalSetup(PositionSide&, PositionSide&);
-    static void syncOccupied(PositionSide&, PositionSide&);
 
     void setOpKing(Square);
     void move(Pi, Square, Square);
@@ -73,7 +71,6 @@ public:
         void assertValid(Pi, PieceType, Square) const;
     #endif
 
-    const Bb& occupied() const { return occupiedBb; }
     const Bb& sideSquares() const { return piecesBb; }
     bool isOccupied(Square sq) const { return piecesBb.has(sq); }
     VectorPiMask alivePieces() const { assert (squares.alivePieces() == types.alivePieces()); return squares.alivePieces(); }

@@ -5,17 +5,18 @@
 
 #define MY (*this)[My]
 #define OP (*this)[Op]
-#define OCCUPIED (*this)[My].occupied()
+#define MY_OCCUPIED (*this).occupiedBb[My]
 
 template <Side::_t My>
 void Position::updateSliderAttacks(VectorPiMask affected) {
     constexpr Side Op{~My};
 
     //sync occupiedBb between sides
-    PositionSide::syncOccupied(MY, OP);
+    MY_OCCUPIED = MY.piecesBb + ~OP.piecesBb;
+    occupiedBb[Op] = ~MY_OCCUPIED;
 
     //TRICK: attacks calculated without opponent's king for implicit out of check king's moves generation
-    MY.setSliderAttacks(affected, OCCUPIED - MY.opKingSquare());
+    MY.setSliderAttacks(affected, MY_OCCUPIED - MY.opKingSquare());
 }
 
 template <Side::_t My>
@@ -23,7 +24,7 @@ void Position::updateSliderAttacks(VectorPiMask myAffected, VectorPiMask opAffec
     constexpr Side Op{~My};
 
     updateSliderAttacks<My>(myAffected);
-    OP.setSliderAttacks(opAffected, OP.occupied());
+    OP.setSliderAttacks(opAffected, (*this).occupiedBb[Op]);
 }
 
 template <Side::_t My>
@@ -70,7 +71,7 @@ void Position::setLegalEnPassant(Pi pi) {
         return;
     }
 
-    if (MY.isPinned(OCCUPIED)) {
+    if (MY.isPinned(MY_OCCUPIED)) {
         assert ((MY.checkers() % pi).any());
         return; //discovered check found
     }
@@ -79,7 +80,7 @@ void Position::setLegalEnPassant(Pi pi) {
     for (Square killer : killers) {
         assert (killer.on(Rank4));
 
-        if (!MY.isPinned(OCCUPIED - killer + ep - to)) {
+        if (!MY.isPinned(MY_OCCUPIED - killer + ep - to)) {
             MY.setEnPassantVictim(pi);
             OP.setEnPassantKiller(OP.pieceOn(~killer));
         }
@@ -243,8 +244,8 @@ bool Position::afterDrop() {
 
 bool Position::setEnPassant(File file) {
     if (MY.hasEnPassant() || OP.hasEnPassant()) { return false; }
-    if (OCCUPIED.has(Square{file, Rank7})) { return false; }
-    if (OCCUPIED.has(Square{file, Rank6})) { return false; }
+    if (MY_OCCUPIED.has(Square{file, Rank7})) { return false; }
+    if (MY_OCCUPIED.has(Square{file, Rank6})) { return false; }
 
     Square victimSquare(file, Rank4);
     if (!OP.hasPieceOn(victimSquare)) { return false; }
@@ -253,7 +254,7 @@ bool Position::setEnPassant(File file) {
     if (!OP.isPawn(victim)) { return false; }
 
     //check against illegal en passant set field like "8/5bk1/8/2Pp4/8/1K6/8/8 w - d6"
-    if (OP.isPinned(OP.occupied() - victimSquare)) {
+    if (OP.isPinned((*this).occupiedBb[Op] - victimSquare)) {
         return false;
     }
 
@@ -263,4 +264,4 @@ bool Position::setEnPassant(File file) {
 
 #undef MY
 #undef OP
-#undef OCCUPIED
+#undef MY_OCCUPIED
