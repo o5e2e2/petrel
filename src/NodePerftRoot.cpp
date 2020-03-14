@@ -11,9 +11,9 @@ NodePerftRoot::NodePerftRoot (const SearchLimit& limit, SearchControl& searchCon
     isDivide(limit.isDivide)
 {}
 
-bool NodePerftRoot::searchIteration() {
+Control NodePerftRoot::searchIteration() {
     if (isDivide) {
-        CUT ( NodePerftRootDivide(*this).visitChildren() );
+        RETURN_CONTROL ( NodePerftRootDivide(*this).visitChildren() );
     }
     else {
         switch (draft) {
@@ -22,22 +22,22 @@ bool NodePerftRoot::searchIteration() {
                 break;
 
             case 2:
-                CUT ( NodePerftLeaf(*this).visitChildren() );
+                RETURN_CONTROL ( NodePerftLeaf(*this).visitChildren() );
                 break;
 
             default:
                 assert (draft >= 3);
-                CUT ( NodePerftTT(*this, draft-1).visitChildren() );
+                RETURN_CONTROL ( NodePerftTT(*this, draft-1).visitChildren() );
         }
     }
 
     control.perftDepth(draft, perft, bestMove, bestScore);
-    return false;
+    return Control::Continue;
 }
 
-bool NodePerftRoot::iterativeDeepening() {
+Control NodePerftRoot::iterativeDeepening() {
     for (draft = 1; draft <= DepthMax; ++draft) {
-        CUT ( searchIteration() );
+        RETURN_CONTROL ( searchIteration() );
 
         perft = 0;
         bestMove = {};
@@ -46,10 +46,10 @@ bool NodePerftRoot::iterativeDeepening() {
         control.nextIteration();
     }
 
-    return false;
+    return Control::Continue;
 }
 
-bool NodePerftRoot::visitChildren() {
+Control NodePerftRoot::visitChildren() {
     if (draft > 0) {
         searchIteration();
     }
@@ -58,5 +58,5 @@ bool NodePerftRoot::visitChildren() {
     }
 
     control.bestmove(bestMove, bestScore);
-    return false;
+    return Control::Continue;
 }

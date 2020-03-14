@@ -4,7 +4,7 @@
 
 NodePerftLeaf::NodePerftLeaf(NodePerft& n) : Node(n) {}
 
-bool NodePerftLeaf::visit(Square from, Square to) {
+Control NodePerftLeaf::visit(Square from, Square to) {
     playMove(parent, from, to, Zobrist{0});
 
     //updateParentPerft:
@@ -17,5 +17,5 @@ bool NodePerftLeaf::visit(Square from, Square to) {
         p.bestMove = p.createMove(from, to);
     }
 
-    return false;
+    return Control::Continue;
 }

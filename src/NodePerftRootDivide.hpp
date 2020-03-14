@@ -10,7 +10,7 @@ class NodePerftRootDivide : public Node {
 
 public:
     NodePerftRootDivide(NodePerftRoot&);
-    bool visit(Square from, Square to) override;
+    Control visit(Square from, Square to) override;
 };
 
 #endif

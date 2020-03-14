@@ -19,7 +19,7 @@ protected:
 public:
     NodePerft (NodePerft& n, depth_t d) : Node(n), draft(d) {}
     NodePerft (const PositionMoves& p, SearchControl& c, depth_t d) : Node(p, c), draft{d} {}
-    bool visit(Square from, Square to) override;
+    Control visit(Square from, Square to) override;
 };
 
 #endif

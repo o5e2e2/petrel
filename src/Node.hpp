@@ -3,8 +3,6 @@
 
 #include "PositionMoves.hpp"
 
-#define CUT(found) { if (found) { return true; } } ((void)0)
-
 class SearchControl;
 
 class Node : public PositionMoves {
@@ -22,8 +20,8 @@ protected:
 
 public:
     virtual ~Node() = default;
-    virtual bool visit(Square, Square) { return false; };
-    virtual bool visitChildren();
+    virtual Control visit(Square, Square) { return Control::Continue; };
+    virtual Control visitChildren();
 };
 
 #endif

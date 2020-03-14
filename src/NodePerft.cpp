@@ -2,17 +2,17 @@
 #include "NodePerftLeaf.hpp"
 #include "NodePerftTT.hpp"
 
-bool NodePerft::visit(Square from, Square to) {
+Control NodePerft::visit(Square from, Square to) {
     playMove(parent, from, to, getZobrist());
 
     switch (draft) {
         case 2:
-            CUT ( NodePerftLeaf(*this).visitChildren() );
+            RETURN_CONTROL ( NodePerftLeaf(*this).visitChildren() );
             break;
 
         default:
             assert (draft >= 3);
-            CUT ( NodePerftTT(*this, draft-1).visitChildren() );
+            RETURN_CONTROL ( NodePerftTT(*this, draft-1).visitChildren() );
     }
 
     updateParentPerft();
@@ -25,5 +25,5 @@ bool NodePerft::visit(Square from, Square to) {
 
     bestScore = Score::Minimum;
     bestMove = {};
-    return false;
+    return Control::Continue;
 }

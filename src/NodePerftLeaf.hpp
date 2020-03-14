@@ -8,7 +8,7 @@ class NodePerft;
 class NodePerftLeaf : public Node {
 public:
     NodePerftLeaf (NodePerft&);
-    bool visit(Square from, Square to) override;
+    Control visit(Square from, Square to) override;
 };
 
 #endif

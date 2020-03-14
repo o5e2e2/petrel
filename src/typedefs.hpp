@@ -7,6 +7,13 @@
 
 using std::size_t;
 
+enum class Control : bool {
+    Continue = false,
+    Abort = true
+};
+
+#define RETURN_CONTROL(control) { Control c = control; if (c != Control::Continue) { return c; } } ((void)0)
+
 typedef index_t depth_t; //search tree depth (relative to root)
 typedef std::uint64_t node_count_t;
 enum : node_count_t {

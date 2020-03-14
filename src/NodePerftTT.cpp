@@ -2,7 +2,7 @@
 #include "PerftTT.hpp"
 #include "SearchControl.hpp"
 
-bool NodePerftTT::visit(Square from, Square to) {
+Control NodePerftTT::visit(Square from, Square to) {
     auto& p = static_cast<NodePerft&>(parent);
 
     setZobrist(p, from, to);
@@ -13,15 +13,15 @@ bool NodePerftTT::visit(Square from, Square to) {
         if (n != NodeCountNone) {
             perft = n;
             updateParentPerft();
-            return false;
+            return Control::Continue;
         }
     }
 
     auto parentPerftBefore = p.perft;
-    CUT ( NodePerft::visit(from, to) );
+    RETURN_CONTROL ( NodePerft::visit(from, to) );
     auto n = p.perft - parentPerftBefore;
 
     control.tt().set(getZobrist(), draft-2, n);
 
-    return false;
+    return Control::Continue;
 }
