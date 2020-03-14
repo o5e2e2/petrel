@@ -32,18 +32,9 @@ void SearchControl::go(const SearchLimit& limit) {
     info.clear();
     transpositionTable.clearCounter();
 
-    auto duration = getThinkingTime(limit);
+    auto duration = limit.getThinkingTime();
     auto searchId = searchThread.start( std::make_unique<NodePerftRoot>(limit, *this) );
     timer.start(duration, searchThread, searchId);
-}
-
-Duration SearchControl::getThinkingTime(const SearchLimit& limit) const {
-    if (limit.movetime != Duration::zero()) { return limit.movetime; }
-
-    auto moves = limit.movestogo ? limit.movestogo : 60;
-    auto average = (limit.time[My] + (moves-1)*limit.inc[My]) / moves;
-
-    return std::min(limit.time[My], average);
 }
 
 Control SearchControl::countNode() {

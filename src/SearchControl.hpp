@@ -40,8 +40,6 @@ public:
     void go(const SearchLimit&);
     void setHash(size_t);
 
-    Duration getThinkingTime(const SearchLimit&) const;
-
     const PerftTT& tt() const { return transpositionTable; }
     PerftTT& tt() { return transpositionTable; }
 
