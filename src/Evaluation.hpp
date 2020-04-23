@@ -19,7 +19,7 @@ public:
     constexpr Evaluation () : pst{0}, gamePhase{Middlegame} {}
     Evaluation (const Evaluation&) = default;
 
-    Score evaluate() const { return static_cast<Score>(5 * static_cast<Score>(pst)); }
+    Score evaluate() const { return static_cast<Score>(5 * pst); }
 
     void drop(PieceType::_t ty, Square to) { pst += pieceSquareTable(ty, to); }
     void clear(PieceType::_t ty, Square from) { pst -= pieceSquareTable(ty, from); }
