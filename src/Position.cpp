@@ -12,7 +12,7 @@ void Position::updateSliderAttacks(VectorPiMask affected) {
     constexpr Side Op{~My};
 
     //sync occupiedBb between sides
-    MY_OCCUPIED = MY.piecesBb + ~OP.piecesBb;
+    MY_OCCUPIED = PositionSide::combinePiecesBb(MY, OP);
     occupiedBb[Op] = ~MY_OCCUPIED;
 
     //TRICK: attacks calculated without opponent's king for implicit out of check king's moves generation

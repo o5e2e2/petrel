@@ -57,6 +57,10 @@ void PositionSide::finalSetup(PositionSide& MY, PositionSide& OP) {
     OP.setGamePhase(MY);
 }
 
+Bb PositionSide::combinePiecesBb(const PositionSide& MY, const PositionSide& OP) {
+    return MY.piecesBb + ~OP.piecesBb;
+}
+
 GamePhase PositionSide::generateGamePhase() const {
     auto queensCount = piecesOfType(Queen).count();
     bool isEndgame = (queensCount == 0) || (queensCount == 1 && types.minors().count() <= 1);

@@ -21,41 +21,8 @@ class PositionSide {
     Bb piecesBb; //all pieces of the current side, incrementally updated
     Bb pawnsBb; //pawns of the current side, incrementally updated
 
-    Square opKing; //location of the opponent's king
-
     Evaluation evaluation;
-
-    void move(Pi, PieceType, Square, Square);
-    void setLeaperAttack(Pi, PieceType, Square);
-    void updatePinner(Pi, Square);
-    GamePhase generateGamePhase() const; //returns whether material for endgame or middlegame
-
-friend class Position;
-    static void swap(PositionSide&, PositionSide&);
-    static void finalSetup(PositionSide&, PositionSide&);
-
-    void setOpKing(Square);
-    void move(Pi, Square, Square);
-    void movePawn(Pi, Square, Square);
-    void moveKing(Square, Square);
-    void castle(Square kingFrom, Square kingTo, Pi rook, Square rookFrom, Square rookTo);
-    void promote(Pi, PromoType, Square, Square);
-    void capture(Square);
-
-    void setEnPassantVictim(Pi);
-    void setEnPassantKiller(Pi);
-    void clearEnPassantVictim();
-    void clearEnPassantKillers();
-
-    void setSliderAttacks(VectorPiMask, Bb);
-    void setGamePhase(const PositionSide&);
-
-    //used only during initial position setup
-    bool dropValid(PieceType, Square);
-
-friend class PositionFen;
-    bool setValidCastling(File);
-    bool setValidCastling(CastlingSide);
+    Square opKing; //location of the opponent's king
 
 public:
     constexpr PositionSide () = default;
@@ -117,6 +84,40 @@ public:
     VectorPiMask checkers() const { return attacks[opKing]; }
 
     Move createMove(Square from, Square to) const;
+
+//friend class Position;
+    static void swap(PositionSide&, PositionSide&);
+    static void finalSetup(PositionSide&, PositionSide&);
+    static Bb combinePiecesBb(const PositionSide&, const PositionSide&);
+
+    void setOpKing(Square);
+    void move(Pi, Square, Square);
+    void movePawn(Pi, Square, Square);
+    void moveKing(Square, Square);
+    void castle(Square kingFrom, Square kingTo, Pi rook, Square rookFrom, Square rookTo);
+    void promote(Pi, PromoType, Square, Square);
+    void capture(Square);
+
+    void setEnPassantVictim(Pi);
+    void setEnPassantKiller(Pi);
+    void clearEnPassantVictim();
+    void clearEnPassantKillers();
+
+    void setSliderAttacks(VectorPiMask, Bb);
+    void setGamePhase(const PositionSide&);
+
+    //used only during initial position setup
+    bool dropValid(PieceType, Square);
+
+//friend class PositionFen;
+    bool setValidCastling(File);
+    bool setValidCastling(CastlingSide);
+
+private:
+    void move(Pi, PieceType, Square, Square);
+    void setLeaperAttack(Pi, PieceType, Square);
+    void updatePinner(Pi, Square);
+    GamePhase generateGamePhase() const; //returns whether material for endgame or middlegame
 
 };
 
