@@ -24,14 +24,14 @@ UciSearchInfo::UciSearchInfo (io::ostream& o, const PositionFen& p) :
     positionFen(p)
 {}
 
-void UciSearchInfo::position() const {
-    OUTPUT(ob);
-    ob << "info fen " << positionFen << '\n';
-}
-
 void UciSearchInfo::clear() {
     lastInfoNodes = 0;
     fromSearchStart = {};
+}
+
+void UciSearchInfo::position() const {
+    OUTPUT(ob);
+    ob << "info fen " << positionFen << '\n';
 }
 
 void UciSearchInfo::uciok(const HashInfo& hashInfo) const {

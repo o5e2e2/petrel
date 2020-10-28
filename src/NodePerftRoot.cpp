@@ -31,7 +31,7 @@ Control NodePerftRoot::searchIteration() {
         }
     }
 
-    control.perftDepth(draft, perft, bestMove, bestScore);
+    control.infoPerftDepth(draft, perft, bestMove, bestScore);
     return Control::Continue;
 }
 

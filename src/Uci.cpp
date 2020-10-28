@@ -19,7 +19,7 @@ void Uci::operator() (io::istream& in, io::ostream& err) {
         if      (next("go"))        { go(); }
         else if (next("position"))  { position(); }
         else if (next("stop"))      { searchControl.stop(); }
-        else if (next("isready"))   { searchControl.readyok(); }
+        else if (next("isready"))   { searchControl.isready(); }
         else if (next("setoption")) { setoption(); }
         else if (next("set"))       { setoption(); }
         else if (next("ucinewgame")){ ucinewgame(); }

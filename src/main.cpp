@@ -39,20 +39,7 @@ template <> czstring Rank::The_string{"87654321"};
 template <> czstring Pi::The_string{"K123456789abcdef"};
 
 int main(int argc, const char* argv[]) {
-    if (argc == 1) {
-        //speed tricks
-        std::ios_base::sync_with_stdio(false);
-        std::cin.tie(nullptr);
-        std::cerr.tie(nullptr);
-
-        Uci uci(std::cout);
-        uci(std::cin, std::cerr);
-
-        //TRICK: return 0; does not work
-        std::exit(0);
-    }
-
-    if (argc == 2) {
+    if (argc > 1) {
         std::string option = argv[1];
 
         if (option == "--help" || option == "-h") {
@@ -73,8 +60,19 @@ int main(int argc, const char* argv[]) {
             ;
             return 0;
         }
+
+        std::cerr << "petrel: invalid option\n";
+        return EINVAL;
     }
 
-    std::cerr << "petrel: invalid option\n";
-    return EINVAL;
+    //speed tricks
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(nullptr);
+    std::cerr.tie(nullptr);
+
+    Uci uci(std::cout);
+    uci(std::cin, std::cerr);
+
+    //TRICK: return 0; does not work
+    std::exit(0);
 }

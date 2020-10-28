@@ -35,7 +35,7 @@ public:
     void stop() { searchThread.stop(); }
 
     void uciok() const;
-    void readyok() const;
+    void isready() const;
     void infoPosition() const;
     void go(const SearchLimit&);
     void setHash(size_t);
@@ -45,9 +45,10 @@ public:
 
     void nextIteration();
 
+    void readyok() const;
     void bestmove(const Move&, Score) const;
-    void perftDepth(depth_t, node_count_t, const Move&, Score) const;
-    void perftMove(index_t moveCount, const Move& currentMove, node_count_t, const Move&, Score) const;
+    void infoPerftDepth(depth_t, node_count_t, const Move&, Score) const;
+    void infoPerftMove(index_t moveCount, const Move& currentMove, node_count_t, const Move&, Score) const;
 
     Control countNode();
 

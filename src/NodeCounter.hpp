@@ -3,6 +3,8 @@
 
 #include "typedefs.hpp"
 
+class SearchControl;
+
 class NodeCounter {
     node_count_t nodes;
     node_count_t nodesLimit; //search limit
@@ -17,6 +19,8 @@ public:
         nodes = 0;
         nodesQuota = 0;
     }
+
+    Control count(const SearchControl& search);
 
     node_count_t getNodesVisited() const {
         assert (nodes >= nodesQuota);

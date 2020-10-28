@@ -14,18 +14,6 @@ void SearchControl::nextIteration() {
     transpositionTable.nextAge();
 }
 
-void SearchControl::uciok() const {
-    info.uciok(transpositionTable.getInfo());
-}
-
-void SearchControl::readyok() const {
-    info.isready(!isBusy());
-}
-
-void SearchControl::infoPosition() const {
-    info.position();
-}
-
 void SearchControl::go(const SearchLimit& limit) {
     nodeCounter = NodeCounter(limit.nodes);
 
@@ -38,32 +26,34 @@ void SearchControl::go(const SearchLimit& limit) {
 }
 
 Control SearchControl::countNode() {
-    if (nodeCounter.tick() == Control::Continue) {
-        return Control::Continue;
-    }
+    return nodeCounter.count(*this);
+}
 
-    if (nodeCounter.refreshQuota() == Control::Abort) {
-        return Control::Abort;
-    }
+void SearchControl::uciok() const {
+    info.uciok(transpositionTable.getInfo());
+}
 
-    if (isStopped()) {
-        nodeCounter.stop();
-        return Control::Abort;
-    }
+void SearchControl::isready() const {
+    info.isready(!isBusy());
+}
 
+void SearchControl::infoPosition() const {
+    info.position();
+}
+
+void SearchControl::readyok() const{
     info.readyok(nodeCounter.getNodesVisited(), transpositionTable);
-    return Control::Continue;
 }
 
 void SearchControl::bestmove(const Move& bestMove, Score bestScore) const {
     info.bestmove(bestMove, bestScore, nodeCounter.getNodesVisited(), transpositionTable);
 }
 
-void SearchControl::perftDepth(depth_t draft, node_count_t perft, const Move& bestMove, Score bestScore) const {
+void SearchControl::infoPerftDepth(depth_t draft, node_count_t perft, const Move& bestMove, Score bestScore) const {
     info.report_perft_depth(draft, bestMove, bestScore, perft, nodeCounter.getNodesVisited(), transpositionTable);
 }
 
-void SearchControl::perftMove(index_t moveCount, const Move& currentMove, node_count_t perft, const Move& bestMove, Score bestScore) const {
+void SearchControl::infoPerftMove(index_t moveCount, const Move& currentMove, node_count_t perft, const Move& bestMove, Score bestScore) const {
     info.report_perft_divide(currentMove, bestMove, bestScore, moveCount, perft, nodeCounter.getNodesVisited(), transpositionTable);
 }
 
