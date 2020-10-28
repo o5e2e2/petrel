@@ -121,6 +121,15 @@ void UciSearchInfo::bestmove(const Move& bestMove, Score bestScore, node_count_t
     ob << "bestmove "; write(ob, bestMove); ob << '\n';
 }
 
+void UciSearchInfo::report_depth(depth_t draft, const Move& bestMove, Score bestScore, node_count_t nodes, const PerftTT& tt) const {
+    OUTPUT(ob);
+    ob << "info depth " << draft;
+    nps(ob, nodes, tt);
+    ob << " pv "; write(ob, bestMove);
+    ob << " score " << bestScore;
+    ob << '\n';
+}
+
 void UciSearchInfo::report_perft_depth(depth_t draft, const Move& bestMove, Score bestScore, node_count_t perftNodes, node_count_t nodes, const PerftTT& tt) const {
     OUTPUT(ob);
     ob << "info depth " << draft;

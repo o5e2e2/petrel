@@ -12,7 +12,7 @@ class NodeCounter {
 
     typedef unsigned nodes_quota_t;
     enum : nodes_quota_t { TickLimit = 5000 }; // ~1 msec
-    nodes_quota_t nodesQuota; //number of remaining nodes before slow checking for terminate
+    nodes_quota_t nodesQuota; //number of remaining nodes before slow checking for search abort
 
 public:
     NodeCounter(node_count_t limitNodes = NodeCountMax) {
@@ -21,51 +21,29 @@ public:
         nodesQuota = 0;
     }
 
-    NodeControl count(const SearchControl& search);
+    bool isAborted() const {
+        return nodesLimit == nodes && nodesQuota == 0;
+    }
+
+    void abort() {
+        nodesLimit = nodes;
+        nodesQuota = 0;
+    }
 
     node_count_t getNodesVisited() const {
         assert (nodes >= nodesQuota);
         return nodes - nodesQuota;
     }
 
-    void stop() {
-        nodesLimit = nodes;
-        nodesQuota = 0;
-    }
-
-    NodeControl tick() {
+    NodeControl count(const SearchControl& search) {
         if (nodesQuota > 0) {
             --nodesQuota;
             return NodeControl::Continue;
         }
-        return NodeControl::Abort;
+        return refreshQuota(search);
     }
 
-    NodeControl refreshQuota() {
-        static_assert (TickLimit > 0, "TickLimit should be a positive number");
-
-        assert (nodes >= nodesQuota);
-        nodes -= nodesQuota;
-
-        assert (nodesLimit >= nodes);
-        auto nodesRemaining = nodesLimit - nodes;
-
-        if (nodesRemaining >= TickLimit) {
-            nodesQuota = TickLimit;
-        }
-        else {
-            nodesQuota = static_cast<decltype(nodesQuota)>(nodesRemaining);
-            if (nodesQuota == 0) {
-                return NodeControl::Abort;
-            }
-        }
-
-        assert (nodesQuota > 0);
-        nodes += nodesQuota;
-
-        --nodesQuota; //count current node
-        return NodeControl::Continue;
-    }
+    NodeControl refreshQuota(const SearchControl& search);
 
 };
 

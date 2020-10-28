@@ -1,17 +1,32 @@
 #include "NodeCounter.hpp"
 #include "SearchControl.hpp"
 
-NodeControl NodeCounter::count(const SearchControl& search) {
-    if (tick() == NodeControl::Continue) {
-        return NodeControl::Continue;
+NodeControl NodeCounter::refreshQuota(const SearchControl& search) {
+    static_assert (TickLimit > 0, "TickLimit should be a positive number");
+
+    assert (nodes >= nodesQuota);
+    nodes -= nodesQuota;
+
+    assert (nodesLimit >= nodes);
+    auto nodesRemaining = nodesLimit - nodes;
+
+    if (nodesRemaining >= TickLimit) {
+        nodesQuota = TickLimit;
+    }
+    else {
+        nodesQuota = static_cast<decltype(nodesQuota)>(nodesRemaining);
+        if (nodesQuota == 0) {
+            return NodeControl::Abort;
+        }
     }
 
-    if (refreshQuota() == NodeControl::Abort) {
-        return NodeControl::Abort;
-    }
+    assert (nodesQuota > 0);
+    nodes += nodesQuota;
+
+    --nodesQuota; //count current node
 
     if (search.isStopped()) {
-        stop();
+        abort();
         return NodeControl::Abort;
     }
 

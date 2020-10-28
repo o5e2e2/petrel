@@ -1,5 +1,6 @@
 #include "SearchControl.hpp"
 #include "NodePerftRoot.hpp"
+#include "NodeAlphaBetaRoot.hpp"
 #include "UciSearchInfo.hpp"
 #include "SearchLimit.hpp"
 
@@ -21,7 +22,12 @@ void SearchControl::go(const SearchLimit& limit) {
     transpositionTable.clearCounter();
 
     auto duration = limit.getThinkingTime();
-    auto searchId = searchThread.start( std::make_unique<NodePerftRoot>(limit, *this) );
+
+    auto searchId = searchThread.start( limit.isPerft
+        ? static_cast<std::unique_ptr<Node>>(std::make_unique<NodePerftRoot>(limit, *this))
+        : static_cast<std::unique_ptr<Node>>(std::make_unique<NodeAlphaBetaRoot>(limit, *this))
+    );
+
     timer.start(duration, searchThread, searchId);
 }
 
@@ -47,6 +53,10 @@ void SearchControl::readyok() const{
 
 void SearchControl::bestmove(const Move& bestMove, Score bestScore) const {
     info.bestmove(bestMove, bestScore, nodeCounter.getNodesVisited(), transpositionTable);
+}
+
+void SearchControl::infoDepth(depth_t draft, const Move& bestMove, Score bestScore) const {
+    info.report_depth(draft, bestMove, bestScore, nodeCounter.getNodesVisited(), transpositionTable);
 }
 
 void SearchControl::infoPerftDepth(depth_t draft, node_count_t perft, const Move& bestMove, Score bestScore) const {

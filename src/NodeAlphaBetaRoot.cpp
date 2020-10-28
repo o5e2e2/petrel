@@ -1,0 +1,40 @@
+#include "NodeAlphaBetaRoot.hpp"
+#include "NodeAlphaBeta.hpp"
+#include "Move.hpp"
+#include "SearchControl.hpp"
+#include "SearchLimit.hpp"
+
+NodeAlphaBetaRoot::NodeAlphaBetaRoot (const SearchLimit& limit, SearchControl& searchControl):
+    NodeAlphaBeta(limit.positionMoves, searchControl, limit.depth)
+{}
+
+NodeControl NodeAlphaBetaRoot::searchIteration() {
+    RETURN_CONTROL ( NodeAlphaBeta(*this).visitChildren() );
+    control.infoDepth(draft, bestMove, bestScore);
+    return NodeControl::Continue;
+}
+
+NodeControl NodeAlphaBetaRoot::iterativeDeepening() {
+    for (draft = 1; draft <= DepthMax; ++draft) {
+        RETURN_CONTROL ( searchIteration() );
+
+        bestMove = {};
+        bestScore = Score::None;
+
+        control.nextIteration();
+    }
+
+    return NodeControl::Continue;
+}
+
+NodeControl NodeAlphaBetaRoot::visitChildren() {
+    if (draft > 0) {
+        searchIteration();
+    }
+    else {
+        iterativeDeepening();
+    }
+
+    control.bestmove(bestMove, bestScore);
+    return NodeControl::Continue;
+}

@@ -31,6 +31,8 @@ public:
 
     void newGame();
 
+    bool isAborted() const { return nodeCounter.isAborted(); }
+
     bool isBusy() const { return !searchThread.isIdle(); }
     bool isStopped() const { return searchThread.isStopped(); }
     void stop() { searchThread.stop(); }
@@ -48,6 +50,7 @@ public:
 
     void readyok() const;
     void bestmove(const Move&, Score) const;
+    void infoDepth(depth_t, const Move&, Score) const;
     void infoPerftDepth(depth_t, node_count_t, const Move&, Score) const;
     void infoPerftMove(index_t moveCount, const Move& currentMove, node_count_t, const Move&, Score) const;
 
