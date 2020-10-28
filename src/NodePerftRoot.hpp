@@ -9,12 +9,12 @@ class SearchControl;
 class NodePerftRoot : public NodePerft {
     bool isDivide;
 
-    Control searchIteration();
-    Control iterativeDeepening();
+    NodeControl searchIteration();
+    NodeControl iterativeDeepening();
 
 public:
     NodePerftRoot (const SearchLimit&, SearchControl&);
-    Control visitChildren() override;
+    NodeControl visitChildren() override;
 };
 
 #endif

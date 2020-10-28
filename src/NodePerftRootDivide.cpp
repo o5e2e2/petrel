@@ -5,9 +5,9 @@
 #include "Move.hpp"
 #include "SearchControl.hpp"
 
-NodePerftRootDivide::NodePerftRootDivide(NodePerftRoot& n) : Node(n) {}
+NodePerftRootDivide::NodePerftRootDivide(NodePerftRoot& n) : NodePerft(n) {}
 
-Control NodePerftRootDivide::visit(Square from, Square to) {
+NodeControl NodePerftRootDivide::visit(Square from, Square to) {
     auto& p = static_cast<NodePerftRoot&>(parent);
     auto parentPerftBefore = p.perft;
 
@@ -21,7 +21,7 @@ Control NodePerftRootDivide::visit(Square from, Square to) {
             break;
 
         default:
-            RETURN_CONTROL ( NodePerftTT(p, p.draft-1).visit(from, to) );
+            RETURN_CONTROL ( NodePerftTT(p).visit(from, to) );
     }
 
     ++moveCount;
@@ -31,5 +31,5 @@ Control NodePerftRootDivide::visit(Square from, Square to) {
 
     bestScore = Score::Minimum;
     bestMove = {};
-    return Control::Continue;
+    return NodeControl::Continue;
 }

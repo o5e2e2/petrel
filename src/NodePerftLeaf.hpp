@@ -7,8 +7,8 @@ class NodePerft;
 
 class NodePerftLeaf : public Node {
 public:
-    NodePerftLeaf (NodePerft&);
-    Control visit(Square from, Square to) override;
+    NodePerftLeaf(Node& n) : Node(n, 0) {}
+    NodeControl visit(Square from, Square to) override;
 };
 
 #endif

@@ -1,9 +1,9 @@
 #include "Node.hpp"
 #include "SearchControl.hpp"
 
- Control Node::beforeVisit() { return control.countNode(); }
+ NodeControl Node::beforeVisit() { return control.countNode(); }
 
- Control Node::visitChildren() {
+ NodeControl Node::visitChildren() {
     auto parentMoves = parent.cloneMoves();
 
     for (Pi pi : parent[My].alivePieces()) {
@@ -16,5 +16,5 @@
         }
     }
 
-    return Control::Continue;
+    return NodeControl::Continue;
 }

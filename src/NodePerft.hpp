@@ -6,7 +6,8 @@
 class NodePerft : public Node {
 public:
     node_count_t perft = 0;
-    depth_t draft; //remaining depth to leaves
+    Score bestScore = Score::Minimum;
+    Move bestMove = {};
 
 protected:
     void updateParentPerft() {
@@ -17,9 +18,9 @@ protected:
     }
 
 public:
-    NodePerft (NodePerft& n, depth_t d) : Node(n), draft(d) {}
-    NodePerft (const PositionMoves& p, SearchControl& c, depth_t d) : Node(p, c), draft{d} {}
-    Control visit(Square from, Square to) override;
+    NodePerft (NodePerft& n, depth_t r) : Node(n, r) {}
+    NodePerft (const PositionMoves& p, SearchControl& c, depth_t d) : Node(p, c, d) {}
+    NodeControl visit(Square from, Square to) override;
 };
 
 #endif

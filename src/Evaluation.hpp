@@ -2,6 +2,7 @@
 #define EVALUATION_HPP
 
 #include "typedefs.hpp"
+#include "Score.hpp"
 #include "Square.hpp"
 #include "PieceSquareTable.hpp"
 

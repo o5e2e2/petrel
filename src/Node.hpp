@@ -1,6 +1,8 @@
 #ifndef NODE_HPP
 #define NODE_HPP
 
+#include "Score.hpp"
+#include "NodeControl.hpp"
 #include "PositionMoves.hpp"
 
 class SearchControl;
@@ -11,18 +13,17 @@ protected:
     SearchControl& control;
 
 public:
-    Score bestScore = Score::Minimum;
-    Move bestMove = {};
+    depth_t draft; //remaining distance to leaves
 
 protected:
-    Node (Node& n) : PositionMoves{}, parent{n}, control{n.control} {}
-    Node (const PositionMoves& p, SearchControl& c) : PositionMoves{p}, parent{*this}, control{c} {}
+    Node (Node& n, depth_t r = 1) : PositionMoves{}, parent{n}, control{n.control}, draft{n.draft - r} {}
+    Node (const PositionMoves& p, SearchControl& c, depth_t d) : PositionMoves{p}, parent{*this}, control{c}, draft{d} {}
 
 public:
     virtual ~Node() = default;
-    virtual Control beforeVisit();
-    virtual Control visit(Square, Square) { return Control::Continue; };
-    virtual Control visitChildren();
+    virtual NodeControl beforeVisit();
+    virtual NodeControl visit(Square, Square) { return NodeControl::Continue; };
+    virtual NodeControl visitChildren();
 };
 
 #endif

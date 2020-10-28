@@ -25,7 +25,7 @@ void SearchControl::go(const SearchLimit& limit) {
     timer.start(duration, searchThread, searchId);
 }
 
-Control SearchControl::countNode() {
+NodeControl SearchControl::countNode() {
     return nodeCounter.count(*this);
 }
 

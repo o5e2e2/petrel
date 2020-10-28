@@ -5,15 +5,6 @@
 #include <limits>
 #include "Index.hpp"
 
-using std::size_t;
-
-enum class Control : bool {
-    Continue = false,
-    Abort = true
-};
-
-#define RETURN_CONTROL(control) { Control c = control; if (c != Control::Continue) { return c; } } ((void)0)
-
 typedef index_t depth_t; //search tree depth (relative to root)
 enum : depth_t {
 #ifndef NDEBUG
@@ -28,17 +19,6 @@ enum : node_count_t {
     NodeCountNone = std::numeric_limits<node_count_t>::max(),
     NodeCountMax  = NodeCountNone - 1
 };
-
-typedef int score_t;
-enum class Score : score_t {
-    None = std::numeric_limits<std::int16_t>::min(),
-    Maximum = std::numeric_limits<std::int16_t>::max(),
-    Minimum = -Maximum,
-    Checkmated = Minimum,
-    Draw = 0
-};
-constexpr Score operator - (Score a) { return static_cast<Score>(-static_cast<score_t>(a)); }
-constexpr Score operator - (Score a, Score b) { return static_cast<Score>(static_cast<score_t>(a) - static_cast<score_t>(b)); }
 
 enum file_t { FileA, FileB, FileC, FileD, FileE, FileF, FileG, FileH };
 typedef Index<8, file_t> File;

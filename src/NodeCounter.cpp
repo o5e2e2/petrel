@@ -1,20 +1,20 @@
 #include "NodeCounter.hpp"
 #include "SearchControl.hpp"
 
-Control NodeCounter::count(const SearchControl& search) {
-    if (tick() == Control::Continue) {
-        return Control::Continue;
+NodeControl NodeCounter::count(const SearchControl& search) {
+    if (tick() == NodeControl::Continue) {
+        return NodeControl::Continue;
     }
 
-    if (refreshQuota() == Control::Abort) {
-        return Control::Abort;
+    if (refreshQuota() == NodeControl::Abort) {
+        return NodeControl::Abort;
     }
 
     if (search.isStopped()) {
         stop();
-        return Control::Abort;
+        return NodeControl::Abort;
     }
 
     search.readyok();
-    return Control::Continue;
+    return NodeControl::Continue;
 }

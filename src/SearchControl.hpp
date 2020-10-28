@@ -3,6 +3,7 @@
 
 #include "NodeCounter.hpp"
 #include "SearchThread.hpp"
+#include "Score.hpp"
 #include "PerftTT.hpp"
 #include "Timer.hpp"
 
@@ -50,7 +51,7 @@ public:
     void infoPerftDepth(depth_t, node_count_t, const Move&, Score) const;
     void infoPerftMove(index_t moveCount, const Move& currentMove, node_count_t, const Move&, Score) const;
 
-    Control countNode();
+    NodeControl countNode();
 
 };
 

@@ -2,6 +2,7 @@
 #define NODE_COUNTER_HPP
 
 #include "typedefs.hpp"
+#include "NodeControl.hpp"
 
 class SearchControl;
 
@@ -20,7 +21,7 @@ public:
         nodesQuota = 0;
     }
 
-    Control count(const SearchControl& search);
+    NodeControl count(const SearchControl& search);
 
     node_count_t getNodesVisited() const {
         assert (nodes >= nodesQuota);
@@ -32,15 +33,15 @@ public:
         nodesQuota = 0;
     }
 
-    Control tick() {
+    NodeControl tick() {
         if (nodesQuota > 0) {
             --nodesQuota;
-            return Control::Continue;
+            return NodeControl::Continue;
         }
-        return Control::Abort;
+        return NodeControl::Abort;
     }
 
-    Control refreshQuota() {
+    NodeControl refreshQuota() {
         static_assert (TickLimit > 0, "TickLimit should be a positive number");
 
         assert (nodes >= nodesQuota);
@@ -55,7 +56,7 @@ public:
         else {
             nodesQuota = static_cast<decltype(nodesQuota)>(nodesRemaining);
             if (nodesQuota == 0) {
-                return Control::Abort;
+                return NodeControl::Abort;
             }
         }
 
@@ -63,7 +64,7 @@ public:
         nodes += nodesQuota;
 
         --nodesQuota; //count current node
-        return Control::Continue;
+        return NodeControl::Continue;
     }
 
 };

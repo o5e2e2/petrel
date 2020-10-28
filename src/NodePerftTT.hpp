@@ -5,8 +5,8 @@
 
 class NodePerftTT : public NodePerft {
 public:
-    NodePerftTT (NodePerft& n, depth_t d) : NodePerft(n, d) {}
-    Control visit(Square from, Square to) override;
+    NodePerftTT (NodePerft& n) : NodePerft{n} {}
+    NodeControl visit(Square from, Square to) override;
 };
 
 #endif

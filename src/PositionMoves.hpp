@@ -1,8 +1,8 @@
 #ifndef POSITION_MOVES_HPP
 #define POSITION_MOVES_HPP
 
-#include "MatrixPiBb.hpp"
 #include "Position.hpp"
+#include "MatrixPiBb.hpp"
 #include "Zobrist.hpp"
 
 class PositionMoves : public Position {

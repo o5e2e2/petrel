@@ -2,9 +2,7 @@
 #include "NodePerft.hpp"
 #include "SearchControl.hpp"
 
-NodePerftLeaf::NodePerftLeaf(NodePerft& n) : Node(n) {}
-
-Control NodePerftLeaf::visit(Square from, Square to) {
+NodeControl NodePerftLeaf::visit(Square from, Square to) {
     playMove(parent, from, to, Zobrist{0});
 
     //updateParentPerft:
@@ -17,5 +15,5 @@ Control NodePerftLeaf::visit(Square from, Square to) {
         p.bestMove = p.createMove(from, to);
     }
 
-    return Control::Continue;
+    return NodeControl::Continue;
 }

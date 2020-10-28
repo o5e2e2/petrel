@@ -2,6 +2,7 @@
 #define POSITION_HPP
 
 #include "PositionSide.hpp"
+#include "Score.hpp"
 
 class Position {
     Side::array<PositionSide> ps;

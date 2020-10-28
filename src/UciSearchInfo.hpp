@@ -3,6 +3,7 @@
 
 #include "io.hpp"
 #include "typedefs.hpp"
+#include "Score.hpp"
 #include "SpinLock.hpp"
 #include "TimePoint.hpp"
 
