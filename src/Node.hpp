@@ -20,6 +20,7 @@ protected:
 
 public:
     virtual ~Node() = default;
+    virtual Control beforeVisit();
     virtual Control visit(Square, Square) { return Control::Continue; };
     virtual Control visitChildren();
 };
