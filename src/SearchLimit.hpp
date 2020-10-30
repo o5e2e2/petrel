@@ -20,7 +20,7 @@ struct SearchLimit {
 
     bool isPonder = false;
     bool isInfinite = false;
-    bool isPerft = true;
+    bool isPerft = false;
     bool isDivide = false;
 
     Duration getThinkingTime() const {
