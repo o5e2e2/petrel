@@ -45,6 +45,7 @@ public:
     constexpr PromoType promoType() const { return PromoType(to()); }
 
     static io::ostream& write(io::ostream&, Move, Color, ChessVariant = Orthodox);
+    static io::ostream& write(io::ostream&, const Move[], Color, ChessVariant = Orthodox);
 };
 
 #endif

@@ -5,6 +5,7 @@
 #include "SearchThread.hpp"
 #include "Score.hpp"
 #include "PerftTT.hpp"
+#include "PvMoves.hpp"
 #include "Timer.hpp"
 
 class Move;
@@ -23,6 +24,10 @@ class SearchControl {
     PerftTT transpositionTable;
     Timer timer;
 
+public:
+    PvMoves<DepthMax> pvMoves;
+
+private:
     SearchControl (const SearchControl&) = delete;
     SearchControl& operator = (const SearchControl&) = delete;
 
@@ -50,7 +55,7 @@ public:
 
     void readyok() const;
     void bestmove(const Move&, Score) const;
-    void infoDepth(depth_t, const Move&, Score) const;
+    void infoDepth(depth_t, Score) const;
     void infoPerftDepth(depth_t, node_count_t, const Move&, Score) const;
     void infoPerftMove(index_t moveCount, const Move& currentMove, node_count_t, const Move&, Score) const;
 

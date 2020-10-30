@@ -117,8 +117,12 @@ io::ostream& operator << (io::ostream& out, const PositionFen& pos) {
     return out;
 }
 
-void PositionFen::writeMove(io::ostream& out, Move move) const {
+void PositionFen::write(io::ostream& out, Move move) const {
     Move::write(out, move, colorToMove, chessVariant);
+}
+
+void PositionFen::write(io::ostream& out, const Move pv[]) const {
+    Move::write(out, pv, colorToMove, chessVariant);
 }
 
 Move PositionFen::readMove(io::istream& in) const {

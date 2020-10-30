@@ -46,3 +46,12 @@ io::ostream& Move::write(io::ostream& out, Move move, Color colorToMove, ChessVa
     //should never happen
     return out << '?' << moveFrom << moveTo << '?';
 }
+
+io::ostream& Move::write(io::ostream& out, const Move pv[], Color colorToMove, ChessVariant chessVariant) {
+    while (*pv++) {
+        Move::write(out, *pv, colorToMove, chessVariant);
+        out << ' ';
+        colorToMove.flip();
+    }
+    return out;
+}

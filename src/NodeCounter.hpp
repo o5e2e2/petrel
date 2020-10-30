@@ -21,6 +21,11 @@ public:
         nodesQuota = 0;
     }
 
+    operator node_count_t () const {
+        assert (nodes >= nodesQuota);
+        return nodes - nodesQuota;
+    }
+
     bool isAborted() const {
         return nodesLimit == nodes && nodesQuota == 0;
     }
@@ -28,11 +33,6 @@ public:
     void abort() {
         nodesLimit = nodes;
         nodesQuota = 0;
-    }
-
-    node_count_t getNodesVisited() const {
-        assert (nodes >= nodesQuota);
-        return nodes - nodesQuota;
     }
 
     NodeControl count(const SearchControl& search) {

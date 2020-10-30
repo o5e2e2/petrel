@@ -10,7 +10,7 @@ NodeAlphaBetaRoot::NodeAlphaBetaRoot (const SearchLimit& limit, SearchControl& s
 
 NodeControl NodeAlphaBetaRoot::searchIteration() {
     RETURN_CONTROL ( NodeAlphaBeta(*this).visitChildren() );
-    control.infoDepth(draft, bestMove, bestScore);
+    control.infoDepth(draft, bestScore);
     return NodeControl::Continue;
 }
 

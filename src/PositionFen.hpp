@@ -34,7 +34,8 @@ public:
     void limitMoves(io::istream&);
 
     friend io::ostream& operator << (io::ostream&, const PositionFen&);
-    void writeMove(io::ostream&, Move) const;
+    void write(io::ostream&, Move) const;
+    void write(io::ostream&, const Move[]) const;
 };
 
 #endif

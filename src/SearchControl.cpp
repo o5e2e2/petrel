@@ -48,23 +48,23 @@ void SearchControl::infoPosition() const {
 }
 
 void SearchControl::readyok() const{
-    info.readyok(nodeCounter.getNodesVisited(), transpositionTable);
+    info.readyok(nodeCounter, transpositionTable);
 }
 
 void SearchControl::bestmove(const Move& bestMove, Score bestScore) const {
-    info.bestmove(bestMove, bestScore, nodeCounter.getNodesVisited(), transpositionTable);
+    info.bestmove(bestMove, bestScore, nodeCounter, transpositionTable);
 }
 
-void SearchControl::infoDepth(depth_t draft, const Move& bestMove, Score bestScore) const {
-    info.report_depth(draft, bestMove, bestScore, nodeCounter.getNodesVisited(), transpositionTable);
+void SearchControl::infoDepth(depth_t draft, Score bestScore) const {
+    info.report_depth(draft, pvMoves, bestScore, nodeCounter, transpositionTable);
 }
 
 void SearchControl::infoPerftDepth(depth_t draft, node_count_t perft, const Move& bestMove, Score bestScore) const {
-    info.report_perft_depth(draft, bestMove, bestScore, perft, nodeCounter.getNodesVisited(), transpositionTable);
+    info.report_perft_depth(draft, bestMove, bestScore, perft, nodeCounter, transpositionTable);
 }
 
 void SearchControl::infoPerftMove(index_t moveCount, const Move& currentMove, node_count_t perft, const Move& bestMove, Score bestScore) const {
-    info.report_perft_divide(currentMove, bestMove, bestScore, moveCount, perft, nodeCounter.getNodesVisited(), transpositionTable);
+    info.report_perft_divide(currentMove, bestMove, bestScore, moveCount, perft, nodeCounter, transpositionTable);
 }
 
 void SearchControl::setHash(size_t bytes) {

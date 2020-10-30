@@ -23,6 +23,7 @@ class UciSearchInfo {
     mutable node_count_t lastInfoNodes = 0;
 
     void write(io::ostream&, const Move&) const;
+    void write(io::ostream&, const Move[]) const;
     void nps(io::ostream&, node_count_t, const PerftTT&) const;
     void info_nps(io::ostream&, node_count_t, const PerftTT&) const;
 
@@ -40,7 +41,7 @@ public:
     void readyok(node_count_t, const PerftTT&) const;
     void bestmove(const Move&, Score, node_count_t, const PerftTT&) const;
 
-    void report_depth(depth_t, const Move&, Score, node_count_t, const PerftTT&) const;
+    void report_depth(depth_t, const Move[], Score, node_count_t, const PerftTT&) const;
     void report_perft_depth(depth_t, const Move&, Score, node_count_t, node_count_t, const PerftTT&) const;
     void report_perft_divide(const Move&, const Move&, Score, index_t, node_count_t, node_count_t, const PerftTT&) const;
 
