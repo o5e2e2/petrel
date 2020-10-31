@@ -16,13 +16,13 @@ public:
     depth_t draft; //remaining distance to leaves
 
 protected:
-    Node (Node& n, depth_t r = 1) : PositionMoves{}, parent{n}, control{n.control}, draft{n.draft - r} {}
+    Node (Node& n, depth_t r = 1);
     Node (const PositionMoves& p, SearchControl& c, depth_t d) : PositionMoves{p}, parent{*this}, control{c}, draft{d} {}
 
 public:
-    virtual ~Node() = default;
+    virtual ~Node();
     virtual NodeControl beforeVisit();
-    virtual NodeControl visit(Square, Square) { return NodeControl::Continue; };
+    virtual NodeControl visit(Square, Square) { return NodeControl::Continue; }
     virtual NodeControl visitChildren();
 };
 

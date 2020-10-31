@@ -1,9 +1,18 @@
 #include "Node.hpp"
 #include "SearchControl.hpp"
 
- NodeControl Node::beforeVisit() { return control.countNode(); }
+Node::Node (Node& n, depth_t r)
+    : PositionMoves{}
+    , parent{n}
+    , control{n.control}
+    , draft{n.draft - r}
+    { ++control.ply; }
 
- NodeControl Node::visitChildren() {
+Node::~Node() { --control.ply; }
+
+NodeControl Node::beforeVisit() { return control.countNode(); }
+
+NodeControl Node::visitChildren() {
     auto parentMoves = parent.cloneMoves();
 
     for (Pi pi : parent[My].alivePieces()) {

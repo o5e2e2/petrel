@@ -35,6 +35,10 @@ NodeControl SearchControl::countNode() {
     return nodeCounter.count(*this);
 }
 
+void SearchControl::createPv(const Move& move) {
+    pvMoves(ply, move);
+}
+
 void SearchControl::uciok() const {
     info.uciok(transpositionTable.getInfo());
 }

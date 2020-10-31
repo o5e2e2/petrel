@@ -21,7 +21,7 @@ NodeControl NodeAlphaBeta::visit(Square from, Square to) {
 
     if (-bestScore > p.bestScore) {
         p.bestScore = -bestScore;
-        control.pvMoves(ply, p.createMove(from, to));
+        control.createPv(p.createMove(from, to));
 
         if (p.alpha < p.bestScore) {
             p.alpha = p.bestScore;

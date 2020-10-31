@@ -12,9 +12,6 @@ class Move;
 class SearchLimit;
 class UciSearchInfo;
 
-/**
- * Shared data to all search threads (currently the only one)
- */
 class SearchControl {
     UciSearchInfo& info; //virtual
 
@@ -24,8 +21,10 @@ class SearchControl {
     PerftTT transpositionTable;
     Timer timer;
 
-public:
     PvMoves<DepthMax> pvMoves;
+
+public:
+    depth_t ply = 0; //distance to root of the current node
 
 private:
     SearchControl (const SearchControl&) = delete;
@@ -50,6 +49,8 @@ public:
 
     const PerftTT& tt() const { return transpositionTable; }
     PerftTT& tt() { return transpositionTable; }
+
+    void createPv(const Move&);
 
     void nextIteration();
 
