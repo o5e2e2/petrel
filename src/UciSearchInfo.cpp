@@ -125,7 +125,7 @@ void UciSearchInfo::bestmove(const Move& bestMove, Score bestScore, node_count_t
     ob << "bestmove "; write(ob, bestMove); ob << '\n';
 }
 
-void UciSearchInfo::report_depth(depth_t draft, const Move pv[], Score bestScore, node_count_t nodes, const PerftTT& tt) const {
+void UciSearchInfo::report_depth(ply_t draft, const Move pv[], Score bestScore, node_count_t nodes, const PerftTT& tt) const {
     OUTPUT(ob);
     ob << "info depth " << draft;
     nps(ob, nodes, tt);
@@ -134,7 +134,7 @@ void UciSearchInfo::report_depth(depth_t draft, const Move pv[], Score bestScore
     ob << '\n';
 }
 
-void UciSearchInfo::report_perft_depth(depth_t draft, const Move& bestMove, Score bestScore, node_count_t perftNodes, node_count_t nodes, const PerftTT& tt) const {
+void UciSearchInfo::report_perft_depth(ply_t draft, const Move& bestMove, Score bestScore, node_count_t perftNodes, node_count_t nodes, const PerftTT& tt) const {
     OUTPUT(ob);
     ob << "info depth " << draft;
     nps(ob, nodes, tt);

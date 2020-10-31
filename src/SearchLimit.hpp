@@ -15,7 +15,7 @@ struct SearchLimit {
 
     node_count_t nodes = NodeCountMax;
     index_t movestogo = 0;
-    depth_t depth = 0;
+    ply_t depth = 0;
     index_t mate = 0;
 
     bool isPonder = false;

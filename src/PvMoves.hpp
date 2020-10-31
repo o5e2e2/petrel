@@ -19,8 +19,7 @@ public:
         }
     }
 
-    void operator() (depth_t ply, Move move) {
-        ply = ply - 1;
+    void operator() (ply_t ply, Move move) {
         pv[index[ply]] = move;
         pv[index[ply]+1] = Move{};
 

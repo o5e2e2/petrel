@@ -24,7 +24,7 @@ class SearchControl {
     PvMoves<DepthMax> pvMoves;
 
 public:
-    depth_t ply = 0; //distance to root of the current node
+    ply_t ply = 0; //distance to root of the current node
 
 private:
     SearchControl (const SearchControl&) = delete;
@@ -56,8 +56,8 @@ public:
 
     void readyok() const;
     void bestmove(const Move&, Score) const;
-    void infoDepth(depth_t, Score) const;
-    void infoPerftDepth(depth_t, node_count_t, const Move&, Score) const;
+    void infoDepth(ply_t, Score) const;
+    void infoPerftDepth(ply_t, node_count_t, const Move&, Score) const;
     void infoPerftMove(index_t moveCount, const Move& currentMove, node_count_t, const Move&, Score) const;
 
     NodeControl countNode();

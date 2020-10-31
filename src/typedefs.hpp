@@ -5,8 +5,8 @@
 #include <limits>
 #include "Index.hpp"
 
-typedef index_t depth_t; //search tree depth (relative to root)
-enum : depth_t {
+typedef index_t ply_t; //search tree depth (relative to root)
+enum : ply_t {
 #ifndef NDEBUG
     DepthMax = 20
 #else

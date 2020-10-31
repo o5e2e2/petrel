@@ -13,11 +13,11 @@ protected:
     SearchControl& control;
 
 public:
-    depth_t draft; //remaining distance to leaves
+    ply_t draft; //remaining distance to leaves
 
 protected:
-    Node (Node& n, depth_t r = 1);
-    Node (const PositionMoves& p, SearchControl& c, depth_t d) : PositionMoves{p}, parent{*this}, control{c}, draft{d} {}
+    Node (Node& n, ply_t r = 1);
+    Node (const PositionMoves& p, SearchControl& c, ply_t d) : PositionMoves{p}, parent{*this}, control{c}, draft{d} {}
 
 public:
     virtual ~Node();

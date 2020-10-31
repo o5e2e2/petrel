@@ -36,7 +36,7 @@ NodeControl SearchControl::countNode() {
 }
 
 void SearchControl::createPv(const Move& move) {
-    pvMoves(ply, move);
+    pvMoves(ply-1, move);
 }
 
 void SearchControl::uciok() const {
@@ -59,11 +59,11 @@ void SearchControl::bestmove(const Move& bestMove, Score bestScore) const {
     info.bestmove(bestMove, bestScore, nodeCounter, transpositionTable);
 }
 
-void SearchControl::infoDepth(depth_t draft, Score bestScore) const {
+void SearchControl::infoDepth(ply_t draft, Score bestScore) const {
     info.report_depth(draft, pvMoves, bestScore, nodeCounter, transpositionTable);
 }
 
-void SearchControl::infoPerftDepth(depth_t draft, node_count_t perft, const Move& bestMove, Score bestScore) const {
+void SearchControl::infoPerftDepth(ply_t draft, node_count_t perft, const Move& bestMove, Score bestScore) const {
     info.report_perft_depth(draft, bestMove, bestScore, perft, nodeCounter, transpositionTable);
 }
 

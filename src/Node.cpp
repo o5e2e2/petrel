@@ -1,7 +1,7 @@
 #include "Node.hpp"
 #include "SearchControl.hpp"
 
-Node::Node (Node& n, depth_t r)
+Node::Node (Node& n, ply_t r)
     : PositionMoves{}
     , parent{n}
     , control{n.control}

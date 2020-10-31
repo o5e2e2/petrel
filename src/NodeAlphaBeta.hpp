@@ -12,8 +12,8 @@ public:
     Move bestMove = {};
 
 public:
-    NodeAlphaBeta (NodeAlphaBeta& n, depth_t r = 1) : Node(n, r), alpha{-n.beta}, beta{-n.alpha} {}
-    NodeAlphaBeta (const PositionMoves& p, SearchControl& c, depth_t d) : Node(p, c, d) {}
+    NodeAlphaBeta (NodeAlphaBeta& n, ply_t r = 1) : Node(n, r), alpha{-n.beta}, beta{-n.alpha} {}
+    NodeAlphaBeta (const PositionMoves& p, SearchControl& c, ply_t d) : Node(p, c, d) {}
 
     NodeControl visit(Square from, Square to);
 };
