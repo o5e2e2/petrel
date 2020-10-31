@@ -2,14 +2,11 @@
 #include "SearchControl.hpp"
 
 NodeControl NodeCounter::refreshQuota(const SearchControl& search) {
-    static_assert (TickLimit > 0, "TickLimit should be a positive number");
+    assert (nodesQuota <= nodes && nodes <= nodesLimit);
 
-    assert (nodes >= nodesQuota);
     nodes -= nodesQuota;
 
-    assert (nodesLimit >= nodes);
     auto nodesRemaining = nodesLimit - nodes;
-
     if (nodesRemaining >= TickLimit) {
         nodesQuota = TickLimit;
     }
@@ -20,7 +17,7 @@ NodeControl NodeCounter::refreshQuota(const SearchControl& search) {
         }
     }
 
-    assert (nodesQuota > 0);
+    assert (0 < nodesQuota && nodesQuota <= TickLimit);
     nodes += nodesQuota;
 
     --nodesQuota; //count current node

@@ -41,7 +41,7 @@ public:
     ThreadControl ();
     virtual ~ThreadControl() = default;
 
-    bool isIdle()   const { return isStatus(Status::Idle); }
+    bool isIdle() const { return isStatus(Status::Idle); }
     bool isRunning() const { return isStatus(Status::Working); }
     bool isStopped() const { return isStatus(Status::Stopping); }
 

@@ -7,12 +7,14 @@
 class SearchControl;
 
 class NodeCounter {
-    node_count_t nodes;
-    node_count_t nodesLimit; //search limit
+    node_count_t nodes; // (0 <= nodes && nodes <= nodesLimit)
+    node_count_t nodesLimit; // search limit
 
     typedef unsigned nodes_quota_t;
     enum : nodes_quota_t { TickLimit = 5000 }; // ~1 msec
-    nodes_quota_t nodesQuota; //number of remaining nodes before slow checking for search abort
+
+    //number of remaining nodes before slow checking for search abort
+    nodes_quota_t nodesQuota; // (0 <= nodesQuota && nodesQuota <= TickLimit)
 
 public:
     NodeCounter(node_count_t limitNodes = NodeCountMax) {
@@ -22,7 +24,7 @@ public:
     }
 
     operator node_count_t () const {
-        assert (nodes >= nodesQuota);
+        assert (nodesQuota <= nodes && nodes <= nodesLimit);
         return nodes - nodesQuota;
     }
 
@@ -36,6 +38,8 @@ public:
     }
 
     NodeControl count(const SearchControl& search) {
+        assert (nodesQuota <= nodes && nodes <= nodesLimit);
+
         if (nodesQuota > 0) {
             --nodesQuota;
             return NodeControl::Continue;
