@@ -32,11 +32,6 @@ public:
         return nodesLimit == nodes && nodesQuota == 0;
     }
 
-    void abort() {
-        nodesLimit = nodes;
-        nodesQuota = 0;
-    }
-
     NodeControl count(const SearchControl& search) {
         assert (nodesQuota <= nodes && nodes <= nodesLimit);
 

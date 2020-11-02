@@ -115,42 +115,46 @@ void UciSearchInfo::info_nps(io::ostream& o, node_count_t nodes, const PerftTT& 
     }
 }
 
-void UciSearchInfo::bestmove(const Move& bestMove, Score bestScore, node_count_t nodes, const PerftTT& tt) const {
+void UciSearchInfo::bestmove(const Move pv[], Score bestScore, node_count_t nodes, const PerftTT& tt) const {
     OUTPUT(ob);
     if (lastInfoNodes != nodes) {
         ob << "info";
         nps(ob, nodes, tt);
-        ob << " score " << bestScore << '\n';
+        ob << " score " << bestScore;
+        ob << " pv "; write(ob, pv);
+        ob << '\n';
     }
-    ob << "bestmove "; write(ob, bestMove); ob << '\n';
+    ob << "bestmove "; write(ob, pv[0]); ob << '\n';
 }
 
 void UciSearchInfo::report_depth(ply_t draft, const Move pv[], Score bestScore, node_count_t nodes, const PerftTT& tt) const {
     OUTPUT(ob);
     ob << "info depth " << draft;
     nps(ob, nodes, tt);
+    ob << " score " << bestScore;
     ob << " pv "; write(ob, pv);
-    ob << "score " << bestScore;
     ob << '\n';
 }
 
-void UciSearchInfo::report_perft_depth(ply_t draft, const Move& bestMove, Score bestScore, node_count_t perftNodes, node_count_t nodes, const PerftTT& tt) const {
+void UciSearchInfo::report_perft_depth(ply_t draft, const Move pv[], Score bestScore, node_count_t perftNodes, node_count_t nodes, const PerftTT& tt) const {
     OUTPUT(ob);
     ob << "info depth " << draft;
+    ob << " perft " << perftNodes;
     nps(ob, nodes, tt);
-    ob << " pv "; write(ob, bestMove);
     ob << " score " << bestScore;
-    ob << " perft " << perftNodes << '\n';
+    ob << " pv "; write(ob, pv);
+    ob << '\n';
 }
 
-void UciSearchInfo::report_perft_divide(const Move& currmove, const Move& bestMove, Score bestScore, index_t currmovenumber, node_count_t perftNodes, node_count_t nodes, const PerftTT& tt) const {
+void UciSearchInfo::report_perft_divide(const Move& currmove, const Move pv[], Score bestScore, index_t currmovenumber, node_count_t perftNodes, node_count_t nodes, const PerftTT& tt) const {
     OUTPUT(ob);
     ob << "info currmovenumber " << currmovenumber;
     ob << " currmove "; write(ob, currmove);
+    ob << " perft " << perftNodes;
     nps(ob, nodes, tt);
-    ob << " pv "; write(ob, bestMove);
     ob << " score " << bestScore;
-    ob << " perft " << perftNodes << '\n';
+    ob << " pv "; write(ob, pv);
+    ob << '\n';
 }
 
 #undef OUTPUT

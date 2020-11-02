@@ -9,7 +9,6 @@ public:
     Score alpha = Score::Minimum;
     Score beta = Score::Maximum;
     Score bestScore = Score::Minimum;
-    Move bestMove = {};
 
 public:
     NodeAlphaBeta (NodeAlphaBeta& n, ply_t r = 1) : Node(n, r), alpha{-n.beta}, beta{-n.alpha} {}

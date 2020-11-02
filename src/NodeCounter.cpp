@@ -17,16 +17,18 @@ NodeControl NodeCounter::refreshQuota(const SearchControl& search) {
         }
     }
 
-    assert (0 < nodesQuota && nodesQuota <= TickLimit);
-    nodes += nodesQuota;
-
-    --nodesQuota; //count current node
-
     if (search.isStopped()) {
-        abort();
+        nodesLimit = nodes;
+        nodesQuota = 0;
         return NodeControl::Abort;
     }
 
+    assert (0 < nodesQuota && nodesQuota <= TickLimit);
+    nodes += nodesQuota;
+    assert (nodesQuota <= nodes && nodes <= nodesLimit);
+
     search.readyok();
+
+    --nodesQuota; //count current node
     return NodeControl::Continue;
 }

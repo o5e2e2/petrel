@@ -1,6 +1,7 @@
 #include "NodePerft.hpp"
 #include "NodePerftLeaf.hpp"
 #include "NodePerftTT.hpp"
+#include "SearchControl.hpp"
 
 NodeControl NodePerft::visit(Square from, Square to) {
     playMove(parent, from, to, getZobrist());
@@ -12,7 +13,7 @@ NodeControl NodePerft::visit(Square from, Square to) {
 
         default:
             assert (draft >= 3);
-            RETURN_CONTROL ( NodePerftTT(*this).visitChildren() );
+            RETURN_CONTROL ( NodePerft(*this).visitChildren() );
     }
 
     updateParentPerft();
@@ -20,10 +21,9 @@ NodeControl NodePerft::visit(Square from, Square to) {
     auto& p = static_cast<NodePerft&>(parent);
     if (-bestScore > p.bestScore) {
         p.bestScore = -bestScore;
-        p.bestMove = p.createMove(from, to);
+        control.createPv(p.createMove(from, to));
     }
 
     bestScore = Score::Minimum;
-    bestMove = {};
     return NodeControl::Continue;
 }

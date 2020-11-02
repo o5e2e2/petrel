@@ -21,15 +21,14 @@ NodeControl NodePerftRootDivide::visit(Square from, Square to) {
             break;
 
         default:
-            RETURN_CONTROL ( NodePerftTT(p).visit(from, to) );
+            RETURN_CONTROL ( NodePerft(p).visit(from, to) );
     }
 
     ++moveCount;
     auto movePerft = p.perft - parentPerftBefore;
     Move move = p.createMove(from, to);
-    control.infoPerftMove(moveCount, move, movePerft, p.bestMove, p.bestScore);
+    control.infoPerftMove(moveCount, move, movePerft, p.bestScore);
 
     bestScore = Score::Minimum;
-    bestMove = {};
     return NodeControl::Continue;
 }

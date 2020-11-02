@@ -12,7 +12,7 @@ TEST_DIR ?= ./test
 ifeq ($(debug),yes)
 	BUILD_DIR = $(DEBUG_DIR)
 	CXXFLAGS += -DDEBUG -ggdb
-	OPTIMIZATIONS = -Og
+	OPTIMIZATIONS = -Og -O1
 else
 	BUILD_DIR = $(RELEASE_DIR)
 	CXXFLAGS += -DNDEBUG

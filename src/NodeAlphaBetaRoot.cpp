@@ -18,7 +18,6 @@ NodeControl NodeAlphaBetaRoot::iterativeDeepening() {
     for (draft = 1; draft <= DepthMax; ++draft) {
         RETURN_CONTROL ( searchIteration() );
 
-        bestMove = {};
         bestScore = Score::None;
 
         control.nextIteration();
@@ -35,6 +34,6 @@ NodeControl NodeAlphaBetaRoot::visitChildren() {
         iterativeDeepening();
     }
 
-    control.bestmove(bestMove, bestScore);
+    control.bestmove(bestScore);
     return NodeControl::Continue;
 }

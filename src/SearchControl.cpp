@@ -4,14 +4,16 @@
 #include "UciSearchInfo.hpp"
 #include "SearchLimit.hpp"
 
-SearchControl::SearchControl (UciSearchInfo& i) : info{i} {}
+SearchControl::SearchControl (UciSearchInfo& i) : info{i}, pvMoves{} {}
 
 void SearchControl::newGame() {
     info.clear();
+    pvMoves.clear();
     transpositionTable.clear();
 }
 
 void SearchControl::nextIteration() {
+    pvMoves.clear();
     transpositionTable.nextAge();
 }
 
@@ -19,6 +21,7 @@ void SearchControl::go(const SearchLimit& limit) {
     nodeCounter = NodeCounter(limit.nodes);
 
     info.clear();
+    pvMoves.clear();
     transpositionTable.clearCounter();
 
     auto duration = limit.getThinkingTime();
@@ -55,20 +58,20 @@ void SearchControl::readyok() const{
     info.readyok(nodeCounter, transpositionTable);
 }
 
-void SearchControl::bestmove(const Move& bestMove, Score bestScore) const {
-    info.bestmove(bestMove, bestScore, nodeCounter, transpositionTable);
+void SearchControl::bestmove(Score bestScore) const {
+    info.bestmove(pvMoves, bestScore, nodeCounter, transpositionTable);
 }
 
 void SearchControl::infoDepth(ply_t draft, Score bestScore) const {
     info.report_depth(draft, pvMoves, bestScore, nodeCounter, transpositionTable);
 }
 
-void SearchControl::infoPerftDepth(ply_t draft, node_count_t perft, const Move& bestMove, Score bestScore) const {
-    info.report_perft_depth(draft, bestMove, bestScore, perft, nodeCounter, transpositionTable);
+void SearchControl::infoPerftDepth(ply_t draft, node_count_t perft, Score bestScore) const {
+    info.report_perft_depth(draft, pvMoves, bestScore, perft, nodeCounter, transpositionTable);
 }
 
-void SearchControl::infoPerftMove(index_t moveCount, const Move& currentMove, node_count_t perft, const Move& bestMove, Score bestScore) const {
-    info.report_perft_divide(currentMove, bestMove, bestScore, moveCount, perft, nodeCounter, transpositionTable);
+void SearchControl::infoPerftMove(index_t moveCount, const Move& currentMove, node_count_t perft, Score bestScore) const {
+    info.report_perft_divide(currentMove, pvMoves, bestScore, moveCount, perft, nodeCounter, transpositionTable);
 }
 
 void SearchControl::setHash(size_t bytes) {

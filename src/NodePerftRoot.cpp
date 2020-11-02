@@ -27,11 +27,11 @@ NodeControl NodePerftRoot::searchIteration() {
 
             default:
                 assert (draft >= 3);
-                RETURN_CONTROL ( NodePerftTT(*this).visitChildren() );
+                RETURN_CONTROL ( NodePerft(*this).visitChildren() );
         }
     }
 
-    control.infoPerftDepth(draft, perft, bestMove, bestScore);
+    control.infoPerftDepth(draft, perft, bestScore);
     return NodeControl::Continue;
 }
 
@@ -40,7 +40,6 @@ NodeControl NodePerftRoot::iterativeDeepening() {
         RETURN_CONTROL ( searchIteration() );
 
         perft = 0;
-        bestMove = {};
         bestScore = Score::None;
 
         control.nextIteration();
@@ -57,6 +56,6 @@ NodeControl NodePerftRoot::visitChildren() {
         iterativeDeepening();
     }
 
-    control.bestmove(bestMove, bestScore);
+    control.bestmove(bestScore);
     return NodeControl::Continue;
 }

@@ -6,31 +6,25 @@
 
 template<index_t Depth>
 class PvMoves {
-    std::array<index_t, Depth> index;
-    std::array<Move, Depth*(Depth+1)/2> pv;
+    std::array< std::array<Move, Depth>, Depth+1> pv;
 
 public:
-    constexpr PvMoves () {
-        index[0] = 0;
-        pv[0] = Move{};
-        for (index_t ply = 1; ply < Depth; ++ply) {
-            index[ply] = index[ply-1] + Depth - ply - 1;
-            pv[index[ply]] = Move{};
+    PvMoves () { clear(); }
+
+    void clear() {
+        for (index_t ply = 0; ply <= Depth; ++ply) {
+            pv[ply][0] = Move{};
         }
     }
 
     void operator() (ply_t ply, Move move) {
-        pv[index[ply]] = move;
-        pv[index[ply]+1] = Move{};
-
-        Move* source = &pv[index[ply + 1]];
-        Move* target = &pv[index[ply] + 1];
-
-        index_t n = Depth - ply - 1;
-        while (n-- && (*target++ = *source++));
+        pv[ply][0] = move;
+        Move* target = &pv[ply][1];
+        Move* source = &pv[ply + 1][0];
+        while ((*target++ = *source++));
     }
 
-    operator const Move* () const { return &pv[0]; }
+    operator const Move* () const { return &pv[0][0]; }
 
 };
 

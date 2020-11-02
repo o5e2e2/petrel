@@ -6,13 +6,22 @@ Node::Node (Node& n, ply_t r)
     , parent{n}
     , control{n.control}
     , draft{n.draft - r}
-    { ++control.ply; }
+    {}
 
-Node::~Node() { --control.ply; }
+namespace {
+    class SearchPly {
+        SearchControl& control;
+    public:
+        SearchPly (Node& n) : control{n.control} { ++control.ply; }
+        ~SearchPly() { --control.ply; }
+    };
+}
 
 NodeControl Node::beforeVisit() { return control.countNode(); }
 
 NodeControl Node::visitChildren() {
+    SearchPly ply(*this);
+
     auto parentMoves = parent.cloneMoves();
 
     for (Pi pi : parent[My].alivePieces()) {

@@ -12,7 +12,7 @@ NodeControl NodePerftLeaf::visit(Square from, Square to) {
     auto score = -getStaticEval();
     if (score > p.bestScore) {
         p.bestScore = score;
-        p.bestMove = p.createMove(from, to);
+        control.createPv(p.createMove(from, to));
     }
 
     return NodeControl::Continue;

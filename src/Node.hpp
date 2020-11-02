@@ -10,9 +10,9 @@ class SearchControl;
 class Node : public PositionMoves {
 protected:
     Node& parent; //virtual
-    SearchControl& control;
 
 public:
+    SearchControl& control;
     ply_t draft; //remaining distance to leaves
 
 protected:
@@ -20,7 +20,7 @@ protected:
     Node (const PositionMoves& p, SearchControl& c, ply_t d) : PositionMoves{p}, parent{*this}, control{c}, draft{d} {}
 
 public:
-    virtual ~Node();
+    virtual ~Node() = default;
     virtual NodeControl beforeVisit();
     virtual NodeControl visit(Square, Square) { return NodeControl::Continue; }
     virtual NodeControl visitChildren();
