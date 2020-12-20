@@ -67,24 +67,6 @@ public:
         _v.set(rook, rookTo);
     }
 
-    friend io::ostream& operator << (io::ostream& out, VectorPiSquare squares) {
-        auto flags = out.flags();
-
-        out << std::hex;
-        FOR_INDEX(Pi, pi) {
-            out << ' ' << pi;
-        }
-        out << '\n';
-
-        FOR_INDEX(Pi, pi) {
-            out << std::setw(2) << static_cast<unsigned>(small_cast<unsigned char>( squares._v[pi] ));
-        }
-        out << '\n';
-
-        out.flags(flags);
-        return out;
-    }
-
 };
 
 #endif

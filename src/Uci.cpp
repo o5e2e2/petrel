@@ -129,8 +129,8 @@ void Uci::go() {
         return;
     }
 
-    auto whiteSide = positionFen.getColorSide(White);
-    auto blackSide = positionFen.getColorSide(Black);
+    auto whiteSide = positionFen.sideOf(White);
+    auto blackSide = positionFen.sideOf(Black);
 
     SearchLimit limit;
     limit.positionMoves = positionFen;

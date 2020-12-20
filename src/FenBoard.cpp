@@ -46,12 +46,18 @@ io::istream& operator >> (io::istream& in, FenBoard& board) {
 }
 
 bool FenBoard::drop(Color color, PieceType ty, Square sq) {
-    //our position representaion cannot hold more then 16 pieces per color
+    //our position representaion cannot hold more then 16 total pieces per color
     if (pieceCount[color] == Pi::Size) {
         return false;
     }
-    //the king should be only one per each color
+
+    //max one king per each color
     if (ty.is(King) && !pieces[color][King].empty()) {
+        return false;
+    }
+
+    //illegal pawn location
+    if (ty.is(Pawn) && (sq.on(Rank1) || sq.on(Rank8))) {
         return false;
     }
 
@@ -78,6 +84,7 @@ bool FenBoard::dropPieces(Position& position, Color colorToMove) {
                 auto piece = pieces[color][ty].begin();
 
                 if (!pos.drop(side, ty, *piece)) {
+                    //should never happen
                     return false;
                 }
 

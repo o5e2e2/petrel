@@ -12,12 +12,6 @@ class MatrixPiBb {
 public:
     constexpr MatrixPiBb () = default;
 
-    MatrixPiBb (const MatrixPiBb& from) {
-        FOR_INDEX(Rank, rank) {
-            matrix[rank] = from.matrix[rank];
-        }
-    }
-
     friend bool operator == (const MatrixPiBb& a, const MatrixPiBb& b) {
         FOR_INDEX(Rank, rank) {
             if (a.matrix[rank] != b.matrix[rank]) { return false; }

@@ -103,7 +103,7 @@ void PositionFen::fenEnPassant(io::ostream& out) const {
 }
 
 io::ostream& operator << (io::ostream& out, const PositionFen& pos) {
-    auto whiteSide = pos.getColorSide(White);
+    auto whiteSide = pos.sideOf(White);
     auto& whitePieces = pos[whiteSide];
     auto& blackPieces = pos[~whiteSide];
 
@@ -249,14 +249,43 @@ void PositionFen::playMoves(io::istream& in) {
 void PositionFen::setBoard(io::istream& in) {
     FenBoard board;
 
-    in >> board >> std::ws >> colorToMove;
-
-    if (in) {
-        if (!board.dropPieces(*this, colorToMove) || !afterDrop()) {
-            io::fail(in);
-        }
+    in >> board >> std::ws;
+    if (in.eof()) {
+        //missing board data
+        io::fail_rewind(in);
+        return;
     }
 
+    if (!in) {
+        //specific board character is invalid
+        io::fail(in);
+        return;
+    }
+
+    auto here = in.tellg();
+    in >> colorToMove;
+
+    if (!in) {
+        //invalid side to move
+        io::fail_rewind(in);
+        return;
+    }
+
+    Position pos;
+
+    if (!board.dropPieces(pos, colorToMove)) {
+        //missing one or both kings
+        io::fail_rewind(in);
+        return;
+    }
+
+    if (!pos.afterDrop()) {
+        //the side to move king left in check
+        io::fail_pos(in, here);
+        return;
+    }
+
+    static_cast<Position&>(*this) = pos;
 }
 
 bool PositionFen::setCastling(Side My, File file) {
@@ -277,7 +306,7 @@ io::istream& PositionFen::setCastling(io::istream& in) {
     for (io::char_type c; in.get(c) && !std::isblank(c); ) {
         if (std::isalpha(c)) {
             Color color = std::isupper(c) ? White : Black;
-            Side side = getColorSide(color);
+            Side side = sideOf(color);
 
             c = static_cast<io::char_type>(std::tolower(c));
 

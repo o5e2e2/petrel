@@ -13,7 +13,6 @@ protected:
     constexpr explicit BitArrayBase (_t v) : _v(v) {}
     constexpr explicit operator _t () const { return _v; }
 
-    constexpr void operator  = (B b) { _v  = b._v; }
     constexpr void operator &= (B b) { _v &= b._v; }
     constexpr void operator |= (B b) { _v |= b._v; }
     constexpr void operator ^= (B b) { _v ^= b._v; }

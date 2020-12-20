@@ -24,7 +24,7 @@ class PositionFen : public PositionMoves {
 public:
     constexpr PositionFen() = default;
 
-    constexpr Side getColorSide(Color color) const { return colorToMove.is(color) ? My : Op; }
+    constexpr Side sideOf(Color color) const { return colorToMove.is(color) ? My : Op; }
     constexpr bool isChess960() const { return chessVariant.is(Chess960); }
 
     void setChessVariant(ChessVariant v) { chessVariant = v; }
