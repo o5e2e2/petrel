@@ -6,6 +6,7 @@
 class SearchLimit;
 
 class NodeAlphaBetaRoot : public NodeAlphaBeta {
+    ply_t depthLimit;
 
     NodeControl searchIteration();
     NodeControl iterativeDeepening();

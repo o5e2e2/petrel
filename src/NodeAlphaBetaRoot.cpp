@@ -5,7 +5,7 @@
 #include "SearchLimit.hpp"
 
 NodeAlphaBetaRoot::NodeAlphaBetaRoot (const SearchLimit& limit, SearchControl& searchControl):
-    NodeAlphaBeta(limit.positionMoves, searchControl, limit.depth)
+    NodeAlphaBeta(limit.positionMoves, searchControl, 1), depthLimit(limit.depth ? limit.depth : DepthMax)
 {}
 
 NodeControl NodeAlphaBetaRoot::searchIteration() {
@@ -15,7 +15,7 @@ NodeControl NodeAlphaBetaRoot::searchIteration() {
 }
 
 NodeControl NodeAlphaBetaRoot::iterativeDeepening() {
-    for (draft = 1; draft <= DepthMax; ++draft) {
+    for (draft = 1; draft <= depthLimit; ++draft) {
         RETURN_CONTROL ( searchIteration() );
 
         bestScore = Score::None;
@@ -27,13 +27,8 @@ NodeControl NodeAlphaBetaRoot::iterativeDeepening() {
 }
 
 NodeControl NodeAlphaBetaRoot::visitChildren() {
-    if (draft > 0) {
-        searchIteration();
-    }
-    else {
-        iterativeDeepening();
-    }
+    iterativeDeepening();
 
     control.bestmove(bestScore);
-    return NodeControl::Continue;
+    return NodeControl::Abort;
 }
