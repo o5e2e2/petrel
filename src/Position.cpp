@@ -5,18 +5,15 @@
 
 #define MY (*this)[My]
 #define OP (*this)[Op]
-#define MY_OCCUPIED (*this).occupiedBb[My]
 
 template <Side::_t My>
 void Position::updateSliderAttacks(VectorPiMask affected) {
     constexpr Side Op{~My};
 
-    //sync occupiedBb between sides
-    MY_OCCUPIED = PositionSide::combinePiecesBb(MY, OP);
-    occupiedBb[Op] = ~MY_OCCUPIED;
+    PositionSide::updateOccupied(MY, OP);
 
     //TRICK: attacks calculated without opponent's king for implicit out of check king's moves generation
-    MY.setSliderAttacks(affected, MY_OCCUPIED - MY.opKingSquare());
+    MY.setSliderAttacks(affected, MY.occupied() - MY.opKingSquare());
 }
 
 template <Side::_t My>
@@ -24,7 +21,7 @@ void Position::updateSliderAttacks(VectorPiMask myAffected, VectorPiMask opAffec
     constexpr Side Op{~My};
 
     updateSliderAttacks<My>(myAffected);
-    OP.setSliderAttacks(opAffected, (*this).occupiedBb[Op]);
+    OP.setSliderAttacks(opAffected, OP.occupied());
 }
 
 template <Side::_t My>
@@ -71,7 +68,7 @@ void Position::setLegalEnPassant(Pi pi) {
         return;
     }
 
-    if (MY.isPinned(MY_OCCUPIED)) {
+    if (MY.isPinned(MY.occupied())) {
         assert ((MY.checkers() % pi).any());
         return; //discovered check found
     }
@@ -80,7 +77,7 @@ void Position::setLegalEnPassant(Pi pi) {
     for (Square killer : killers) {
         assert (killer.on(Rank4));
 
-        if (!MY.isPinned(MY_OCCUPIED - killer + ep - to)) {
+        if (!MY.isPinned(MY.occupied() - killer + ep - to)) {
             MY.setEnPassantVictim(pi);
             OP.setEnPassantKiller(OP.pieceOn(~killer));
         }
@@ -236,4 +233,3 @@ bool Position::afterDrop() {
 
 #undef MY
 #undef OP
-#undef MY_OCCUPIED

@@ -6,7 +6,6 @@
 
 #define MY (*this)[My]
 #define OP (*this)[Op]
-#define MY_OCCUPIED (*this).occupiedBb[My]
 
 class WriteFenBoard {
     const PositionSide& whitePieces;
@@ -332,8 +331,8 @@ io::istream& PositionFen::setCastling(io::istream& in) {
 
 bool PositionFen::setEnPassant(File file) {
     if (MY.hasEnPassant() || OP.hasEnPassant()) { return false; }
-    if (MY_OCCUPIED.has(Square{file, Rank7})) { return false; }
-    if (MY_OCCUPIED.has(Square{file, Rank6})) { return false; }
+    if (MY.occupied().has(Square{file, Rank7})) { return false; }
+    if (MY.occupied().has(Square{file, Rank6})) { return false; }
 
     Square victimSquare(file, Rank4);
     if (!OP.hasPieceOn(victimSquare)) { return false; }
@@ -342,7 +341,7 @@ bool PositionFen::setEnPassant(File file) {
     if (!OP.isPawn(victim)) { return false; }
 
     //check against illegal en passant set field like "8/5bk1/8/2Pp4/8/1K6/8/8 w - d6"
-    if (OP.isPinned((*this).occupiedBb[Op] - victimSquare)) {
+    if (OP.isPinned(OP.occupied() - victimSquare)) {
         return false;
     }
 
@@ -392,4 +391,3 @@ void PositionFen::setStartpos() {
 
 #undef MY
 #undef OP
-#undef MY_OCCUPIED

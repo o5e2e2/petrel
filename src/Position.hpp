@@ -16,7 +16,6 @@ class Position {
     template <Side::_t> void playMove(Square, Square);
 
 protected:
-    Side::array<Bb> occupiedBb; //all occupied squares by both sides, updated by combining both PositionSide::piecesBb
     constexpr PositionSide& operator[] (Side side) { return (this->ps)[side]; }
 
 public:

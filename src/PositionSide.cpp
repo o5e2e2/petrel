@@ -45,6 +45,7 @@ void PositionSide::swap(PositionSide& MY, PositionSide& OP) {
     swap(MY.squares, OP.squares);
     swap(MY.piecesBb, OP.piecesBb);
     swap(MY.pawnsBb, OP.pawnsBb);
+    swap(MY.occupiedBb, OP.occupiedBb);
     swap(MY.evaluation, OP.evaluation);
     swap(MY.opKing, OP.opKing);
 }
@@ -57,8 +58,9 @@ void PositionSide::finalSetup(PositionSide& MY, PositionSide& OP) {
     OP.setGamePhase(MY);
 }
 
-Bb PositionSide::combinePiecesBb(const PositionSide& MY, const PositionSide& OP) {
-    return MY.piecesBb + ~OP.piecesBb;
+void PositionSide::updateOccupied(PositionSide& MY, PositionSide& OP) {
+    MY.occupiedBb = MY.piecesBb + ~OP.piecesBb;
+    OP.occupiedBb = OP.piecesBb + ~MY.piecesBb;
 }
 
 GamePhase PositionSide::generateGamePhase() const {

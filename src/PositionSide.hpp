@@ -9,7 +9,7 @@
 #include "Zobrist.hpp"
 
 /******************************************************************************
- * static information about pieces of the single player's side (either on move or opponent)
+ * static information about pieces of one player's side (either side to move or its opponent)
  */
 
 //TRICK: all squares are relative to its own side (so the king piece is initially on E1 square regardless color)
@@ -20,6 +20,7 @@ class PositionSide {
 
     Bb piecesBb; //all pieces of the current side, incrementally updated
     Bb pawnsBb; //pawns of the current side, incrementally updated
+    Bb occupiedBb; //all occupied squares by both sides, updated by combining both PositionSide::piecesBb
 
     Evaluation evaluation;
     Square opKing; //location of the opponent's king
@@ -41,6 +42,7 @@ public:
     #endif
 
     const Bb& sideSquares() const { return piecesBb; }
+    const Bb& occupied() const { return occupiedBb; }
     bool isOccupied(Square sq) const { return piecesBb.has(sq); }
     VectorPiMask alivePieces() const { assert (squares.alivePieces() == types.alivePieces()); return squares.alivePieces(); }
 
@@ -88,7 +90,7 @@ public:
 //friend class Position;
     static void swap(PositionSide&, PositionSide&);
     static void finalSetup(PositionSide&, PositionSide&);
-    static Bb combinePiecesBb(const PositionSide&, const PositionSide&);
+    static void updateOccupied(PositionSide&, PositionSide&);
 
     void setOpKing(Square);
     void move(Pi, Square, Square);
