@@ -103,25 +103,25 @@ void PositionMoves::correctCheckEvasionsByPawns(Bb checkLine, Square checkFrom) 
 
 }
 
-//exclude illegal moves due pin
+//exclude illegal moves due absolute pin
 template <Side::_t My>
-void PositionMoves::excludePinnedMoves(VectorPiMask pinnerCandidates) {
+void PositionMoves::excludePinnedMoves(VectorPiMask opPinners) {
     constexpr Side Op{~My};
 
-    for (Pi pi : pinnerCandidates) {
-        Square pinFrom{~OP.squareOf(pi)};
+    for (Pi pinner : opPinners) {
+        Square pinFrom{~OP.squareOf(pinner)};
 
-        assert (::attacksFrom(OP.typeOf(pi), pinFrom).has(MY.kingSquare()));
+        assert (::attacksFrom(OP.typeOf(pinner), pinFrom).has(MY.kingSquare()));
 
         const Bb& pinLine = ::between(MY.kingSquare(), pinFrom);
-        Bb betweenPieces = pinLine & MY_OCCUPIED;
-        assert (betweenPieces.any());
+        Bb piecesOnPinLine = pinLine & MY_OCCUPIED;
+        assert (piecesOnPinLine.any());
 
-        if (betweenPieces.isSingleton() && (betweenPieces & MY.sideSquares()).any()) {
+        if (piecesOnPinLine.isSingleton() && (piecesOnPinLine & MY.sideSquares()).any()) {
             //we discovered a true pinned piece
-            Pi pinned = MY.pieceOn(betweenPieces.index());
+            Pi pinned = MY.pieceOn(piecesOnPinLine.index());
 
-            //exclude moves except moves over the pin line
+            //exclude all pinned piece moves except those over the pin line
             moves.filter(pinned, pinLine + pinFrom);
         }
     }

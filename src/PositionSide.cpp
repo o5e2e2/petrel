@@ -45,8 +45,8 @@ void PositionSide::swap(PositionSide& MY, PositionSide& OP) {
     swap(MY.squares, OP.squares);
     swap(MY.piecesBb, OP.piecesBb);
     swap(MY.pawnsBb, OP.pawnsBb);
-    swap(MY.opKing, OP.opKing);
     swap(MY.evaluation, OP.evaluation);
+    swap(MY.opKing, OP.opKing);
 }
 
 void PositionSide::finalSetup(PositionSide& MY, PositionSide& OP) {
