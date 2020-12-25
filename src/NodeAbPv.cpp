@@ -1,17 +1,22 @@
-#include "NodeAlphaBeta.hpp"
+#include "NodeAbPv.hpp"
+#include "NodeAbCut.hpp"
 #include "SearchControl.hpp"
 
-NodeControl NodeAlphaBeta::visit(Square from, Square to) {
-    auto& p = static_cast<NodeAlphaBeta&>(parent);
+NodeControl NodeAbPv::visit(Square from, Square to) {
+    auto& p = static_cast<NodeAbPv&>(parent);
 
     playMove(p, from, to, getZobrist());
 
-    if (getMovesCount() == 0 || draft == 0) {
+    if (getMovesCount() == 0) {
+        //mated or stalemated
+        bestScore = getStaticEval();
+    }
+    else if (draft == 0) {
         bestScore = getStaticEval();
     }
     else {
         bestScore = Score::Minimum;
-        NodeControl result = NodeAlphaBeta(*this).visitChildren();
+        NodeControl result = NodeAbCut(*this).visitChildren();
 
         //the search is interrupted so exit immediately
         if (result == NodeControl::Abort && control.isAborted()) {

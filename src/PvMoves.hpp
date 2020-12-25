@@ -6,13 +6,13 @@
 
 template<index_t Depth>
 class PvMoves {
-    std::array< std::array<Move, Depth>, Depth+1> pv;
+    std::array< std::array<Move, Depth+1>, Depth> pv;
 
 public:
     PvMoves () { clear(); }
 
     void clear() {
-        for (index_t ply = 0; ply <= Depth; ++ply) {
+        for (index_t ply = 0; ply < Depth; ++ply) {
             pv[ply][0] = Move{};
         }
     }

@@ -1,6 +1,6 @@
 #include "SearchControl.hpp"
 #include "NodePerftRoot.hpp"
-#include "NodeAlphaBetaRoot.hpp"
+#include "NodeAbRoot.hpp"
 #include "UciSearchInfo.hpp"
 #include "SearchLimit.hpp"
 
@@ -28,7 +28,7 @@ void SearchControl::go(const SearchLimit& limit) {
 
     auto searchId = searchThread.start( limit.isPerft
         ? static_cast<std::unique_ptr<Node>>(std::make_unique<NodePerftRoot>(limit, *this))
-        : static_cast<std::unique_ptr<Node>>(std::make_unique<NodeAlphaBetaRoot>(limit, *this))
+        : static_cast<std::unique_ptr<Node>>(std::make_unique<NodeAbRoot>(limit, *this))
     );
 
     timer.start(duration, searchThread, searchId);
