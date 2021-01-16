@@ -43,25 +43,16 @@ int main(int argc, const char* argv[]) {
         std::string option = argv[1];
 
         if (option == "--help" || option == "-h") {
-            std::cout
-                << "petrel [-hv]\n"
-                << "    Petrel UCI chess engine. Plays the game of chess.\n\n"
-                << "    Options:\n"
-                << "      -h, --help        display this help and exit\n"
-                << "      -v, --version     output version information and exit\n"
-            ;
-            return 0;
+            io::option_help(std::cout);
+            return EXIT_SUCCESS;
         }
 
         if (option == "--version" || option == "-v") {
-            std::cout
-                << "petrel " << io::app_version << '\n'
-                << "written by Aleks Peshkov (aleks.peshkov@gmail.com)\n"
-            ;
-            return 0;
+            io::option_version(std::cout);
+            return EXIT_SUCCESS;
         }
 
-        std::cerr << "petrel: invalid option\n";
+        io::option_invalid(std::cerr);
         return EINVAL;
     }
 
@@ -73,6 +64,6 @@ int main(int argc, const char* argv[]) {
     Uci uci(std::cout);
     uci(std::cin, std::cerr);
 
-    //TRICK: return 0; does not work
-    std::exit(0);
+    //TRICK: simple "return 0;" does not work
+    std::exit(EXIT_SUCCESS);
 }

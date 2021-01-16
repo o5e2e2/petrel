@@ -29,13 +29,9 @@ void Uci::operator() (io::istream& in, io::ostream& err) {
 
         if (!nextNone()) {
             //parsing error if something left unparsed
-            reportError(err);
+            io::uci_error(err, command);
         }
     }
-}
-
-void Uci::reportError(io::ostream& err) {
-    err << "parsing error: " << command.rdbuf() << '\n';
 }
 
 void Uci::ucinewgame() {

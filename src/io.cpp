@@ -111,4 +111,29 @@ ostream& app_version(ostream& out) {
     return out;
 }
 
+ostream& option_version(ostream& out) {
+    return out
+        << "petrel " << app_version << '\n'
+        << "written by Aleks Peshkov (aleks.peshkov@gmail.com)\n"
+    ;
+}
+
+ostream& option_help(ostream& out) {
+    return out
+        << "petrel [-hv]\n"
+        << "    Petrel UCI chess engine. Plays the game of chess.\n\n"
+        << "    Options:\n"
+        << "      -h, --help        display this help and exit\n"
+        << "      -v, --version     output version information and exit\n"
+    ;
+}
+
+ostream& option_invalid(ostream& err) {
+    return err << "petrel: invalid option\n";
+}
+
+ostream& uci_error(ostream& err, istream& context) {
+    return err << "parsing error: " << context.rdbuf() << '\n';
+}
+
 } //end of namespace io

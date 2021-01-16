@@ -21,7 +21,10 @@ namespace io {
     bool next(istream&, czstring);
     bool nextNone(istream&);
 
-    ostream& app_version(ostream&);
+    ostream& option_help(ostream&);
+    ostream& option_version(ostream&);
+    ostream& option_invalid(ostream&);
+    ostream& uci_error(ostream&, istream&);
 }
 
 #endif
