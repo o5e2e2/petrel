@@ -7,23 +7,24 @@
 SearchControl::SearchControl (UciSearchInfo& i) : info{i}, pvMoves{} {}
 
 void SearchControl::newGame() {
-    info.clear();
-    pvMoves.clear();
     transpositionTable.clear();
+    newSearch();
 }
 
-void SearchControl::nextIteration() {
+void SearchControl::newSearch() {
+    newIteration();
+    transpositionTable.clearCounter();
+}
+
+void SearchControl::newIteration() {
     pvMoves.clear();
     transpositionTable.nextAge();
 }
 
 void SearchControl::go(const SearchLimit& limit) {
+    newSearch();
+
     nodeCounter = NodeCounter(limit.nodes);
-
-    info.clear();
-    pvMoves.clear();
-    transpositionTable.clearCounter();
-
     auto duration = limit.getThinkingTime();
 
     auto searchId = searchThread.start( limit.isPerft

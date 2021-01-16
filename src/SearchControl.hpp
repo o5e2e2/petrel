@@ -34,6 +34,8 @@ public:
     SearchControl (UciSearchInfo&);
 
     void newGame();
+    void newSearch();
+    void newIteration();
 
     bool isAborted() const { return nodeCounter.isAborted(); }
 
@@ -51,8 +53,6 @@ public:
     PerftTT& tt() { return transpositionTable; }
 
     void createPv(const Move&);
-
-    void nextIteration();
 
     void readyok() const;
     void bestmove(Score) const;

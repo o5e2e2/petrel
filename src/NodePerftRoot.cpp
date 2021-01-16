@@ -38,11 +38,9 @@ NodeControl NodePerftRoot::searchIteration() {
 NodeControl NodePerftRoot::iterativeDeepening() {
     for (draft = 1; draft <= DepthMax; ++draft) {
         RETURN_CONTROL ( searchIteration() );
-
         perft = 0;
         bestScore = Score::None;
-
-        control.nextIteration();
+        control.newIteration();
     }
 
     return NodeControl::Continue;

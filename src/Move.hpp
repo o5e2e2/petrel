@@ -6,9 +6,9 @@
 #include "Square.hpp"
 
 /**
- * Internal move is packed to 12 bits and connected with the position from it was made
- * Independent move is extended to 13 bits (extra flag bit to mark castling, promotion or en passant move)
- * All moves are relative to its side.
+ * Internal move is 12 bits long (packed 'from' and 'to' squares) and linked to the position from it was made
+ * Position independent move is 13 bits with the extra flag bit to mark castling, promotion or en passant move
+ * Any move's squares coordinates are relative to its side.
  *
  * Castling encoded as the castling rook moves over own king square.
  * Pawn promotion piece encoded in place of destination rank.

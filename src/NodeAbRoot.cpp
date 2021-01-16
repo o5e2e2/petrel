@@ -17,10 +17,8 @@ NodeControl NodeAbRoot::searchIteration() {
 NodeControl NodeAbRoot::iterativeDeepening() {
     for (draft = 1; draft <= depthLimit; ++draft) {
         RETURN_CONTROL ( searchIteration() );
-
         bestScore = Score::None;
-
-        control.nextIteration();
+        control.newIteration();
     }
 
     return NodeControl::Continue;
