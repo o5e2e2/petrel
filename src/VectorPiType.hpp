@@ -34,6 +34,7 @@ public:
     VectorPiMask piecesOfType(PieceType ty) const { assert (!ty.is(King)); return _v.anyOf(ty); }
     VectorPiMask minors() const { return _v.anyOf(MinorMask); }
     VectorPiMask sliders() const { return _v.anyOf(SliderMask); }
+    VectorPiMask leapers() const { return _v.anyOf(LeaperMask); }
 
     PieceType typeOf(Pi pi) const { assertValid(pi); return static_cast<PieceType::_t>( ::bsf(static_cast<unsigned>(_v[pi])) ); }
 

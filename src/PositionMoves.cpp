@@ -166,11 +166,10 @@ void PositionMoves::generateCheckEvasions() {
 template <Side::_t My>
 void PositionMoves::generateMoves() {
     constexpr Side Op{~My};
-
     attackedSquares = ~OP.attacksMatrix().gather();
-    inCheck = attackedSquares.has(MY.kingSquare());
+    assert (OP.checkers().any() == attackedSquares.has(MY.kingSquare()));
 
-    if (inCheck) {
+    if (OP.checkers().any()) {
         generateCheckEvasions<My>();
         return;
     }
@@ -203,7 +202,7 @@ void PositionMoves::generateMoves() {
         staticEval = evaluate();
     }
     else {
-        staticEval = inCheck ? Score::Checkmated : Score::Draw;
+        staticEval = OP.checkers().any() ? Score::Checkmated : Score::Draw;
     }
 
 }

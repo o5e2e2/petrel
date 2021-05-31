@@ -7,10 +7,11 @@
 class VectorPiTrait {
     //Castling: rooks with castling rights
     //EnPassant: pawns that can either be legally captured en passant or perform a legal en passant capture (depends on side to move)
-    //Pinner: sliding pieces that can attack the enemy king on empty board
+    //Pinner: sliding pieces that can attack the enemy king on empty board (potential pinners)
+    //Checker: any piece actually attacking enemy king
 
-    enum piece_trait_t { Castling, EnPassant, Pinner };
-    typedef ::Index<3, piece_trait_t> Index;
+    enum piece_trait_t { Castling, EnPassant, Pinner, Checker };
+    typedef ::Index<4, piece_trait_t> Index;
     struct Value : VectorPiBit<Value, Index> {};
 
     Value _v;
@@ -35,6 +36,9 @@ public:
     void setPinner(Pi pi) { assert (!_v.is(pi, Pinner)); _v.set(pi, Pinner); }
     void clearPinner(Pi pi) { _v.clear(pi, Pinner); }
 
+    VectorPiMask checkers() const { return _v.anyOf(Checker); }
+    void clearCheckers() { _v.clear(Checker); }
+    void setChecker(Pi pi) { assert (!_v.is(pi, Checker)); _v.set(pi, Checker); }
 };
 
 #endif

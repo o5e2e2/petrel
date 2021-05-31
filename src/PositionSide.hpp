@@ -66,9 +66,6 @@ public:
     VectorPiMask pawns() const { return types.piecesOfType(Pawn); }
     bool isPawn(Pi pi) const { assertValid(pi); return types.isPawn(pi); }
 
-    VectorPiMask sliders() const { return types.sliders(); }
-    bool isSlider(Pi pi) const { assertValid(pi); return types.isSlider(pi); }
-
     VectorPiMask castlingRooks() const { return traits.castlingRooks(); }
     bool isCastling(Pi pi) const { assertValid(pi); return traits.isCastling(pi); }
     bool isCastling(Square sq) const { return isCastling(pieceOn(sq)); }
@@ -85,7 +82,8 @@ public:
     VectorPiMask attackersTo(Square a) const { return attacks[a]; }
     VectorPiMask attackersTo(Square a, Square b) const { return attacks[a] | attacks[b]; }
     VectorPiMask attackersTo(Square a, Square b, Square c) const { return attacks[a] | attacks[b] | attacks[c]; }
-    VectorPiMask checkers() const { return attacks[opKing]; }
+
+    VectorPiMask checkers() const { assert (traits.checkers() == attacks[opKing]); return traits.checkers(); }
 
     Move createMove(Square from, Square to) const;
 
@@ -106,6 +104,7 @@ public:
     void setEnPassantKiller(Pi);
     void clearEnPassantVictim();
     void clearEnPassantKillers();
+    void clearCheckers() { traits.clearCheckers(); }
 
     void setSliderAttacks(VectorPiMask, Bb);
     void setGamePhase(const PositionSide&);
@@ -119,6 +118,7 @@ public:
 
 private:
     void move(Pi, PieceType, Square, Square);
+    void setLeaperAttacks();
     void setLeaperAttack(Pi, PieceType, Square);
     void setPinner(Pi, Square);
     GamePhase generateGamePhase() const; //returns whether material for endgame or middlegame

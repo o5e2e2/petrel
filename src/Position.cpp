@@ -111,8 +111,8 @@ void Position::playPawnMove(Pi pi, Square from, Square to) {
     if (OP.isOccupied(~to)) {
         capture<Op>(~to);
 
+        //en Passant capture encoded as the pawn captures the pawn
         if (from.on(Rank5) && to.on(Rank5)) {
-            //en passant capture
             Square ep{File(to), Rank6};
             MY.movePawn(pi, from, ep);
             updateSliderAttacks<My>(MY.attackersTo(from, to, ep), OP.attackersTo(~from, ~to, ~ep));
@@ -157,8 +157,8 @@ void Position::playMove(Square from, Square to) {
     constexpr Side Op{~My};
 
     //Assumes that the given move is valid and legal
-    //En Passant capture encoded as the pawn captures the pawn
-    //Castling move encoded as rook captures the king
+    OP.clearCheckers();
+    assert (MY.checkers().none());
 
     //clear en passant status from the previous move
     if (OP.hasEnPassant()) {

@@ -56,8 +56,19 @@ void PositionSide::finalSetup(PositionSide& MY, PositionSide& OP) {
     MY.setOpKing(~OP.kingSquare());
     OP.setOpKing(~MY.kingSquare());
 
+    MY.setLeaperAttacks();
+    OP.setLeaperAttacks();
+
     MY.setGamePhase(OP);
     OP.setGamePhase(MY);
+}
+
+void PositionSide::setLeaperAttacks() {
+    assert (traits.checkers().none());
+
+    for (Pi pi : types.leapers()) {
+        setLeaperAttack(pi, typeOf(pi), squareOf(pi));
+    }
 }
 
 void PositionSide::updateOccupied(PositionSide& MY, PositionSide& OP) {
@@ -104,6 +115,7 @@ void PositionSide::move(Pi pi, PieceType ty, Square from, Square to) {
     piecesBb.move(from, to);
     evaluation.move(ty, from, to);
     squares.move(pi, to);
+    traits.clear(pi);
 }
 
 void PositionSide::move(Pi pi, Square from, Square to) {
@@ -117,7 +129,6 @@ void PositionSide::move(Pi pi, Square from, Square to) {
         setLeaperAttack(pi, Knight, to);
     }
     else {
-        traits.clear(pi);
         setPinner(pi, to);
     }
 
@@ -143,6 +154,7 @@ void PositionSide::promote(Pi pi, PromoType ty, Square from, Square to) {
     squares.move(pi, to);
     types.promote(pi, ty);
     evaluation.promote(from, to, ty);
+    traits.clear(pi);
 
     if (ty.is(Knight)) {
         setLeaperAttack(pi, Knight, to);
@@ -185,14 +197,19 @@ void PositionSide::castle(Square kingFrom, Square kingTo, Pi rook, Square rookFr
     assert (kingTo.on(Rank1) && rookTo.on(Rank1));
 }
 
-void PositionSide::setLeaperAttack(Pi pi, PieceType ty, Square to) {
-    assertValid(pi, ty, to);
+void PositionSide::setLeaperAttack(Pi pi, PieceType ty, Square sq) {
+    assertValid(pi, ty, sq);
     assert (isLeaper(ty));
-    attacks.set(pi, ::attacksFrom(ty, to));
+
+    attacks.set(pi, ::attacksFrom(ty, sq));
+    if (::attacksFrom(ty, sq).has(opKing)) {
+        traits.setChecker(pi);
+    }
 }
 
 void PositionSide::setPinner(Pi pi, Square sq) {
-    assert (isSlider(pi));
+    assertValid(pi);
+    assert (types.isSlider(pi));
     assert (sq == squareOf(pi));
 
     if (::attacksFrom(typeOf(pi), sq).has(opKing) && ::between(opKing, sq).any()) {
@@ -200,23 +217,31 @@ void PositionSide::setPinner(Pi pi, Square sq) {
     }
 }
 
-void PositionSide::setOpKing(Square sq) {
-    opKing = sq;
+void PositionSide::setOpKing(Square king) {
+    opKing = king;
 
+    traits.clearCheckers();
     traits.clearPinners();
-    for (Pi pi : sliders()) {
-        setPinner(pi, squareOf(pi));
+    for (Pi pi : types.sliders()) {
+        Square sq = squareOf(pi);
+        if (::attacksFrom(typeOf(pi), sq).has(opKing)) {
+            assert (::between(opKing, sq).any()); //king should not be in check
+            traits.setPinner(pi);
+        }
     }
 }
 
 void PositionSide::setSliderAttacks(VectorPiMask affectedSliders, Bb occupied) {
-    affectedSliders &= sliders();
+    affectedSliders &= types.sliders();
     if (affectedSliders.none()) { return; }
 
     ReverseBb blockers{ occupied };
     for (Pi pi : affectedSliders) {
         Bb attack = blockers.attack(static_cast<SliderType>(typeOf(pi)), squareOf(pi));
         attacks.set(pi, attack);
+        if (attack.has(opKing)) {
+            traits.setChecker(pi);
+        }
     }
 }
 
@@ -271,10 +296,6 @@ bool PositionSide::dropValid(PieceType ty, Square to) {
     evaluation.drop(ty, to);
     types.drop(pi, ty);
     squares.drop(pi, to);
-
-    if (isLeaper(ty)) {
-        setLeaperAttack(pi, ty, to);
-    }
 
     assertValid(pi, ty, to);
     return true;

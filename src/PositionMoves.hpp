@@ -12,7 +12,6 @@ class PositionMoves : public Position {
     Zobrist zobrist{0};
     Score staticEval = Score::None;
     index_t movesCount = 0;
-    bool inCheck = false;
 
 private:
     //legal move generation helpers
