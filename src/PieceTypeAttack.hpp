@@ -5,7 +5,7 @@
 
 //attack bitboards of the piece types on the empty board (3.5k)
 class PieceTypeAttack {
-    PieceType::static_array< Square::static_array<Bb> > attack;
+    PieceType::static_arrayOf< Square::static_arrayOf<Bb> > attack;
 public:
     constexpr PieceTypeAttack () {
         FOR_INDEX (Square, sq) {

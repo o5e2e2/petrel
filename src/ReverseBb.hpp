@@ -9,7 +9,7 @@ constexpr inline __m128i combine(Bb lo, Bb hi) {
     return __m128i{static_cast<__int64>(lo), static_cast<__int64>(hi)};
 }
 
-struct SingletonBb : Square::static_array<__m128i> {
+struct SingletonBb : Square::static_arrayOf<__m128i> {
     constexpr SingletonBb () {
         FOR_INDEX(Square, sq) {
             Square reversedSq(~File(sq), ~Rank(sq));
@@ -20,8 +20,8 @@ struct SingletonBb : Square::static_array<__m128i> {
 extern const SingletonBb singletonBb;
 
 enum direction_t { Horizont, Vertical, Diagonal, Antidiag };
-typedef Index<4, direction_t>::static_array<__m128i> Directions;
-struct DirectionBb : SliderType::static_array< Square::static_array<Directions> > {
+typedef Index<4, direction_t>::static_arrayOf<__m128i> Directions;
+struct DirectionBb : SliderType::static_arrayOf< Square::static_arrayOf<Directions> > {
     constexpr DirectionBb () {
         const auto empty = ::combine(Bb{}, Bb{});
         FOR_INDEX(Square, sq) {

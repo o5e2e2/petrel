@@ -8,8 +8,8 @@
 struct SearchLimit {
     PositionFen positionMoves;
 
-    Side::array<Duration> time = {{ Duration::zero(), Duration::zero() }};
-    Side::array<Duration> inc = {{ Duration::zero(), Duration::zero() }};
+    Side::arrayOf<Duration> time = {{ Duration::zero(), Duration::zero() }};
+    Side::arrayOf<Duration> inc = {{ Duration::zero(), Duration::zero() }};
 
     Duration movetime = Duration::zero();
 

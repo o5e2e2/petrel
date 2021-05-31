@@ -5,7 +5,7 @@
 #include "Score.hpp"
 
 class Position {
-    Side::array<PositionSide> ps;
+    Side::arrayOf<PositionSide> positionSide;
 
     template <Side::_t> void updateSliderAttacks(VectorPiMask);
     template <Side::_t> void updateSliderAttacks(VectorPiMask, VectorPiMask);
@@ -16,13 +16,13 @@ class Position {
     template <Side::_t> void playMove(Square, Square);
 
 protected:
-    constexpr PositionSide& operator[] (Side side) { return (this->ps)[side]; }
+    constexpr PositionSide& operator[] (Side side) { return positionSide[side]; }
 
 public:
     constexpr Position () = default;
     Position (const Position&) = default;
 
-    constexpr const PositionSide& operator[] (Side side) const { return (this->ps)[side]; }
+    constexpr const PositionSide& operator[] (Side side) const { return positionSide[side]; }
 
     Move createMove(Square from, Square to) const { return (*this)[My].createMove(from, to); }
     Score evaluate() const { return PositionSide::evaluate((*this)[My], (*this)[Op]); }

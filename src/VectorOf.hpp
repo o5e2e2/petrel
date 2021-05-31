@@ -10,11 +10,11 @@ class VectorOf {
     typedef __m128i _t;
 
     union _u {
-        Pi::array<byte_t> _a;
+        Pi::arrayOf<byte_t> _a;
         _t _m;
     };
 
-    Index::array<_u> _v;
+    Index::arrayOf<_u> _v;
 
     constexpr static _u all(byte_t i) { return { i,i,i,i, i,i,i,i, i,i,i,i, i,i,i,i }; }
 

@@ -10,7 +10,7 @@ public:
     typedef __m128i _t;
 
 private:
-    Index::array<_t> _v;
+    Index::arrayOf<_t> _v;
 
 public:
     constexpr HashBucket() : _v{{{0,0}, {0,0}, {0,0}, {0,0}}} {}

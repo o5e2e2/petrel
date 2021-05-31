@@ -10,7 +10,7 @@ class PieceSquareTable {
 
 public:
     typedef unsigned char _t;
-    Index::array< Square::array<_t> > pst;
+    Index::arrayOf< Square::arrayOf<_t> > pst;
 
     static constexpr _t e(unsigned m, signed s) { return static_cast<_t>((m + static_cast<unsigned>(s)) / 5); }
 

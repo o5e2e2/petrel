@@ -7,7 +7,7 @@
 #include "ReverseBb.hpp"
 
 class MatrixPiBb {
-    Rank::array<VectorPiRank> matrix;
+    Rank::arrayOf<VectorPiRank> matrix;
 
 public:
     constexpr MatrixPiBb () = default;

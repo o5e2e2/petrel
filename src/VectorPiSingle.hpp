@@ -9,11 +9,11 @@ class VectorPiSingle {
     typedef __m128i _t;
 
     union _u {
-        Pi::array<unsigned char> _a;
+        Pi::arrayOf<unsigned char> _a;
         _t _m;
     };
 
-    Pi::array<_u> _v;
+    Pi::arrayOf<_u> _v;
 
 public:
     constexpr VectorPiSingle () :

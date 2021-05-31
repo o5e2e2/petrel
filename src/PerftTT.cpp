@@ -4,7 +4,7 @@
 #include "PerftRecordDual.hpp"
 
 namespace {
-    typedef Index<3>::array<PerftRecord> Bucket;
+    typedef Index<3>::arrayOf<PerftRecord> Bucket;
 
     union BucketUnion {
         HashBucket m;

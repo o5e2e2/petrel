@@ -10,7 +10,7 @@ public:
 
     union {
         __m128i m;
-        Index::array<PerftRecordSmall> s;
+        Index::arrayOf<PerftRecordSmall> s;
     };
 
 public:

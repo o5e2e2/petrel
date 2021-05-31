@@ -74,12 +74,12 @@ public:
         return out << i.to_char();
     }
 
-    template <typename T> using array = std::array<T, Size>;
+    template <typename T> using arrayOf = std::array<T, Size>;
 
-    template <typename T> struct CACHE_ALIGN static_array : array<T> {
-        constexpr static_array () = default;
-        static_array (const static_array&) = delete;
-        static_array& operator = (const static_array&) = delete;
+    template <typename T> struct CACHE_ALIGN static_arrayOf : arrayOf<T> {
+        constexpr static_arrayOf () = default;
+        static_arrayOf (const static_arrayOf&) = delete;
+        static_arrayOf& operator = (const static_arrayOf&) = delete;
     };
 
 };

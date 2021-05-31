@@ -22,7 +22,7 @@ private:
         Extra  = 0x03ac4dfb48546797ull
     };
 
-    const Index::array<_t> key = {{
+    const Index::arrayOf<_t> key = {{
         Queen, Rook, Bishop, Knight, Pawn, King,
         Extra ^ Rook, //castling
         Extra ^ Pawn //en passant
