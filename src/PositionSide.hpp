@@ -50,14 +50,12 @@ public:
 
     Square squareOf(Pi pi) const { assertValid(pi); return squares.squareOf(pi); }
     Square kingSquare() const { return squareOf(TheKing); }
-    const Square& opKingSquare() const { return opKing; }
 
     bool hasPieceOn(Square sq) const { assert (piecesBb.has(sq) == squares.hasPieceOn(sq)); return squares.hasPieceOn(sq); }
     Pi pieceOn(Square sq) const { Pi pi = squares.pieceOn(sq); assertValid(pi); return pi; }
     VectorPiMask piecesOn(Square sq) const { return squares.piecesOn(sq); }
     VectorPiMask piecesOn(Rank rank) const { return squares.piecesOn(rank); }
 
-    bool isOfType(Pi pi, PieceType ty) const { assertValid(pi); return types.isOfType(pi, ty); }
     VectorPiMask piecesOfType(PieceType ty) const { return types.piecesOfType(ty); }
     PieceType typeOf(Pi pi) const { assertValid(pi); return types.typeOf(pi); }
     PieceType typeOf(Square sq) const { return typeOf(pieceOn(sq)); }
@@ -90,7 +88,7 @@ public:
 //friend class Position;
     static void swap(PositionSide&, PositionSide&);
     static void finalSetup(PositionSide&, PositionSide&);
-    static void updateOccupied(PositionSide&, PositionSide&);
+    static void syncOccupied(PositionSide&, PositionSide&);
 
     void setOpKing(Square);
     void move(Pi, Square, Square);
@@ -106,7 +104,9 @@ public:
     void clearEnPassantKillers();
     void clearCheckers() { traits.clearCheckers(); }
 
-    void setSliderAttacks(VectorPiMask, Bb);
+    //TRICK: attacks calculated without opponent's king for implicit out of check king's moves generation
+    void setSliderAttacks(VectorPiMask affected) { setSliderAttacks(affected, occupiedBb - opKing); };
+
     void setGamePhase(const PositionSide&);
 
     //used only during initial position setup
@@ -118,6 +118,7 @@ public:
 
 private:
     void move(Pi, PieceType, Square, Square);
+    void setSliderAttacks(VectorPiMask, Bb);
     void setLeaperAttacks();
     void setLeaperAttack(Pi, PieceType, Square);
     void setPinner(Pi, Square);

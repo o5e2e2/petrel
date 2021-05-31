@@ -10,18 +10,17 @@ template <Side::_t My>
 void Position::updateSliderAttacks(VectorPiMask affected) {
     constexpr Side Op{~My};
 
-    PositionSide::updateOccupied(MY, OP);
-
-    //TRICK: attacks calculated without opponent's king for implicit out of check king's moves generation
-    MY.setSliderAttacks(affected, MY.occupied() - MY.opKingSquare());
+    PositionSide::syncOccupied(MY, OP);
+    MY.setSliderAttacks(affected);
 }
 
 template <Side::_t My>
 void Position::updateSliderAttacks(VectorPiMask myAffected, VectorPiMask opAffected) {
     constexpr Side Op{~My};
 
-    updateSliderAttacks<My>(myAffected);
-    OP.setSliderAttacks(opAffected, OP.occupied());
+    PositionSide::syncOccupied(MY, OP);
+    MY.setSliderAttacks(myAffected);
+    OP.setSliderAttacks(opAffected);
 }
 
 template <Side::_t My>

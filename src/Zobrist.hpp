@@ -13,8 +13,7 @@ public:
 
 private:
     _t _v;
-    void drop(Index ty, Square to) { _v ^= ::zobristKey(ty, to); }
-    void clear(Index ty, Square from) { drop(ty, from); }
+    void change(Index ty, Square to) { _v ^= ::zobristKey(ty, to); }
 
 public:
     constexpr explicit Zobrist (_t z) : _v{z} {}
@@ -22,14 +21,14 @@ public:
 
     Zobrist (Arg my, Arg op) : _v{ my._v ^ ::bswap(op._v) } {}
 
-    void drop(PieceZobristType::_t ty, Square to) { drop(Index{ty}, to); }
-    void clear(PieceZobristType::_t ty, Square from) { drop(ty, from); }
+    void drop(PieceType ty, Square to) { change(Index{ty}, to); }
+    void clear(PieceType ty, Square from) { drop(ty, from); }
 
-    void setCastling(Square sq)  { assert (sq.on(Rank1)); drop(ZobristCastling, sq); }
-    void setEnPassant(Square sq) { assert (sq.on(Rank4)); drop(ZobristEnPassant, sq); }
-    void setEnPassant(File fileFrom) { setEnPassant(Square{fileFrom, Rank4}); }
-
+    void setCastling(Square sq)  { assert (sq.on(Rank1)); change(ZobristCastling, sq); }
     void clearCastling(Square sq) { setCastling(sq); }
+
+    void setEnPassant(Square sq) { assert (sq.on(Rank4)); change(ZobristEnPassant, sq); }
+    void setEnPassant(File fileFrom) { setEnPassant(Square{fileFrom, Rank4}); }
     void clearEnPassant(Square sq) { setEnPassant(sq); }
 
     void move(PieceType ty, Square from, Square to) {

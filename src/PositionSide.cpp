@@ -71,7 +71,7 @@ void PositionSide::setLeaperAttacks() {
     }
 }
 
-void PositionSide::updateOccupied(PositionSide& MY, PositionSide& OP) {
+void PositionSide::syncOccupied(PositionSide& MY, PositionSide& OP) {
     MY.occupiedBb = MY.piecesBb + ~OP.piecesBb;
     OP.occupiedBb = OP.piecesBb + ~MY.piecesBb;
 }
@@ -326,7 +326,7 @@ bool PositionSide::setValidCastling(File file) {
     if (!hasPieceOn(rookFrom)) { return false; }
 
     Pi rook = pieceOn(rookFrom);
-    if (!isOfType(rook, Rook)) { return false; }
+    if (!types.isOfType(rook, Rook)) { return false; }
     if (isCastling(rook)) { return false; }
 
     traits.setCastling(rook);
