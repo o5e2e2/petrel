@@ -14,7 +14,8 @@
 
         assert (!types.isPawn(pi) || pawnsBb.has(sq));
         assert (!types.isPawn(pi) || (!sq.on(Rank1) && !sq.on(Rank8)));
-        assert (!types.isPawn(pi) || !types.isEnPassant(pi) || sq.on(Rank4) || sq.on(Rank5));
+        assert (!types.isPawn(pi) || !traits.isEnPassant(pi) || sq.on(Rank4) || sq.on(Rank5));
+        assert (!types.isOfType(pi, Rook) || !traits.isCastling(pi) || sq.on(Rank1));
     }
 
     void PositionSide::assertValid(Pi pi, PieceType ty, Square sq) const {
@@ -42,6 +43,7 @@ void PositionSide::swap(PositionSide& MY, PositionSide& OP) {
     using std::swap;
     swap(MY.attacks, OP.attacks);
     swap(MY.types, OP.types);
+    swap(MY.traits, OP.traits);
     swap(MY.squares, OP.squares);
     swap(MY.piecesBb, OP.piecesBb);
     swap(MY.pawnsBb, OP.pawnsBb);
@@ -92,6 +94,7 @@ void PositionSide::capture(Square from) {
     attacks.clear(pi);
     squares.clear(pi);
     types.clear(pi);
+    traits.clear(pi);
 }
 
 void PositionSide::move(Pi pi, PieceType ty, Square from, Square to) {
@@ -114,8 +117,8 @@ void PositionSide::move(Pi pi, Square from, Square to) {
         setLeaperAttack(pi, Knight, to);
     }
     else {
-        updatePinner(pi, to);
-        types.clearCastling(pi);
+        traits.clear(pi);
+        setPinner(pi, to);
     }
 
     assertValid(pi, ty, to);
@@ -145,7 +148,7 @@ void PositionSide::promote(Pi pi, PromoType ty, Square from, Square to) {
         setLeaperAttack(pi, Knight, to);
     }
     else {
-        updatePinner(pi, to);
+        setPinner(pi, to);
     }
 
     assertValid(pi, static_cast<PieceType>(ty), to);
@@ -153,7 +156,7 @@ void PositionSide::promote(Pi pi, PromoType ty, Square from, Square to) {
 
 void PositionSide::moveKing(Square from, Square to) {
     move(TheKing, King, from, to);
-    types.clearCastlings();
+    traits.clearCastlings();
     setLeaperAttack(TheKing, King, to);
 
     assertValid(TheKing, King, to);
@@ -172,9 +175,10 @@ void PositionSide::castle(Square kingFrom, Square kingTo, Pi rook, Square rookFr
     evaluation.castle(kingFrom, rookFrom, rookFrom, rookTo);
     squares.castle(kingTo, rook, rookTo);
     setLeaperAttack(TheKing, King, kingTo);
-    types.clearCastlings();
+    traits.clearCastlings();
 
-    updatePinner(rook, rookTo);
+    traits.clearPinner(rook);
+    setPinner(rook, rookTo);
 
     assertValid(TheKing, King, kingTo);
     assertValid(rook, Rook, rookTo);
@@ -187,22 +191,21 @@ void PositionSide::setLeaperAttack(Pi pi, PieceType ty, Square to) {
     attacks.set(pi, ::attacksFrom(ty, to));
 }
 
-void PositionSide::updatePinner(Pi pi, Square sq) {
+void PositionSide::setPinner(Pi pi, Square sq) {
     assert (isSlider(pi));
     assert (sq == squareOf(pi));
 
     if (::attacksFrom(typeOf(pi), sq).has(opKing) && ::between(opKing, sq).any()) {
-        types.setPinner(pi);
-    }
-    else {
-        types.clearPinner(pi);
+        traits.setPinner(pi);
     }
 }
 
 void PositionSide::setOpKing(Square sq) {
     opKing = sq;
+
+    traits.clearPinners();
     for (Pi pi : sliders()) {
-        updatePinner(pi, squareOf(pi));
+        setPinner(pi, squareOf(pi));
     }
 }
 
@@ -220,27 +223,27 @@ void PositionSide::setSliderAttacks(VectorPiMask affectedSliders, Bb occupied) {
 void PositionSide::setEnPassantVictim(Pi pi) {
     assert (isPawn(pi));
     assert (squareOf(pi).on(Rank4));
-    assert (!hasEnPassant() || types.isEnPassant(pi));
-    types.setEnPassant(pi);
+    assert (!hasEnPassant() || traits.isEnPassant(pi));
+    traits.setEnPassant(pi);
 }
 
 void PositionSide::setEnPassantKiller(Pi pi) {
     assert (isPawn(pi));
     assert (squareOf(pi).on(Rank5));
-    types.setEnPassant(pi);
+    traits.setEnPassant(pi);
 }
 
 void PositionSide::clearEnPassantVictim() {
     assert (hasEnPassant());
-    assert (types.enPassantPawns().isSingleton());
-    assert (types.enPassantPawns() <= squares.piecesOn(Rank4));
-    types.clearEnPassants();
+    assert (traits.enPassantPawns().isSingleton());
+    assert (traits.enPassantPawns() <= squares.piecesOn(Rank4));
+    traits.clearEnPassants();
 }
 
 void PositionSide::clearEnPassantKillers() {
     assert (hasEnPassant());
-    assert (types.enPassantPawns() <= squares.piecesOn(Rank5));
-    types.clearEnPassants();
+    assert (traits.enPassantPawns() <= squares.piecesOn(Rank5));
+    traits.clearEnPassants();
 }
 
 bool PositionSide::isPinned(Bb allOccupiedWithoutPinned) const {
@@ -291,7 +294,7 @@ bool PositionSide::setValidCastling(CastlingSide castlingSide) {
     Pi rook = pieceOn(outerSquare);
     if (isCastling(rook)) { return false; }
 
-    types.setCastling(rook);
+    traits.setCastling(rook);
     return true;
 }
 
@@ -305,7 +308,7 @@ bool PositionSide::setValidCastling(File file) {
     if (!isOfType(rook, Rook)) { return false; }
     if (isCastling(rook)) { return false; }
 
-    types.setCastling(rook);
+    traits.setCastling(rook);
     return true;
 }
 

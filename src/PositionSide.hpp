@@ -4,6 +4,7 @@
 #include "Evaluation.hpp"
 #include "MatrixPiBb.hpp"
 #include "Move.hpp"
+#include "VectorPiTrait.hpp"
 #include "VectorPiType.hpp"
 #include "VectorPiSquare.hpp"
 #include "Zobrist.hpp"
@@ -15,7 +16,8 @@
 //TRICK: all squares are relative to its own side (so the king piece is initially on E1 square regardless color)
 class PositionSide {
     MatrixPiBb attacks; //squares attacked by a piece and pieces attacking to a square
-    VectorPiType types; //type of each alive piece, rooks with castling rights, pawns affected by en passant
+    VectorPiType types; //chess type of each alive piece: king, pawn, knignt, bishop, rook, queen
+    VectorPiTrait traits; //rooks with castling rights, pawns affected by en passant, pinned pieces
     VectorPiSquare squares; //onboard square locations of the alive pieces or 'NoSquare' special value
 
     Bb piecesBb; //all pieces of the current side, incrementally updated
@@ -67,16 +69,16 @@ public:
     VectorPiMask sliders() const { return types.sliders(); }
     bool isSlider(Pi pi) const { assertValid(pi); return types.isSlider(pi); }
 
-    VectorPiMask castlingRooks() const { return types.castlingRooks(); }
-    bool isCastling(Pi pi) const { assertValid(pi); return types.isCastling(pi); }
+    VectorPiMask castlingRooks() const { return traits.castlingRooks(); }
+    bool isCastling(Pi pi) const { assertValid(pi); return traits.isCastling(pi); }
     bool isCastling(Square sq) const { return isCastling(pieceOn(sq)); }
 
-    VectorPiMask enPassantPawns() const { return types.enPassantPawns(); }
+    VectorPiMask enPassantPawns() const { return traits.enPassantPawns(); }
     bool hasEnPassant() const { return enPassantPawns().any(); }
-    Square enPassantSquare() const { Square ep = squareOf(types.getEnPassant()); assert (ep.on(Rank4)); return ep; }
+    Square enPassantSquare() const { Square ep = squareOf(traits.getEnPassant()); assert (ep.on(Rank4)); return ep; }
     File   enPassantFile()   const { return File( enPassantSquare() ); }
 
-    VectorPiMask pinners() const { return types.pinners(); }
+    VectorPiMask pinners() const { return traits.pinners(); }
     bool isPinned(Bb) const;
 
     const MatrixPiBb& attacksMatrix() const { return attacks; }
@@ -118,7 +120,7 @@ public:
 private:
     void move(Pi, PieceType, Square, Square);
     void setLeaperAttack(Pi, PieceType, Square);
-    void updatePinner(Pi, Square);
+    void setPinner(Pi, Square);
     GamePhase generateGamePhase() const; //returns whether material for endgame or middlegame
 
 };

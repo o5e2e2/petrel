@@ -47,22 +47,20 @@ enum piece_type_t {
     Knight = 3,
     Pawn = 4,
     King = 5,
-    Castling = 6, KingEndgame = Castling,
-    Special = 7, EnPassant = Special, Pinner = Special
+    KingEndgame = 6, ZobristCastling = 6,
+    ZobristEnPassant = 7,
 };
 typedef Index<3, piece_type_t> SliderType;
 typedef Index<4, piece_type_t> PromoType;
 typedef Index<6, piece_type_t> PieceType;
 typedef Index<7, piece_type_t> PieceEvalType;
+typedef Index<8, piece_type_t> PieceZobristType;
 
-constexpr bool isSlider(PromoType::_t ty) { return ty < Knight; }
-constexpr bool isLeaper(PromoType::_t ty) { return ty >= Knight; }
+constexpr bool isSlider(piece_type_t ty) { return ty < Knight; }
+constexpr bool isLeaper(piece_type_t ty) { return ty >= Knight; }
 
 //encoding of the promoted piece type inside 12-bit move
 constexpr Rank::_t rankOf(PromoType::_t ty) { return static_cast<Rank::_t>(ty); }
-
-enum chess_variant_t { Orthodox, Chess960 };
-typedef Index<2, chess_variant_t> ChessVariant;
 
 enum game_phase_t { Middlegame, Endgame };
 typedef Index<2, game_phase_t> GamePhase;

@@ -5,6 +5,9 @@
 #include "typedefs.hpp"
 #include "Square.hpp"
 
+enum chess_variant_t { Orthodox, Chess960 };
+typedef Index<2, chess_variant_t> ChessVariant;
+
 /**
  * Internal move is 12 bits long (packed 'from' and 'to' squares) and linked to the position from it was made
  * Position independent move is 13 bits with the extra flag bit to mark castling, promotion or en passant move

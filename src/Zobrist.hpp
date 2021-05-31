@@ -22,11 +22,11 @@ public:
 
     Zobrist (Arg my, Arg op) : _v{ my._v ^ ::bswap(op._v) } {}
 
-    void drop(PieceType::_t ty, Square to) { drop(Index{ty}, to); }
-    void clear(PieceType::_t ty, Square from) { drop(ty, from); }
+    void drop(PieceZobristType::_t ty, Square to) { drop(Index{ty}, to); }
+    void clear(PieceZobristType::_t ty, Square from) { drop(ty, from); }
 
-    void setCastling(Square sq)  { assert (sq.on(Rank1)); drop(Castling, sq); }
-    void setEnPassant(Square sq) { assert (sq.on(Rank4)); drop(EnPassant, sq); }
+    void setCastling(Square sq)  { assert (sq.on(Rank1)); drop(ZobristCastling, sq); }
+    void setEnPassant(Square sq) { assert (sq.on(Rank4)); drop(ZobristEnPassant, sq); }
     void setEnPassant(File fileFrom) { setEnPassant(Square{fileFrom, Rank4}); }
 
     void clearCastling(Square sq) { setCastling(sq); }
