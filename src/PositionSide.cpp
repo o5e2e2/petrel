@@ -220,7 +220,8 @@ void PositionSide::setPinner(Pi pi, Square sq) {
 void PositionSide::setOpKing(Square king) {
     opKing = king;
 
-    traits.clearCheckers();
+    assert (traits.checkers().none());
+
     traits.clearPinners();
     for (Pi pi : types.sliders()) {
         Square sq = squareOf(pi);
