@@ -7,7 +7,7 @@
 #include "VectorPiEnum.hpp"
 #include "VectorOf.hpp"
 
-class PiSquare : public VectorPiEnum<Square::_t> {
+class PiSquare : protected VectorPiEnum<Square::_t> {
     typedef VectorPiEnum<Square::_t> Base;
 
     bool none(Square sq) { return (*this == sq).none(); }

@@ -4,7 +4,7 @@
 #include "typedefs.hpp"
 #include "VectorPiBit.hpp"
 
-class PiType : public VectorPiBit<PiType, PieceType> {
+class PiType : protected VectorPiBit<PiType, PieceType> {
     typedef VectorPiBit<PiType, PieceType> Base;
 
     typedef PieceType::_t _t;
@@ -13,6 +13,8 @@ class PiType : public VectorPiBit<PiType, PieceType> {
         Leaper = ::singleton<_t>(King)|::singleton<_t>(Knight)|::singleton<_t>(Pawn),
         Minor  = ::singleton<_t>(Bishop)|::singleton<_t>(Knight),
     };
+
+    bool is(Pi pi, PieceType ty) const { assertValid(pi); assert (!ty.is(King)); return Base::is(pi, ty); }
 
 public:
 
@@ -33,8 +35,8 @@ public:
 
     PieceType typeOf(Pi pi) const { assertValid(pi); return static_cast<PieceType::_t>( ::bsf(static_cast<unsigned>(get(pi))) ); }
 
-    bool is(Pi pi, PieceType ty) const { assert (!ty.is(King)); assertValid(pi); return Base::is(pi, ty); }
     bool isPawn(Pi pi) const { return is(pi, Pawn); }
+    bool isRook(Pi pi) const { return is(pi, Rook); }
     bool isSlider(Pi pi) const { assertValid(pi); return (get(pi) & Slider) != 0; }
 
     void clear(Pi pi) { assertValid(pi); assert (pi != TheKing); assert (!Base::is(pi, King)); Base::clear(pi); }

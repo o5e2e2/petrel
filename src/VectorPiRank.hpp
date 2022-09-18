@@ -25,7 +25,7 @@ struct VectorPiRank : VectorPiBit<VectorPiRank, File> {
     }
 
     constexpr BitRank operator [] (Pi pi) const {
-        return BitRank{ VectorPiBit::operator[](pi) };
+        return BitRank{ get(pi) };
     }
 
     PiMask operator [] (File file) const {

@@ -22,19 +22,18 @@ protected:
 
     static _t cmpeq(_t a, _t b) { return _mm_cmpeq_epi8(a, b); }
 
+    element_type& operator [] (Pi pi) { return reinterpret_cast<element_type*>(this)[pi]; }
+
 public:
     using Base::Base;
 
-    constexpr bool isEmpty(Pi pi) const { return (*this)[pi] == 0; }
+    constexpr bool isEmpty(Pi pi) const { return get(pi) == 0; }
     void clear() { *this = Self(); }
     void clear(Pi pi) { (*this)[pi] = 0; }
 
-    constexpr const element_type& operator [] (Pi pi) const { return reinterpret_cast<const element_type*>(this)[pi]; }
-    element_type& operator [] (Pi pi) { return reinterpret_cast<element_type*>(this)[pi]; }
+    constexpr const element_type& get(Pi pi) const { return reinterpret_cast<const element_type*>(this)[pi]; }
 
-    constexpr const element_type& get(Pi pi) const { return operator[] (pi); }
-
-    constexpr bool is(Pi pi, element_type bitmask) const { return ((*this)[pi] & bitmask) != 0; }
+    constexpr bool is(Pi pi, element_type bitmask) const { return (get(pi) & bitmask) != 0; }
     constexpr bool is(Pi pi, index_type _Bit) const { return is(pi, single(_Bit)); }
 
     PiMask anyOf(index_type _Bit) const {

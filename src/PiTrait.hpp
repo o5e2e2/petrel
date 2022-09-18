@@ -11,8 +11,11 @@ enum pi_trait_t {
     Checker,   // any piece actually attacking enemy king
 };
 
-class PiTrait : public VectorPiBit< PiTrait, Index<4, pi_trait_t> > {
+class PiTrait : protected VectorPiBit< PiTrait, Index<4, pi_trait_t> > {
+    typedef VectorPiBit< PiTrait, Index<4, pi_trait_t> > Base;
 public:
+    using Base::clear;
+
     PiMask castlingRooks() const { return anyOf(Castling); }
     bool isCastling(Pi pi) const { return is(pi, Castling); }
     void setCastling(Pi pi) { assert (!isCastling(pi)); set(pi, Castling); }

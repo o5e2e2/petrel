@@ -15,7 +15,7 @@
         assert (!types.isPawn(pi) || pawnsBb.has(sq));
         assert (!types.isPawn(pi) || (!sq.on(Rank1) && !sq.on(Rank8)));
         assert (!types.isPawn(pi) || !traits.isEnPassant(pi) || sq.on(Rank4) || sq.on(Rank5));
-        assert (!types.is(pi, Rook) || !traits.isCastling(pi) || sq.on(Rank1));
+        assert (!types.isRook(pi) || !traits.isCastling(pi) || sq.on(Rank1));
     }
 
     void PositionSide::assertValid(Pi pi, PieceType ty, Square sq) const {
@@ -325,7 +325,7 @@ bool PositionSide::setValidCastling(File file) {
     if (!hasPieceOn(rookFrom)) { return false; }
 
     Pi rook = pieceOn(rookFrom);
-    if (!types.is(rook, Rook)) { return false; }
+    if (!types.isRook(rook)) { return false; }
     if (isCastling(rook)) { return false; }
 
     traits.setCastling(rook);
