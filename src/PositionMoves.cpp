@@ -104,7 +104,7 @@ void PositionMoves::correctCheckEvasionsByPawns(Bb checkLine, Square checkFrom) 
 
 //exclude illegal moves due absolute pin
 template <Side::_t My>
-void PositionMoves::excludePinnedMoves(VectorPiMask opPinners) {
+void PositionMoves::excludePinnedMoves(PiMask opPinners) {
     constexpr Side Op{~My};
 
     for (Pi pinner : opPinners) {
@@ -130,7 +130,7 @@ template <Side::_t My>
 void PositionMoves::generateCheckEvasions() {
     constexpr Side Op{~My};
 
-    VectorPiMask checkers = OP.checkers();
+    PiMask checkers = OP.checkers();
 
     if (!checkers.isSingleton()) {
         //multiple (double) checker's case: no moves except king's ones are possible

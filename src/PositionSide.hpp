@@ -46,42 +46,42 @@ public:
     const Bb& sideSquares() const { return piecesBb; }
     const Bb& occupied() const { return occupiedBb; }
     bool isOccupied(Square sq) const { return piecesBb.has(sq); }
-    VectorPiMask alivePieces() const { assert (squares.alivePieces() == types.alivePieces()); return squares.alivePieces(); }
+    PiMask alivePieces() const { assert (squares.alivePieces() == types.alivePieces()); return squares.alivePieces(); }
 
     Square squareOf(Pi pi) const { assertValid(pi); return squares.squareOf(pi); }
     Square kingSquare() const { return squareOf(TheKing); }
 
     bool hasPieceOn(Square sq) const { assert (piecesBb.has(sq) == squares.hasPieceOn(sq)); return squares.hasPieceOn(sq); }
     Pi pieceOn(Square sq) const { Pi pi = squares.pieceOn(sq); assertValid(pi); return pi; }
-    VectorPiMask piecesOn(Square sq) const { return squares.piecesOn(sq); }
-    VectorPiMask piecesOn(Rank rank) const { return squares.piecesOn(rank); }
+    PiMask piecesOn(Square sq) const { return squares.piecesOn(sq); }
+    PiMask piecesOn(Rank rank) const { return squares.piecesOn(rank); }
 
-    VectorPiMask piecesOfType(PieceType ty) const { return types.piecesOfType(ty); }
+    PiMask piecesOfType(PieceType ty) const { return types.piecesOfType(ty); }
     PieceType typeOf(Pi pi) const { assertValid(pi); return types.typeOf(pi); }
     PieceType typeOf(Square sq) const { return typeOf(pieceOn(sq)); }
 
     const Bb& pawnsSquares() const { return pawnsBb; }
-    VectorPiMask pawns() const { return types.piecesOfType(Pawn); }
+    PiMask pawns() const { return types.piecesOfType(Pawn); }
     bool isPawn(Pi pi) const { assertValid(pi); return types.isPawn(pi); }
 
-    VectorPiMask castlingRooks() const { return traits.castlingRooks(); }
+    PiMask castlingRooks() const { return traits.castlingRooks(); }
     bool isCastling(Pi pi) const { assertValid(pi); return traits.isCastling(pi); }
     bool isCastling(Square sq) const { return isCastling(pieceOn(sq)); }
 
-    VectorPiMask enPassantPawns() const { return traits.enPassantPawns(); }
+    PiMask enPassantPawns() const { return traits.enPassantPawns(); }
     bool hasEnPassant() const { return enPassantPawns().any(); }
     Square enPassantSquare() const { Square ep = squareOf(traits.getEnPassant()); assert (ep.on(Rank4)); return ep; }
     File   enPassantFile()   const { return File( enPassantSquare() ); }
 
-    VectorPiMask pinners() const { return traits.pinners(); }
+    PiMask pinners() const { return traits.pinners(); }
     bool isPinned(Bb) const;
 
     const MatrixPiBb& attacksMatrix() const { return attacks; }
-    VectorPiMask attackersTo(Square a) const { return attacks[a]; }
-    VectorPiMask attackersTo(Square a, Square b) const { return attacks[a] | attacks[b]; }
-    VectorPiMask attackersTo(Square a, Square b, Square c) const { return attacks[a] | attacks[b] | attacks[c]; }
+    PiMask attackersTo(Square a) const { return attacks[a]; }
+    PiMask attackersTo(Square a, Square b) const { return attacks[a] | attacks[b]; }
+    PiMask attackersTo(Square a, Square b, Square c) const { return attacks[a] | attacks[b] | attacks[c]; }
 
-    VectorPiMask checkers() const { assert (traits.checkers() == attacks[opKing]); return traits.checkers(); }
+    PiMask checkers() const { assert (traits.checkers() == attacks[opKing]); return traits.checkers(); }
 
     Move createMove(Square from, Square to) const;
 
@@ -105,7 +105,7 @@ public:
     void clearCheckers() { traits.clearCheckers(); }
 
     //TRICK: attacks calculated without opponent's king for implicit out of check king's moves generation
-    void setSliderAttacks(VectorPiMask affected) { setSliderAttacks(affected, occupiedBb - opKing); };
+    void setSliderAttacks(PiMask affected) { setSliderAttacks(affected, occupiedBb - opKing); };
 
     void setGamePhase(const PositionSide&);
 
@@ -118,7 +118,7 @@ public:
 
 private:
     void move(Pi, PieceType, Square, Square);
-    void setSliderAttacks(VectorPiMask, Bb);
+    void setSliderAttacks(PiMask, Bb);
     void setLeaperAttacks();
     void setLeaperAttack(Pi, PieceType, Square);
     void setPinner(Pi, Square);

@@ -24,16 +24,16 @@ public:
     }
 #endif
 
-    VectorPiMask alivePieces() const { return notEmpty(); }
-    VectorPiMask piecesOn(Square sq) const { assert (sq.isOk()); return *this == sq; }
-    VectorPiMask leftForward(Square sq) const { assert (sq.isOk()); return *this < sq; }
-    VectorPiMask rightBackward(Square sq) const { assert (sq.isOk()); return *this > sq; }
+    PiMask alivePieces() const { return notEmpty(); }
+    PiMask piecesOn(Square sq) const { assert (sq.isOk()); return *this == sq; }
+    PiMask leftForward(Square sq) const { assert (sq.isOk()); return *this < sq; }
+    PiMask rightBackward(Square sq) const { assert (sq.isOk()); return *this > sq; }
 
     Square squareOf(Pi pi) const { assertValid(pi); return get(pi); }
     bool hasPieceOn(Square sq) const { assert (sq.isOk()); return piecesOn(sq).any(); }
     Pi pieceOn(Square sq) const { assert (sq.isOk()); assert (hasPieceOn(sq)); return piecesOn(sq).index(); }
 
-    VectorPiMask piecesOn(Rank rank) const {
+    PiMask piecesOn(Rank rank) const {
         return _mm_cmpeq_epi8(
             static_cast<_t>(*this) & ::vectorOfAll[static_cast<unsigned char>(0xff^File::Mask)],
             ::vectorOfAll[static_cast<unsigned char>(rank << 3)]

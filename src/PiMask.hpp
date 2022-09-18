@@ -1,5 +1,5 @@
-#ifndef VECTOR_PI_MASK_HPP
-#define VECTOR_PI_MASK_HPP
+#ifndef PI_MASK_HPP
+#define PI_MASK_HPP
 
 #include "io.hpp"
 #include "typedefs.hpp"
@@ -12,17 +12,17 @@
 /**
  * piece vector of boolean values: false (0) or true (0xff)
  */
-class VectorPiMask : public BitArray<VectorPiMask, __m128i> {
+class PiMask : public BitArray<PiMask, __m128i> {
     bool isOk() const {
         _t v = _mm_cmpgt_epi8(::vectorOfAll[0], this->_v);
         return _mm_movemask_epi8(_mm_cmpeq_epi8(this->_v, v)) == 0xffffu;
     }
 
 public:
-    VectorPiMask (_t v) : BitArray{v} { assert (isOk()); }
-    VectorPiMask (Pi pi) : BitArray{::vectorPiSingle[pi]} {}
+    PiMask (_t v) : BitArray{v} { assert (isOk()); }
+    PiMask (Pi pi) : BitArray{::vectorPiSingle[pi]} {}
 
-    static VectorPiMask negate(_t v) { return VectorPiMask{ _mm_cmpeq_epi8(v, ::vectorOfAll[0]) }; }
+    static PiMask negate(_t v) { return PiMask{ _mm_cmpeq_epi8(v, ::vectorOfAll[0]) }; }
 
     operator PieceSet() const {
         assert (isOk());
@@ -43,7 +43,7 @@ public:
     PieceSet begin() const { return *this; }
     PieceSet end() const { return {}; }
 
-    friend io::ostream& operator << (io::ostream& out, VectorPiMask v) {
+    friend io::ostream& operator << (io::ostream& out, PiMask v) {
         return out << PieceSet(v);
     }
 

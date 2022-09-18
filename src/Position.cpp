@@ -7,7 +7,7 @@
 #define OP (*this)[Op]
 
 template <Side::_t My>
-void Position::updateSliderAttacks(VectorPiMask affected) {
+void Position::updateSliderAttacks(PiMask affected) {
     constexpr Side Op{~My};
 
     PositionSide::syncOccupied(MY, OP);
@@ -15,7 +15,7 @@ void Position::updateSliderAttacks(VectorPiMask affected) {
 }
 
 template <Side::_t My>
-void Position::updateSliderAttacks(VectorPiMask myAffected, VectorPiMask opAffected) {
+void Position::updateSliderAttacks(PiMask myAffected, PiMask opAffected) {
     constexpr Side Op{~My};
 
     PositionSide::syncOccupied(MY, OP);

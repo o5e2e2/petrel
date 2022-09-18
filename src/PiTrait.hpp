@@ -13,24 +13,24 @@ enum pi_trait_t {
 
 class PiTrait : public VectorPiBit< PiTrait, Index<4, pi_trait_t> > {
 public:
-    VectorPiMask castlingRooks() const { return anyOf(Castling); }
+    PiMask castlingRooks() const { return anyOf(Castling); }
     bool isCastling(Pi pi) const { return is(pi, Castling); }
     void setCastling(Pi pi) { assert (!isCastling(pi)); set(pi, Castling); }
     void clearCastlings() { clear(Castling); }
 
-    VectorPiMask enPassantPawns() const { return anyOf(EnPassant); }
+    PiMask enPassantPawns() const { return anyOf(EnPassant); }
     Pi getEnPassant() const { Pi pi = enPassantPawns().index(); return pi; }
     bool isEnPassant(Pi pi) const { return is(pi, EnPassant); }
     void setEnPassant(Pi pi) { set(pi, EnPassant); }
     void clearEnPassant(Pi pi) { assert (isEnPassant(pi)); clear(pi, EnPassant); }
     void clearEnPassants() { clear(EnPassant); }
 
-    VectorPiMask pinners() const { return anyOf(Pinner); }
+    PiMask pinners() const { return anyOf(Pinner); }
     void clearPinners() { clear(Pinner); }
     void setPinner(Pi pi) { assert (!is(pi, Pinner)); set(pi, Pinner); }
     void clearPinner(Pi pi) { clear(pi, Pinner); }
 
-    VectorPiMask checkers() const { return anyOf(Checker); }
+    PiMask checkers() const { return anyOf(Checker); }
     void clearCheckers() { clear(Checker); }
     void setChecker(Pi pi) { assert (!is(pi, Checker)); set(pi, Checker); }
 };

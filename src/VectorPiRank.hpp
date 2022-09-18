@@ -13,7 +13,7 @@ struct VectorPiRank : VectorPiBit<VectorPiRank, File> {
     constexpr VectorPiRank () : VectorPiBit{} {}
     explicit VectorPiRank (BitRank br) : VectorPiBit{::vectorOfAll[br]} {}
     explicit VectorPiRank (File f) : VectorPiBit{::vectorOfAll[BitRank{f}]} {}
-    VectorPiRank (VectorPiMask m) : VectorPiBit{static_cast<VectorPiMask::_t>(m)} {}
+    VectorPiRank (PiMask m) : VectorPiBit{static_cast<PiMask::_t>(m)} {}
 
     BitRank gather() const {
         _t v = this->_v;
@@ -28,7 +28,7 @@ struct VectorPiRank : VectorPiBit<VectorPiRank, File> {
         return BitRank{ VectorPiBit::operator[](pi) };
     }
 
-    VectorPiMask operator [] (File file) const {
+    PiMask operator [] (File file) const {
         _t file_vector = ::vectorOfAll[BitRank{file}];
         return cmpeq(file_vector, this->_v & file_vector);
     }

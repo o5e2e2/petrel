@@ -33,18 +33,18 @@ public:
     }
 
     void clear(Pi pi, Square sq) {
-        matrix[Rank(sq)] -= VectorPiRank{File(sq)} & VectorPiMask{pi};
+        matrix[Rank(sq)] -= VectorPiRank{File(sq)} & PiMask{pi};
     }
 
     void clear(Pi pi) {
         FOR_INDEX(Rank, rank) {
-            matrix[rank] %= VectorPiMask{pi};
+            matrix[rank] %= PiMask{pi};
         }
     }
 
     void set(Pi pi, Rank rank, BitRank br) {
         //_mm_blendv_epi8
-        matrix[rank] = (matrix[rank] % VectorPiMask{pi}) + (VectorPiRank{br} & VectorPiMask{pi});
+        matrix[rank] = (matrix[rank] % PiMask{pi}) + (VectorPiRank{br} & PiMask{pi});
     }
 
     void set(Pi pi, Bb bb) {
@@ -54,7 +54,7 @@ public:
     }
 
     void add(Pi pi, Rank rank, File file) {
-        matrix[rank] += VectorPiRank{file} & VectorPiMask{pi};
+        matrix[rank] += VectorPiRank{file} & PiMask{pi};
     }
 
     void add(Pi pi, Square sq) {
@@ -63,12 +63,12 @@ public:
 
     void add(Pi pi, Bb bb) {
         FOR_INDEX(Rank, rank) {
-            matrix[rank] += VectorPiRank{bb[rank]} & VectorPiMask{pi};
+            matrix[rank] += VectorPiRank{bb[rank]} & PiMask{pi};
         }
     }
 
     bool has(Pi pi, Square sq) const {
-        return (matrix[Rank(sq)] & VectorPiRank{File(sq)} & VectorPiMask{pi}).any();
+        return (matrix[Rank(sq)] & VectorPiRank{File(sq)} & PiMask{pi}).any();
     }
 
     const VectorPiRank& operator[] (Rank rank) const {
@@ -80,7 +80,7 @@ public:
     }
 
     //pieces affecting the given square
-    VectorPiMask operator[] (Square sq) const {
+    PiMask operator[] (Square sq) const {
         return matrix[Rank(sq)][File(sq)];
     }
 
@@ -103,7 +103,7 @@ public:
     }
 
     void filter(Pi pi, Bb bb) {
-        VectorPiMask exceptPi{ ::vectorPiSingle.except(pi) };
+        PiMask exceptPi{ ::vectorPiSingle.except(pi) };
         FOR_INDEX(Rank, rank) {
             matrix[rank] &= VectorPiRank{bb[rank]} | exceptPi;
         }

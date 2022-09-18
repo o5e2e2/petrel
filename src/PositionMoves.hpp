@@ -15,7 +15,7 @@ class PositionMoves : public Position {
 
 private:
     //legal move generation helpers
-    template <Side::_t> void excludePinnedMoves(VectorPiMask);
+    template <Side::_t> void excludePinnedMoves(PiMask);
     template <Side::_t> void correctCheckEvasionsByPawns(Bb, Square);
     template <Side::_t> void populateUnderpromotions();
     template <Side::_t> void generateEnPassantMoves();

@@ -7,8 +7,8 @@
 class Position {
     Side::arrayOf<PositionSide> positionSide;
 
-    template <Side::_t> void updateSliderAttacks(VectorPiMask);
-    template <Side::_t> void updateSliderAttacks(VectorPiMask, VectorPiMask);
+    template <Side::_t> void updateSliderAttacks(PiMask);
+    template <Side::_t> void updateSliderAttacks(PiMask, PiMask);
     template <Side::_t> void capture(Square);
     template <Side::_t> void playKingMove(Square, Square);
     template <Side::_t> void playPawnMove(Pi, Square, Square);

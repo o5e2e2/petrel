@@ -1,7 +1,7 @@
 #ifndef VECTOR_PI_ENUM_HPP
 #define VECTOR_PI_ENUM_HPP
 
-#include "VectorPiMask.hpp"
+#include "PiMask.hpp"
 #include "VectorOf.hpp"
 
 template <typename _Element>
@@ -30,7 +30,7 @@ public:
     constexpr explicit VectorPiEnum (element_type e) : _v(::vectorOfAll[e]) {}
     constexpr explicit operator _t () const { return _v; }
 
-    VectorPiMask notEmpty() const {
+    PiMask notEmpty() const {
         return _mm_cmpgt_epi8(_v, ::vectorOfAll[None]);
     }
 
@@ -66,19 +66,19 @@ public:
         _set(pi, None);
     }
 
-    friend VectorPiMask operator == (Self v1, Self v2) {
+    friend PiMask operator == (Self v1, Self v2) {
         return _mm_cmpeq_epi8(v1._v, v2._v);
     }
 
-    friend VectorPiMask operator == (Self v, element_type e) {
+    friend PiMask operator == (Self v, element_type e) {
         return v == VectorPiEnum{e};
     }
 
-    friend VectorPiMask operator > (Self v, element_type e) {
+    friend PiMask operator > (Self v, element_type e) {
         return _mm_cmpgt_epi8(v._v, ::vectorOfAll[e]);
     }
 
-    friend VectorPiMask operator < (Self v, element_type e) {
+    friend PiMask operator < (Self v, element_type e) {
         return _mm_cmpgt_epi8(::vectorOfAll[e], v._v);
     }
 

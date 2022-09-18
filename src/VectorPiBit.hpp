@@ -3,7 +3,7 @@
 
 #include "BitArray128.hpp"
 #include "VectorOf.hpp"
-#include "VectorPiMask.hpp"
+#include "PiMask.hpp"
 
 template <class Self, class Index>
 class VectorPiBit : public BitArray<Self, __m128i> {
@@ -37,18 +37,18 @@ public:
     constexpr bool is(Pi pi, element_type bitmask) const { return ((*this)[pi] & bitmask) != 0; }
     constexpr bool is(Pi pi, index_type _Bit) const { return is(pi, single(_Bit)); }
 
-    VectorPiMask anyOf(index_type _Bit) const {
+    PiMask anyOf(index_type _Bit) const {
         _t mask = singleVector(_Bit);
         return cmpeq(mask, this->_v & mask);
     }
 
-    VectorPiMask anyOf(element_type bitmask) const {
+    PiMask anyOf(element_type bitmask) const {
         _t mask = ::vectorOfAll[bitmask];
-        return VectorPiMask::negate(cmpeq(this->_v & mask, ::vectorOfAll[0]));
+        return PiMask::negate(cmpeq(this->_v & mask, ::vectorOfAll[0]));
     }
 
-    VectorPiMask notEmpty() const {
-        return VectorPiMask::negate(cmpeq(this->_v, ::vectorOfAll[0]));
+    PiMask notEmpty() const {
+        return PiMask::negate(cmpeq(this->_v, ::vectorOfAll[0]));
     }
 
     void clear(index_type _Bit) {

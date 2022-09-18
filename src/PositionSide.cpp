@@ -232,7 +232,7 @@ void PositionSide::setOpKing(Square king) {
     }
 }
 
-void PositionSide::setSliderAttacks(VectorPiMask affectedSliders, Bb occupied) {
+void PositionSide::setSliderAttacks(PiMask affectedSliders, Bb occupied) {
     affectedSliders &= types.sliders();
     if (affectedSliders.none()) { return; }
 

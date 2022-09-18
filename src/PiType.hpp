@@ -25,11 +25,11 @@ public:
     }
 #endif
 
-    VectorPiMask alivePieces() const { return notEmpty(); }
-    VectorPiMask piecesOfType(PieceType ty) const { assert (!ty.is(King)); return anyOf(ty); }
-    VectorPiMask minors() const { return anyOf(Minor); }
-    VectorPiMask sliders() const { return anyOf(Slider); }
-    VectorPiMask leapers() const { return anyOf(Leaper); }
+    PiMask alivePieces() const { return notEmpty(); }
+    PiMask piecesOfType(PieceType ty) const { assert (!ty.is(King)); return anyOf(ty); }
+    PiMask minors() const { return anyOf(Minor); }
+    PiMask sliders() const { return anyOf(Slider); }
+    PiMask leapers() const { return anyOf(Leaper); }
 
     PieceType typeOf(Pi pi) const { assertValid(pi); return static_cast<PieceType::_t>( ::bsf(static_cast<unsigned>(get(pi))) ); }
 
