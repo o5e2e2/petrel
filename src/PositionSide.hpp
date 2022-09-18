@@ -9,22 +9,21 @@
 #include "PiSquare.hpp"
 #include "Zobrist.hpp"
 
-/******************************************************************************
- * static information about pieces of one player's side (either side to move or its opponent)
- */
-
 //TRICK: all squares are relative to its own side (so the king piece is initially on E1 square regardless color)
+
+/// static information about pieces from one player's side (either side to move or its opponent)
 class PositionSide {
     MatrixPiBb attacks; //squares attacked by a piece and pieces attacking to a square
     PiType types; //chess type of each alive piece: king, pawn, knignt, bishop, rook, queen
-    PiTrait traits; //rooks with castling rights, pawns affected by en passant, pinned pieces
+    PiTrait traits; //rooks with castling rights, pawns affected by en passant, pinner pieces, checker pieces
     PiSquare squares; //onboard square locations of the alive pieces or 'NoSquare' special value
 
-    Bb piecesBb; //all pieces of the current side, incrementally updated
-    Bb pawnsBb; //pawns of the current side, incrementally updated
+    Evaluation evaluation; //PST incremental evaluation
+
+    Bb piecesBb; //squares occupied by current side pieces
+    Bb pawnsBb; //squares of current side pawns
     Bb occupiedBb; //all occupied squares by both sides, updated by combining both PositionSide::piecesBb
 
-    Evaluation evaluation;
     Square opKing; //location of the opponent's king
 
 public:
@@ -117,10 +116,11 @@ public:
 
 private:
     void move(Pi, PieceType, Square, Square);
+    void kingMoved(Square);
     void setSliderAttacks(PiMask, Bb);
     void setLeaperAttacks();
     void setLeaperAttack(Pi, PieceType, Square);
-    void setPinner(Pi, Square);
+    void setPinner(Pi, PieceType, Square);
     GamePhase generateGamePhase() const; //returns whether material for endgame or middlegame
 
 };

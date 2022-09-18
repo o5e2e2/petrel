@@ -6,7 +6,7 @@
 
 enum pi_trait_t {
     Castling,  // rooks with castling rights
-    EnPassant, // pawns that can either be legally captured en passant or perform a legal en passant capture (depends on side to move)
+    EnPassant, // pawn can be captured en passant or pawn or pawns that can perform a legal en passant capture (depends on side to move)
     Pinner,    // sliding pieces that can attack the enemy king on empty board (potential pinners)
     Checker,   // any piece actually attacking enemy king
 };
@@ -15,6 +15,7 @@ class PiTrait : protected VectorPiBit< PiTrait, Index<4, pi_trait_t> > {
     typedef VectorPiBit< PiTrait, Index<4, pi_trait_t> > Base;
 public:
     using Base::clear;
+    using Base::isEmpty;
 
     PiMask castlingRooks() const { return anyOf(Castling); }
     bool isCastling(Pi pi) const { return is(pi, Castling); }
@@ -29,8 +30,9 @@ public:
     void clearEnPassants() { clear(EnPassant); }
 
     PiMask pinners() const { return anyOf(Pinner); }
+    bool isPinner(Pi pi) const { return is(pi, Pinner); }
     void clearPinners() { clear(Pinner); }
-    void setPinner(Pi pi) { assert (!is(pi, Pinner)); set(pi, Pinner); }
+    void setPinner(Pi pi) { assert (!isPinner(pi)); set(pi, Pinner); }
     void clearPinner(Pi pi) { clear(pi, Pinner); }
 
     PiMask checkers() const { return anyOf(Checker); }

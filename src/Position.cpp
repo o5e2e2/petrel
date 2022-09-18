@@ -220,7 +220,7 @@ void Position::playMove(Square from, Square to) {
     assert (MY.checkers().none());
 }
 
-bool Position::drop(Side My, PieceType ty, Square to) {
+bool Position::dropValid(Side My, PieceType ty, Square to) {
     return MY.dropValid(ty, to);
 }
 

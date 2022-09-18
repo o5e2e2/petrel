@@ -83,7 +83,7 @@ bool FenBoard::dropPieces(Position& position, Color colorToMove) {
             while (!pieces[color][ty].empty()) {
                 auto piece = pieces[color][ty].begin();
 
-                if (!pos.drop(side, ty, *piece)) {
+                if (!pos.dropValid(side, ty, *piece)) {
                     //should never happen
                     return false;
                 }

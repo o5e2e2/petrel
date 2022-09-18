@@ -31,7 +31,7 @@ public:
     void playMove(Square, Square);
 
     //initial position setup
-    bool drop(Side, PieceType, Square);
+    bool dropValid(Side, PieceType, Square);
     bool afterDrop();
     template <Side::_t> void setLegalEnPassant(Pi);
 };
