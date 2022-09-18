@@ -3,15 +3,16 @@
 
 #include "bitops128.hpp"
 #include "Index.hpp"
+#include "VectorOf.hpp"
 
 class BitReverse {
     typedef __m128i _t;
-    _t lowNibbleReverse, highNibbleReverse, lowNibbleMask, byteReverse;
+    const _t& lowNibbleMask = ::vectorOfAll[0x0f];
+    _t lowNibbleReverse, highNibbleReverse, byteReverse;
 
 public:
     BitReverse () {
         FOR_INDEX (Index<0x10>, i) {
-            reinterpret_cast<char*>(&lowNibbleMask)[i] = 0x0f;
             reinterpret_cast<char*>(&byteReverse)[i] = static_cast<char>(0x0f ^ i);
 
             //http://graphics.stanford.edu/~seander/bithacks.html#ReverseByteWith32Bits

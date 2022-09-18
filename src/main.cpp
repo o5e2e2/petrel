@@ -25,8 +25,8 @@ constexpr const VectorPiSingle vectorPiSingle; //256
 constexpr const PieceSquareTable pieceSquareTable; //7*64
 constexpr const ZobristKey zobristKey; //64
 constexpr const CastlingRules castlingRules; //128
-const BitReverse bitReverse; //64
-const VectorBitCount bitCount; //48
+const BitReverse bitReverse; //48
+constexpr const VectorBitCount bitCount; //16
 const VectorPiOrder::Sorted VectorPiOrder::sorted; //16
 
 using io::czstring;
