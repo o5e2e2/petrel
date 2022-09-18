@@ -32,6 +32,8 @@ public:
     constexpr const element_type& operator [] (Pi pi) const { return reinterpret_cast<const element_type*>(this)[pi]; }
     element_type& operator [] (Pi pi) { return reinterpret_cast<element_type*>(this)[pi]; }
 
+    constexpr const element_type& get(Pi pi) const { return operator[] (pi); }
+
     constexpr bool is(Pi pi, element_type bitmask) const { return ((*this)[pi] & bitmask) != 0; }
     constexpr bool is(Pi pi, index_type _Bit) const { return is(pi, single(_Bit)); }
 

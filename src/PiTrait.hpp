@@ -4,42 +4,35 @@
 #include "typedefs.hpp"
 #include "VectorPiBit.hpp"
 
-class PiTrait {
-    enum pi_trait_t {
-        Castling,  // rooks with castling rights
-        EnPassant, // pawns that can either be legally captured en passant or perform a legal en passant capture (depends on side to move)
-        Pinner,    // sliding pieces that can attack the enemy king on empty board (potential pinners)
-        Checker,   // any piece actually attacking enemy king
-    };
+enum pi_trait_t {
+    Castling,  // rooks with castling rights
+    EnPassant, // pawns that can either be legally captured en passant or perform a legal en passant capture (depends on side to move)
+    Pinner,    // sliding pieces that can attack the enemy king on empty board (potential pinners)
+    Checker,   // any piece actually attacking enemy king
+};
 
-    typedef ::Index<4, pi_trait_t> Index;
-    struct Value : VectorPiBit<Value, Index> {};
-
-    Value _v;
-
+class PiTrait : public VectorPiBit< PiTrait, Index<4, pi_trait_t> > {
 public:
-    void clear(Pi pi) { _v.clear(pi); }
+    VectorPiMask castlingRooks() const { return anyOf(Castling); }
+    bool isCastling(Pi pi) const { return is(pi, Castling); }
+    void setCastling(Pi pi) { assert (!isCastling(pi)); set(pi, Castling); }
+    void clearCastlings() { clear(Castling); }
 
-    VectorPiMask castlingRooks() const { return _v.anyOf(Castling); }
-    bool isCastling(Pi pi) const { return _v.is(pi, Castling); }
-    void setCastling(Pi pi) { assert (!isCastling(pi)); _v.set(pi, Castling); }
-    void clearCastlings() { _v.clear(Castling); }
-
-    VectorPiMask enPassantPawns() const { return _v.anyOf(EnPassant); }
+    VectorPiMask enPassantPawns() const { return anyOf(EnPassant); }
     Pi getEnPassant() const { Pi pi = enPassantPawns().index(); return pi; }
-    bool isEnPassant(Pi pi) const { return _v.is(pi, EnPassant); }
-    void setEnPassant(Pi pi) { _v.set(pi, EnPassant); }
-    void clearEnPassant(Pi pi) { assert (isEnPassant(pi)); _v.clear(pi, EnPassant); }
-    void clearEnPassants() { _v.clear(EnPassant); }
+    bool isEnPassant(Pi pi) const { return is(pi, EnPassant); }
+    void setEnPassant(Pi pi) { set(pi, EnPassant); }
+    void clearEnPassant(Pi pi) { assert (isEnPassant(pi)); clear(pi, EnPassant); }
+    void clearEnPassants() { clear(EnPassant); }
 
-    VectorPiMask pinners() const { return _v.anyOf(Pinner); }
-    void clearPinners() { _v.clear(Pinner); }
-    void setPinner(Pi pi) { assert (!_v.is(pi, Pinner)); _v.set(pi, Pinner); }
-    void clearPinner(Pi pi) { _v.clear(pi, Pinner); }
+    VectorPiMask pinners() const { return anyOf(Pinner); }
+    void clearPinners() { clear(Pinner); }
+    void setPinner(Pi pi) { assert (!is(pi, Pinner)); set(pi, Pinner); }
+    void clearPinner(Pi pi) { clear(pi, Pinner); }
 
-    VectorPiMask checkers() const { return _v.anyOf(Checker); }
-    void clearCheckers() { _v.clear(Checker); }
-    void setChecker(Pi pi) { assert (!_v.is(pi, Checker)); _v.set(pi, Checker); }
+    VectorPiMask checkers() const { return anyOf(Checker); }
+    void clearCheckers() { clear(Checker); }
+    void setChecker(Pi pi) { assert (!is(pi, Checker)); set(pi, Checker); }
 };
 
 #endif

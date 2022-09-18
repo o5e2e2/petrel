@@ -7,12 +7,10 @@
 #include "VectorPiEnum.hpp"
 #include "VectorOf.hpp"
 
-class PiSquare {
-    VectorPiEnum<Square::_t> _v;
-    typedef VectorPiEnum<Square::_t>::_t _t;
+class PiSquare : public VectorPiEnum<Square::_t> {
+    typedef VectorPiEnum<Square::_t> Base;
 
-    bool isEmpty(Pi pi) const { return _v.isEmpty(pi); }
-    bool none(Square sq) { assert (sq.isOk()); return (_v == sq).none(); }
+    bool none(Square sq) { assert (sq.isOk()); return (*this == sq).none(); }
 
 public:
 
@@ -21,40 +19,39 @@ public:
 #else
     void assertValid(Pi pi) const {
         assert (!isEmpty(pi));
-        Square sq = _v[pi];
+        Square sq = get(pi);
         assert (pieceOn(sq) == pi);
     }
 #endif
 
-    VectorPiMask alivePieces() const { return _v.notEmpty(); }
-    VectorPiMask piecesOn(Square sq) const { return _v == sq; }
-    VectorPiMask leftForward(Square sq) const { return _v < sq; }
-    VectorPiMask rightBackward(Square sq) const { return _v > sq; }
+    VectorPiMask alivePieces() const { return notEmpty(); }
+    VectorPiMask piecesOn(Square sq) const { assert (sq.isOk()); return *this == sq; }
+    VectorPiMask leftForward(Square sq) const { assert (sq.isOk()); return *this < sq; }
+    VectorPiMask rightBackward(Square sq) const { assert (sq.isOk()); return *this > sq; }
 
-    Square squareOf(Pi pi) const { assertValid(pi); return _v[pi]; }
-    bool hasPieceOn(Square sq) const { return piecesOn(sq).any(); }
-    Pi pieceOn(Square sq) const { assert (hasPieceOn(sq)); return piecesOn(sq).index(); }
+    Square squareOf(Pi pi) const { assertValid(pi); return get(pi); }
+    bool hasPieceOn(Square sq) const { assert (sq.isOk()); return piecesOn(sq).any(); }
+    Pi pieceOn(Square sq) const { assert (sq.isOk()); assert (hasPieceOn(sq)); return piecesOn(sq).index(); }
 
     VectorPiMask piecesOn(Rank rank) const {
         return _mm_cmpeq_epi8(
-            static_cast<_t>(_v) & ::vectorOfAll[static_cast<unsigned char>(0xff^File::Mask)],
+            static_cast<_t>(*this) & ::vectorOfAll[static_cast<unsigned char>(0xff^File::Mask)],
             ::vectorOfAll[static_cast<unsigned char>(rank << 3)]
         );
     }
 
-    void clear() { _v.clear(); }
-    void clear(Pi pi) { assertValid(pi); _v.clear(pi); }
+    void clear(Pi pi) { assertValid(pi); Base::clear(pi); }
 
     void drop(Pi pi, Square sq) {
         assert (none(sq));
         assert (isEmpty(pi));
-        _v.drop(pi, sq);
+        Base::drop(pi, sq);
     }
 
     void move(Pi pi, Square sq) {
         assert (none(sq));
         assert (squareOf(pi) != sq);
-        _v.set(pi, sq);
+        set(pi, sq);
     }
 
     void castle(Square kingTo, Pi rook, Square rookTo) {
@@ -63,8 +60,8 @@ public:
         assert (squareOf(TheKing).on(Rank1) && squareOf(rook).on(Rank1));
         assert (kingTo.on(Rank1) && rookTo.on(Rank1));
 
-        _v.set(TheKing, kingTo);
-        _v.set(rook, rookTo);
+        set(TheKing, kingTo);
+        set(rook, rookTo);
     }
 
 };

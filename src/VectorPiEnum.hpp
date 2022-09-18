@@ -43,6 +43,10 @@ public:
         return static_cast<element_type>(byte[pi]);
     }
 
+    element_type get(Pi pi) const {
+        return operator[](pi);
+    }
+
     void clear() {
         *this = {};
     }
