@@ -22,13 +22,10 @@ istream& fail_rewind(istream& in) {
     return fail_pos(in, 0);
 }
 
-/**
-    * Tries to read the stream token and match it with the given token parameter
-    * The comparision is case insensitive and all sequential space symbols treated equal to the single space
-    * Return:
-    * true  -- next stream token is matches to the given token, shift stream cursor past the matched token
-    * false -- failed to read stram or failed to match next stream token with the given token, stream state is not changed
-    **/
+/// Tries to read the stream token and match it with the given token parameter.
+/// The comparision is case insensitive and all sequential space symbols are equal to single space.
+/// @retval true: stream matches the given token, shift stream cursor past the matched token
+/// @retval false: failed to read stream or failed to match next stream token with the given token, stream state left unchanged
 bool next(istream& in, czstring token) {
     if (token == nullptr) { token = ""; }
 

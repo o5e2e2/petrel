@@ -5,13 +5,14 @@
 #include "VectorPiBit.hpp"
 
 class VectorPiTrait {
-    //Castling: rooks with castling rights
-    //EnPassant: pawns that can either be legally captured en passant or perform a legal en passant capture (depends on side to move)
-    //Pinner: sliding pieces that can attack the enemy king on empty board (potential pinners)
-    //Checker: any piece actually attacking enemy king
+    enum pi_trait_t {
+        Castling,  // rooks with castling rights
+        EnPassant, // pawns that can either be legally captured en passant or perform a legal en passant capture (depends on side to move)
+        Pinner,    // sliding pieces that can attack the enemy king on empty board (potential pinners)
+        Checker,   // any piece actually attacking enemy king
+    };
 
-    enum piece_trait_t { Castling, EnPassant, Pinner, Checker };
-    typedef ::Index<4, piece_trait_t> Index;
+    typedef ::Index<4, pi_trait_t> Index;
     struct Value : VectorPiBit<Value, Index> {};
 
     Value _v;
