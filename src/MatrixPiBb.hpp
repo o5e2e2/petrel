@@ -103,7 +103,7 @@ public:
     }
 
     void filter(Pi pi, Bb bb) {
-        PiMask exceptPi{ ::vectorPiSingle.except(pi) };
+        PiMask exceptPi{ ::vectorOfAll[0xff] ^ ::vectorPiSingle[pi] };
         FOR_INDEX(Rank, rank) {
             matrix[rank] &= VectorPiRank{bb[rank]} | exceptPi;
         }

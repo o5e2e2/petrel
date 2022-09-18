@@ -41,8 +41,6 @@ public:
     {}
 
     constexpr const _t& operator[] (Pi pi) const { return _v[pi]._m; }
-    constexpr _t except(Pi pi) const { return (*this)[pi] ^ ::vectorOfAll[0xff]; };
-
 };
 
 extern const VectorPiSingle vectorPiSingle;
