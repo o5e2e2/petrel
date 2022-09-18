@@ -10,7 +10,7 @@
 class PiSquare : public VectorPiEnum<Square::_t> {
     typedef VectorPiEnum<Square::_t> Base;
 
-    bool none(Square sq) { assert (sq.isOk()); return (*this == sq).none(); }
+    bool none(Square sq) { return (*this == sq).none(); }
 
 public:
 
@@ -25,13 +25,13 @@ public:
 #endif
 
     PiMask alivePieces() const { return notEmpty(); }
-    PiMask piecesOn(Square sq) const { assert (sq.isOk()); return *this == sq; }
-    PiMask leftForward(Square sq) const { assert (sq.isOk()); return *this < sq; }
-    PiMask rightBackward(Square sq) const { assert (sq.isOk()); return *this > sq; }
+    PiMask piecesOn(Square sq) const { return *this == sq; }
+    PiMask leftForward(Square sq) const { return *this < sq; }
+    PiMask rightBackward(Square sq) const { return *this > sq; }
 
     Square squareOf(Pi pi) const { assertValid(pi); return get(pi); }
-    bool hasPieceOn(Square sq) const { assert (sq.isOk()); return piecesOn(sq).any(); }
-    Pi pieceOn(Square sq) const { assert (sq.isOk()); assert (hasPieceOn(sq)); return piecesOn(sq).index(); }
+    bool hasPieceOn(Square sq) const { return piecesOn(sq).any(); }
+    Pi pieceOn(Square sq) const { assert (hasPieceOn(sq)); return piecesOn(sq).index(); }
 
     PiMask piecesOn(Rank rank) const {
         return _mm_cmpeq_epi8(
@@ -40,28 +40,42 @@ public:
         );
     }
 
-    void clear(Pi pi) { assertValid(pi); Base::clear(pi); }
+    void clear(Pi pi) {
+        assertValid(pi);
+        Base::clear(pi);
+        assert (isEmpty(pi));
+    }
 
     void drop(Pi pi, Square sq) {
-        assert (none(sq));
         assert (isEmpty(pi));
-        Base::drop(pi, sq);
+        assert (none(sq));
+        set(pi, sq);
+        assertValid(pi);
     }
 
     void move(Pi pi, Square sq) {
+        assertValid(pi);
         assert (none(sq));
-        assert (squareOf(pi) != sq);
         set(pi, sq);
+        assertValid(pi);
     }
 
-    void castle(Square kingTo, Pi rook, Square rookTo) {
-        assert (!isEmpty(TheKing) && !isEmpty(rook));
-        assert (TheKing != rook && kingTo != rookTo);
-        assert (squareOf(TheKing).on(Rank1) && squareOf(rook).on(Rank1));
-        assert (kingTo.on(Rank1) && rookTo.on(Rank1));
+    void castle(Square kingTo, Pi theRook, Square rookTo) {
+        assert (TheKing != theRook);
+        assertValid(TheKing);
+        assertValid(theRook);
+
+        assert (squareOf(TheKing).on(Rank1));
+        assert (squareOf(theRook).on(Rank1));
+
+        assert (kingTo.is(G1) || kingTo.is(C1));
+        assert (rookTo.is(F1) || rookTo.is(D1));
 
         set(TheKing, kingTo);
-        set(rook, rookTo);
+        set(theRook, rookTo);
+
+        assertValid(TheKing);
+        assertValid(theRook);
     }
 
 };

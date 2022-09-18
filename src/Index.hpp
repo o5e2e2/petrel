@@ -24,7 +24,7 @@ protected:
 
 public:
     constexpr Index () : _v{Size} {}
-    constexpr Index (_t v) : _v{v} {}
+    constexpr Index (_t v) : _v{v} { assertValid(); }
 
     constexpr operator _t () const { return static_cast<_t>(_v); }
 

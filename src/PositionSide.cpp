@@ -177,7 +177,6 @@ void PositionSide::moveKing(Square from, Square to) {
 void PositionSide::castle(Square kingFrom, Square kingTo, Pi rook, Square rookFrom, Square rookTo) {
     assertValid(TheKing, King, kingFrom);
     assertValid(rook, Rook, rookFrom);
-    assert (kingFrom.on(Rank1) && rookFrom.on(Rank1));
 
     piecesBb -= kingFrom;
     piecesBb -= rookFrom;
@@ -194,7 +193,6 @@ void PositionSide::castle(Square kingFrom, Square kingTo, Pi rook, Square rookFr
 
     assertValid(TheKing, King, kingTo);
     assertValid(rook, Rook, rookTo);
-    assert (kingTo.on(Rank1) && rookTo.on(Rank1));
 }
 
 void PositionSide::setLeaperAttack(Pi pi, PieceType ty, Square sq) {

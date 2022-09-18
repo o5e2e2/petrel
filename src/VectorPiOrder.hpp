@@ -32,7 +32,7 @@ public:
     PiMask order(PiMask a) const {
         return _mm_shuffle_epi8(static_cast<PiMask::_t>(a), static_cast<_t>(_v));
     }
-    Pi operator[] (Pi pi) const { return _v[pi]; }
+    Pi operator[] (Pi pi) const { return _v.get(pi); }
 
 };
 

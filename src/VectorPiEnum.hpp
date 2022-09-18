@@ -22,7 +22,8 @@ private:
 
     enum { None = 0xff };
 
-    void _set(Pi pi, storage_type v) { byte[pi] = v; }
+protected:
+    void set(Pi pi, storage_type v) { byte[pi] = v; }
 
 public:
     constexpr VectorPiEnum () : _v(::vectorOfAll[None]) {}
@@ -38,32 +39,14 @@ public:
         return byte[pi] == static_cast<storage_type>(None);
     }
 
-    element_type operator[] (Pi pi) const {
+    element_type get(Pi pi) const {
         assert (!isEmpty(pi));
         return static_cast<element_type>(byte[pi]);
     }
 
-    element_type get(Pi pi) const {
-        return operator[](pi);
-    }
-
-    void clear() {
-        *this = {};
-    }
-
-    void drop(Pi pi, element_type e) {
-        assert (isEmpty(pi));
-        _set(pi, e);
-    }
-
-    void set(Pi pi, element_type e) {
-        assert (!isEmpty(pi));
-        _set(pi, e);
-    }
-
     void clear(Pi pi) {
         assert (!isEmpty(pi));
-        _set(pi, None);
+        set(pi, None);
     }
 
     friend PiMask operator == (Self v1, Self v2) {

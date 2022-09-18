@@ -51,9 +51,8 @@ public:
     Square squareOf(Pi pi) const { assertValid(pi); return squares.squareOf(pi); }
     Square kingSquare() const { return squareOf(TheKing); }
 
-    bool hasPieceOn(Square sq) const { assert (piecesBb.has(sq) == squares.hasPieceOn(sq)); return squares.hasPieceOn(sq); }
+    bool hasPieceOn(Square sq) const { assert (isOccupied(sq) == squares.hasPieceOn(sq)); return squares.hasPieceOn(sq); }
     Pi pieceOn(Square sq) const { Pi pi = squares.pieceOn(sq); assertValid(pi); return pi; }
-    PiMask piecesOn(Square sq) const { return squares.piecesOn(sq); }
     PiMask piecesOn(Rank rank) const { return squares.piecesOn(rank); }
 
     PiMask piecesOfType(PieceType ty) const { return types.piecesOfType(ty); }
@@ -71,7 +70,7 @@ public:
     PiMask enPassantPawns() const { return traits.enPassantPawns(); }
     bool hasEnPassant() const { return enPassantPawns().any(); }
     Square enPassantSquare() const { Square ep = squareOf(traits.getEnPassant()); assert (ep.on(Rank4)); return ep; }
-    File   enPassantFile()   const { return File( enPassantSquare() ); }
+    File enPassantFile() const { return File( enPassantSquare() ); }
 
     PiMask pinners() const { return traits.pinners(); }
     bool isPinned(Bb) const;
