@@ -1,10 +1,10 @@
-#ifndef VECTOR_PI_TYPE_H
-#define VECTOR_PI_TYPE_H
+#ifndef PI_TYPE_H
+#define PI_TYPE_H
 
 #include "typedefs.hpp"
 #include "VectorPiBit.hpp"
 
-class VectorPiType {
+class PiType {
     struct Value : VectorPiBit<Value, PieceType> {};
 
     typedef Value::element_type _t;

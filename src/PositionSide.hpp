@@ -4,9 +4,9 @@
 #include "Evaluation.hpp"
 #include "MatrixPiBb.hpp"
 #include "Move.hpp"
-#include "VectorPiTrait.hpp"
-#include "VectorPiType.hpp"
-#include "VectorPiSquare.hpp"
+#include "PiTrait.hpp"
+#include "PiType.hpp"
+#include "PiSquare.hpp"
 #include "Zobrist.hpp"
 
 /******************************************************************************
@@ -16,9 +16,9 @@
 //TRICK: all squares are relative to its own side (so the king piece is initially on E1 square regardless color)
 class PositionSide {
     MatrixPiBb attacks; //squares attacked by a piece and pieces attacking to a square
-    VectorPiType types; //chess type of each alive piece: king, pawn, knignt, bishop, rook, queen
-    VectorPiTrait traits; //rooks with castling rights, pawns affected by en passant, pinned pieces
-    VectorPiSquare squares; //onboard square locations of the alive pieces or 'NoSquare' special value
+    PiType types; //chess type of each alive piece: king, pawn, knignt, bishop, rook, queen
+    PiTrait traits; //rooks with castling rights, pawns affected by en passant, pinned pieces
+    PiSquare squares; //onboard square locations of the alive pieces or 'NoSquare' special value
 
     Bb piecesBb; //all pieces of the current side, incrementally updated
     Bb pawnsBb; //pawns of the current side, incrementally updated

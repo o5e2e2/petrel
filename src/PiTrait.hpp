@@ -1,10 +1,10 @@
-#ifndef VECTOR_PI_TRAIT_H
-#define VECTOR_PI_TRAIT_H
+#ifndef PI_TRAIT_H
+#define PI_TRAIT_H
 
 #include "typedefs.hpp"
 #include "VectorPiBit.hpp"
 
-class VectorPiTrait {
+class PiTrait {
     enum pi_trait_t {
         Castling,  // rooks with castling rights
         EnPassant, // pawns that can either be legally captured en passant or perform a legal en passant capture (depends on side to move)

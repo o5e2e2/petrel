@@ -1,5 +1,5 @@
-#ifndef VECTOR_PI_SQUARE_HPP
-#define VECTOR_PI_SQUARE_HPP
+#ifndef PI_SQUARE_HPP
+#define PI_SQUARE_HPP
 
 #include "io.hpp"
 #include "typedefs.hpp"
@@ -7,7 +7,7 @@
 #include "VectorPiEnum.hpp"
 #include "VectorOf.hpp"
 
-class VectorPiSquare {
+class PiSquare {
     VectorPiEnum<Square::_t> _v;
     typedef VectorPiEnum<Square::_t>::_t _t;
 
