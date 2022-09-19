@@ -44,9 +44,6 @@ void Position::playCastling(Pi rook, Square rookFrom, Square kingFrom) {
     //TRICK: castling rook should attack 'kingFrom' square
     //TRICK: only first rank sliders can be affected
     updateSliderAttacks<My>(MY.attackersTo(rookFrom, kingFrom) & MY.piecesOn(Rank1));
-
-    MY.assertValid(TheKing);
-    MY.assertValid(rook);
 }
 
 template <Side::_t My>

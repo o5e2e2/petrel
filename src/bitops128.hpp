@@ -2,12 +2,7 @@
 #define BIT_OPS_128_HPP
 
 #include "bitops.hpp"
-
-#if defined __SSSE3__ || defined _M_X64 || (defined _MSC_VER && defined _M_IX86_FP && _M_IX86_FP >= 2)
-#   include <tmmintrin.h>
-#else
-#   error The code requiers to enable compiler to use SSSE3 extension
-#endif
+#include <tmmintrin.h>
 
 #if !defined PLATFORM_64
     INLINE __int64 _mm_cvtsi128_si64(__m128i v) {
