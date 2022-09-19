@@ -32,7 +32,7 @@ public:
     constexpr explicit operator _t () const { return _v; }
 
     PiMask notEmpty() const {
-        return _mm_cmpgt_epi8(_v, ::vectorOfAll[None]);
+        return PiMask::cmpgt(_v, ::vectorOfAll[None]);
     }
 
     bool isEmpty(Pi pi) const {
@@ -50,7 +50,7 @@ public:
     }
 
     friend PiMask operator == (Self v1, Self v2) {
-        return _mm_cmpeq_epi8(v1._v, v2._v);
+        return PiMask::cmpeq(v1._v, v2._v);
     }
 
     friend PiMask operator == (Self v, element_type e) {
@@ -58,11 +58,11 @@ public:
     }
 
     friend PiMask operator > (Self v, element_type e) {
-        return _mm_cmpgt_epi8(v._v, ::vectorOfAll[e]);
+        return PiMask::cmpgt(v._v, ::vectorOfAll[e]);
     }
 
     friend PiMask operator < (Self v, element_type e) {
-        return _mm_cmpgt_epi8(::vectorOfAll[e], v._v);
+        return PiMask::cmpgt(::vectorOfAll[e], v._v);
     }
 
 };

@@ -34,7 +34,7 @@ public:
     Pi pieceOn(Square sq) const { assert (hasPieceOn(sq)); return piecesOn(sq).index(); }
 
     PiMask piecesOn(Rank rank) const {
-        return _mm_cmpeq_epi8(
+        return PiMask::cmpeq(
             static_cast<_t>(*this) & ::vectorOfAll[static_cast<unsigned char>(0xff^File::Mask)],
             ::vectorOfAll[static_cast<unsigned char>(rank << 3)]
         );

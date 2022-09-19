@@ -29,9 +29,9 @@ public:
     VectorPiOrder () : _v(sorted) {}
     VectorPiOrder (_t v) : _v(v) { assert (isOk()); }
 
-    PiMask order(PiMask a) const {
+    /*PiMask order(PiMask a) const {
         return _mm_shuffle_epi8(static_cast<PiMask::_t>(a), static_cast<_t>(_v));
-    }
+    }*/
     Pi operator[] (Pi pi) const { return _v.get(pi); }
 
 };
@@ -41,8 +41,8 @@ class PiOrderedIterator {
     PieceSet mask;
 
 public:
-    PiOrderedIterator (VectorPiOrder o, PiMask m)
-        : order(o), mask(o.order(m)) {}
+    /*PiOrderedIterator (VectorPiOrder o, PiMask m)
+        : order(o), mask(o.order(m)) {}*/
 
     Pi operator * () const { return order[*mask]; }
     PiOrderedIterator& operator ++ () { ++mask; return *this; }
