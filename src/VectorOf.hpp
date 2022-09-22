@@ -2,7 +2,9 @@
 #define VECTOR_OF_HPP
 
 #include "bitops128.hpp"
+#include "BitRank.hpp"
 #include "Index.hpp"
+#include "typedefs.hpp"
 
 class VectorOf {
     typedef unsigned char byte_t;

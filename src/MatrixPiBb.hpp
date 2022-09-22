@@ -4,7 +4,6 @@
 #include "Bb.hpp"
 #include "VectorOf.hpp"
 #include "VectorPiRank.hpp"
-#include "ReverseBb.hpp"
 
 class MatrixPiBb {
     Rank::arrayOf<VectorPiRank> matrix;

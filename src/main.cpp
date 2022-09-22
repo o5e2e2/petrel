@@ -1,6 +1,7 @@
 #include <errno.h>
 
 #include "io.hpp"
+#include "AttackBb.hpp"
 #include "BetweenSquares.hpp"
 #include "BitReverse.hpp"
 #include "CastlingRules.hpp"
@@ -17,15 +18,15 @@
 * Startup constant initialization
 */
 constexpr const BetweenSquares between; //32k
-constexpr const DirectionBb directionBb; //12k
-constexpr const SingletonBb singletonBb; //1k
+constexpr const HyperbolaDir hyperbolaDir; //12k
+constexpr const HyperbolaSq hyperbolaSq; //1k
 constexpr const PieceTypeAttack attacksFrom; //3k
 constexpr const VectorOf vectorOfAll; //4k
 constexpr const VectorPiSingle vectorPiSingle; //256
 constexpr const PieceSquareTable pieceSquareTable; //7*64
 constexpr const ZobristKey zobristKey; //64
 constexpr const CastlingRules castlingRules; //128
-constexpr const BitReverse bitReverse; //48
+constexpr const BitReverse bitReverse; //32
 constexpr const VectorBitCount bitCount; //16
 const VectorPiOrder::Sorted VectorPiOrder::sorted; //16
 

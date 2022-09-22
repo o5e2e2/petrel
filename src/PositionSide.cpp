@@ -2,7 +2,7 @@
 #include "BetweenSquares.hpp"
 #include "CastlingRules.hpp"
 #include "PieceTypeAttack.hpp"
-#include "ReverseBb.hpp"
+#include "AttackBb.hpp"
 
 #ifndef NDEBUG
     void PositionSide::assertValid(Pi pi) const {
@@ -246,7 +246,7 @@ void PositionSide::setSliderAttacks(PiMask affectedSliders, Bb occupied) {
     affectedSliders &= types.sliders();
     if (affectedSliders.none()) { return; }
 
-    ReverseBb blockers{ occupied };
+    AttackBb blockers{ occupied };
     for (Pi pi : affectedSliders) {
         Bb attack = blockers.attack(static_cast<SliderType>(typeOf(pi)), squareOf(pi));
         attacks.set(pi, attack);
