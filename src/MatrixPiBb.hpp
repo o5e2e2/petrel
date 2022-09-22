@@ -132,11 +132,11 @@ public:
     }
 
     index_t count() const {
-        VectorBitCount::_t result = ::vectorOfAll[0];
+        VectorBitCount::_t sum = ::vectorOfAll[0];
         FOR_INDEX(Rank, rank) {
-            result = _mm_add_epi8(result, ::bitCount.perByte(static_cast<VectorBitCount::_t>(matrix[rank])));
+            sum = _mm_add_epi8(sum, ::bitCount.bytes( static_cast<VectorBitCount::_t>(matrix[rank]) ));
         }
-        return ::bitCount.total(result);
+        return ::bitCount.total(sum);
     }
 
 };

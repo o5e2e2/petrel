@@ -8,20 +8,19 @@ class VectorBitCount {
 public:
     typedef __m128i _t;
 
-    typedef union {
+private:
+    const union {
         char b[16];
         _t v;
-    } Vector;
+    } nibbleCount = {0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4,};
 
-private:
     const _t& emptyMask = ::vectorOfAll[0];
-    const _t& lowNibbleMask = ::vectorOfAll[0x0f];
-    const Vector nibbleCount = {0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4,};
+    const _t& nibbleMask = ::vectorOfAll[0x0f];
 
 public:
-    _t perByte(_t v) const {
-        _t lo = v & lowNibbleMask;
-        _t hi = _mm_srli_epi16(v, 4) & lowNibbleMask;
+    _t bytes(_t v) const {
+        _t lo = v & nibbleMask;
+        _t hi = _mm_srli_epi16(v, 4) & nibbleMask;
         lo = _mm_shuffle_epi8(nibbleCount.v, lo);
         hi = _mm_shuffle_epi8(nibbleCount.v, hi);
         return _mm_add_epi8(lo, hi);
@@ -35,7 +34,7 @@ public:
     }
 
     index_t operator() (_t v) const {
-        return total(perByte(v));
+        return total(bytes(v));
     }
 };
 

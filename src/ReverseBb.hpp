@@ -2,7 +2,7 @@
 #define REVERSE_BB_HPP
 
 #include "BitArray128.hpp"
-#include "BitArray128Reverse.hpp"
+#include "BitReverse.hpp"
 #include "Bb.hpp"
 
 constexpr inline __m128i combine(Bb lo, Bb hi) {

@@ -2,7 +2,7 @@
 
 #include "io.hpp"
 #include "BetweenSquares.hpp"
-#include "BitArray128Reverse.hpp"
+#include "BitReverse.hpp"
 #include "CastlingRules.hpp"
 #include "Evaluation.hpp"
 #include "PerftRecord.hpp"
@@ -25,7 +25,7 @@ constexpr const VectorPiSingle vectorPiSingle; //256
 constexpr const PieceSquareTable pieceSquareTable; //7*64
 constexpr const ZobristKey zobristKey; //64
 constexpr const CastlingRules castlingRules; //128
-const BitReverse bitReverse; //48
+constexpr const BitReverse bitReverse; //48
 constexpr const VectorBitCount bitCount; //16
 const VectorPiOrder::Sorted VectorPiOrder::sorted; //16
 
