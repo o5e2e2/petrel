@@ -345,7 +345,7 @@ bool PositionFen::setEnPassant(File file) {
         return false;
     }
 
-    setLegalEnPassant<Op>(victim);
+    setLegalEnPassant<Op>(victim, victimSquare);
     return true;
 }
 

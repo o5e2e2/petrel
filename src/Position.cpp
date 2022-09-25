@@ -47,17 +47,16 @@ void Position::playCastling(Pi rook, Square rookFrom, Square kingFrom) {
 }
 
 template <Side::_t My>
-void Position::setLegalEnPassant(Pi pi) {
+void Position::setLegalEnPassant(Pi pi, Square to) {
     constexpr Side Op{~My};
 
     assert (!MY.hasEnPassant());
     assert (!OP.hasEnPassant());
+    assert (MY.squareOf(pi) == to);
+    assert (to.on(Rank4));
 
-    Square to{MY.squareOf(pi)};
     Square from(File(to), Rank2);
     Square ep(File(to), Rank3);
-
-    assert (to.on(Rank4));
 
     Bb killers = ~OP.pawnsSquares() & ::attacksFrom(Pawn, ep);
     if (killers.none()) {
@@ -104,29 +103,21 @@ void Position::playPawnMove(Pi pi, Square from, Square to) {
         return;
     }
 
+    MY.movePawn(pi, from, to);
+
+    //possible en passant capture case already treated
     if (OP.isOccupied(~to)) {
-        capture<Op>(~to);
-
-        //en Passant capture encoded as the pawn captures the pawn
-        if (from.on(Rank5) && to.on(Rank5)) {
-            Square ep{File(to), Rank6};
-            MY.movePawn(pi, from, ep);
-            updateSliderAttacks<My>(MY.attackersTo(from, to, ep), OP.attackersTo(~from, ~to, ~ep));
-            return;
-        }
-
         //simple pawn capture
-        MY.movePawn(pi, from, to);
+        capture<Op>(~to);
         updateSliderAttacks<My>(MY.attackersTo(from), OP.attackersTo(~from));
         return;
     }
 
     //simple pawn move
-    MY.movePawn(pi, from, to);
     updateSliderAttacks<My>(MY.attackersTo(from, to), OP.attackersTo(~from, ~to));
 
     if (from.on(Rank2) && to.on(Rank4)) {
-        setLegalEnPassant<My>(pi);
+        setLegalEnPassant<My>(pi, to);
     }
 }
 
@@ -156,15 +147,25 @@ void Position::playMove(Square from, Square to) {
     OP.clearCheckers();
     assert (MY.checkers().none());
 
+    Pi pi = MY.pieceOn(from);
+
     //clear en passant status from the previous move
     if (OP.hasEnPassant()) {
-        OP.clearEnPassantVictim();
         MY.clearEnPassantKillers();
+
+        //en passant capture encoded as the pawn captures the pawn
+        if (MY.isPawn(pi) && from.on(Rank5) && to.on(Rank5)) {
+            Square ep{File(to), Rank6};
+            MY.movePawn(pi, from, ep);
+            capture<Op>(~to);
+            updateSliderAttacks<My>(MY.attackersTo(from, to, ep), OP.attackersTo(~from, ~to, ~ep));
+            return;
+        }
+
+        OP.clearEnPassantVictim();
     }
     assert (!MY.hasEnPassant());
     assert (!OP.hasEnPassant());
-
-    Pi pi = MY.pieceOn(from);
 
     if (MY.isPawn(pi)) {
         playPawnMove<My>(pi, from, to);
@@ -176,22 +177,21 @@ void Position::playMove(Square from, Square to) {
         return;
     }
 
-    if (OP.isOccupied(~to)) {
-        //simple non-pawn non-king capture
-        capture<Op>(~to);
-        MY.move(pi, from, to);
-        updateSliderAttacks<My>(MY.attackersTo(from) | pi, OP.attackersTo(~from));
-        return;
-    }
-
     if (MY.kingSquare().is(to)) {
         //castling move encoded as castling rook captures own king
         playCastling<My>(pi, from, to);
         return;
     }
 
-    //simple non-pawn non-king non-capture move
+    //simple non-pawn non-king move
     MY.move(pi, from, to);
+
+    if (OP.isOccupied(~to)) {
+        capture<Op>(~to);
+        updateSliderAttacks<My>(MY.attackersTo(from) | pi, OP.attackersTo(~from));
+        return;
+    }
+
     updateSliderAttacks<My>(MY.attackersTo(from, to), OP.attackersTo(~from, ~to));
 }
 

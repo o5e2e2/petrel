@@ -33,7 +33,7 @@ public:
     //initial position setup
     bool dropValid(Side, PieceType, Square);
     bool afterDrop();
-    template <Side::_t> void setLegalEnPassant(Pi);
+    template <Side::_t> void setLegalEnPassant(Pi, Square);
 };
 
 #endif
