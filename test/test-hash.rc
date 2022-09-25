@@ -2,81 +2,81 @@ position fen 8/5p2/8/2k3P1/p3K3/8/1P6/8 b - -
 
 set hash 128k
 go
-;* score 57658060464
+;* perft 57658060464 *
 stop
 
 set hash 256k
 go
-;* score 57658060464
+;* perft 57658060464 *
 stop
 
 set hash 512k
 go
-;* score 57658060464
+;* perft 57658060464 *
 stop
 
 set hash 1
 go
-;* score 57658060464
+;* perft 57658060464 *
 stop
 
 set hash 2
 go
-;* score 57658060464
+;* perft 57658060464 *
 stop
 
 set hash 4
 go
-;* score 57658060464
+;* perft 57658060464 *
 stop
 
 set hash 8
 go
-;* score 57658060464
+;* perft 57658060464 *
 stop
 
 set hash 16
 go
-;* score 57658060464
+;* perft 57658060464 *
 stop
 
 set hash 32
 go
-;* score 57658060464
+;* perft 57658060464 *
 stop
 
 set hash 64
 go
-;* score 57658060464
+;* perft 57658060464 *
 stop
 
 set hash 128
 go
-;* score 57658060464
+;* perft 57658060464 *
 stop
 set hash 256
 go
-;* score 57658060464
+;* perft 57658060464 *
 stop
 
 set hash 512
 go
-;* score 57658060464
+;* perft 57658060464 *
 stop
 
 set hash 1g
 go
-;* score 57658060464
+;* perft 57658060464 *
 stop
 
 set hash 2g
 go
-;* score 57658060464
+;* perft 57658060464 *
 stop
 
 set hash 4g
 go
-;* score 57658060464
+;* perft 57658060464 *
 stop
 
 quit

@@ -2,364 +2,594 @@
 spawn ./release/petrel
 setoption hash 16
 uci
-go depth 1 divide
+go perft depth 1 divide
 id name petrel
 id author Aleks Peshkov
 option name UCI_Chess960 type check default false
-option name Hash type spin min 0 max 4096 default 16
+option name Hash type spin min 0 max 2048 default 16
 uciok
-info currmovenumber 1 currmove b1a3 nodes 1 score 1
-info currmovenumber 2 currmove b1c3 nodes 2 score 1
-info currmovenumber 3 currmove g1f3 nodes 3 score 1
-info currmovenumber 4 currmove g1h3 nodes 4 score 1
-info currmovenumber 5 currmove d2d4 nodes 5 score 1
-info currmovenumber 6 currmove d2d3 nodes 6 score 1
-info currmovenumber 7 currmove e2e4 nodes 7 score 1
-info currmovenumber 8 currmove e2e3 nodes 8 score 1
-info currmovenumber 9 currmove c2c4 nodes 9 score 1
-info currmovenumber 10 currmove c2c3 nodes 10 score 1
-info currmovenumber 11 currmove f2f4 nodes 11 score 1
-info currmovenumber 12 currmove f2f3 nodes 12 score 1
-info currmovenumber 13 currmove b2b4 nodes 13 score 1
-info currmovenumber 14 currmove b2b3 nodes 14 score 1
-info currmovenumber 15 currmove g2g4 nodes 15 score 1
-info currmovenumber 16 currmove g2g3 nodes 16 score 1
-info currmovenumber 17 currmove a2a4 nodes 17 score 1
-info currmovenumber 18 currmove a2a3 nodes 18 score 1
-info currmovenumber 19 currmove h2h4 nodes 19 score 1
-info currmovenumber 20 currmove h2h3 nodes 20 score 1
-info depth 1 score 20
+info currmovenumber 1 currmove b1a3 perft 1 nodes 1 score -32767 pv 
+info currmovenumber 2 currmove b1c3 perft 1 nodes 2 score -32767 pv 
+info currmovenumber 3 currmove g1f3 perft 1 nodes 3 score -32767 pv 
+info currmovenumber 4 currmove g1h3 perft 1 nodes 4 score -32767 pv 
+info currmovenumber 5 currmove d2d4 perft 1 nodes 5 score -32767 pv 
+info currmovenumber 6 currmove d2d3 perft 1 nodes 6 score -32767 pv 
+info currmovenumber 7 currmove e2e4 perft 1 nodes 7 score -32767 pv 
+info currmovenumber 8 currmove e2e3 perft 1 nodes 8 score -32767 pv 
+info currmovenumber 9 currmove c2c4 perft 1 nodes 9 score -32767 pv 
+info currmovenumber 10 currmove c2c3 perft 1 nodes 10 score -32767 pv 
+info currmovenumber 11 currmove f2f4 perft 1 nodes 11 score -32767 pv 
+info currmovenumber 12 currmove f2f3 perft 1 nodes 12 score -32767 pv 
+info currmovenumber 13 currmove b2b4 perft 1 nodes 13 score -32767 pv 
+info currmovenumber 14 currmove b2b3 perft 1 nodes 14 score -32767 pv 
+info currmovenumber 15 currmove g2g4 perft 1 nodes 15 score -32767 pv 
+info currmovenumber 16 currmove g2g3 perft 1 nodes 16 score -32767 pv 
+info currmovenumber 17 currmove a2a4 perft 1 nodes 17 score -32767 pv 
+info currmovenumber 18 currmove a2a3 perft 1 nodes 18 score -32767 pv 
+info currmovenumber 19 currmove h2h4 perft 1 nodes 19 score -32767 pv 
+info currmovenumber 20 currmove h2h3 perft 1 nodes 20 score -32767 pv 
+info depth 1 perft 20 score -32767 pv 
 bestmove 0000
 position fen 6kr///////6K1 b k
-go
-info depth 1 score 12
-info depth 2 nodes 12 score 37
-info depth 3 nodes 61 hhits 0 hreads 12 hhitratio 0 hwrites 12 score 620
-info depth 4 nodes 730 hhits 0 hreads 61 hhitratio 0 hwrites 61 score 3357
-info depth 5 nodes 3608 hhits 209 hreads 730 hhitratio 286 hwrites 521 score 60957
-info depth 6 nodes 27112 time 4 hhits 1507 hreads 3608 hhitratio 417 hwrites 2101 score 325293
+go perft
+info depth 1 perft 12 score -32767 pv 
+info depth 2 perft 37 nodes 12 score 530 pv 0000 
+info depth 3 perft 620 nodes 61 hhits 0 hreads 12 hhitratio 0 hwrites 12 score 500 pv g8f7 0000 
+info depth 4 perft 3357 nodes 730 hhits 0 hreads 61 hhitratio 0 hwrites 61 score 510 pv g8g7 g1f2 0000 
+info depth 5 perft 60957 nodes 3608 hhits 209 hreads 730 hhitratio 286 hwrites 521 score 505 pv g8g7 h1d1 g7f7 0000 
+info depth 6 perft 325293 nodes 27112 time 5 hhits 1507 hreads 3608 hhitratio 417 hwrites 2101 score 530 pv g8f7 h1h7 f7e6 h7b7 0000 
 stop
 position fen 5kr1///////5K2 b k
-go
-info nodes 30000 time 4 hhits 1585 hreads 4115 hhitratio 385 hwrites 2525
+go perft
+info nodes 30000 time 5 hhits 1585 hreads 4115 hhitratio 385 hwrites 2525 score -32768 pv 
 bestmove 0000
-info depth 1 score 13
-info depth 2 nodes 13 score 43
-info depth 3 nodes 56 hhits 3 hreads 13 hhitratio 230 hwrites 10 score 719
-info depth 4 nodes 594 hhits 9 hreads 56 hhitratio 160 hwrites 47 score 3975
-info depth 5 nodes 3368 hhits 305 hreads 789 hhitratio 386 hwrites 484 score 73098
-info depth 6 nodes 23749 time 3 hhits 1819 hreads 3698 hhitratio 491 hwrites 1879 score 401634
+info depth 1 perft 13 score -32767 pv 
+info depth 2 perft 43 nodes 13 score 530 pv 0000 
+info depth 3 perft 719 nodes 56 hhits 3 hreads 13 hhitratio 230 hwrites 10 score 500 pv f8e7 0000 
+info depth 4 perft 3975 nodes 594 hhits 9 hreads 56 hhitratio 160 hwrites 47 score 540 pv f8e8 f1e2 0000 
+info depth 5 perft 73098 nodes 3368 hhits 305 hreads 789 hhitratio 386 hwrites 484 score 505 pv f8f7 g1d1 f7e7 0000 
+info depth 6 perft 401634 nodes 23749 time 2 hhits 1819 hreads 3698 hhitratio 491 hwrites 1879 score 32767 pv f8e7 g1g7 e7d6 e2d2 0000 
 stop
 position fen 4kr2///////4K3 b k
-go
-info nodes 25000 time 3 hhits 1837 hreads 3908 hhitratio 470 hwrites 2066
+go perft
+info nodes 30000 time 3 hhits 2316 hreads 5126 hhitratio 451 hwrites 2806 score -32768 pv 
 bestmove 0000
-info depth 1 score 14
-info depth 2 nodes 14 score 47
-info depth 3 nodes 57 hhits 4 hreads 14 hhitratio 285 hwrites 10 score 781
-info depth 4 nodes 582 hhits 11 hreads 57 hhitratio 192 hwrites 46 score 4432
-info depth 5 nodes 3555 hhits 359 hreads 855 hhitratio 419 hwrites 496 score 82020
-info depth 6 nodes 24773 time 3 hhits 2016 hreads 3951 hhitratio 510 hwrites 1935 score 459256
+info depth 1 perft 14 score -32767 pv 
+info depth 2 perft 47 nodes 14 score 530 pv 0000 
+info depth 3 perft 781 nodes 51 hhits 6 hreads 14 hhitratio 428 hwrites 8 score 470 pv e8d7 0000 
+info depth 4 perft 4432 nodes 576 hhits 13 hreads 57 hhitratio 228 hwrites 44 score 540 pv e8d8 e1d2 0000 
+info depth 5 perft 82020 nodes 3050 hhits 404 hreads 813 hhitratio 496 hwrites 409 score 32767 pv e8d7 f1f7 d7c6 0000 
+info depth 6 perft 459256 nodes 24268 time 1 hhits 2061 hreads 3909 hhitratio 527 hwrites 1848 score 32767 pv e8d7 f1f7 d7c6 d2c2 0000 
 stop
 position fen 3kr3///////3K4 b k
-go
-info nodes 30000 time 3 hhits 2344 hreads 5061 hhitratio 463 hwrites 2712
+go perft
+info nodes 30000 time 2 hhits 2525 hreads 5220 hhitratio 483 hwrites 2690 score -32768 pv 
 bestmove 0000
-info depth 1 score 15
-info depth 2 nodes 15 score 54
-info depth 3 nodes 50 hhits 8 hreads 15 hhitratio 533 hwrites 7 score 901
-info depth 4 nodes 544 hhits 16 hreads 56 hhitratio 285 hwrites 40 score 5154
-info depth 5 nodes 3282 hhits 477 hreads 918 hhitratio 519 hwrites 441 score 95429
-info depth 6 nodes 25866 time 3 hhits 2329 hreads 4306 hhitratio 540 hwrites 1977 score 539692
+info depth 1 perft 15 score -32767 pv 
+info depth 2 perft 54 nodes 15 score 535 pv 0000 
+info depth 3 perft 901 nodes 50 hhits 8 hreads 15 hhitratio 533 hwrites 7 score 470 pv d8c7 0000 
+info depth 4 perft 5154 nodes 544 hhits 16 hreads 56 hhitratio 285 hwrites 40 score 540 pv d8c8 d1c2 0000 
+info depth 5 perft 95429 nodes 3087 hhits 462 hreads 873 hhitratio 529 hwrites 411 score 32767 pv d8c7 f1f7 c7b6 0000 
+info depth 6 perft 539692 nodes 25671 time 1 hhits 2314 hreads 4261 hhitratio 543 hwrites 1947 score 32767 pv d8c7 c2d2 c7b6 e1e7 0000 
+stop
+position fen r3k2r/8/8/8/8/8/8/R3K2R w KQkq
+go perft
+info nodes 30000 time 2 hhits 2619 hreads 5205 hhitratio 503 hwrites 2581 score -32768 pv 
+bestmove 0000
+info depth 1 perft 26 score -32767 pv 
+info depth 2 perft 568 nodes 26 score 500 pv 0000 
+info depth 3 perft 13744 nodes 620 hhits 0 hreads 26 hhitratio 0 hwrites 26 score 470 pv e1d2 0000 
+info depth 4 perft 314346 nodes 14958 time 1 hhits 0 hreads 620 hhitratio 0 hwrites 620 score 970 pv e1d2 a1h1 0000 
+info depth 5 perft 7594526 nodes 192903 time 16 hhits 6189 hreads 14958 hhitratio 413 hwrites 8769 score 970 pv e1d2 a1h1 d2c2 0000 
+info depth 6 perft 179862938 nodes 2624668 time 216 nps 12151240 hhits 78531 hreads 192903 hhitratio 407 hwrites 114372 score 1000 pv e1d2 a1h1 d2c2 e8d7 0000 
 stop
 position fen rnbqkb1r/pp1p1ppp/2p5/4P3/2B5/8/PPP1NnPP/RNBQK2R w KQkq - 0 6
-go
-info nodes 30000 time 3 hhits 2608 hreads 5197 hhitratio 501 hwrites 2585
+go perft
+info nodes 2630000 time 216 nps 12175925 hhits 78549 hreads 193119 hhitratio 406 hwrites 114565 score -32768 pv 
 bestmove 0000
-info depth 1 score 42
-info depth 2 nodes 42 score 1352
-info depth 3 nodes 1436 hhits 0 hreads 42 hhitratio 0 hwrites 42 score 53392
+info depth 1 perft 42 score -32767 pv 
+info depth 2 perft 1352 nodes 42 score 300 pv 0000 
+info depth 3 perft 53392 nodes 1436 hhits 0 hreads 42 hhitratio 0 hwrites 42 score 260 pv d2d4 0000 
 stop
 position fen 8/5bk1/8/2Pp4/8/1K6/8/8 w - d6 0 1
-go
-info nodes 5000 time 1 hhits 0 hreads 140 hhitratio 0 hwrites 138
-bestmove 0000
+go perft
+info nodes 5000 hhits 0 hreads 140 hhitratio 0 hwrites 138 score 300 pv f1c4 c8e6 0000 
+bestmove e1f2
 parsing error: d6 0 1
-info depth 1 score 8
-info depth 2 nodes 8 score 104
-info depth 3 nodes 120 hhits 0 hreads 8 hhitratio 0 hwrites 8 score 736
-info depth 4 nodes 968 hhits 0 hreads 120 hhitratio 0 hwrites 120 score 9287
-info depth 5 nodes 5744 hhits 424 hreads 968 hhitratio 438 hwrites 544 score 62297
-info depth 6 nodes 24271 time 3 hhits 2665 hreads 5744 hhitratio 463 hwrites 3079 score 824064
+info depth 1 perft 8 score -32767 pv 
+info depth 2 perft 104 nodes 8 score -310 pv 0000 
+info depth 3 perft 736 nodes 120 hhits 0 hreads 8 hhitratio 0 hwrites 8 score -320 pv g2f3 0000 
+info depth 4 perft 9287 nodes 968 hhits 0 hreads 120 hhitratio 0 hwrites 120 score -305 pv d4d5 b6c7 0000 
+info depth 5 perft 62297 nodes 5744 hhits 424 hreads 968 hhitratio 438 hwrites 544 score -350 pv f2e3 c4c3 g2f2 0000 
+info depth 6 perft 824064 nodes 24271 time 2 hhits 2665 hreads 5744 hhitratio 463 hwrites 3079 score -330 pv f2e3 a5b4 g2f2 b4c3 0000 
 stop
 position fen 8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1
-go
-info nodes 25000 time 3 hhits 2670 hreads 5812 hhitratio 459 hwrites 3138
+go perft
+info nodes 30000 time 2 hhits 3122 hreads 6699 hhitratio 466 hwrites 3572 score -32768 pv 
 bestmove 0000
-info depth 1 score 14
-info depth 2 nodes 14 score 191
-info depth 3 nodes 219 hhits 0 hreads 14 hhitratio 0 hwrites 14 score 2812
-info depth 4 nodes 3236 hhits 0 hreads 219 hhitratio 0 hwrites 219 score 43238
-info depth 5 nodes 34304 time 5 hhits 948 hreads 3236 hhitratio 292 hwrites 2288 score 674624
-info depth 6 nodes 329891 time 47 nps 7018957 hhits 13076 hreads 34304 hhitratio 381 hwrites 21228 score 11030083
-info depth 7 nodes 2614004 time 354 nps 7384192 hhits 164168 hreads 329891 hhitratio 497 hwrites 165723 score 178633661
+info depth 1 perft 14 score -32767 pv 
+info depth 2 perft 191 nodes 14 score 90 pv 0000 
+info depth 3 perft 2812 nodes 219 hhits 0 hreads 14 hhitratio 0 hwrites 14 score 70 pv h5g6 0000 
+info depth 4 perft 43238 nodes 3236 hhits 0 hreads 219 hhitratio 0 hwrites 219 score 110 pv h5g6 e7e5 0000 
+info depth 5 perft 674624 nodes 34304 time 3 hhits 948 hreads 3236 hhitratio 292 hwrites 2288 score -20 pv h5g6 e7e6 h4b4 0000 
+info depth 6 perft 11030083 nodes 329891 time 30 nps 10996366 hhits 13076 hreads 34304 hhitratio 381 hwrites 21228 score 440 pv h4b4 a4b4 h5g6 b4c3 0000 
+info depth 7 perft 178633661 nodes 2613955 time 240 nps 10891479 hhits 164170 hreads 329891 hhitratio 497 hwrites 165721 score 390 pv h4b4 b5b4 h5g6 b4g4 g6f7 0000 
 stop
 position fen 8/8/8/2rk/2p1p/5R/QP1P2B/2KR w - -
-go
-info nodes 2615000 time 354 nps 7387005 hhits 164170 hreads 329957 hhitratio 497 hwrites 165781
+go perft
+info nodes 2620000 time 241 nps 10871369 hhits 164174 hreads 330240 hhitratio 497 hwrites 166060 score -32768 pv 
 bestmove 0000
-info depth 1 score 37
-info depth 2 nodes 37 score 391
-info depth 3 nodes 465 hhits 0 hreads 37 hhitratio 0 hwrites 37 score 14016
-info depth 4 nodes 14871 time 2 hhits 2 hreads 465 hhitratio 4 hwrites 463 score 190656
-info depth 5 nodes 137884 time 19 hhits 5635 hreads 14871 hhitratio 378 hwrites 9236 score 6921209
-info depth 6 nodes 2609026 time 398 nps 6555341 hhits 54584 hreads 137884 hhitratio 395 hwrites 83300 score 102040304
+info depth 1 perft 37 score -32767 pv 
+info depth 2 perft 391 nodes 37 score 1820 pv 0000 
+info depth 3 perft 14016 nodes 465 hhits 0 hreads 37 hhitratio 0 hwrites 37 score 1695 pv d4e4 0000 
+info depth 4 perft 190656 nodes 14871 time 1 hhits 2 hreads 465 hhitratio 4 hwrites 463 score 2175 pv d4c3 f4c4 0000 
+info depth 5 perft 6921209 nodes 137884 time 13 hhits 5635 hreads 14871 hhitratio 378 hwrites 9236 score 1785 pv d4c3 g7e5 c3c2 0000 
+info depth 6 perft 102040304 nodes 2609208 time 254 nps 10272472 hhits 54579 hreads 137884 hhitratio 395 hwrites 83305 score 32767 pv d4d5 b7b5 c5b6 a7c7 0000 
 stop
-position fen rnbqkbnr/pppppppp///4P//PPPP1PPP/RNBQKBNR b qkQK e3 0 1 moves g8h6 e4e5 f7f5
-go
-info nodes 2610000 time 398 nps 6557788 hhits 54586 hreads 137959 hhitratio 395 hwrites 83368
+position fen 8/5bk1/8/2Pp4/8/1K6/8/8 w - d6 0 1
+go perft
+info nodes 2615000 time 255 nps 10254901 hhits 54581 hreads 138254 hhitratio 394 hwrites 83668 score -32768 pv 
 bestmove 0000
-info depth 1 score 31
-info depth 2 nodes 31 score 570
-info depth 3 nodes 632 hhits 0 hreads 31 hhitratio 0 hwrites 31 score 17546
-info depth 4 nodes 18779 time 3 hhits 0 hreads 632 hhitratio 0 hwrites 632 score 351806
-info depth 5 nodes 246258 time 44 nps 5596772 hhits 6966 hreads 18779 hhitratio 370 hwrites 11813 score 11139762
+parsing error: d6 0 1
+info depth 1 perft 8 score -32767 pv 
+info depth 2 perft 104 nodes 8 score -310 pv 0000 
+info depth 3 perft 736 nodes 16 hhits 8 hreads 8 hhitratio 1000 hwrites 0 score -32768 pv 
+info depth 4 perft 9287 nodes 24 hhits 16 hreads 16 hhitratio 1000 hwrites 0 score -32768 pv 
+info depth 5 perft 62297 nodes 45 hhits 36 hreads 37 hhitratio 972 hwrites 1 score -32768 pv 
+info depth 6 perft 824064 nodes 66 hhits 56 hreads 58 hhitratio 965 hwrites 2 score -32768 pv 
+stop
+position fen 3k4/8/8/K1Pp3r/8/8/8/8 w - d6 0 1
+go perft
+info nodes 5000 hhits 549 hreads 1028 hhitratio 534 hwrites 474 score -32768 pv 
+bestmove 0000
+info depth 1 perft 6 score -32767 pv 
+info depth 2 perft 94 nodes 6 score -485 pv 0000 
+info depth 3 perft 578 nodes 106 hhits 0 hreads 6 hhitratio 0 hwrites 6 score -515 pv d1d2 0000 
+info depth 4 perft 9833 nodes 784 hhits 0 hreads 106 hhitratio 0 hwrites 106 score -505 pv d1d2 c4c3 0000 
+info depth 5 perft 58564 nodes 5902 hhits 310 hreads 784 hhitratio 395 hwrites 474 score -530 pv d4d5 c4c3 d1c2 0000 
+info depth 6 perft 1020480 nodes 23647 time 3 hhits 2913 hreads 5902 hhitratio 493 hwrites 2989 score -505 pv d1e2 b3c2 h4h3 c4c3 0000 
+stop
+position fen 8/8/1k6/2b5/2pP4/8/5K2/8 b - d3 0 1
+go perft
+info nodes 30000 time 3 hhits 3286 hreads 6768 hhitratio 485 hwrites 3477 score -32768 pv 
+bestmove 0000
+info depth 1 perft 15 score -32767 pv 
+info depth 2 perft 126 nodes 15 score 460 pv 0000 
+info depth 3 perft 1928 nodes 156 hhits 0 hreads 15 hhitratio 0 hwrites 15 score 480 pv f7f6 0000 
+info depth 4 perft 13931 nodes 2225 hhits 0 hreads 156 hhitratio 0 hwrites 156 score 500 pv f7f6 d6d7 0000 
+info depth 5 perft 206379 nodes 12045 time 1 hhits 821 hreads 2225 hhitratio 368 hwrites 1404 score 490 pv f7f6 b3c2 f6g6 0000 
+info depth 6 perft 1440467 nodes 68870 time 6 hhits 6187 hreads 12045 hhitratio 513 hwrites 5858 score 510 pv f7e8 c4e6 e8d8 d6d7 0000 
+stop
+position fen 5k2/8/8/8/8/8/8/4K2R w K - 0 1
+go perft
+info nodes 75000 time 6 hhits 6787 hreads 13393 hhitratio 506 hwrites 6602 score -32768 pv 
+bestmove 0000
+info depth 1 perft 15 score -32767 pv 
+info depth 2 perft 66 nodes 15 score 530 pv 0000 
+info depth 3 perft 1198 nodes 44 hhits 12 hreads 15 hhitratio 800 hwrites 3 score 500 pv f1e2 0000 
+info depth 4 perft 6399 nodes 59 hhits 27 hreads 30 hhitratio 900 hwrites 3 score -32768 pv 
+info depth 5 perft 120330 nodes 2977 hhits 599 hreads 1035 hhitratio 578 hwrites 436 score 32767 pv f1g2 h8f8 g2g3 0000 
+info depth 6 perft 661072 nodes 17543 time 1 hhits 2567 hreads 4035 hhitratio 636 hwrites 1468 score 32767 pv f1e2 h8h1 g2h3 d8c7 0000 
+stop
+position fen r3k3/8/8/8/8/8/8/3K4 b q - 0 1
+go perft
+info nodes 25000 time 2 hhits 4133 hreads 6574 hhitratio 628 hwrites 2436 score -32768 pv 
+bestmove 0000
+info depth 1 perft 16 score -32767 pv 
+info depth 2 perft 71 nodes 16 score 530 pv 0000 
+info depth 3 perft 1286 nodes 52 hhits 11 hreads 16 hhitratio 687 hwrites 5 score 475 pv d8c7 0000 
+info depth 4 perft 7418 nodes 428 hhits 31 hreads 66 hhitratio 469 hwrites 35 score 32767 pv d8c7 f1e2 0000 
+info depth 5 perft 141077 nodes 3596 hhits 932 hreads 1395 hhitratio 668 hwrites 463 score 515 pv d8c7 a1a7 c7b6 0000 
+info depth 6 perft 803711 nodes 22975 time 2 hhits 3137 hreads 4897 hhitratio 640 hwrites 1760 score 32767 pv d8c7 a8a6 c7b7 e1d2 0000 
+stop
+position fen r3k2r/7b/8/8/8/8/1B4BQ/R3K2R b KQkq - 0 1
+go perft
+info nodes 30000 time 2 hhits 4964 hreads 7681 hhitratio 646 hwrites 2713 score -32768 pv 
+bestmove 0000
+info depth 1 perft 26 score -32767 pv 
+info depth 2 perft 1141 nodes 26 score -710 pv 0000 
+info depth 3 perft 27826 nodes 1193 hhits 0 hreads 26 hhitratio 0 hwrites 26 score -1185 pv b7a8 0000 
+info depth 4 perft 1274206 nodes 30186 time 3 hhits 0 hreads 1193 hhitratio 0 hwrites 1193 score -1165 pv b7a8 e1g1 0000 
+stop
+position fen r3k2r/8/3Q4/8/8/5q2/8/R3K2R b KQkq - 0 1
+go perft
+info nodes 35000 time 3 hhits 0 hreads 1294 hhitratio 0 hwrites 1291 score -32768 pv 
+bestmove 0000
+info depth 1 perft 44 score -32767 pv 
+info depth 2 perft 1494 nodes 44 score 500 pv 0000 
+info depth 3 perft 50509 nodes 1582 hhits 0 hreads 44 hhitratio 0 hwrites 44 score 470 pv e8d7 0000 
+info depth 4 perft 1720476 nodes 53375 time 4 hhits 12 hreads 1582 hhitratio 7 hwrites 1570 score 970 pv e8d7 a8h8 0000 
+stop
+position fen 3K4/8/8/8/8/8/4p3/2k2R2 b - - 0 1
+go perft
+info nodes 60000 time 5 hhits 14 hreads 1792 hhitratio 7 hwrites 1775 score -32768 pv 
+bestmove 0000
+info depth 1 perft 11 score -32767 pv 
+info depth 2 perft 133 nodes 11 score 880 pv 0000 
+info depth 3 perft 1442 nodes 155 hhits 0 hreads 11 hhitratio 0 hwrites 11 score 860 pv d1d2 0000 
+info depth 4 perft 19174 nodes 1732 hhits 3 hreads 155 hhitratio 19 hwrites 152 score 890 pv d1d2 c8d7 0000 
+info depth 5 perft 266199 nodes 17433 time 1 hhits 328 hreads 1732 hhitratio 189 hwrites 1404 score 860 pv d1e2 f8a3 e2d2 0000 
+info depth 6 perft 3821001 nodes 138944 time 11 hhits 7333 hreads 17433 hhitratio 420 hwrites 10100 score 920 pv d1c1 f8f7 c1d1 c8d7 0000 
+stop
+position fen 8/8/1P2K3/8/2n5/1q6/8/5k2 b - - 0 1
+go perft
+info nodes 145000 time 11 hhits 7402 hreads 17911 hhitratio 413 hwrites 10504 score -32768 pv 
+bestmove 0000
+info depth 1 perft 29 score -32767 pv 
+info depth 2 perft 165 nodes 29 score 1180 pv 0000 
+info depth 3 perft 5160 nodes 223 hhits 0 hreads 29 hhitratio 0 hwrites 29 score 1210 pv e3d2 0000 
+info depth 4 perft 31961 nodes 5577 hhits 0 hreads 223 hhitratio 0 hwrites 223 score 1240 pv e3d2 f8e7 0000 
+info depth 5 perft 1004658 nodes 28393 time 2 hhits 2236 hreads 5577 hhitratio 400 hwrites 3341 score 1230 pv e3d2 b3d3 d2e1 0000 
+stop
+position fen 4k3/1P6/8/8/8/8/K7/8 w - - 0 1
+go perft
+info nodes 35000 time 2 hhits 2243 hreads 5823 hhitratio 385 hwrites 3576 score -32768 pv 
+bestmove 0000
+info depth 1 perft 9 score -32767 pv 
+info depth 2 perft 40 nodes 9 score 890 pv 0000 
+info depth 3 perft 472 nodes 58 hhits 0 hreads 9 hhitratio 0 hwrites 9 score 860 pv e1d2 0000 
+info depth 4 perft 2661 nodes 579 hhits 0 hreads 58 hhitratio 0 hwrites 58 score 880 pv e1d2 b2b1q 0000 
+info depth 5 perft 38983 nodes 2812 hhits 160 hreads 579 hhitratio 276 hwrites 419 score 890 pv e1e2 b1b2 e2d3 0000 
+info depth 6 perft 217342 nodes 19370 time 1 hhits 1198 hreads 2812 hhitratio 426 hwrites 1614 score 910 pv e1e2 b1b2 e2f3 a7b6 0000 
+stop
+position fen 8/P1k5/K7/8/8/8/8/8 w - - 0 1
+go perft
+info nodes 25000 time 2 hhits 1684 hreads 4156 hhitratio 405 hwrites 2468 score -32768 pv 
+bestmove 0000
+info depth 1 perft 6 score -32767 pv 
+info depth 2 perft 27 nodes 6 score 850 pv 0000 
+info depth 3 perft 273 nodes 39 hhits 0 hreads 6 hhitratio 0 hwrites 6 score 850 pv c2d2 0000 
+info depth 4 perft 1329 nodes 345 hhits 0 hreads 39 hhitratio 0 hwrites 39 score 875 pv c2d2 a1c3 0000 
+info depth 5 perft 18135 nodes 1739 hhits 44 hreads 345 hhitratio 127 hwrites 301 score 890 pv c2d3 a1b2 d3e3 0000 
+info depth 6 perft 92683 nodes 11312 hhits 634 hreads 1739 hhitratio 364 hwrites 1105 score 905 pv c2d3 a1b2 d3c4 b2c3 0000 
+stop
+position fen 8/8/8/8/8/p7/8/k1K5 b - - 0 1
+go perft
+info nodes 15000 time 1 hhits 918 hreads 2611 hhitratio 351 hwrites 1690 score -32768 pv 
+bestmove 0000
+info depth 1 perft 2 score -32767 pv 
+info depth 2 perft 6 nodes 2 score 130 pv 0000 
+info depth 3 perft 13 nodes 10 hhits 0 hreads 2 hhitratio 0 hwrites 2 score 80 pv c8c7 0000 
+info depth 4 perft 63 nodes 31 hhits 0 hreads 10 hhitratio 0 hwrites 10 score 60 pv c8c7 a7a8 0000 
+info depth 5 perft 382 nodes 110 hhits 1 hreads 31 hhitratio 32 hwrites 30 score 60 pv c8c7 a7a8 c7d7 0000 
+info depth 6 perft 2217 nodes 459 hhits 21 hreads 115 hhitratio 182 hwrites 94 score 100 pv c8c7 a7a8 c7d7 a6a7 0000 
+info depth 7 perft 15453 nodes 1555 hhits 180 hreads 464 hhitratio 387 hwrites 284 score -32767 pv c8c7 a7a8 c7c8 a8a7 d7c7 0000 
+stop
+position fen 8/k1P5/8/1K6/8/8/8/8 w - - 0 1
+go perft
+info depth 8 perft 93446 nodes 4849 hhits 883 hreads 1636 hhitratio 539 hwrites 753 score -32767 pv c8c7 a7a8 c7c8 a8a7 d7c8 a7b6 0000 
+info nodes 5000 hhits 884 hreads 1669 hhitratio 529 hwrites 779 score -32768 pv 
+bestmove 0000
+info depth 1 perft 10 score -32767 pv 
+info depth 2 perft 25 nodes 10 score 520 pv 0000 
+info depth 3 perft 268 nodes 45 hhits 0 hreads 10 hhitratio 0 hwrites 10 score 32767 pv a2b3 0000 
+info depth 4 perft 926 nodes 348 hhits 0 hreads 45 hhitratio 0 hwrites 45 score 32767 pv a2b3 c2c1q 0000 
+info depth 5 perft 10857 nodes 1268 hhits 82 hreads 348 hhitratio 235 hwrites 266 score 32767 pv a2b2 c2c1q b2c1 0000 
+info depth 6 perft 43261 nodes 6093 hhits 475 hreads 1270 hhitratio 374 hwrites 795 score 32767 pv a2a3 a5b6 a3b4 c2c1q 0000 
+info depth 7 perft 567584 nodes 18575 time 1 hhits 2729 hreads 6126 hhitratio 445 hwrites 3397 score 32767 pv a2a3 c2c1q a3b3 c1c5 b3a2 0000 
+stop
+position fen 8/5k2/8/5N2/5Q2/2K5/8/8 w - - 0 1
+go perft
+info nodes 25000 time 2 hhits 3196 hreads 7189 hhitratio 444 hwrites 3987 score -32768 pv 
+bestmove 0000
+info depth 1 perft 37 score -32767 pv 
+info depth 2 perft 183 nodes 37 score 1240 pv 0000 
+info depth 3 perft 6559 nodes 257 hhits 0 hreads 37 hhitratio 0 hwrites 37 score 1260 pv f2e3 0000 
+info depth 4 perft 23527 nodes 7036 hhits 0 hreads 257 hhitratio 0 hwrites 257 score 1270 pv f2g1 c6c7 0000 
+stop
+position fen 4k2r/8/8/7r/8/8/1B6/1K6 w k - 0 1
+go perft
+info nodes 10000 hhits 68 hreads 994 hhitratio 68 hwrites 923 score 1235 pv f2e3 f4d5 e3d2 0000 
+bestmove c3b4
+info depth 1 perft 13 score -32767 pv 
+info depth 2 perft 284 nodes 13 score -185 pv 0000 
+info depth 3 perft 3529 nodes 310 hhits 0 hreads 13 hhitratio 0 hwrites 13 score -500 pv h4h1 0000 
+info depth 4 perft 85765 nodes 4136 hhits 0 hreads 310 hhitratio 0 hwrites 310 score -470 pv h4h1 b8c7 0000 
+info depth 5 perft 1063513 nodes 52917 time 4 hhits 1663 hreads 4136 hhitratio 402 hwrites 2473 score -530 pv h4h1 b8a7 e1d2 0000 
+stop
+position fen 1k6/8/8/8/R7/1n6/8/R3K3 b Q - 0 1
+go perft
+info nodes 60000 time 5 hhits 1698 hreads 4728 hhitratio 359 hwrites 3026 score -32768 pv 
+bestmove 0000
+info depth 1 perft 9 score -32767 pv 
+info depth 2 perft 193 nodes 9 score -225 pv 0000 
+info depth 3 perft 1676 nodes 211 hhits 0 hreads 9 hhitratio 0 hwrites 9 score -500 pv a5a8 0000 
+info depth 4 perft 38751 nodes 2086 hhits 1 hreads 211 hhitratio 4 hwrites 210 score -205 pv e8d7 a8c7 0000 
+info depth 5 perft 346695 nodes 26472 time 2 hhits 693 hreads 2089 hhitratio 331 hwrites 1396 score -705 pv a5a2 c2d3 e8e7 0000 
+stop
+position fen r3k2r/8/8/8/3pPp2/8/8/R3K1RR b KQkq e3 0 1
+go perft depth 6
+info nodes 30000 time 2 hhits 708 hreads 2428 hhitratio 291 hwrites 1716 score -32768 pv 
+bestmove 0000
+info depth 6 perft 485647607 nodes 5281202 time 479 nps 11025473 hhits 159582 hreads 379063 hhitratio 420 hwrites 219481 score 610 pv e8d7 a8a7 d7d6 h1h8 0000 
+bestmove a8a1
+position fen r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1
+go perft depth 6
+info depth 6 perft 706045033 nodes 9466787 time 1181 nps 8015907 hhits 149709 hreads 407089 hhitratio 367 hwrites 257380 score -275 pv b7a8r b5a6 a8d8 f8d8 0000 
+bestmove f3d4
+position fen 8/7p/p5pb/4k3/P1pPn3/8/P5PP/1rB2RK1 b - d3 0 28
+go perft depth 6
+info depth 6 perft 38633283 nodes 1133474 time 115 nps 9856295 hhits 24870 hreads 67777 hhitratio 366 hwrites 42907 score 75 pv c8h3 b8f8 g8f8 d5d6 0000 
+bestmove e5d4
+position fen 8/3K4/2p5/p2b2r1/5k2/8/8/1q6 b - - 1 67
+go perft depth 7
+info depth 7 perft 493407574 nodes 1282224 time 109 nps 11763522 hhits 363562 hreads 568691 hhitratio 639 hwrites 205129 score 32767 pv 0000 
+bestmove f4e3
+position fen rnbqkb1r/ppppp1pp/7n/4Pp2/8/8/PPPP1PPP/RNBQKBNR w KQkq f6 0 3
+go perft depth 6
+info depth 6 perft 244063299 nodes 4466714 time 509 nps 8775469 hhits 83126 hreads 227479 hhitratio 365 hwrites 144353 score 235 pv h3f2 d8h4 g2g3 f3e2 0000 
+bestmove e5f6
+position fen 8/p7/8/1P6/K1k3p1/6P1/7P/8 w - -
+go perft depth 8
+info depth 8 perft 8103790 nodes 110265 time 8 hhits 21294 hreads 34852 hhitratio 610 hwrites 13558 score 175 pv c5c4 a4a3 c4d3 a3a2 d3c2 b4b3 0000 
+bestmove a4a5
+position fen n1n5/PPPk4/8/8/8/8/4Kppp/5N1N b - -
+go perft depth 6
+info depth 6 perft 71179139 nodes 1552232 time 129 nps 12032806 hhits 41925 hreads 122308 hhitratio 342 hwrites 80383 score 480 pv e7e6 g7f8n e6f7 a1c2 0000 
+bestmove d7e7
+position fen r3k2r/p6p/8/B7/1pp1p3/3b4/P6P/R3K2R w KQkq -
+go perft depth 6
+info depth 6 perft 77054993 nodes 1392073 time 139 nps 10014913 hhits 43399 hreads 109313 hhitratio 397 hwrites 65914 score -175 pv b5b6 h8h6 b6a7 h6d6 0000 
+bestmove h2h4
+position fen 8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - -
+go perft depth 7
+info depth 7 perft 178633661 nodes 195241 time 18 hhits 19279 hreads 31392 hhitratio 614 hwrites 12113 score 32767 pv 0000 
+bestmove a5a6
+position fen 8/5p2/8/2k3P1/p3K3/8/1P6/8 b - -
+go perft depth 8
+info depth 8 perft 64451405 nodes 356258 time 28 nps 12723500 hhits 66557 hreads 105440 hhitratio 631 hwrites 38883 score 70 pv b7b5 c4b5 g4g3 f2f4 e5f4 a6a7 0000 
+bestmove a4a3
+position fen r3k2r/pb3p2/5npp/n2p4/1p1PPB2/6P1/P2N1PBP/R3K2R w KQkq -
+go perft depth 5
+info depth 5 perft 29179893 nodes 566133 time 58 nps 9760913 hhits 12481 hreads 31908 hhitratio 391 hwrites 19427 score 35 pv a4c5 d7c5 d4c5 0000 
+bestmove f4e5
+position fen 8/7p/p5pb/4k3/P1pPn3/8/P5PP/1rB2RK1 b - d3 0 28
+go perft depth 6
+info depth 6 perft 38633283 nodes 1858 hhits 591 hreads 663 hhitratio 891 hwrites 72 score -32767 pv 
+bestmove 0000
+position fen rnbqkbnr/pppppppp///4P//PPPP1PPP/RNBQKBNR b qkQK e3 0 1 moves g8h6 e4e5 f7f5
+go perft
+info depth 1 perft 31 score -32767 pv 
+info depth 2 perft 570 nodes 31 score 140 pv 0000 
+info depth 3 perft 17546 nodes 632 hhits 0 hreads 31 hhitratio 0 hwrites 31 score 45 pv b1c3 0000 
+info depth 4 perft 351806 nodes 17088 time 5 hhits 52 hreads 632 hhitratio 82 hwrites 580 score 340 pv h3f2 h4f2 0000 
+info depth 5 perft 11139762 nodes 244609 time 35 nps 6988828 hhits 7016 hreads 18779 hhitratio 373 hwrites 11763 score 15 pv h3f2 b8c6 b1c3 0000 
 position
 info fen rnbqkb1r/ppppp1pp/7n/4Pp2/8/8/PPPP1PPP/RNBQKBNR w KQkq f6
 stop
 position fen 8/7p/p5pb/4k3/P1pPn3/8/P5PP/1rB2RK1 b - d3 0 28
-go
-info nodes 250000 time 45 nps 5555555 hhits 6966 hreads 18917 hhitratio 368 hwrites 11947
-bestmove 0000
-info depth 1 score 5
-info depth 2 nodes 5 score 117
-info depth 3 nodes 127 hhits 0 hreads 5 hhitratio 0 hwrites 5 score 3293
-info depth 4 nodes 3542 hhits 0 hreads 127 hhitratio 0 hwrites 127 score 67197
-info depth 5 nodes 71319 time 10 hhits 132 hreads 3542 hhitratio 37 hwrites 3410 score 1881089
-info depth 6 nodes 1202912 time 184 nps 6537565 hhits 25070 hreads 71319 hhitratio 351 hwrites 46249 score 38633283
+go perft
+info nodes 255000 time 36 nps 7083333 hhits 13638 hreads 25765 hhitratio 529 hwrites 12125 score 32767 pv h3f2 0000 
+bestmove d1h5
+info depth 1 perft 5 score -32767 pv 
+info depth 2 perft 117 nodes 5 score 345 pv 0000 
+info depth 3 perft 3293 nodes 127 hhits 0 hreads 5 hhitratio 0 hwrites 5 score 25 pv c8h3 0000 
+info depth 4 perft 67197 nodes 2081 hhits 51 hreads 127 hhitratio 401 hwrites 76 score 625 pv f8f2 b8c8 0000 
+info depth 5 perft 1881089 nodes 69858 time 6 hhits 183 hreads 3542 hhitratio 51 hwrites 3359 score 25 pv c8h3 b8f8 g8f8 0000 
+info depth 6 perft 38633283 nodes 79909 time 7 hhits 2639 hreads 6375 hhitratio 413 hwrites 3736 score -32767 pv c8e6 e5g6 g8f7 b8f8 0000 
 stop
 position fen 8/PPP4k/8/8/8/8/4Kppp/8 w - - 0 1
-go depth 6
-info nodes 1205000 time 184 nps 6548913 hhits 25071 hreads 71424 hhitratio 351 hwrites 46348
+go perft depth 6
+info nodes 85000 time 8 hhits 2640 hreads 6640 hhitratio 397 hwrites 3995 score -32768 pv 
 bestmove 0000
-info depth 6 nodes 797106 time 102 nps 7814764 hhits 18303 hreads 61015 hhitratio 299 hwrites 42712 score 34336777
-bestmove 0000
+info depth 6 perft 34336777 nodes 797148 time 68 nps 11722764 hhits 18301 hreads 61015 hhitratio 299 hwrites 42714 score -140 pv f7f8n d7c8 g7g8q c2c1q 0000 
+bestmove e2d2
 position fen 2rkr3/5PP1/8/5Q2/5q2/8/5pp1/2RKR3 w KQkq - 0 1
-go
-info depth 1 score 51
-info depth 2 nodes 51 score 1904
-info depth 3 nodes 2006 hhits 0 hreads 51 hhitratio 0 hwrites 51 score 71005
-info depth 4 nodes 74672 time 12 hhits 6 hreads 2006 hhitratio 2 hwrites 2000 score 2583102
-info depth 5 nodes 1520193 time 241 nps 6307854 hhits 28601 hreads 74672 hhitratio 383 hwrites 46071 score 94370149
+go perft
+info depth 1 perft 51 score -32767 pv 
+info depth 2 perft 1904 nodes 51 score 32767 pv 0000 
+info depth 3 perft 71005 nodes 2006 hhits 0 hreads 51 hhitratio 0 hwrites 51 score 32767 pv e1e8 0000 
+info depth 4 perft 2583102 nodes 74672 time 7 hhits 6 hreads 2006 hhitratio 2 hwrites 2000 score 32767 pv f7e8q d8c7 0000 
+info depth 5 perft 94370149 nodes 1520378 time 151 nps 10068728 hhits 28597 hreads 74672 hhitratio 382 hwrites 46075 score 32767 pv f7e8q d8c7 c1c4 0000 
 stop
 position fen bnrbnkrq/pppppppp/8/8/8/8/PPPPPPPP/BNRBNKRQ w CGkq - 0 1
-go
-info nodes 1525000 time 242 nps 6301652 hhits 28605 hreads 74873 hhitratio 382 hwrites 46264
+go perft
+info nodes 1525000 time 151 nps 10099337 hhits 28601 hreads 74866 hhitratio 382 hwrites 46261 score -32768 pv 
 bestmove 0000
-info depth 1 score 21
-info depth 2 nodes 21 score 441
-info depth 3 nodes 483 hhits 0 hreads 21 hhitratio 0 hwrites 21 score 10179
-info depth 4 nodes 11124 time 2 hhits 0 hreads 483 hhitratio 0 hwrites 483 score 233585
-info depth 5 nodes 156076 time 27 nps 5780592 hhits 4305 hreads 11124 hhitratio 387 hwrites 6819 score 5863166
-info depth 6 nodes 2349345 time 417 nps 5633920 hhits 62256 hreads 156076 hhitratio 398 hwrites 93820 score 145999259
+info depth 1 perft 21 score -32767 pv 
+info depth 2 perft 441 nodes 21 score 50 pv 0000 
+info depth 3 perft 10179 nodes 483 hhits 0 hreads 21 hhitratio 0 hwrites 21 score 0 pv b1c3 0000 
+info depth 4 perft 233585 nodes 11124 time 1 hhits 0 hreads 483 hhitratio 0 hwrites 483 score 75 pv e1d3 h8b2 0000 
+info depth 5 perft 5863166 nodes 156105 time 17 hhits 4304 hreads 11124 hhitratio 386 hwrites 6820 score -35 pv g2g4 e7e5 h1b7 0000 
+info depth 6 perft 145999259 nodes 2349393 time 270 nps 8701455 hhits 62295 hreads 156117 hhitratio 399 hwrites 93822 score 85 pv e1d3 g7g5 e2e4 h8b2 0000 
 stop
 position fen rbknqnbr/pppppppp/8/8/8/8/PPPPPPPP/RBKNQNBR w ahKQ - 0 1
-go
-info nodes 2355000 time 418 nps 5633971 hhits 62256 hreads 156339 hhitratio 398 hwrites 94078
+go perft
+info nodes 2355000 time 270 nps 8722222 hhits 62295 hreads 156378 hhitratio 398 hwrites 94078 score -32768 pv 
 bestmove 0000
-info depth 1 score 20
-info depth 2 nodes 20 score 400
-info depth 3 nodes 440 hhits 0 hreads 20 hhitratio 0 hwrites 20 score 9032
-info depth 4 nodes 9892 time 1 hhits 0 hreads 440 hhitratio 0 hwrites 440 score 203232
-info depth 5 nodes 139586 time 24 nps 5816083 hhits 3680 hreads 9892 hhitratio 372 hwrites 6212 score 5089230
-info depth 6 nodes 2147830 time 382 nps 5622591 hhits 53366 hreads 139586 hhitratio 382 hwrites 86220 score 126480040
+info depth 1 perft 20 score -32767 pv 
+info depth 2 perft 400 nodes 20 score 45 pv 0000 
+info depth 3 perft 9032 nodes 440 hhits 0 hreads 20 hhitratio 0 hwrites 20 score 0 pv d1e3 0000 
+info depth 4 perft 203232 nodes 9892 time 1 hhits 0 hreads 440 hhitratio 0 hwrites 440 score 40 pv d1e3 f8e6 0000 
+info depth 5 perft 5089230 nodes 139586 time 16 hhits 3680 hreads 9892 hhitratio 372 hwrites 6212 score 0 pv d1c3 f8e6 f1e3 0000 
+info depth 6 perft 126480040 nodes 2147782 time 246 nps 8730821 hhits 53388 hreads 139607 hhitratio 382 hwrites 86219 score 70 pv f1e3 e8b5 d2d4 b5b2 0000 
 stop
 position fen qbrnnkbr/pppppppp/8/8/8/8/PPPPPPPP/QBRNNKBR w KQkq - 0 1
-go
-info nodes 2150000 time 382 nps 5628272 hhits 53366 hreads 139682 hhitratio 382 hwrites 86311
+go perft
+info nodes 2155000 time 247 nps 8724696 hhits 53388 hreads 139911 hhitratio 381 hwrites 86518 score -32768 pv 
 bestmove 0000
-info depth 1 score 20
-info depth 2 nodes 20 score 400
-info depth 3 nodes 440 hhits 0 hreads 20 hhitratio 0 hwrites 20 score 9006
-info depth 4 nodes 9866 time 1 hhits 0 hreads 440 hhitratio 0 hwrites 440 score 200996
-info depth 5 nodes 137145 time 23 nps 5962826 hhits 3700 hreads 9866 hhitratio 375 hwrites 6166 score 4968926
-info depth 6 nodes 2072048 time 365 nps 5676843 hhits 52809 hreads 137145 hhitratio 385 hwrites 84336 score 121613156
+info depth 1 perft 20 score -32767 pv 
+info depth 2 perft 400 nodes 20 score 45 pv 0000 
+info depth 3 perft 9006 nodes 440 hhits 0 hreads 20 hhitratio 0 hwrites 20 score 0 pv d1e3 0000 
+info depth 4 perft 200996 nodes 9866 time 1 hhits 0 hreads 440 hhitratio 0 hwrites 440 score 75 pv d1e3 a8g2 0000 
+info depth 5 perft 4968926 nodes 137172 time 15 hhits 3699 hreads 9866 hhitratio 374 hwrites 6167 score -30 pv b2b3 e8d6 a1g7 0000 
+info depth 6 perft 121613156 nodes 2072094 time 235 nps 8817421 hhits 52807 hreads 137145 hhitratio 385 hwrites 84338 score 75 pv d1c3 b7b6 e1d3 a8g2 0000 
 stop
 position fen nqbnrbkr/pppppppp/8/8/8/8/PPPPPPPP/NQBNRBKR w KQkq - 0 1
-go
-info nodes 2075000 time 366 nps 5669398 hhits 52809 hreads 137278 hhitratio 384 hwrites 84464
+go perft
+info nodes 2075000 time 235 nps 8829787 hhits 52807 hreads 137276 hhitratio 384 hwrites 84464 score -32768 pv 
 bestmove 0000
-info depth 1 score 19
-info depth 2 nodes 19 score 361
-info depth 3 nodes 399 hhits 0 hreads 19 hhitratio 0 hwrites 19 score 7801
-info depth 4 nodes 8580 time 1 hhits 0 hreads 399 hhitratio 0 hwrites 399 score 166982
-info depth 5 nodes 115250 time 20 nps 5762500 hhits 3173 hreads 8580 hhitratio 369 hwrites 5407 score 3978864
-info depth 6 nodes 1685052 time 298 nps 5654536 hhits 43805 hreads 115250 hhitratio 380 hwrites 71445 score 93888956
+info depth 1 perft 19 score -32767 pv 
+info depth 2 perft 361 nodes 19 score 55 pv 0000 
+info depth 3 perft 7801 nodes 399 hhits 0 hreads 19 hhitratio 0 hwrites 19 score 0 pv a1b3 0000 
+info depth 4 perft 166982 nodes 8580 time 1 hhits 0 hreads 399 hhitratio 0 hwrites 399 score 45 pv a1b3 a8b6 0000 
+info depth 5 perft 3978864 nodes 115291 time 13 hhits 3171 hreads 8580 hhitratio 369 hwrites 5409 score 0 pv d1e3 a8b6 a1b3 0000 
+info depth 6 perft 93888956 nodes 1685071 time 194 nps 8685932 hhits 43804 hreads 115250 hhitratio 380 hwrites 71446 score 55 pv e2e4 c6b4 d1e3 b4c2 0000 
 stop
 position fen nrnkbqrb/pppppppp/8/8/8/8/PPPPPPPP/NRNKBQRB w KQkq - 0 1
-go
-info nodes 1690000 time 299 nps 5652173 hhits 43805 hreads 115468 hhitratio 379 hwrites 71659
+go perft
+info nodes 1690000 time 195 nps 8666666 hhits 43804 hreads 115468 hhitratio 379 hwrites 71659 score -32768 pv 
 bestmove 0000
-info depth 1 score 19
-info depth 2 nodes 19 score 361
-info depth 3 nodes 399 hhits 0 hreads 19 hhitratio 0 hwrites 19 score 7792
-info depth 4 nodes 8571 time 1 hhits 0 hreads 399 hhitratio 0 hwrites 399 score 167475
-info depth 5 nodes 116154 time 20 nps 5807700 hhits 3154 hreads 8571 hhitratio 367 hwrites 5417 score 4048343
-info depth 6 nodes 1737179 time 311 nps 5585784 hhits 43924 hreads 116154 hhitratio 378 hwrites 72230 score 97044730
+info depth 1 perft 19 score -32767 pv 
+info depth 2 perft 361 nodes 19 score 55 pv 0000 
+info depth 3 perft 7792 nodes 399 hhits 0 hreads 19 hhitratio 0 hwrites 19 score 0 pv a1b3 0000 
+info depth 4 perft 167475 nodes 8571 time 1 hhits 0 hreads 399 hhitratio 0 hwrites 399 score 65 pv a1b3 h8b2 0000 
+info depth 5 perft 4048343 nodes 116154 time 13 hhits 3154 hreads 8571 hhitratio 367 hwrites 5417 score -20 pv g2g4 a8b6 h1b7 0000 
+info depth 6 perft 97044730 nodes 1737271 time 200 nps 8686355 hhits 43947 hreads 116181 hhitratio 378 hwrites 72234 score 100 pv d2d3 f8c5 e2e4 c5c2 0000 
 stop
 position fen rbbknnqr/pppppppp/8/8/8/8/PPPPPPPP/RBBKNNQR w KQkq - 0 1
-go
-info nodes 1740000 time 312 nps 5576923 hhits 43924 hreads 116292 hhitratio 377 hwrites 72363
+go perft
+info nodes 1740000 time 201 nps 8656716 hhits 43947 hreads 116314 hhitratio 377 hwrites 72362 score -32768 pv 
 bestmove 0000
-info depth 1 score 20
-info depth 2 nodes 20 score 400
-info depth 3 nodes 440 hhits 0 hreads 20 hhitratio 0 hwrites 20 score 9030
-info depth 4 nodes 9890 time 1 hhits 0 hreads 440 hhitratio 0 hwrites 440 score 202966
-info depth 5 nodes 138904 time 24 nps 5787666 hhits 3700 hreads 9890 hhitratio 374 hwrites 6190 score 5044135
-info depth 6 nodes 2112133 time 371 nps 5693080 hhits 53375 hreads 138904 hhitratio 384 hwrites 85529 score 124381396
+info depth 1 perft 20 score -32767 pv 
+info depth 2 perft 400 nodes 20 score 45 pv 0000 
+info depth 3 perft 9030 nodes 440 hhits 0 hreads 20 hhitratio 0 hwrites 20 score 0 pv e1d3 0000 
+info depth 4 perft 202966 nodes 9890 time 1 hhits 0 hreads 440 hhitratio 0 hwrites 440 score 45 pv e1d3 f8e6 0000 
+info depth 5 perft 5044135 nodes 138904 time 15 hhits 3700 hreads 9890 hhitratio 374 hwrites 6190 score 0 pv e1d3 f8e6 f1e3 0000 
+info depth 6 perft 124381396 nodes 2112335 time 241 nps 8764875 hhits 53416 hreads 138953 hhitratio 384 hwrites 85537 score 55 pv e1d3 f6g4 e2e4 g4f2 0000 
 stop
 position fen r1k1r2q/p1ppp1pp/8/8/8/8/P1PPP1PP/R1K1R2Q w KQkq -
-go
-info nodes 2115000 time 371 nps 5700808 hhits 53375 hreads 139030 hhitratio 383 hwrites 85650
+go perft
+info nodes 2115000 time 241 nps 8775933 hhits 53416 hreads 139069 hhitratio 384 hwrites 85648 score -32768 pv 
 bestmove 0000
-info depth 1 score 23
-info depth 2 nodes 23 score 522
-info depth 3 nodes 568 hhits 0 hreads 23 hhitratio 0 hwrites 23 score 12333
-info depth 4 nodes 13446 time 2 hhits 0 hreads 568 hhitratio 0 hwrites 568 score 285754
-info depth 5 nodes 185654 time 30 nps 6188466 hhits 5373 hreads 13446 hhitratio 399 hwrites 8073 score 7096972
-info depth 6 nodes 2723717 time 451 nps 6039283 hhits 75836 hreads 185589 hhitratio 408 hwrites 109753 score 172843489
+info depth 1 perft 23 score -32767 pv 
+info depth 2 perft 522 nodes 23 score 40 pv 0000 
+info depth 3 perft 12333 nodes 568 hhits 0 hreads 23 hhitratio 0 hwrites 23 score 0 pv d2d4 0000 
+info depth 4 perft 285754 nodes 13446 time 1 hhits 0 hreads 568 hhitratio 0 hwrites 568 score 50 pv a2a3 d7d5 0000 
+info depth 5 perft 7096972 nodes 185589 time 19 hhits 5376 hreads 13446 hhitratio 399 hwrites 8070 score -25 pv a1b1 h8d4 e2e4 0000 
+info depth 6 perft 172843489 nodes 2723960 time 290 nps 9392965 hhits 75868 hreads 185630 hhitratio 408 hwrites 109762 score 90 pv a1b1 h8d4 b1b5 d4d2 0000 
 stop
 position fen r1k2r1q/p1ppp1pp/8/8/8/8/P1PPP1PP/R1K2R1Q w KQkq - 0 1
-go
-info nodes 2725000 time 451 nps 6042128 hhits 75842 hreads 185652 hhitratio 408 hwrites 109805
+go perft
+info nodes 2730000 time 290 nps 9413793 hhits 75889 hreads 185910 hhitratio 408 hwrites 110016 score -32768 pv 
 bestmove 0000
-info depth 1 score 28
-info depth 2 nodes 28 score 738
-info depth 3 nodes 792 hhits 1 hreads 28 hhitratio 35 hwrites 27 score 20218
-info depth 4 nodes 17400 time 2 hhits 179 hreads 792 hhitratio 226 hwrites 613 score 541480
-info depth 5 nodes 316732 time 52 nps 6091000 hhits 9232 hreads 21177 hhitratio 435 hwrites 11945 score 15194841
-info depth 6 nodes 5391382 time 902 nps 5977141 hhits 142250 hreads 335138 hhitratio 424 hwrites 192888 score 418430598
+info depth 1 perft 28 score -32767 pv 
+info depth 2 perft 738 nodes 28 score 500 pv 0000 
+info depth 3 perft 20218 nodes 792 hhits 1 hreads 28 hhitratio 35 hwrites 27 score -35 pv d2d4 0000 
+info depth 4 perft 541480 nodes 17421 time 1 hhits 178 hreads 792 hhitratio 224 hwrites 614 score 460 pv d2d4 f8f1 0000 
+info depth 5 perft 15194841 nodes 316856 time 33 nps 9601696 hhits 9228 hreads 21177 hhitratio 435 hwrites 11949 score -10 pv h1f1 d7d5 d2d4 0000 
+info depth 6 perft 418430598 nodes 5391612 time 576 nps 9360437 hhits 142260 hreads 335160 hhitratio 424 hwrites 192900 score 90 pv h1f1 h8g8 f1f5 g8a2 0000 
 stop
 position fen 8/8/8/4B2b/6nN/8/5P2/2R1K2k w Q - 0 1
-go
-info nodes 5395000 time 903 nps 5974529 hhits 142261 hreads 335286 hhitratio 424 hwrites 193020
+go perft
+info nodes 5395000 time 576 nps 9366319 hhits 142271 hreads 335299 hhitratio 424 hwrites 193023 score -32768 pv 
 bestmove 0000
-info depth 1 score 34
-info depth 2 nodes 34 score 318
-info depth 3 nodes 386 hhits 0 hreads 34 hhitratio 0 hwrites 34 score 9002
-info depth 4 nodes 9740 time 1 hhits 0 hreads 386 hhitratio 0 hwrites 386 score 118388
-info depth 5 nodes 81084 time 10 hhits 4051 hreads 9740 hhitratio 415 hwrites 5689 score 3223406
-info depth 6 nodes 1279690 time 157 nps 8150891 hhits 27398 hreads 81084 hhitratio 337 hwrites 53686 score 44554839
+info depth 1 perft 34 score -32767 pv 
+info depth 2 perft 318 nodes 34 score 32767 pv 0000 
+info depth 3 perft 9002 nodes 386 hhits 0 hreads 34 hhitratio 0 hwrites 34 score 32767 pv 0000 
+info depth 4 perft 118388 nodes 9740 hhits 0 hreads 386 hhitratio 0 hwrites 386 score 32767 pv 0000 
+info depth 5 perft 3223406 nodes 81084 time 6 hhits 4051 hreads 9740 hhitratio 415 hwrites 5689 score 32767 pv 0000 
+info depth 6 perft 44554839 nodes 1279612 time 99 nps 12925373 hhits 27401 hreads 81084 hhitratio 337 hwrites 53683 score 32767 pv 0000 
 stop
 position fen 2r5/8/8/8/8/8/6PP/k2KR3 w K - 0 1
-go
-info nodes 1285000 time 158 nps 8132911 hhits 27416 hreads 81531 hhitratio 336 hwrites 54110
-bestmove 0000
-info depth 1 score 17
-info depth 2 nodes 17 score 242
-info depth 3 nodes 276 hhits 0 hreads 17 hhitratio 0 hwrites 17 score 3931
-info depth 4 nodes 4466 hhits 0 hreads 276 hhitratio 0 hwrites 276 score 57700
-info depth 5 nodes 42413 time 5 hhits 1477 hreads 4466 hhitratio 330 hwrites 2989 score 985298
-info depth 6 nodes 337521 time 40 nps 8438025 hhits 21262 hreads 42413 hhitratio 501 hwrites 21151 score 14751778
-info depth 7 nodes 1822437 time 223 nps 8172363 hhits 212876 hreads 337504 hhitratio 630 hwrites 124628 score 259604208
+go perft
+info nodes 1285000 time 99 nps 12979797 hhits 27420 hreads 81539 hhitratio 336 hwrites 54114 score 32767 pv 0000 
+bestmove e1e2
+info depth 1 perft 17 score -32767 pv 
+info depth 2 perft 242 nodes 17 score 270 pv 0000 
+info depth 3 perft 3931 nodes 276 hhits 0 hreads 17 hhitratio 0 hwrites 17 score 240 pv a8b7 0000 
+info depth 4 perft 57700 nodes 4466 hhits 0 hreads 276 hhitratio 0 hwrites 276 score 255 pv a8b8 d8d7 0000 
+info depth 5 perft 985298 nodes 42413 time 3 hhits 1477 hreads 4466 hhitratio 330 hwrites 2989 score 235 pv a8a7 e8e2 a7b6 0000 
+info depth 6 perft 14751778 nodes 337587 time 26 nps 12984115 hhits 21259 hreads 42413 hhitratio 501 hwrites 21154 score 250 pv a8b8 e7f7 c1d1 d8e7 0000 
+info depth 7 perft 259604208 nodes 1821906 time 149 nps 12227557 hhits 212917 hreads 337504 hhitratio 630 hwrites 124587 score 165 pv a8b7 e2b2 b7c6 d8c8 c6d6 0000 
 stop
 position fen 4r3/3k4/8/8/8/8/6PP/qR1K1R2 w KQ - 0 1
-go
-info nodes 1825000 time 223 nps 8183856 hhits 212879 hreads 337637 hhitratio 630 hwrites 124752
+go perft
+info nodes 1830000 time 150 nps 12200000 hhits 212933 hreads 337951 hhitratio 630 hwrites 125013 score -32768 pv 
 bestmove 0000
-info depth 1 score 19
-info depth 2 nodes 19 score 628
-info depth 3 nodes 666 hhits 0 hreads 19 hhitratio 0 hwrites 19 score 12858
-info depth 4 nodes 14171 time 1 hhits 0 hreads 666 hhitratio 0 hwrites 666 score 405636
-info depth 5 nodes 277439 time 39 nps 7113820 hhits 4729 hreads 14171 hhitratio 333 hwrites 9442 score 8992652
-info depth 6 nodes 3509180 time 463 nps 7579222 hhits 124133 hreads 277439 hhitratio 447 hwrites 153306 score 281330710
+info depth 1 perft 19 score -32767 pv 
+info depth 2 perft 628 nodes 19 score 680 pv 0000 
+info depth 3 perft 12858 nodes 666 hhits 0 hreads 19 hhitratio 0 hwrites 19 score 675 pv e1e7 0000 
+info depth 4 perft 405636 nodes 14171 time 1 hhits 0 hreads 666 hhitratio 0 hwrites 666 score 710 pv d2c2 d8c7 0000 
+info depth 5 perft 8992652 nodes 277439 time 25 nps 11097560 hhits 4729 hreads 14171 hhitratio 333 hwrites 9442 score 695 pv d2c3 a8a2 c3b4 0000 
+info depth 6 perft 281330710 nodes 3509011 time 288 nps 12184065 hhits 124138 hreads 277439 hhitratio 447 hwrites 153301 score 725 pv d2c3 a8a2 c3b4 d8c7 0000 
 stop
 position fen 8/3K4/2p5/p2b2r1/5k2/8/8/1q6 b - - 1 67
-go
-info nodes 3510000 time 463 nps 7580993 hhits 124133 hreads 277470 hhitratio 447 hwrites 153332
+go perft
+info nodes 3515000 time 289 nps 12162629 hhits 124141 hreads 277640 hhitratio 447 hwrites 153494 score -32768 pv 
 bestmove 0000
-info depth 1 score 50
-info depth 2 nodes 50 score 279
-info depth 3 nodes 379 hhits 0 hreads 50 hhitratio 0 hwrites 50 score 13310
-info depth 4 nodes 14018 time 1 hhits 0 hreads 379 hhitratio 0 hwrites 379 score 54703
-info depth 5 nodes 55097 time 6 hhits 6481 hreads 14018 hhitratio 462 hwrites 7537 score 2538084
-info depth 6 nodes 611094 time 77 nps 7936285 hhits 29231 hreads 55097 hhitratio 530 hwrites 25866 score 10809689
-info depth 7 nodes 1854992 time 224 nps 8281214 hhits 387088 hreads 611390 hhitratio 633 hwrites 224302 score 493407574
+info depth 1 perft 50 score -32767 pv 
+info depth 2 perft 279 nodes 50 score 1950 pv 0000 
+info depth 3 perft 13310 nodes 364 hhits 4 hreads 50 hhitratio 80 hwrites 46 score 1920 pv d2d3 0000 
+info depth 4 perft 54703 nodes 14003 time 1 hhits 4 hreads 379 hhitratio 10 hwrites 375 score 1980 pv d2c1 f5e6 0000 
+info depth 5 perft 2538084 nodes 28993 time 2 hhits 1185 hreads 4345 hhitratio 272 hwrites 3160 score 32767 pv d2c1 g6f6 c1d2 0000 
+info depth 6 perft 10809689 nodes 585406 time 45 nps 13009022 hhits 23945 hreads 45446 hhitratio 526 hwrites 21501 score 32767 pv d2c1 b8h2 c1b2 g4g7 0000 
+info depth 7 perft 493407574 nodes 1001371 time 84 nps 11921083 hhits 97992 hreads 197294 hhitratio 496 hwrites 99302 score 32767 pv d2c1 e6e7 c1d2 b8b5 d2c2 0000 
 stop
 position fen 8/p7/8/1P6/K1k3p1/6P1/7P/8 w - -
-go
-info nodes 1860000 time 224 nps 8303571 hhits 387091 hreads 611530 hhitratio 632 hwrites 224433
+go perft
+info nodes 1010000 time 85 nps 11882352 hhits 97995 hreads 197520 hhitratio 496 hwrites 99519 score -32768 pv 
 bestmove 0000
-info depth 1 score 5
-info depth 2 nodes 5 score 39
-info depth 3 nodes 49 hhits 0 hreads 5 hhitratio 0 hwrites 5 score 237
-info depth 4 nodes 326 hhits 1 hreads 49 hhitratio 20 hwrites 48 score 2002
-info depth 5 nodes 2177 hhits 47 hreads 326 hhitratio 144 hwrites 279 score 14062
-info depth 6 nodes 10127 time 1 hhits 824 hreads 2177 hhitratio 378 hwrites 1353 score 120995
-info depth 7 nodes 44099 time 5 hhits 4568 hreads 10127 hhitratio 451 hwrites 5559 score 966152
-info depth 8 nodes 148568 time 16 hhits 25744 hreads 44082 hhitratio 584 hwrites 18338 score 8103790
+info depth 1 perft 5 score -32767 pv 
+info depth 2 perft 39 nodes 5 score 110 pv 0000 
+info depth 3 perft 237 nodes 49 hhits 0 hreads 5 hhitratio 0 hwrites 5 score 35 pv c5d6 0000 
+info depth 4 perft 2002 nodes 116 hhits 4 hreads 18 hhitratio 222 hwrites 14 score 10 pv a2b3 a5a6 0000 
+info depth 5 perft 14062 nodes 1967 hhits 50 hreads 295 hhitratio 169 hwrites 245 score 105 pv a2a3 h6g5 a3b4 0000 
+info depth 6 perft 120995 nodes 6506 hhits 571 hreads 1462 hhitratio 390 hwrites 891 score 140 pv c5c6 a4a3 c6d6 a3a2 0000 
+info depth 7 perft 966152 nodes 40461 time 3 hhits 4317 hreads 9412 hhitratio 458 hwrites 5095 score 75 pv c5b6 a4a3 b6a5 a3a2 a5b4 0000 
+info depth 8 perft 8103790 nodes 80245 time 7 hhits 12511 hreads 22509 hhitratio 555 hwrites 9998 score -670 pv g5h6 a5a4 h6h7 a4a3 h7h8q a3a2 0000 
 stop
 position fen r3k2r/p6p/8/B7/1pp1p3/3b4/P6P/R3K2R w KQkq -
-go
-info nodes 150000 time 16 hhits 25781 hreads 44334 hhitratio 581 hwrites 18546
+go perft
+info nodes 85000 time 7 hhits 12741 hreads 23377 hhitratio 545 hwrites 10629 score -32768 pv 
 bestmove 0000
-info depth 1 score 17
-info depth 2 nodes 17 score 341
-info depth 3 nodes 375 hhits 0 hreads 17 hhitratio 0 hwrites 17 score 6666
-info depth 4 nodes 7380 time 1 hhits 1 hreads 375 hhitratio 2 hwrites 374 score 150072
-info depth 5 nodes 116693 time 16 hhits 2051 hreads 7380 hhitratio 277 hwrites 5329 score 3186478
-info depth 6 nodes 1505524 time 234 nps 6433863 hhits 45613 hreads 116693 hhitratio 390 hwrites 71080 score 77054993
+info depth 1 perft 17 score -32767 pv 
+info depth 2 perft 341 nodes 17 score -245 pv 0000 
+info depth 3 perft 6666 nodes 375 hhits 0 hreads 17 hhitratio 0 hwrites 17 score -275 pv e1d2 0000 
+info depth 4 perft 150072 nodes 6621 hhits 38 hreads 375 hhitratio 101 hwrites 337 score -230 pv d6c7 a4b5 0000 
+info depth 5 perft 3186478 nodes 115934 time 11 hhits 2088 hreads 7380 hhitratio 282 hwrites 5292 score -270 pv e1d2 b5c6 a1d1 0000 
+info depth 6 perft 77054993 nodes 450390 time 45 nps 10008666 hhits 13860 hreads 34934 hhitratio 396 hwrites 21074 score -365 pv h1f1 a7a5 b5a6 a8a6 0000 
 stop
 position fen 8/5p2/8/2k3P1/p3K3/8/1P6/8 b - -
-go
-info nodes 1510000 time 234 nps 6452991 hhits 45614 hreads 116879 hhitratio 390 hwrites 71260
+go perft
+info nodes 455000 time 46 nps 9891304 hhits 13861 hreads 35125 hhitratio 394 hwrites 21259 score -32768 pv 
 bestmove 0000
-info depth 1 score 9
-info depth 2 nodes 9 score 85
-info depth 3 nodes 103 hhits 0 hreads 9 hhitratio 0 hwrites 9 score 795
-info depth 4 nodes 985 hhits 1 hreads 103 hhitratio 9 hwrites 102 score 7658
-info depth 5 nodes 6426 hhits 305 hreads 985 hhitratio 309 hwrites 680 score 72120
-info depth 6 nodes 33722 time 3 hhits 2780 hreads 6426 hhitratio 432 hwrites 3646 score 703851
-info depth 7 nodes 135325 time 15 hhits 19097 hreads 33722 hhitratio 566 hwrites 14625 score 6627106
-info depth 8 nodes 468226 time 50 nps 9364520 hhits 84385 hreads 135342 hhitratio 623 hwrites 50957 score 64451405
+info depth 1 perft 9 score -32767 pv 
+info depth 2 perft 85 nodes 9 score 30 pv 0000 
+info depth 3 perft 795 nodes 103 hhits 0 hreads 9 hhitratio 0 hwrites 9 score 10 pv e5d6 0000 
+info depth 4 perft 7658 nodes 498 hhits 7 hreads 58 hhitratio 120 hwrites 51 score 20 pv e5d6 b3c2 0000 
+info depth 5 perft 72120 nodes 5939 hhits 311 hreads 940 hhitratio 330 hwrites 629 score 0 pv e5d6 d3e2 d6c7 0000 
+info depth 6 perft 703851 nodes 22396 time 1 hhits 1536 hreads 3918 hhitratio 392 hwrites 2382 score 10 pv b7a6 f2f3 a6a5 f3g4 0000 
+info depth 7 perft 6627106 nodes 124009 time 10 hhits 17852 hreads 31214 hhitratio 571 hwrites 13362 score 30 pv b7b5 c4b5 g4g3 f2f4 e5f4 0000 
+info depth 8 perft 64451405 nodes 221179 time 18 hhits 40563 hreads 64417 hhitratio 629 hwrites 23854 score -100 pv e5f4 c4b5 f4e5 b5c4 e5d6 c4b5 0000 
 stop
 position fen r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1
-go
-info nodes 470000 time 51 nps 9215686 hhits 84396 hreads 135542 hhitratio 622 hwrites 51139
+go perft
+info nodes 225000 time 18 hhits 40660 hreads 64906 hhitratio 626 hwrites 24239 score -32768 pv 
 bestmove 0000
-info depth 1 score 6
-info depth 2 nodes 6 score 264
-info depth 3 nodes 276 hhits 0 hreads 6 hhitratio 0 hwrites 6 score 9467
-info depth 4 nodes 10013 time 1 hhits 0 hreads 276 hhitratio 0 hwrites 276 score 422333
-info depth 5 nodes 417102 time 78 nps 5347461 hhits 572 hreads 10013 hhitratio 57 hwrites 9441 score 15833292
-info depth 6 nodes 9891921 time 1912 nps 5173598 hhits 150076 hreads 417102 hhitratio 359 hwrites 267026 score 706045033
+info depth 1 perft 6 score -32767 pv 
+info depth 2 perft 264 nodes 6 score 145 pv 0000 
+info depth 3 perft 9467 nodes 276 hhits 0 hreads 6 hhitratio 0 hwrites 6 score -1085 pv b2a1q 0000 
+info depth 4 perft 422333 nodes 9981 time 1 hhits 1 hreads 276 hhitratio 3 hwrites 275 score -205 pv b2a1q b4a3 0000 
+info depth 5 perft 15833292 nodes 417070 time 48 nps 8688958 hhits 573 hreads 10013 hhitratio 57 hwrites 9440 score -810 pv b2a1r b4a3 a1d1 0000 
+info depth 6 perft 706045033 nodes 4402448 time 548 nps 8033664 hhits 29415 hreads 145812 hhitratio 201 hwrites 116397 score -570 pv a3b4 d1b1 b2a1q b1b4 0000 
 stop
 position startpos moves e2e4 e7e5 f1c4 g8f6 d2d4 c7c6 d4e5 f6e4 g1e2 e4f2 e5e6 f8e7 e6d7 e8f8
 position
-info nodes 9895000 time 1913 nps 5172503 hhits 150076 hreads 417180 hhitratio 359 hwrites 267099
+info nodes 4410000 time 549 nps 8032786 hhits 29415 hreads 145995 hhitratio 201 hwrites 116575 score -32768 pv 
 bestmove 0000
 info fen rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ -
-go
-info depth 1 score 44
-info depth 2 nodes 44 time 2 score 1486
-info depth 3 nodes 1574 time 2 hhits 0 hreads 44 hhitratio 0 hwrites 44 score 62379
-info depth 4 nodes 65357 time 14 hhits 3 hreads 1574 hhitratio 1 hwrites 1571 score 2103487
-info depth 5 nodes 1324844 time 243 nps 5452032 hhits 26419 hreads 65357 hhitratio 404 hwrites 38938 score 89941194
+go perft
+info depth 1 perft 44 score -32767 pv 
+info depth 2 perft 1486 nodes 44 score 1125 pv 0000 
+info depth 3 perft 62379 nodes 1574 hhits 0 hreads 44 hhitratio 0 hwrites 44 score 240 pv d1c1 0000 
+info depth 4 perft 2103487 nodes 65357 time 13 hhits 3 hreads 1574 hhitratio 1 hwrites 1571 score 775 pv f7d8 c1d1 0000 
+info depth 5 perft 89941194 nodes 1325122 time 153 nps 8660928 hhits 26411 hreads 65357 hhitratio 404 hwrites 38946 score 215 pv e2b5 c7c6 d1c1 0000 
 stop
 position fen r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 25
-go nodes 100000000
-info nodes 1325000 time 244 nps 5430327 hhits 26419 hreads 65365 hhitratio 404 hwrites 38942
+go perft nodes 100000000
+info nodes 1330000 time 154 nps 8636363 hhits 26411 hreads 65495 hhitratio 403 hwrites 39080 score -32768 pv 
 bestmove 0000
-info depth 1 score 48
-info depth 2 nodes 48 score 2039
-info depth 3 nodes 2135 hhits 0 hreads 48 hhitratio 0 hwrites 48 score 97862
-info depth 4 nodes 102033 time 19 hhits 1 hreads 2135 hhitratio 0 hwrites 2134 score 4085603
-info depth 5 nodes 2592313 time 498 nps 5205447 hhits 40245 hreads 102033 hhitratio 394 hwrites 61788 score 193690690
+info depth 1 perft 48 score -32767 pv 
+info depth 2 perft 2039 nodes 48 score 435 pv 0000 
+info depth 3 perft 97862 nodes 2135 hhits 0 hreads 48 hhitratio 0 hwrites 48 score 70 pv b5c6 0000 
+info depth 4 perft 4085603 nodes 102033 time 11 hhits 1 hreads 2135 hhitratio 0 hwrites 2134 score 400 pv b5c6 f6f3 0000 
+info depth 5 perft 193690690 nodes 2591950 time 314 nps 8254617 hhits 40254 hreads 102033 hhitratio 394 hwrites 61779 score 50 pv b5c6 d7c6 h6g7 0000 
 isready
-info nodes 2590000 time 498 nps 5200803 hhits 40245 hreads 102095 hhitratio 394 hwrites 61846
+info nodes 2600000 time 315 nps 8253968 hhits 40254 hreads 102206 hhitratio 393 hwrites 61948
 readyok
-info depth 6 nodes 70991690 time 13592 nps 5223049 hhits 1072302 hreads 2591485 hhitratio 413 hwrites 1519183 score 8031647685
-info nodes 100000000 time 18832 nps 5310110 hhits 1542635 hreads 3775925 hhitratio 408 hwrites 2233285
+info depth 6 perft 8031647685 nodes 71015552 time 8004 nps 8872507 hhits 1071801 hreads 2591485 hhitratio 413 hwrites 1519684 score 520 pv a3c5 e7c5 b3c5 f6f3 0000 
+info nodes 100000000 time 11358 nps 8804366 hhits 1541362 hreads 3774533 hhitratio 408 hwrites 2233166 score -32768 pv 
 bestmove 0000
 quit
 TEST PASSED
