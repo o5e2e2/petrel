@@ -27,7 +27,7 @@ NodeControl NodePerftRoot::searchIteration() {
 
             default:
                 assert (draft >= 3);
-                RETURN_CONTROL ( NodePerft(*this).visitChildren() );
+                RETURN_CONTROL ( NodePerftTT(*this).visitChildren() );
         }
     }
 
