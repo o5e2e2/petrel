@@ -243,14 +243,54 @@ Zobrist PositionMoves::createZobrist(Square from, Square to) const {
     Zobrist mz{zobrist};
     Zobrist oz{0};
 
-    if (OP.hasEnPassant()) {
-        oz.clearEnPassant(OP.enPassantSquare());
-    }
-
     Pi pi = MY.pieceOn(from);
     PieceType ty = MY.typeOf(pi);
 
-    if (MY.kingSquare().is(to)) {
+    if (OP.hasEnPassant()) {
+        oz.clearEnPassant(OP.enPassantSquare());
+
+        //en passant capture
+        if (ty.is(Pawn) && from.on(Rank5) && to.on(Rank5)) {
+            Square ep{File(to), Rank6};
+            mz.move(Pawn, from, ep);
+            oz.clear(Pawn, ~to);
+            goto zobrist;
+        }
+    }
+
+    if (ty.is(Pawn)) {
+        if (from.on(Rank7)) {
+            Square promotedTo{File(to), Rank8};
+            mz.clear(Pawn, from);
+            mz.drop(static_cast<PieceType>(PromoType(to)), promotedTo);
+
+            to = promotedTo;
+            goto capture;
+        }
+
+        if (from.on(Rank2) && to.on(Rank4)) {
+            mz.move(ty, from, to);
+
+            File file = File(from);
+            Square ep(file, Rank3);
+
+            Bb killers = ~OP.pawnsSquares() & ::attacksFrom(Pawn, ep);
+            if (killers.any() && !MY.isPinned(MY.occupied() - from + ep)) {
+                for (Square killer : killers) {
+                    assert (killer.on(Rank4));
+
+                    if (!MY.isPinned(MY.occupied() - killer + ep)) {
+                        mz.setEnPassant(file);
+                        goto zobrist;
+                    }
+                }
+            }
+            goto zobrist;
+        }
+
+        //the rest of pawns moves (non-promotion, non en passant, non double push)
+    }
+    else if (MY.kingSquare().is(to)) {
         //castling move encoded as rook moves over own king's square
         for (Pi rook : MY.castlingRooks()) {
             mz.clearCastling(MY.squareOf(rook));
@@ -265,11 +305,10 @@ Zobrist PositionMoves::createZobrist(Square from, Square to) const {
         mz.clear(Rook, rookFrom);
         mz.drop(King, kingTo);
         mz.drop(Rook, rookTo);
-        return Zobrist{oz, mz};
+        goto zobrist;
     }
     else if (ty.is(King)) {
-        //king's move resets rooks with castling rights
-         for (Pi rook : MY.castlingRooks()) {
+        for (Pi rook : MY.castlingRooks()) {
             mz.clearCastling(MY.squareOf(rook));
         }
     }
@@ -278,50 +317,10 @@ Zobrist PositionMoves::createZobrist(Square from, Square to) const {
         assert (ty.is(Rook));
         mz.clearCastling(from);
     }
-    else if (ty.is(Pawn)) {
-        if (from.on(Rank7)) {
-            Square promotedTo{File(to), Rank8};
-            mz.clear(Pawn, from);
-            mz.drop(static_cast<PieceType>(PromoType(to)), promotedTo);
 
-            if (OP.isOccupied(~promotedTo)) {
-                Pi victim = OP.pieceOn(~promotedTo);
-                oz.clear(OP.typeOf(victim), ~promotedTo);
+    mz.move(ty, from, to);
 
-                if (OP.isCastling(victim)) {
-                    oz.clearCastling(~promotedTo);
-                }
-            }
-            return Zobrist{oz, mz};
-        }
-
-        if (from.on(Rank5) && to.on(Rank5)) {
-            Square ep{File(to), Rank6};
-            mz.move(Pawn, from, ep);
-            oz.clear(Pawn, ~to);
-            return Zobrist{oz, mz};
-        }
-
-        if (from.on(Rank2) && to.on(Rank4)) {
-            File file = File(from);
-            Square ep(file, Rank3);
-
-            Bb killers = ~OP.pawnsSquares() & ::attacksFrom(Pawn, ep);
-            if (killers.any() && !MY.isPinned(MY.occupied() - from + ep)) {
-                for (Square killer : killers) {
-                    assert (killer.on(Rank4));
-
-                    if (!MY.isPinned(MY.occupied() - killer + ep)) {
-                        mz.setEnPassant(file);
-                        break;
-                    }
-                }
-            }
-        }
-
-        //the rest of pawns moves (non-promotion, non en passant capture)
-    }
-
+capture:
     if (OP.isOccupied(~to)) {
         Pi victim = OP.pieceOn(~to);
         oz.clear(OP.typeOf(victim), ~to);
@@ -331,7 +330,7 @@ Zobrist PositionMoves::createZobrist(Square from, Square to) const {
         }
     }
 
-    mz.move(ty, from, to);
+zobrist:
     return Zobrist{oz, mz};
 }
 
