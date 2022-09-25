@@ -48,9 +48,9 @@ io::ostream& Move::write(io::ostream& out, Move move, Color colorToMove, ChessVa
 }
 
 io::ostream& Move::write(io::ostream& out, const Move pv[], Color colorToMove, ChessVariant chessVariant) {
-    while (*pv++) {
-        Move::write(out, *pv, colorToMove, chessVariant);
+    for (Move move; (move = *pv); ++pv) {
         out << ' ';
+        Move::write(out, move, colorToMove, chessVariant);
         colorToMove.flip();
     }
     return out;

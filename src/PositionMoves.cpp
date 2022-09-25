@@ -286,11 +286,11 @@ Zobrist PositionMoves::createZobrist(Square from, Square to) const {
 
             if (OP.isOccupied(~promotedTo)) {
                 Pi victim = OP.pieceOn(~promotedTo);
+                oz.clear(OP.typeOf(victim), ~promotedTo);
 
                 if (OP.isCastling(victim)) {
                     oz.clearCastling(~promotedTo);
                 }
-                oz.clear(OP.typeOf(victim), ~promotedTo);
             }
             return Zobrist{oz, mz};
         }

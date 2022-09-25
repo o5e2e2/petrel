@@ -101,7 +101,6 @@ go perft
 stop
 
 #castling (including losing cr due to rook capture):
-r3k2r/1b4bq/8/8/8/8/7B/R3K2R w KQkq - 0 1 perft 4 = 1274206
 position fen r3k2r/7b/8/8/8/8/1B4BQ/R3K2R b KQkq - 0 1
 go perft
 ;info depth 4 perft 1274206 *

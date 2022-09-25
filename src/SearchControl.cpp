@@ -14,6 +14,7 @@ void SearchControl::newGame() {
 void SearchControl::newSearch() {
     newIteration();
     transpositionTable.clearCounter();
+    info.clear();
 }
 
 void SearchControl::newIteration() {
