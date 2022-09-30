@@ -18,12 +18,5 @@ NodeControl NodePerft::visit(Square from, Square to) {
 
     updateParentPerft();
 
-    auto& p = static_cast<NodePerft&>(parent);
-    if (-bestScore > p.bestScore) {
-        p.bestScore = -bestScore;
-        control.createPv(p.createMove(from, to));
-    }
-
-    bestScore = Score::Minimum;
     return NodeControl::Continue;
 }

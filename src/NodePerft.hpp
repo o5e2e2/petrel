@@ -6,7 +6,6 @@
 class NodePerft : public Node {
 public:
     node_count_t perft = 0;
-    Score bestScore = Score::Minimum;
 
 protected:
     void updateParentPerft() {

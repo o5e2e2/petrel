@@ -9,7 +9,7 @@ NodePerftRootDivide::NodePerftRootDivide(NodePerftRoot& n) : NodePerft(n) {}
 
 NodeControl NodePerftRootDivide::visit(Square from, Square to) {
     auto& p = static_cast<NodePerftRoot&>(parent);
-    auto parentPerftBefore = p.perft;
+    auto perftBeforeMove = p.perft;
 
     switch (p.draft) {
         case 1:
@@ -21,14 +21,14 @@ NodeControl NodePerftRootDivide::visit(Square from, Square to) {
             break;
 
         default:
+            assert (p.draft > 2);
             RETURN_CONTROL ( NodePerft(p).visit(from, to) );
     }
 
     ++moveCount;
-    auto movePerft = p.perft - parentPerftBefore;
+    auto movePerft = p.perft - perftBeforeMove;
     Move move = p.createMove(from, to);
-    control.infoPerftMove(moveCount, move, movePerft, p.bestScore);
+    control.perft_currmove(moveCount, move, movePerft);
 
-    bestScore = Score::Minimum;
     return NodeControl::Continue;
 }

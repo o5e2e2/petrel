@@ -82,7 +82,7 @@ void UciSearchInfo::write(io::ostream& o, const Move pv[]) const {
 
 void UciSearchInfo::nps(io::ostream& o, node_count_t nodes, const PerftTT& tt) const {
     if (lastInfoNodes == nodes) {
-        return;
+        //return;
     }
     lastInfoNodes = nodes;
 
@@ -99,10 +99,10 @@ void UciSearchInfo::nps(io::ostream& o, node_count_t nodes, const PerftTT& tt) c
 
     auto& counter = tt.getCounter();
     if (counter.reads > 0) {
+        o << " hwrites " << counter.writes;
         o << " hhits " << counter.hits;
         o << " hreads " << counter.reads;
         o << " hhitratio " << ::permil(counter.hits, counter.reads);
-        o << " hwrites " << counter.writes;
     }
 }
 
@@ -121,7 +121,9 @@ void UciSearchInfo::bestmove(const Move pv[], Score bestScore, node_count_t node
         ob << "info";
         nps(ob, nodes, tt);
         ob << " score " << bestScore;
-        ob << " pv "; write(ob, pv);
+        if (pv[0] != Move{}) {
+            ob << " pv"; write(ob, pv);
+        }
         ob << '\n';
     }
     ob << "bestmove "; write(ob, pv[0]); ob << '\n';
@@ -132,29 +134,35 @@ void UciSearchInfo::report_depth(ply_t draft, const Move pv[], Score bestScore, 
     ob << "info depth " << draft;
     nps(ob, nodes, tt);
     ob << " score " << bestScore;
-    ob << " pv "; write(ob, pv);
+    ob << " pv"; write(ob, pv);
     ob << '\n';
 }
 
-void UciSearchInfo::report_perft_depth(ply_t draft, const Move pv[], Score bestScore, node_count_t perftNodes, node_count_t nodes, const PerftTT& tt) const {
+void UciSearchInfo::perft_depth(ply_t draft, node_count_t perftNodes, node_count_t nodes, const PerftTT& tt) const {
     OUTPUT(ob);
     ob << "info depth " << draft;
     ob << " perft " << perftNodes;
     nps(ob, nodes, tt);
-    ob << " score " << bestScore;
-    ob << " pv "; write(ob, pv);
     ob << '\n';
 }
 
-void UciSearchInfo::report_perft_divide(const Move& currmove, const Move pv[], Score bestScore, index_t currmovenumber, node_count_t perftNodes, node_count_t nodes, const PerftTT& tt) const {
+void UciSearchInfo::perft_currmove(const Move& currmove, index_t currmovenumber, node_count_t perftNodes, node_count_t nodes, const PerftTT& tt) const {
     OUTPUT(ob);
     ob << "info currmovenumber " << currmovenumber;
     ob << " currmove "; write(ob, currmove);
     ob << " perft " << perftNodes;
     nps(ob, nodes, tt);
-    ob << " score " << bestScore;
-    ob << " pv "; write(ob, pv);
     ob << '\n';
+}
+
+void UciSearchInfo::perft_finish(node_count_t nodes, const PerftTT& tt) const {
+    OUTPUT(ob);
+    if (lastInfoNodes != nodes) {
+        ob << "info";
+        nps(ob, nodes, tt);
+        ob << '\n';
+    }
+    ob << "bestmove 0000\n";
 }
 
 #undef OUTPUT

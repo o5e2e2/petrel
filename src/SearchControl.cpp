@@ -68,12 +68,16 @@ void SearchControl::infoDepth(ply_t draft, Score bestScore) const {
     info.report_depth(draft, pvMoves, bestScore, nodeCounter, transpositionTable);
 }
 
-void SearchControl::infoPerftDepth(ply_t draft, node_count_t perft, Score bestScore) const {
-    info.report_perft_depth(draft, pvMoves, bestScore, perft, nodeCounter, transpositionTable);
+void SearchControl::perft_depth(ply_t draft, node_count_t perft) const {
+    info.perft_depth(draft, perft, nodeCounter, transpositionTable);
 }
 
-void SearchControl::infoPerftMove(index_t moveCount, const Move& currentMove, node_count_t perft, Score bestScore) const {
-    info.report_perft_divide(currentMove, pvMoves, bestScore, moveCount, perft, nodeCounter, transpositionTable);
+void SearchControl::perft_currmove(index_t moveCount, const Move& currentMove, node_count_t perft) const {
+    info.perft_currmove(currentMove, moveCount, perft, nodeCounter, transpositionTable);
+}
+
+void SearchControl::perft_finish() const {
+    info.perft_finish(nodeCounter, transpositionTable);
 }
 
 void SearchControl::setHash(size_t bytes) {

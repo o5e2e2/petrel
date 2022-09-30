@@ -12,9 +12,9 @@ class PerftTT {
     HashAge hashAge;
 
     struct Counter {
-        size_t reads = 0;
-        size_t writes = 0;
-        size_t hits = 0;
+        node_count_t reads = 0;
+        node_count_t writes = 0;
+        node_count_t hits = 0;
     } counter;
 
 public:

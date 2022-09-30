@@ -31,7 +31,7 @@ NodeControl NodePerftRoot::searchIteration() {
         }
     }
 
-    control.infoPerftDepth(draft, perft, bestScore);
+    control.perft_depth(draft, perft);
     return NodeControl::Continue;
 }
 
@@ -39,7 +39,6 @@ NodeControl NodePerftRoot::iterativeDeepening() {
     for (draft = 1; draft <= DepthMax; ++draft) {
         RETURN_CONTROL ( searchIteration() );
         perft = 0;
-        bestScore = Score::None;
         control.newIteration();
     }
 
@@ -54,6 +53,6 @@ NodeControl NodePerftRoot::visitChildren() {
         iterativeDeepening();
     }
 
-    control.bestmove(bestScore);
+    control.perft_finish();
     return NodeControl::Continue;
 }

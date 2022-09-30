@@ -57,8 +57,10 @@ public:
     void readyok() const;
     void bestmove(Score) const;
     void infoDepth(ply_t, Score) const;
-    void infoPerftDepth(ply_t, node_count_t, Score) const;
-    void infoPerftMove(index_t moveCount, const Move& currentMove, node_count_t, Score) const;
+
+    void perft_depth(ply_t, node_count_t) const;
+    void perft_currmove(index_t moveCount, const Move& currentMove, node_count_t) const;
+    void perft_finish() const;
 
     NodeControl countNode();
 

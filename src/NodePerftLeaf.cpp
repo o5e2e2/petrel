@@ -9,11 +9,5 @@ NodeControl NodePerftLeaf::visit(Square from, Square to) {
     auto& p = static_cast<NodePerft&>(parent);
     p.perft += getMovesCount();
 
-    auto score = -getStaticEval();
-    if (score > p.bestScore) {
-        p.bestScore = score;
-        control.createPv(p.createMove(from, to));
-    }
-
     return NodeControl::Continue;
 }
