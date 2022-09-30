@@ -18,7 +18,7 @@ NodeControl NodePerftTT::visit(Square from, Square to) {
     }
 
     auto parentPerftBefore = p.perft;
-    RETURN_CONTROL ( NodePerft::visit(from, to) );
+    RETURN_IF_ABORT ( NodePerft::visit(from, to) );
     auto n = p.perft - parentPerftBefore;
 
     control.tt().set(getZobrist(), draft-2, n);

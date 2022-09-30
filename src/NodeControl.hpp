@@ -6,6 +6,6 @@ enum class NodeControl : bool {
     Abort = true
 };
 
-#define RETURN_CONTROL(control) { NodeControl c{control}; if (c != NodeControl::Continue) { return c; } } ((void)0)
+#define RETURN_IF_ABORT(control) { NodeControl c{control}; if (c != NodeControl::Continue) { return c; } } ((void)0)
 
 #endif

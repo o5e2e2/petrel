@@ -28,9 +28,9 @@ NodeControl Node::visitChildren() {
         Square from = parent[My].squareOf(pi);
 
         for (Square to : parentMoves[pi]) {
-            RETURN_CONTROL (beforeVisit());
+            RETURN_IF_ABORT (beforeVisit());
             parentMoves.clear(pi, to);
-            RETURN_CONTROL (visit(from, to));
+            RETURN_IF_ABORT (visit(from, to));
         }
     }
 

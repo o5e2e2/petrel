@@ -17,12 +17,12 @@ NodeControl NodePerftRootDivide::visit(Square from, Square to) {
             break;
 
         case 2:
-            RETURN_CONTROL ( NodePerftLeaf(p).visit(from, to) );
+            RETURN_IF_ABORT ( NodePerftLeaf(p).visit(from, to) );
             break;
 
         default:
             assert (p.draft > 2);
-            RETURN_CONTROL ( NodePerft(p).visit(from, to) );
+            RETURN_IF_ABORT ( NodePerftTT(p).visit(from, to) );
     }
 
     ++moveCount;

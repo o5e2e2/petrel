@@ -9,14 +9,14 @@ NodeAbRoot::NodeAbRoot (const SearchLimit& limit, SearchControl& searchControl):
 {}
 
 NodeControl NodeAbRoot::searchIteration() {
-    RETURN_CONTROL ( NodeAbPv(*this).visitChildren() );
+    RETURN_IF_ABORT ( NodeAbPv(*this).visitChildren() );
     control.infoDepth(draft, bestScore);
     return NodeControl::Continue;
 }
 
 NodeControl NodeAbRoot::iterativeDeepening() {
     for (draft = 1; draft <= depthLimit; ++draft) {
-        RETURN_CONTROL ( searchIteration() );
+        RETURN_IF_ABORT ( searchIteration() );
         bestScore = Score::None;
         control.newIteration();
     }
