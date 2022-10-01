@@ -7,32 +7,34 @@
 #define MY (*this)[My]
 #define OP (*this)[Op]
 
-class WriteFenBoard {
+namespace {
+
+class BoardToFen {
     const PositionSide& whitePieces;
     const PositionSide& blackPieces;
 
 public:
-    WriteFenBoard (const PositionSide& w, const PositionSide& b) :
+    BoardToFen (const PositionSide& w, const PositionSide& b) :
         whitePieces{w},
         blackPieces{b}
         {}
 
-    friend io::ostream& operator << (io::ostream& out, const WriteFenBoard& fen) {
+    friend io::ostream& operator << (io::ostream& out, const BoardToFen& board) {
         FOR_INDEX(Rank, rank) {
             index_t emptySqCount = 0;
 
             FOR_INDEX(File, file) {
                 Square sq(file,rank);
 
-                if (fen.whitePieces.isOccupied(sq)) {
+                if (board.whitePieces.isOccupied(sq)) {
                     if (emptySqCount != 0) { out << emptySqCount; emptySqCount = 0; }
-                    out << static_cast<io::char_type>(std::toupper( fen.whitePieces.typeOf(sq).to_char() ));
+                    out << static_cast<io::char_type>(std::toupper( board.whitePieces.typeOf(sq).to_char() ));
                     continue;
                 }
 
-                if (fen.blackPieces.isOccupied(~sq)) {
+                if (board.blackPieces.isOccupied(~sq)) {
                     if (emptySqCount != 0) { out << emptySqCount; emptySqCount = 0; }
-                    out << fen.blackPieces.typeOf(~sq).to_char();
+                    out << board.blackPieces.typeOf(~sq).to_char();
                     continue;
                 }
 
@@ -47,7 +49,7 @@ public:
     }
 };
 
-class WriteFenCastling {
+class CastlingToFen {
     std::set<io::char_type> castlingSet;
 
     void insert(const PositionSide& positionSide, Color color, ChessVariant chessVariant) {
@@ -74,17 +76,17 @@ class WriteFenCastling {
     }
 
 public:
-    WriteFenCastling (const PositionSide& whitePieces, const PositionSide& blackPieces, ChessVariant chessVariant) {
+    CastlingToFen (const PositionSide& whitePieces, const PositionSide& blackPieces, ChessVariant chessVariant) {
         insert(whitePieces, White, chessVariant);
         insert(blackPieces, Black, chessVariant);
     }
 
-    friend io::ostream& operator << (io::ostream& out, const WriteFenCastling& fen) {
-        if (fen.castlingSet.empty()) {
+    friend io::ostream& operator << (io::ostream& out, const CastlingToFen& castling) {
+        if (castling.castlingSet.empty()) {
             return out << '-';
         }
 
-        for (auto castlingSymbol : fen.castlingSet) {
+        for (auto castlingSymbol : castling.castlingSet) {
             out << castlingSymbol;
         }
 
@@ -92,27 +94,37 @@ public:
     }
 };
 
-void PositionFen::fenEnPassant(io::ostream& out) const {
-    if (!OP.hasEnPassant()) {
-        out << '-';
-        return;
-    }
+class EnPassantToFen {
+    const PositionSide& op;
+    Rank enPassantRank;
 
-    out << Square{OP.enPassantFile(), colorToMove.is(White) ? Rank6 : Rank3};
-}
+public:
+    EnPassantToFen (const PositionSide& side, Color colorToMove):
+        op{side}, enPassantRank{colorToMove.is(White) ? Rank6 : Rank3} {}
+
+    friend io::ostream& operator << (io::ostream& out, const EnPassantToFen& enPassant) {
+        if (!enPassant.op.hasEnPassant()) {
+            return out << '-';
+        }
+
+        return out << Square{enPassant.op.enPassantFile(), enPassant.enPassantRank};
+    }
+};
+
+} //end of anonymous namespace
 
 io::ostream& operator << (io::ostream& out, const PositionFen& pos) {
-    auto whiteSide = pos.sideOf(White);
-    auto& whitePieces = pos[whiteSide];
-    auto& blackPieces = pos[~whiteSide];
+    auto& whitePieces = pos[pos.sideOf(White)];
+    auto& blackPieces = pos[pos.sideOf(Black)];
 
-    out << WriteFenBoard(whitePieces, blackPieces)
+    out << BoardToFen(whitePieces, blackPieces)
         << ' '
         << pos.colorToMove
         << ' '
-        << WriteFenCastling(whitePieces, blackPieces, pos.chessVariant)
-        << ' ';
-    pos.fenEnPassant(out);
+        << CastlingToFen(whitePieces, blackPieces, pos.chessVariant)
+        << ' '
+        << EnPassantToFen(pos[Op], pos.colorToMove);
+
     return out;
 }
 
@@ -124,98 +136,89 @@ void PositionFen::write(io::ostream& out, const Move pv[]) const {
     Move::write(out, pv, colorToMove, chessVariant);
 }
 
-Move PositionFen::readMove(io::istream& in) const {
-    Square moveFrom;
-    Square moveTo;
-
-    auto here = in.tellg();
-    in >> std::ws >> moveFrom >> moveTo;
-
-    if (!in) {
-        io::fail_pos(in, here);
-        return {};
-    }
+io::istream& PositionFen::readMove(io::istream& in, Square& from, Square& to) const {
+    in >> std::ws >> from >> to;
 
     if (colorToMove.is(Black)) {
-        moveFrom.flip();
-        moveTo.flip();
+        from.flip();
+        to.flip();
     }
 
-    if (!MY.hasPieceOn(moveFrom)) {
-        io::fail_pos(in, here);
-        return {};
+    if (!in || !MY.hasPieceOn(from)) {
+        return io::fail(in);
     }
 
-    Pi pi = MY.pieceOn(moveFrom);
+    Pi pi = MY.pieceOn(from);
 
     //convert special moves (castling, promotion, ep) to the internal move format
     if (MY.isPawn(pi)) {
-        if (moveFrom.on(Rank7)) {
+        if (from.on(Rank7)) {
             PromoType promo{Queen};
             in >> promo;
             in.clear(); //promotion piece is optional
-            return Move::promotion(moveFrom, moveTo, promo);
+            to = Square{File(to), static_cast<Rank::_t>(+promo)};
+            return in;
         }
-        if (moveFrom.on(Rank5) && OP.hasEnPassant() && OP.enPassantFile().is(File(moveTo))) {
-            return Move::enPassant(moveFrom, Square{File(moveTo), Rank5});
+        if (from.on(Rank5) && OP.hasEnPassant() && OP.enPassantFile().is(File(to))) {
+            to = Square{File(to), Rank5};
+            return in;
         }
         //else normal pawn move
     }
     else if (pi.is(TheKing)) {
-        if (MY.hasPieceOn(moveTo)) { //Chess960 castling encoding
-            if (!MY.isCastling(moveTo)) {
-                io::fail_pos(in, here);
-                return {};
+        if (MY.hasPieceOn(to)) { //Chess960 castling encoding
+            if (!MY.isCastling(to)) {
+                return io::fail(in);
             }
-            return Move::castling(moveTo, moveFrom);
+            std::swap(from, to);
+            return in;
         }
-        if (moveFrom.is(E1) && moveTo.is(G1)) {
+        if (from.is(E1) && to.is(G1)) {
             if (!MY.hasPieceOn(H1) || !MY.isCastling(H1)) {
-                io::fail_pos(in, here);
-                return {};
+                return io::fail(in);
             }
-            return Move::castling(H1, E1);
+            from = H1;
+            to = E1;
+            return in;
         }
-        if (moveFrom.is(E1) && moveTo.is(C1)) {
+        if (from.is(E1) && to.is(C1)) {
             if (!MY.hasPieceOn(A1) || !MY.isCastling(A1)) {
-                io::fail_pos(in, here);
-                return {};
+                return io::fail(in);
             }
-            return Move::castling(A1, E1);
+            from = A1;
+            to = E1;
+            return in;
         }
         //else normal king move
     }
 
-    return Move(moveFrom, moveTo);
+    return in;
 }
 
 void PositionFen::limitMoves(io::istream& in) {
-    MatrixPiBb searchMoves;
-    searchMoves.clear();
-    index_t limit = 0;
+    MatrixPiBb movesMatrix;
+    movesMatrix.clear();
+    index_t n = 0;
 
     while (in) {
-        auto here = in.tellg();
+        Square from;
+        Square to;
+        auto beforeMove = in.tellg();
 
-        Move move = readMove(in);
-        if (in) {
-            Square from = move.from();
-            Square to = move.to();
-            if (isLegalMove(from, to)) {
-                Pi pi = MY.pieceOn(from);
-                if (!searchMoves.has(pi, to)) {
-                    searchMoves.set(pi, to);
-                    ++limit;
-                    continue;
-                }
-            }
+        if (!readMove(in, from, to) || !isLegalMove(from, to)) {
+            io::fail_pos(in, beforeMove);
+            return;
         }
 
-        io::fail_pos(in, here);
+        Pi pi = MY.pieceOn(from);
+        if (!movesMatrix.has(pi, to)) {
+            movesMatrix.set(pi, to);
+            ++n;
+        }
     }
 
-    if (limit > 0) {
-        setMoves(searchMoves);
+    if (n) {
+        setMoves(movesMatrix, n);
         in.clear();
         return;
     }
@@ -227,64 +230,56 @@ void PositionFen::limitMoves(io::istream& in) {
 
 void PositionFen::playMoves(io::istream& in) {
     while (in) {
-        auto here = in.tellg();
+        auto beforeMove = in.tellg();
+        Square from;
+        Square to;
 
-        Move move = readMove(in);
-        if (in) {
-            Square from{ move.from() };
-            Square to{ move.to() } ;
-
-            if (isLegalMove(from, to)) {
-                playMove(from, to);
-                colorToMove.flip();
-                continue;
-            }
+        if (!readMove(in, from, to) || !isLegalMove(from, to)) {
+            io::fail_pos(in, beforeMove);
+            return;
         }
 
-        io::fail_pos(in, here);
+        playMove(from, to);
+        colorToMove.flip();
     }
 }
 
-void PositionFen::setBoard(io::istream& in) {
+io::istream& PositionFen::setBoard(io::istream& in) {
     FenBoard board;
 
     in >> board >> std::ws;
     if (in.eof()) {
         //missing board data
-        io::fail_rewind(in);
-        return;
+        return io::fail_rewind(in);
     }
 
     if (!in) {
         //specific board character is invalid
-        io::fail(in);
-        return;
+        return io::fail(in);
     }
 
-    auto here = in.tellg();
+    auto beforeColorToMove = in.tellg();
     in >> colorToMove;
 
     if (!in) {
         //invalid side to move
-        io::fail_rewind(in);
-        return;
+        return io::fail_pos(in, beforeColorToMove);
     }
 
     Position pos;
 
     if (!board.dropPieces(pos, colorToMove)) {
         //missing one or both kings
-        io::fail_rewind(in);
-        return;
+        return io::fail_pos(in, beforeColorToMove);
     }
 
     if (!pos.afterDrop()) {
         //the side to move king left in check
-        io::fail_pos(in, here);
-        return;
+        return io::fail_pos(in, beforeColorToMove);
     }
 
     static_cast<Position&>(*this) = pos;
+    return in;
 }
 
 bool PositionFen::setCastling(Side My, File file) {
@@ -356,25 +351,18 @@ io::istream& PositionFen::setEnPassant(io::istream& in) {
         return in;
     }
 
+    auto beforeEp = in.tellg();
     Square ep;
-
-    auto here = in.tellg();
-    in >> ep;
-
-    if (in) {
+    if (in >> ep) {
         if (!ep.on(colorToMove.is(White) ? Rank6 : Rank3) || !setEnPassant( File(ep) )) {
-            io::fail_pos(in, here);
+            return io::fail_pos(in, beforeEp);
         }
     }
     return in;
 }
 
 void PositionFen::readFen(io::istream& in) {
-    setBoard(in);
-    setCastling(in);
-    setEnPassant(in);
-    setZobrist();
-    generateMoves();
+    setBoard(in) && setCastling(in) && setEnPassant(in);
 
     if (in) {
         unsigned _fifty;
@@ -382,6 +370,9 @@ void PositionFen::readFen(io::istream& in) {
         in >> _fifty >> _moves;
         in.clear(); //ignore missing optional 'fifty' and 'moves' fen fields
     }
+
+    setZobrist();
+    generateMoves();
 }
 
 void PositionFen::setStartpos() {

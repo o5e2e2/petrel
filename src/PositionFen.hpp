@@ -10,12 +10,10 @@ class PositionFen : public PositionMoves {
     Color colorToMove = White; //root position color for moves long algebraic format output
     ChessVariant chessVariant = Orthodox; //format of castling moves output
 
-    Move readMove(io::istream&) const;
-    void fenEnPassant(io::ostream&) const;
-
-    void setBoard(io::istream&);
+    io::istream& setBoard(io::istream&);
     io::istream& setCastling(io::istream&);
     io::istream& setEnPassant(io::istream&);
+    io::istream& readMove(io::istream&, Square&, Square&) const;
 
     bool setCastling(Side, File);
     bool setCastling(Side, CastlingSide);

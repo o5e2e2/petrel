@@ -35,7 +35,7 @@ protected:
     void generateMoves();
 
     void clearMove(Pi pi, Square sq) { moves.clear(pi, sq); }
-    void setMoves(const MatrixPiBb& m) { moves = m; }
+    void setMoves(const MatrixPiBb& m, index_t n) { moves = m; movesCount = n; }
 
     void setZobrist(const PositionMoves& parent, Square from, Square to) { zobrist = parent.createZobrist(from, to); }
     void setZobrist() { zobrist = generateZobrist(); }
