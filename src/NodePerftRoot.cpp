@@ -1,33 +1,92 @@
 #include "NodePerftRoot.hpp"
 #include "NodePerftTT.hpp"
 #include "NodePerftLeaf.hpp"
-#include "NodePerftRootDivide.hpp"
 #include "Move.hpp"
 #include "SearchControl.hpp"
 #include "SearchLimit.hpp"
 
-NodePerftRoot::NodePerftRoot (const SearchLimit& limit, SearchControl& searchControl):
-    NodePerft(limit.positionMoves, searchControl, limit.depth),
-    isDivide(limit.isDivide)
-{}
+NodeControl NodePerftRoot::visitChildren() {
+    switch (draft) {
+        case 1:
+            perft = getMovesCount();
+            break;
 
-NodeControl NodePerftRoot::searchIteration() {
-    if (isDivide) {
-        RETURN_IF_ABORT ( NodePerftRootDivide(*this).visitChildren() );
+        case 2:
+            RETURN_IF_ABORT ( static_cast<NodePerftLeaf>(*this).visitChildren() );
+            break;
+
+        default:
+            assert (draft >= 3);
+            RETURN_IF_ABORT ( static_cast<NodePerftTT>(*this).visitChildren() );
     }
-    else {
-        switch (draft) {
-            case 1:
-                perft += getMovesCount();
-                break;
 
-            case 2:
-                RETURN_IF_ABORT ( NodePerftLeaf(*this).visitChildren() );
-                break;
+    control.perft_depth(draft, perft);
+    return NodeControl::Continue;
+}
 
-            default:
-                assert (draft >= 3);
-                RETURN_IF_ABORT ( NodePerftTT(*this).visitChildren() );
+NodeControl NodePerftRootDepth::visitChildren() {
+    NodePerftRoot::visitChildren();
+
+    control.perft_finish();
+    return NodeControl::Continue;
+}
+
+NodeControl NodePerftRootIterative::visitChildren() {
+    for (draft = 1; draft <= DepthMax; ++draft) {
+        auto c = NodePerftRoot(*this, control, draft).visitChildren();
+        if (c != NodeControl::Continue) { break; }
+
+        control.newIteration();
+    }
+
+    control.perft_finish();
+    return NodeControl::Continue;
+}
+
+NodeControl NodePerftDivide::visit(Square from, Square to) {
+    playMove(parent, from, to, Zobrist{0});
+
+    switch (draft) {
+        case 0:
+            perft = 1;
+            break;
+
+        case 1:
+            perft = getMovesCount();
+            break;
+
+        case 2:
+            RETURN_IF_ABORT ( static_cast<NodePerftLeaf>(*this).visitChildren() );
+            break;
+
+        default:
+            assert (draft >= 3);
+            setZobrist(parent, from, to);
+            RETURN_IF_ABORT ( static_cast<NodePerftTT>(*this).visitChildren() );
+    }
+
+    ++moveCount;
+    Move move = parent.createMove(from, to);
+    control.perft_currmove(moveCount, move, perft);
+
+    updateParentPerft();
+    return NodeControl::Continue;
+}
+
+NodeControl NodePerftDivide::visitChildren() {
+    perft = 0;
+
+    auto _moves = cloneMoves();
+    auto child = NodePerftDivide(*this);
+
+    for (Pi pi : (*this)[My].alivePieces()) {
+        Square from = (*this)[My].squareOf(pi);
+
+        for (Square to : _moves[pi]) {
+            RETURN_IF_ABORT (beforeVisit());
+            _moves.clear(pi, to);
+
+            RETURN_IF_ABORT (child.visit(from, to));
         }
     }
 
@@ -35,22 +94,19 @@ NodeControl NodePerftRoot::searchIteration() {
     return NodeControl::Continue;
 }
 
-NodeControl NodePerftRoot::iterativeDeepening() {
-    for (draft = 1; draft <= DepthMax; ++draft) {
-        RETURN_IF_ABORT ( searchIteration() );
-        perft = 0;
-        control.newIteration();
-    }
+NodeControl NodePerftDivideDepth::visitChildren() {
+    NodePerftDivide::visitChildren();
 
+    control.perft_finish();
     return NodeControl::Continue;
 }
 
-NodeControl NodePerftRoot::visitChildren() {
-    if (draft > 0) {
-        searchIteration();
-    }
-    else {
-        iterativeDeepening();
+NodeControl NodePerftDivideIterative::visitChildren() {
+    for (draft = 1; draft <= DepthMax; ++draft) {
+        auto c = NodePerftDivide(*this, control, draft).visitChildren();
+        if (c != NodeControl::Continue) { break; }
+
+        control.newIteration();
     }
 
     control.perft_finish();

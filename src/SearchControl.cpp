@@ -28,9 +28,19 @@ void SearchControl::go(const SearchLimit& limit) {
     nodeCounter = NodeCounter(limit.nodes);
     auto duration = limit.getThinkingTime();
 
-    auto searchId = searchThread.start( limit.isPerft
-        ? static_cast<std::unique_ptr<Node>>(std::make_unique<NodePerftRoot>(limit, *this))
-        : static_cast<std::unique_ptr<Node>>(std::make_unique<NodeAbRoot>(limit, *this))
+    auto searchId = searchThread.start(
+        limit.isPerft
+            ? (limit.depth
+                ? (limit.isDivide
+                    ? static_cast<std::unique_ptr<Node>>(std::make_unique<NodePerftDivideDepth>(limit, *this))
+                    : static_cast<std::unique_ptr<Node>>(std::make_unique<NodePerftRootDepth>(limit, *this))
+                )
+                : (limit.isDivide
+                    ? static_cast<std::unique_ptr<Node>>(std::make_unique<NodePerftDivideIterative>(limit, *this))
+                    : static_cast<std::unique_ptr<Node>>(std::make_unique<NodePerftRootIterative>(limit, *this))
+                )
+            )
+            : static_cast<std::unique_ptr<Node>>(std::make_unique<NodeAbRoot>(limit, *this))
     );
 
     timer.start(duration, searchThread, searchId);

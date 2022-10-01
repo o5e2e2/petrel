@@ -66,4 +66,11 @@ public:
 
 };
 
+class SearchControlPly {
+    ply_t& ply;
+public:
+    SearchControlPly (SearchControl& c) : ply{c.ply} { ++ply; }
+    ~SearchControlPly () { --ply; }
+};
+
 #endif

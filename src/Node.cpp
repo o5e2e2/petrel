@@ -8,19 +8,10 @@ Node::Node (Node& n, ply_t r)
     , draft{n.draft - r}
     {}
 
-namespace {
-    class SearchPly {
-        SearchControl& control;
-    public:
-        SearchPly (Node& n) : control{n.control} { ++control.ply; }
-        ~SearchPly() { --control.ply; }
-    };
-}
-
 NodeControl Node::beforeVisit() { return control.countNode(); }
 
 NodeControl Node::visitChildren() {
-    SearchPly ply(*this);
+    SearchControlPly ply(control);
 
     auto parentMoves = parent.cloneMoves();
 

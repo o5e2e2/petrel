@@ -5,6 +5,7 @@
 NodeControl NodePerftTT::visit(Square from, Square to) {
     auto& p = static_cast<NodePerft&>(parent);
 
+    assert (draft >= 2);
     setZobrist(p, from, to);
 
     {
