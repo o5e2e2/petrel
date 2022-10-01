@@ -7,39 +7,47 @@
 class SearchControl;
 
 class NodeCounter {
-    node_count_t nodes; // (0 <= nodes && nodes <= nodesLimit)
+    node_count_t nodes = 0; // (0 <= nodes && nodes <= nodesLimit)
     node_count_t nodesLimit; // search limit
 
     typedef unsigned nodes_quota_t;
-    enum : nodes_quota_t { TickLimit = 5000 }; // ~1 msec
+    enum : nodes_quota_t { QuotaLimit = 5000 }; // ~1 msec
 
     //number of remaining nodes before slow checking for search abort
-    nodes_quota_t nodesQuota; // (0 <= nodesQuota && nodesQuota <= TickLimit)
+    nodes_quota_t nodesQuota = 0; // (0 <= nodesQuota && nodesQuota <= QuotaLimit)
 
-public:
-    NodeCounter(node_count_t limitNodes = NodeCountMax) {
-        nodesLimit = limitNodes;
-        nodes = 0;
-        nodesQuota = 0;
+    constexpr void assertValid() const {
+        assert (nodesQuota <= nodes && nodes <= nodesLimit);
+        assert (/* 0 <= nodesQuota && */ nodesQuota < QuotaLimit);
     }
 
-    operator node_count_t () const {
-        assert (nodesQuota <= nodes && nodes <= nodesLimit);
+public:
+    constexpr NodeCounter(node_count_t n = NodeCountMax) : nodesLimit{n} {}
+
+    /// exact number of visited nodes
+    constexpr operator node_count_t () const {
+        assertValid();
         return nodes - nodesQuota;
     }
 
-    bool isAborted() const {
-        return nodesLimit == nodes && nodesQuota == 0;
+    constexpr bool isAborted() const {
+        assertValid();
+        assert (nodes - nodesQuota < nodesLimit || nodesQuota == 0);
+        return nodes == nodesLimit;
     }
 
     NodeControl count(const SearchControl& search) {
-        assert (nodesQuota <= nodes && nodes <= nodesLimit);
+        assertValid();
 
-        if (nodesQuota > 0) {
-            --nodesQuota;
-            return NodeControl::Continue;
+        if (nodesQuota == 0) {
+            return refreshQuota(search);
         }
-        return refreshQuota(search);
+
+        assert (nodesQuota > 0);
+        --nodesQuota;
+
+        assertValid();
+        return NodeControl::Continue;
     }
 
     NodeControl refreshQuota(const SearchControl& search);
