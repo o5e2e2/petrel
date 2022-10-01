@@ -11,8 +11,7 @@ class SearchThread : public ThreadControl {
     void run() override;
 
 public:
-    SearchThread ();
-    ~SearchThread();
+    ~SearchThread(); /* default */
 
     TaskId start(std::unique_ptr<Node>);
 };

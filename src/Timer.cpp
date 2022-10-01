@@ -10,16 +10,16 @@ void TimerThread::run() {
 
 void Timer::start(Duration duration, ThreadControl& thread, ThreadControl::TaskId taskId) {
     //zero duration means no timer
-    if (taskId == decltype(taskId)::None || duration == Duration::zero()) {
+    if (duration == Duration::zero() || taskId == decltype(taskId)::None || !thread.isTask(taskId)) {
         return;
     }
 
-    auto iterator = acquire();
-    auto& timer = fetch(iterator);
+    auto timerIterator = acquire();
+    auto& timer = fetch(timerIterator);
     assert (timer.isIdle());
 
     timer.pool = this;
-    timer.iterator = iterator;
+    timer.iterator = timerIterator;
     timer.thread = &thread;
     timer.taskId = taskId;
     timer.duration = duration;

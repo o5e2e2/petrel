@@ -1,8 +1,7 @@
 #include "SearchThread.hpp"
 #include "Node.hpp"
 
-SearchThread::SearchThread() = default;
-SearchThread::~SearchThread() { stop(); }
+SearchThread::~SearchThread() = default;
 
 ThreadControl::TaskId SearchThread::start(std::unique_ptr<Node> n) {
     assert (isIdle());

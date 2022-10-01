@@ -39,11 +39,12 @@ private:
 
 public:
     ThreadControl ();
-    virtual ~ThreadControl() = default;
+    virtual ~ThreadControl() { stop(); }
 
     bool isIdle() const { return isStatus(Status::Idle); }
     bool isRunning() const { return isStatus(Status::Working); }
     bool isStopped() const { return isStatus(Status::Stopping); }
+    bool isTask(TaskId id) const { return taskId == id; }
 
     TaskId start() { return signalSequence(Status::Idle, Status::Working); }
     void stop() { signal(Status::Working, Status::Stopping); wait(Status::Idle); }
