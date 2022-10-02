@@ -12,7 +12,9 @@
 #include <condition_variable>
 #include <cstdint>
 #include <cstdlib>
+#include <cstring>
 #include <forward_list>
+#include <errno.h>
 #include <immintrin.h>
 #include <iomanip>
 #include <iostream>
@@ -21,6 +23,7 @@
 #include <set>
 #include <sstream>
 #include <thread>
+#include <tmmintrin.h>
 
 #endif
 

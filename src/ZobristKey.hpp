@@ -12,6 +12,7 @@ public:
 private:
     static constexpr _t rol(_t n, Square::_t sq) { return n << sq | n >> (64-sq); }
 
+    //selected de Bruijn sequences
     enum : _t {
         Queen  = 0x0218a392cd5d3dbfull,
         Rook   = 0x024530decb9f8eadull,
