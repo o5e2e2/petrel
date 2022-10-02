@@ -1,13 +1,133 @@
 #include <set>
 
 #include "PositionFen.hpp"
-#include "FenBoard.hpp"
 #include "CastlingRules.hpp"
 
 #define MY (*this)[My]
 #define OP (*this)[Op]
 
 namespace {
+
+/** Setup a chess position from a FEN string with chess legality validation */
+class FenToBoard {
+    struct SquareImportance {
+        bool operator () (Square sq1, Square sq2) const {
+            if (Rank(sq1) != Rank(sq2)) {
+                return Rank(sq1) < Rank(sq2); //Rank8 < Rank1
+            }
+            else {
+                constexpr Rank::arrayOf<index_t> order{6, 4, 2, 0, 1, 3, 5, 7};
+                return order[File(sq1)] < order[File(sq2)]; //FileD < FileE < FileC < FileF < FileB < FileG < FileA < FileH
+            }
+        }
+    };
+    typedef std::set<Square, SquareImportance> Squares;
+
+    Color::arrayOf< PieceType::arrayOf<Squares> > pieces;
+    Color::arrayOf<index_t> pieceCount = {{0, 0}};
+
+    bool drop(Color, PieceType, Square);
+
+public:
+    friend io::istream& operator >> (io::istream&, FenToBoard&);
+    bool dropPieces(Position& pos, Color colorToMove);
+};
+
+io::istream& operator >> (io::istream& in, FenToBoard& board) {
+    in >> std::ws;
+
+    File file{FileA}; Rank rank{Rank8};
+    for (io::char_type c; in.get(c); ) {
+        if (std::isalpha(c) && rank.isOk() && file.isOk()) {
+            Color color = std::isupper(c) ? White : Black;
+            c = static_cast<io::char_type>(std::tolower(c));
+
+            PieceType ty{PieceType::Begin};
+            if ( ty.from_char(c) && board.drop(color, ty, Square{file, rank}) ) {
+                ++file;
+                continue;
+            }
+            io::fail_char(in);
+        }
+        else if ('1' <= c && c <= '8' && rank.isOk() && file.isOk()) {
+            int b = c - '0'; //convert digit symbol to int
+
+            //skip blank squares
+            int f = file + b;
+            if (f <= static_cast<int>(File::Size)) {
+                //avoid out of range initialization check
+                file = static_cast<File::_t>(f-1);
+                ++file;
+                continue;
+            }
+            io::fail_char(in);
+        }
+        else if (c == '/' && rank.isOk()) {
+            ++rank;
+            file = FileA;
+            continue;
+        }
+        else if (std::isblank(c)) {
+            break; //end of board description field
+        }
+
+        //otherwise it is an input error
+        io::fail_char(in);
+    }
+    return in;
+}
+
+bool FenToBoard::drop(Color color, PieceType ty, Square sq) {
+    //our position representaion cannot hold more then 16 total pieces per color
+    if (pieceCount[color] == Pi::Size) {
+        return false;
+    }
+
+    //max one king per each color
+    if (ty.is(King) && !pieces[color][King].empty()) {
+        return false;
+    }
+
+    //illegal pawn location
+    if (ty.is(Pawn) && (sq.on(Rank1) || sq.on(Rank8))) {
+        return false;
+    }
+
+    ++pieceCount[color];
+    pieces[color][ty].insert(color.is(White) ? sq : ~sq);
+    return true;
+}
+
+bool FenToBoard::dropPieces(Position& position, Color colorToMove) {
+    //each side should have one king
+    FOR_INDEX(Color, color) {
+        if (pieces[color][King].empty()) {
+            return false;
+        }
+    }
+
+    Position pos;
+
+    FOR_INDEX(Color, color) {
+        Side side = colorToMove.is(color) ? My : Op;
+
+        FOR_INDEX(PieceType, ty) {
+            while (!pieces[color][ty].empty()) {
+                auto piece = pieces[color][ty].begin();
+
+                if (!pos.dropValid(side, ty, *piece)) {
+                    //should never happen
+                    return false;
+                }
+
+                pieces[color][ty].erase(piece);
+            }
+        }
+    }
+
+    position = pos;
+    return true;
+}
 
 class BoardToFen {
     const PositionSide& whitePieces;
@@ -245,7 +365,7 @@ void PositionFen::playMoves(io::istream& in) {
 }
 
 io::istream& PositionFen::setBoard(io::istream& in) {
-    FenBoard board;
+    FenToBoard board;
 
     in >> board >> std::ws;
     if (in.eof()) {
