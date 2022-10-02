@@ -105,8 +105,6 @@ public:
     //TRICK: attacks calculated without opponent's king for implicit out of check king's moves generation
     void setSliderAttacks(PiMask affected) { setSliderAttacks(affected, occupiedBb - opKing); };
 
-    void setGamePhase(const PositionSide&);
-
     //used only during initial position setup
     bool dropValid(PieceType, Square);
 
@@ -121,7 +119,6 @@ private:
     void setLeaperAttacks();
     void setLeaperAttack(Pi, PieceType, Square);
     void setPinner(Pi, PieceType, Square);
-    GamePhase generateGamePhase() const; //returns whether material for endgame or middlegame
 
 };
 

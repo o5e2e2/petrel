@@ -58,9 +58,6 @@ void PositionSide::finalSetup(PositionSide& MY, PositionSide& OP) {
 
     MY.setLeaperAttacks();
     OP.setLeaperAttacks();
-
-    MY.setGamePhase(OP);
-    OP.setGamePhase(MY);
 }
 
 void PositionSide::setLeaperAttacks() {
@@ -76,19 +73,8 @@ void PositionSide::syncOccupied(PositionSide& MY, PositionSide& OP) {
     OP.occupiedBb = OP.piecesBb + ~MY.piecesBb;
 }
 
-GamePhase PositionSide::generateGamePhase() const {
-    auto queensCount = piecesOfType(Queen).count();
-    bool isEndgame = (queensCount == 0) || (queensCount == 1 && types.minors().count() <= 1);
-    return isEndgame ? Endgame : Middlegame;
-}
-
-void PositionSide::setGamePhase(const PositionSide& OP) {
-    auto opGamePhase = OP.generateGamePhase();
-    evaluation.setGamePhase(opGamePhase, kingSquare());
-}
-
 Score PositionSide::evaluate(const PositionSide& MY, const PositionSide& OP) {
-    return MY.evaluation.evaluate() - OP.evaluation.evaluate();
+    return Evaluation::evaluate(MY.evaluation, OP.evaluation);
 }
 
 void PositionSide::capture(Square from) {
@@ -101,7 +87,7 @@ void PositionSide::capture(Square from) {
     piecesBb -= from;
     pawnsBb &= piecesBb; //clear if pawn
 
-    evaluation.clear(ty, from);
+    evaluation.capture(ty, from);
     attacks.clear(pi);
     squares.clear(pi);
     types.clear(pi);

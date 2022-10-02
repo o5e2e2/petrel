@@ -23,7 +23,7 @@ constexpr const HyperbolaSq hyperbolaSq; //1k
 constexpr const PieceTypeAttack attacksFrom; //3k
 constexpr const VectorOf vectorOfAll; //4k
 constexpr const VectorPiSingle vectorPiSingle; //256
-constexpr const PieceSquareTable pieceSquareTable; //7*64
+constexpr const PieceSquareTable pieceSquareTable; //1.5k 6*64*4
 constexpr const ZobristKey zobristKey; //64
 constexpr const CastlingRules castlingRules; //128
 constexpr const BitReverse bitReverse; //32

@@ -27,7 +27,6 @@ template <Side::_t My>
 void Position::capture(Square from) {
     constexpr Side Op{~My};
     MY.capture(from);
-    OP.setGamePhase(MY);
 }
 
 template <Side::_t My>
@@ -89,7 +88,6 @@ void Position::playPawnMove(Pi pi, Square from, Square to) {
         Square promotedTo{File(to), Rank8};
 
         MY.promote(pi, ty, from, promotedTo);
-        OP.setGamePhase(MY);
 
         if (OP.isOccupied(~promotedTo)) {
             //promotion with capture

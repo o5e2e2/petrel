@@ -47,13 +47,12 @@ enum piece_type_t {
     Knight = 3,
     Pawn = 4,
     King = 5,
-    KingEndgame = 6, ZobristCastling = 6,
+    ZobristCastling = 6,
     ZobristEnPassant = 7,
 };
 typedef Index<3, piece_type_t> SliderType;
 typedef Index<4, piece_type_t> PromoType;
 typedef Index<6, piece_type_t> PieceType;
-typedef Index<7, piece_type_t> PieceEvalType;
 typedef Index<8, piece_type_t> PieceZobristType;
 
 constexpr bool isSlider(piece_type_t ty) { return ty < Knight; }
