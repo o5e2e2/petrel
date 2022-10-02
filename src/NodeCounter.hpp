@@ -2,7 +2,7 @@
 #define NODE_COUNTER_HPP
 
 #include "typedefs.hpp"
-#include "NodeControl.hpp"
+#include "Node.hpp"
 
 class SearchControl;
 

@@ -2,8 +2,14 @@
 #define NODE_HPP
 
 #include "Score.hpp"
-#include "NodeControl.hpp"
 #include "PositionMoves.hpp"
+
+enum class NodeControl : bool {
+    Continue = false,
+    Abort = true
+};
+
+#define RETURN_IF_ABORT(control) { NodeControl c{control}; if (c != NodeControl::Continue) { return c; } } ((void)0)
 
 class SearchControl;
 
