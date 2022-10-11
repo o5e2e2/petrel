@@ -196,7 +196,7 @@ void PositionSide::castle(Square kingFrom, Square kingTo, Pi rook, Square rookFr
     piecesBb += kingTo;
     piecesBb += rookTo;
 
-    evaluation.castle(kingFrom, rookFrom, rookFrom, rookTo);
+    evaluation.castle(kingFrom, kingTo, rookFrom, rookTo);
 
     traits.clearPinner(rook);
     setPinner(rook, Rook, rookTo);
