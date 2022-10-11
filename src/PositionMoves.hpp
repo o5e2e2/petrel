@@ -41,9 +41,6 @@ protected:
     void setZobrist() { zobrist = generateZobrist(); }
 
 public:
-    constexpr PositionMoves () = default;
-    PositionMoves (const PositionMoves&) = default;
-
     const Zobrist& getZobrist() const { return zobrist; }
     index_t getMovesCount() const { return movesCount; }
     Score getStaticEval() const { return staticEval; }

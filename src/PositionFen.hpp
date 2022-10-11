@@ -20,8 +20,6 @@ class PositionFen : public PositionMoves {
     bool setEnPassant(File);
 
 public:
-    constexpr PositionFen() = default;
-
     constexpr Side sideOf(Color color) const { return colorToMove.is(color) ? My : Op; }
     constexpr bool isChess960() const { return chessVariant.is(Chess960); }
 

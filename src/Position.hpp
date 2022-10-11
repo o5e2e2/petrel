@@ -19,9 +19,6 @@ protected:
     constexpr PositionSide& operator[] (Side side) { return positionSide[side]; }
 
 public:
-    constexpr Position () = default;
-    Position (const Position&) = default;
-
     constexpr const PositionSide& operator[] (Side side) const { return positionSide[side]; }
 
     Move createMove(Square from, Square to) const { return (*this)[My].createMove(from, to); }

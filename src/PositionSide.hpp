@@ -27,9 +27,6 @@ class PositionSide {
     Square opKing; //location of the opponent's king
 
 public:
-    constexpr PositionSide () = default;
-    PositionSide (const PositionSide&) = default;
-
     static Score evaluate(const PositionSide&, const PositionSide&);
 
     Zobrist generateZobrist() const; //calculate Zobrist key from scratch
