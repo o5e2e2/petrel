@@ -18,7 +18,6 @@ protected:
 public:
     NodePerft (NodePerft& n, ply_t r) : Node(n, r) {}
     NodePerft (const PositionMoves& p, SearchControl& c, ply_t d) : Node(p, c, d) {}
-    NodeControl visit(Square from, Square to) override;
 };
 
 #endif

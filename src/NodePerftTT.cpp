@@ -1,28 +1,32 @@
 #include "NodePerftTT.hpp"
+#include "NodePerftLeaf.hpp"
 #include "PerftTT.hpp"
 #include "SearchControl.hpp"
 
 NodeControl NodePerftTT::visit(Square from, Square to) {
-    auto& p = static_cast<NodePerft&>(parent);
-
     assert (draft >= 2);
-    setZobrist(p, from, to);
+    setZobrist(parent, from, to);
 
-    {
-        auto n = control.tt().get(getZobrist(), draft-2);
+    auto n = control.tt().get(getZobrist(), draft-2);
+    if (n != NodeCountNone) {
+        perft = n;
+    }
+    else {
+        playMove(parent, from, to, getZobrist());
 
-        if (n != NodeCountNone) {
-            perft = n;
-            updateParentPerft();
-            return NodeControl::Continue;
+        switch (draft) {
+            case 2:
+                RETURN_IF_ABORT ( static_cast<NodePerftLeaf>(*this).visitChildren() );
+                break;
+
+            default:
+                assert (draft >= 3);
+                RETURN_IF_ABORT ( static_cast<NodePerftTT>(*this).visitChildren() );
         }
+
+        control.tt().set(getZobrist(), draft-2, perft);
     }
 
-    auto parentPerftBefore = p.perft;
-    RETURN_IF_ABORT ( NodePerft::visit(from, to) );
-    auto n = p.perft - parentPerftBefore;
-
-    control.tt().set(getZobrist(), draft-2, n);
-
+    updateParentPerft();
     return NodeControl::Continue;
 }

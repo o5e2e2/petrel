@@ -44,25 +44,40 @@ NodeControl NodePerftRootIterative::visitChildren() {
 }
 
 NodeControl NodePerftDivide::visit(Square from, Square to) {
-    playMove(parent, from, to, Zobrist{0});
-
     switch (draft) {
         case 0:
             perft = 1;
             break;
 
         case 1:
+            playMove(parent, from, to, Zobrist{0});
             perft = getMovesCount();
             break;
 
-        case 2:
-            RETURN_IF_ABORT ( static_cast<NodePerftLeaf>(*this).visitChildren() );
-            break;
-
-        default:
-            assert (draft >= 3);
+        default: {
+            assert (draft >= 2);
             setZobrist(parent, from, to);
-            RETURN_IF_ABORT ( static_cast<NodePerftTT>(*this).visitChildren() );
+
+            auto n = control.tt().get(getZobrist(), draft-2);
+            if (n != NodeCountNone) {
+                perft = n;
+            }
+            else {
+                playMove(parent, from, to, getZobrist());
+
+                switch (draft) {
+                    case 2:
+                        RETURN_IF_ABORT ( static_cast<NodePerftLeaf>(*this).visitChildren() );
+                        break;
+
+                    default:
+                        assert (draft >= 3);
+                        RETURN_IF_ABORT ( static_cast<NodePerftTT>(*this).visitChildren() );
+                }
+
+                control.tt().set(getZobrist(), draft-2, perft);
+            }
+        }
     }
 
     ++moveCount;
