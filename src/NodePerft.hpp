@@ -16,7 +16,7 @@ protected:
     }
 
 public:
-    NodePerft (NodePerft& n, ply_t r) : Node(n, r) {}
+    NodePerft (NodePerft& n) : Node{n} {}
     NodePerft (const PositionMoves& p, SearchControl& c, ply_t d) : Node(p, c, d) {}
 };
 

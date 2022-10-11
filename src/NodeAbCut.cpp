@@ -5,7 +5,7 @@
 NodeControl NodeAbCut::visit(Square from, Square to) {
     auto& p = static_cast<NodeAbAll&>(parent);
 
-    playMove(p, from, to, getZobrist());
+    playMove(p, from, to);
 
     if (getMovesCount() == 0 || draft == 0) {
         bestScore = getStaticEval();

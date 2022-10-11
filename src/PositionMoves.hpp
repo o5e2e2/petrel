@@ -30,7 +30,7 @@ private:
 
 protected:
     void playMove(Square, Square);
-    void playMove(const Position&, Square, Square, Zobrist);
+    void playMove(const Position&, Square, Square);
 
     void generateMoves();
 

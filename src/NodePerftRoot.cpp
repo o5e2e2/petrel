@@ -50,7 +50,7 @@ NodeControl NodePerftDivide::visit(Square from, Square to) {
             break;
 
         case 1:
-            playMove(parent, from, to, Zobrist{0});
+            playMove(parent, from, to);
             perft = getMovesCount();
             break;
 
@@ -63,7 +63,7 @@ NodeControl NodePerftDivide::visit(Square from, Square to) {
                 perft = n;
             }
             else {
-                playMove(parent, from, to, getZobrist());
+                playMove(parent, from, to);
 
                 switch (draft) {
                     case 2:

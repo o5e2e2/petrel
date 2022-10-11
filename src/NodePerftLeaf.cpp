@@ -3,7 +3,7 @@
 #include "SearchControl.hpp"
 
 NodeControl NodePerftLeaf::visit(Square from, Square to) {
-    playMove(parent, from, to, Zobrist{0});
+    playMove(parent, from, to);
 
     //updateParentPerft:
     auto& p = static_cast<NodePerft&>(parent);

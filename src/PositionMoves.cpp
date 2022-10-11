@@ -221,8 +221,7 @@ void PositionMoves::playMove(Square from, Square to) {
     assert (zobrist == generateZobrist());
 }
 
-void PositionMoves::playMove(const Position& parent, Square from, Square to, Zobrist z) {
-    zobrist = z;
+void PositionMoves::playMove(const Position& parent, Square from, Square to) {
     Position::playMove(parent, from, to);
     generateMoves();
     assert (zobrist == Zobrist{0} || zobrist == generateZobrist());

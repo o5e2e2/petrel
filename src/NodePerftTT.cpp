@@ -12,7 +12,7 @@ NodeControl NodePerftTT::visit(Square from, Square to) {
         perft = n;
     }
     else {
-        playMove(parent, from, to, getZobrist());
+        playMove(parent, from, to);
 
         switch (draft) {
             case 2:

@@ -5,7 +5,7 @@
 NodeControl NodeAbPv::visit(Square from, Square to) {
     auto& p = static_cast<NodeAbPv&>(parent);
 
-    playMove(p, from, to, getZobrist());
+    playMove(p, from, to);
 
     if (getMovesCount() == 0) {
         //mated or stalemated
