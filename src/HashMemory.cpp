@@ -1,4 +1,5 @@
 #include <cstring>
+#include <xmmintrin.h>
 #include "HashMemory.hpp"
 #include "bitops.hpp"
 #include "memory.hpp"

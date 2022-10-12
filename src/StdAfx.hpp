@@ -1,7 +1,7 @@
 #ifndef STD_AFX_HPP
 #define STD_AFX_HPP
 
-#define USE_PRECOMPILED_HEADERS
+//#define USE_PRECOMPILED_HEADERS
 
 #if defined USE_PRECOMPILED_HEADERS
 
@@ -24,6 +24,7 @@
 #include <sstream>
 #include <thread>
 #include <tmmintrin.h>
+#include <xmmintrin.h>
 
 #endif
 

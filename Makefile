@@ -1,13 +1,14 @@
 #debug = yes
 
+SRC_DIR ?= src
+DEBUG_DIR ?= debug
+RELEASE_DIR ?= release
+TEST_DIR ?= test
+
 GIT_DATE = $(shell git log -1 --date=short --pretty=format:%cd)
 GIT_HASH = $(shell git log -1 --date=short --pretty=format:%h)
 GIT_ORIGIN = $(shell git remote get-url origin)
-
-SRC_DIR ?= ./src
-DEBUG_DIR ?= ./debug
-RELEASE_DIR ?= ./release
-TEST_DIR ?= ./test
+CXXFLAGS += -DGIT_DATE=\"$(GIT_DATE)\" -DGIT_HASH=\"$(GIT_HASH)\" -DGIT_ORIGIN=\"$(GIT_ORIGIN)\"
 
 ifeq ($(debug),yes)
 	BUILD_DIR = $(DEBUG_DIR)
@@ -22,16 +23,16 @@ endif
 TARGET ?= $(BUILD_DIR)/petrel
 EXPECT ?= $(TEST_DIR)/expect.sh
 
-LIBS = -pthread
-OPTIONS  = -std=c++17 -mssse3 -march=native -mtune=native
-OPTIONS += -fno-rtti -fno-common -fno-exceptions
+CXXFLAGS += -std=c++17 -mssse3 -march=native -mtune=native
+CXXFLAGS +=-fno-rtti -fno-common -fno-exceptions
 
 WARNINGS += -pedantic -Wall -Wextra -Wuninitialized -Wpointer-arith -Wcast-qual -Wcast-align
 WARNINGS += -Wconversion -Wshadow -Wno-ignored-attributes
 
-CXXFLAGS += $(OPTIONS) $(OPTIMIZATIONS) $(WARNINGS)
-CXXFLAGS += -DGIT_DATE=\"$(GIT_DATE)\" -DGIT_HASH=\"$(GIT_HASH)\" -DGIT_ORIGIN=\"$(GIT_ORIGIN)\"
-LDFLAGS += $(LIBS) $(OPTIMIZATIONS) -Wl,--no-as-needed
+CXXFLAGS += $(OPTIMIZATIONS) $(WARNINGS)
+
+LDLIBS += -pthread
+LDFLAGS += $(LDLIBS) $(OPTIMIZATIONS) -Wl,--no-as-needed
 
 HEADER = StdAfx.hpp
 PRECOMP = $(BUILD_DIR)/$(HEADER).gch
