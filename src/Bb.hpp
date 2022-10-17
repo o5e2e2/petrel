@@ -70,7 +70,7 @@ constexpr Bb Square::operator() (signed fileOffset, signed rankOffset) const {
 }
 constexpr Bb Square::horizont() const { return Bb{Rank(*this)} - *this; }
 constexpr Bb Square::vertical() const { return Bb{File(*this)} - *this; }
-constexpr Bb Square::diagonal() const { return Bb{BB(0x0102040810204080), 8*(Rank(*this) + File(*this) - 7)} - *this; }
-constexpr Bb Square::antidiag() const { return Bb{BB(0x8040201008040201), 8*(Rank(*this) - File(*this))} - *this; }
+constexpr Bb Square::diagonal() const { return Bb{BB(0x0102040810204080), 8*(Rank(*this) + +File(*this) - 7)} - *this; }
+constexpr Bb Square::antidiag() const { return Bb{BB(0x8040201008040201), 8*(Rank(*this) - +File(*this))} - *this; }
 
 #endif

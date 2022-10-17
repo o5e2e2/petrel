@@ -16,8 +16,8 @@ private:
     /// @param sm square middlegame adjustment
     /// @param pe piece endgame value
     /// @param se square endgame adjustment
-    static constexpr _t e(unsigned pm, signed sm, unsigned pe, signed se) {
-        return (pm + sm) | ((pe + se) << 16); }
+    static constexpr _t e(signed pm, signed sm, signed pe, signed se) {
+        return static_cast<_t>(pm + sm) | (static_cast<_t>(pe + se) << 16); }
 
 public:
     constexpr PieceSquareTable () : pst {{

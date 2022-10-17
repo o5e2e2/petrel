@@ -14,19 +14,19 @@ private:
 
     //selected de Bruijn sequences
     enum : _t {
-        Queen  = 0x0218a392cd5d3dbfull,
-        Rook   = 0x024530decb9f8eadull,
-        Bishop = 0x02b91efc4b53a1b3ull,
-        Knight = 0x02dc61d5ecfc9a51ull,
-        Pawn   = 0x031faf09dcda2ca9ull,
-        King   = 0x0352138afdd1e65bull,
-        Extra  = 0x03ac4dfb48546797ull
+        zQueen  = 0x0218a392cd5d3dbfull,
+        zRook   = 0x024530decb9f8eadull,
+        zBishop = 0x02b91efc4b53a1b3ull,
+        zKnight = 0x02dc61d5ecfc9a51ull,
+        zPawn   = 0x031faf09dcda2ca9ull,
+        zKing   = 0x0352138afdd1e65bull,
+        zExtra  = 0x03ac4dfb48546797ull,
+        zCastling = zExtra ^ zRook,
+        zEnPassant = zExtra ^ zPawn,
     };
 
-    const Index::static_arrayOf<_t> key = {{
-        Queen, Rook, Bishop, Knight, Pawn, King,
-        Extra ^ Rook, //castling
-        Extra ^ Pawn //en passant
+    const Index::arrayOf<_t> key = {{
+        zQueen, zRook, zBishop, zKnight, zPawn, zKing, zCastling, zEnPassant
     }};
 
 public:

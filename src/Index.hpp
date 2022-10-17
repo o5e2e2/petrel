@@ -6,7 +6,7 @@
 #include "bitops.hpp"
 #include "io.hpp"
 
-typedef int index_t; //small numbers [0..N) with a known upper bound
+typedef unsigned index_t; //small numbers [0..N) with a known upper bound
 
 #define FOR_INDEX(Index, i) for (Index i{Index::Begin}; i.isOk(); ++i)
 
@@ -75,12 +75,6 @@ public:
     }
 
     template <typename T> using arrayOf = std::array<T, Size>;
-
-    template <typename T> struct CACHE_ALIGN static_arrayOf : arrayOf<T> {
-        constexpr static_arrayOf () = default;
-        static_arrayOf (const static_arrayOf&) = delete;
-        static_arrayOf& operator = (const static_arrayOf&) = delete;
-    };
 
 };
 

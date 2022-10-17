@@ -5,7 +5,7 @@
 
 //queen moves between two given squares (32k) (excluding both ends)
 class BetweenSquares {
-    Square::static_arrayOf< Square::static_arrayOf<Bb> > between;
+    Square::arrayOf< Square::arrayOf<Bb> > between;
 
 public:
     constexpr BetweenSquares () {

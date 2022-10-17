@@ -23,8 +23,8 @@ private:
 
     constexpr Score e(game_phase_t opGamePhase) const {
         const game_phase_t phase = std::max(static_cast<game_phase_t>(minEG), std::min(static_cast<game_phase_t>(maxMG), static_cast<game_phase_t>(this->gamePhase + opGamePhase)));
-        const auto factorMG = (phase - minEG) / phaseRange;
-        const auto factorEG = 1 - factorMG;
+        const auto factorMG = static_cast<double>(phase - minEG) / static_cast<double>(phaseRange);
+        const auto factorEG = 1.0 - factorMG;
 
         auto mpst = pst & 0xffff;
         auto epst = pst >> 16;

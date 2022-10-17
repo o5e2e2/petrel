@@ -65,12 +65,12 @@ constexpr T withoutLsb(T n) { return n & static_cast<T>(n-1); }
 template <typename T>
 constexpr bool isSingleton(T n) { return (n != 0) && (::withoutLsb(n) == 0); }
 
-typedef int index_t; //small numbers [0..N) with a known upper bound
+typedef unsigned index_t; //small numbers [0..N) with a known upper bound
 
 #if defined __GNUC__
     INLINE index_t bsf(std::uint32_t b) {
         assert (b != 0);
-        return __builtin_ctz(b);
+        return static_cast<index_t>(__builtin_ctz(b));
     }
 
     INLINE index_t bsr(std::uint32_t b) {
@@ -87,7 +87,7 @@ typedef int index_t; //small numbers [0..N) with a known upper bound
 #   if defined PLATFORM_64
         INLINE index_t bsf(std::uint64_t b) {
             assert (b != 0);
-            return __builtin_ctzll(b);
+            return static_cast<index_t>(__builtin_ctzll(b));
         }
 
         INLINE index_t bsr(std::uint64_t b) {

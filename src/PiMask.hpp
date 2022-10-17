@@ -28,15 +28,15 @@ private:
     }
 #endif
 
-    constexpr explicit PiMask (_t a) : m{a} { assertValid(); }
+    explicit PiMask (_t a) : m{a} { assertValid(); }
 
 public:
     constexpr operator _t () const { return m; }
 
-    constexpr PiMask () : m{ ::vectorOfAll[0] } {}
-    constexpr PiMask (Pi pi) : m{ ::vectorPiSingle[pi] } {}
+    constexpr PiMask () : m{0} {}
+    PiMask (Pi pi) : m{ ::vectorPiSingle[pi] } {}
 
-    constexpr static PiMask all() { return PiMask{ ::vectorOfAll[0xff] }; }
+    static PiMask all() { return PiMask{ ::vectorOfAll[0xff] }; }
     static PiMask cmpeq(_t a, _t b) { return PiMask { _mm_cmpeq_epi8(a, b) }; }
     static PiMask cmpgt(_t a, _t b) { return PiMask { _mm_cmpgt_epi8(a, b) }; }
     static PiMask negate(_t a) { return PiMask::cmpeq(a, ::vectorOfAll[0]); }

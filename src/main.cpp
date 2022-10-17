@@ -17,15 +17,15 @@
 /**
 * Startup constant initialization
 */
-constexpr const BetweenSquares between; //32k
-constexpr const HyperbolaDir hyperbolaDir; //12k
-constexpr const HyperbolaSq hyperbolaSq; //1k
-constexpr const PieceTypeAttack attacksFrom; //3k
+const BetweenSquares between; //32k
+const HyperbolaDir hyperbolaDir; //12k
+const HyperbolaSq hyperbolaSq; //1k
+const PieceTypeAttack attacksFrom; //3k
 constexpr const VectorOf vectorOfAll; //4k
 constexpr const VectorPiSingle vectorPiSingle; //256
 constexpr const PieceSquareTable pieceSquareTable; //1.5k 6*64*4
 constexpr const ZobristKey zobristKey; //64
-constexpr const CastlingRules castlingRules; //128
+const CastlingRules castlingRules; //128
 constexpr const BitReverse bitReverse; //32
 constexpr const VectorBitCount bitCount; //16
 const VectorPiOrder::Sorted VectorPiOrder::sorted; //16

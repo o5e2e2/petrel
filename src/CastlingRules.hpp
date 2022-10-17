@@ -10,7 +10,7 @@ class CastlingRules {
         Bb unattacked;
     };
 
-    File::static_arrayOf< File::static_arrayOf<Rules> > castlingRules;
+    File::arrayOf< File::arrayOf<Rules> > castlingRules;
 
 public:
     constexpr CastlingRules () {

@@ -1,4 +1,5 @@
 #debug = yes
+CXX = clang++
 
 SRC_DIR ?= src
 DEBUG_DIR ?= debug
@@ -17,14 +18,14 @@ ifeq ($(debug),yes)
 else
 	BUILD_DIR = $(RELEASE_DIR)
 	CXXFLAGS += -DNDEBUG
-	OPTIMIZATIONS = -Ofast -flto -finline-functions -funroll-all-loops
+	OPTIMIZATIONS = -Ofast -flto -finline-functions
 endif
 
 TARGET ?= $(BUILD_DIR)/petrel
 EXPECT ?= $(TEST_DIR)/expect.sh
 
 CXXFLAGS += -std=c++17 -mssse3 -march=native -mtune=native
-CXXFLAGS +=-fno-rtti -fno-common -fno-exceptions
+CXXFLAGS +=-fno-rtti -fno-common -fno-exceptions -flax-vector-conversions
 
 WARNINGS += -pedantic -Wall -Wextra -Wuninitialized -Wpointer-arith -Wcast-qual -Wcast-align
 WARNINGS += -Wconversion -Wshadow -Wno-ignored-attributes

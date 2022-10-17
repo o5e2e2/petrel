@@ -12,7 +12,7 @@ private:
     const union {
         char b[16];
         _t v;
-    } nibbleCount = {0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4,};
+    } nibbleCount = {{ 0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4, }};
 
     const _t& emptyMask = ::vectorOfAll[0];
     const _t& nibbleMask = ::vectorOfAll[0x0f];

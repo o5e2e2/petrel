@@ -5,7 +5,8 @@
 #include "Duration.hpp"
 #include "PositionFen.hpp"
 
-struct SearchLimit {
+class SearchLimit {
+public:
     PositionFen positionMoves;
 
     Side::arrayOf<Duration> time = {{ Duration::zero(), Duration::zero() }};

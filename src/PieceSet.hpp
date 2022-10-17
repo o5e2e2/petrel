@@ -19,7 +19,7 @@ public:
     }
 
     index_t count() const {
-        int total = 0;
+        index_t total = 0;
         for (_t x = this->_v; x; x &= x - 1) {
             total++;
         }

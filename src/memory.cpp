@@ -18,7 +18,7 @@ size_t getAvailableMemory() {
 #include <unistd.h>
 
 size_t getPageSize() {
-    return ::sysconf(_SC_PAGESIZE);
+    return static_cast<size_t>(::sysconf(_SC_PAGESIZE));
 }
 
 size_t getAvailableMemory() {

@@ -1,5 +1,5 @@
 #ifndef ATTACK_BB_HPP
-#define ATTACk_BB_HPP
+#define ATTACK_BB_HPP
 
 #include "BitArray128.hpp"
 #include "BitReverse.hpp"
@@ -9,8 +9,8 @@ constexpr inline __m128i combine(Bb lo, Bb hi) {
     return __m128i{static_cast<__int64>(lo), static_cast<__int64>(hi)};
 }
 
-struct HyperbolaSq : Square::static_arrayOf<__m128i> {
-    constexpr HyperbolaSq () {
+struct HyperbolaSq : Square::arrayOf<__m128i> {
+    HyperbolaSq () {
         FOR_INDEX(Square, sq) {
             Square revSq(~File(sq), ~Rank(sq));
             (*this)[sq] = ::combine(Bb{sq}, Bb{revSq});
@@ -20,9 +20,9 @@ struct HyperbolaSq : Square::static_arrayOf<__m128i> {
 extern const HyperbolaSq hyperbolaSq;
 
 enum direction_t { Horizont, Vertical, Diagonal, Antidiag };
-typedef Index<4, direction_t>::static_arrayOf<__m128i> Directions;
-struct HyperbolaDir : SliderType::static_arrayOf< Square::static_arrayOf<Directions> > {
-    constexpr HyperbolaDir () {
+typedef Index<4, direction_t>::arrayOf<__m128i> Directions;
+struct HyperbolaDir : SliderType::arrayOf< Square::arrayOf<Directions> > {
+    HyperbolaDir () {
         const auto empty = ::combine(Bb{}, Bb{});
         FOR_INDEX(Square, sq) {
             Square revSq{~File(sq), ~Rank(sq)};

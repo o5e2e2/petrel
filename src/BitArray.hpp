@@ -11,14 +11,15 @@ protected:
 
     constexpr BitArrayBase () : _v{} {}
     constexpr explicit BitArrayBase (_t v) : _v(v) {}
-    constexpr explicit operator _t () const { return _v; }
 
     constexpr void operator &= (B b) { _v &= b._v; }
     constexpr void operator |= (B b) { _v |= b._v; }
     constexpr void operator ^= (B b) { _v ^= b._v; }
     constexpr void operator %= (B b) { _v |= b._v; _v ^= b._v; }  //"and not"
-    constexpr bool operator == (B b) { return _v == b._v; }
+    bool operator == (B b) { return _v == b._v; }
 
+public:
+    constexpr explicit operator _t () const { return _v; }
 };
 
 /*

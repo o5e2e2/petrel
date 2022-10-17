@@ -70,14 +70,8 @@ void* HashMemory::seek(Zobrist z) const {
     return reinterpret_cast<char*>(hash) + (static_cast<Zobrist::_t>(z) & mask);
 }
 
-template <size_t BucketSize>
 void* HashMemory::prefetch(Zobrist z) const {
     auto o = seek(z);
-
-    constexpr auto CachePages = (BucketSize-1)/64 + 1;
-    for (index_t i = 0; i < CachePages; i++) {
-        _mm_prefetch(o + i, _MM_HINT_NTA);
-    }
-
-    return static_cast<void*>(o);
+    _mm_prefetch(o, _MM_HINT_NTA);
+    return o;
 }

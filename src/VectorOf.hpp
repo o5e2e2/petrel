@@ -18,7 +18,7 @@ class VectorOf {
 
     Index::arrayOf<_u> _v;
 
-    constexpr static _u all(byte_t i) { return { i,i,i,i, i,i,i,i, i,i,i,i, i,i,i,i }; }
+    constexpr static _u all(byte_t i) { return {{ i,i,i,i, i,i,i,i, i,i,i,i, i,i,i,i }}; }
 
 public:
     constexpr VectorOf () :

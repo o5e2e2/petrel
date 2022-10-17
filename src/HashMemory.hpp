@@ -4,7 +4,8 @@
 
 #include "Zobrist.hpp"
 
-struct HashInfo {
+class HashInfo {
+public:
     size_t currentSize = 0;
     size_t maxSize = 0;
 };
@@ -38,7 +39,7 @@ public:
     void clear();
 
     void* seek(Zobrist z) const;
-    template <size_t bucketSize = 64> void* prefetch(Zobrist z) const;
+    void* prefetch(Zobrist z) const;
 };
 
 #endif
