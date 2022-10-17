@@ -16,7 +16,7 @@
 /**
  * BitBoard type: a bit for each chessboard square
  */
-class Bb : public BitSet<Bb, Square, std::uint64_t> {
+class Bb : public BitSet<Bb, Square, u64_t> {
     //declared to catch type cast bugs
     Bb (unsigned int) = delete;
     Bb (int) = delete;
@@ -34,7 +34,8 @@ public:
     //bidirectional signed shift
     constexpr Bb (_t v, signed offset) : Bb( (offset >= 0) ? (v << offset) : (v >> -offset) ) {}
 
-    constexpr explicit operator __int64 () const { return static_cast<__int64>(this->_v); }
+    constexpr explicit operator i64_t () const { return static_cast<i64_t>(this->_v); }
+    constexpr explicit operator u64_t () const { return static_cast<u64_t>(this->_v); }
 
     Bb operator ~ () const { return Bb{::bswap(this->_v)}; }
 

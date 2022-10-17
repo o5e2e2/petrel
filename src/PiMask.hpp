@@ -11,7 +11,7 @@
 ///piece vector of boolean values: false (0) or true (0xff)
 class PiMask {
 public:
-    typedef __m128i _t;
+    typedef i128_t _t;
 private:
     _t m;
 

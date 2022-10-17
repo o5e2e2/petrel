@@ -6,11 +6,11 @@
 #include "PiMask.hpp"
 
 template <class Self, class Index>
-class VectorPiBit : public BitArray<Self, __m128i> {
-    typedef BitArray<Self, __m128i> Base;
+class VectorPiBit : public BitArray<Self, i128_t> {
+    typedef BitArray<Self, i128_t> Base;
 public:
     typedef typename Base::_t _t;
-    typedef std::uint8_t element_type;
+    typedef u8_t element_type;
 protected:
     typedef typename Index::_t index_type;
 

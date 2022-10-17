@@ -7,7 +7,7 @@
 class CACHE_ALIGN HashBucket {
 public:
     typedef ::Index<4> Index;
-    typedef __m128i _t;
+    typedef i128_t _t;
 
 private:
     Index::arrayOf<_t> _v;
@@ -24,7 +24,7 @@ public:
         return *this;
     }
 
-    void set(Index i, __m128i m) {
+    void set(Index i, _t m) {
         _mm_stream_si128(&_v[i], m);
     }
 

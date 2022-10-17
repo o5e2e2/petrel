@@ -6,8 +6,8 @@
 #include "Zobrist.hpp"
 
 class PerftRecordSmall {
-    std::uint32_t key;
-    std::uint32_t perft;
+    u32_t key;
+    u32_t perft;
 
 public:
     void set(Zobrist::_t z, node_count_t n) {

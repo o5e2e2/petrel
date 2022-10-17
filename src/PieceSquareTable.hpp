@@ -7,7 +7,7 @@
 //https://www.chessprogramming.org/PeSTO%27s_Evaluation_Function
 class PieceSquareTable {
 public:
-    typedef unsigned _t;
+    typedef u32_t _t;
 
 private:
     PieceType::arrayOf< Square::arrayOf<_t> > pst;
@@ -17,7 +17,8 @@ private:
     /// @param pe piece endgame value
     /// @param se square endgame adjustment
     static constexpr _t e(signed pm, signed sm, signed pe, signed se) {
-        return static_cast<_t>(pm + sm) | (static_cast<_t>(pe + se) << 16); }
+        return static_cast<_t>(pm + sm) | (static_cast<_t>(pe + se) << 16);
+    }
 
 public:
     constexpr PieceSquareTable () : pst {{

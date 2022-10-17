@@ -6,10 +6,11 @@
 
 class PerftRecordDual {
 public:
+    typedef i128_t _t;
     typedef ::Index<2> Index;
 
     union {
-        __m128i m;
+        _t m;
         Index::arrayOf<PerftRecordSmall> s;
     };
 

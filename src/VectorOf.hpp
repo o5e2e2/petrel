@@ -9,7 +9,7 @@
 class VectorOf {
     typedef unsigned char byte_t;
     typedef ::Index<0x100> Index;
-    typedef __m128i _t;
+    typedef i128_t _t;
 
     union _u {
         Pi::arrayOf<byte_t> _a;

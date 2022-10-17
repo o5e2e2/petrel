@@ -7,7 +7,7 @@
 template <typename _Element>
 class VectorPiEnum {
 public:
-    typedef __m128i _t;
+    typedef i128_t _t;
 
 private:
     typedef VectorPiEnum Self;

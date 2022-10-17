@@ -3,14 +3,13 @@
 
 #include <array>
 #include <cstring>
+#include "types.hpp"
 #include "bitops.hpp"
 #include "io.hpp"
 
-typedef unsigned index_t; //small numbers [0..N) with a known upper bound
-
 #define FOR_INDEX(Index, i) for (Index i{Index::Begin}; i.isOk(); ++i)
 
-template <size_t _Size, typename _Value_type = unsigned int, typename _Storage_type = unsigned int>
+template <size_t _Size, typename _Value_type = index_t, typename _Storage_type = index_t>
 class Index {
     static io::czstring The_string;
 public:

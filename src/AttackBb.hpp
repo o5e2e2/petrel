@@ -5,11 +5,11 @@
 #include "BitReverse.hpp"
 #include "Bb.hpp"
 
-constexpr inline __m128i combine(Bb lo, Bb hi) {
-    return __m128i{static_cast<__int64>(lo), static_cast<__int64>(hi)};
+constexpr i128_t combine(Bb lo, Bb hi) {
+    return i128_t{static_cast<i64_t>(lo), static_cast<i64_t>(hi)};
 }
 
-struct HyperbolaSq : Square::arrayOf<__m128i> {
+struct HyperbolaSq : Square::arrayOf<i128_t> {
     HyperbolaSq () {
         FOR_INDEX(Square, sq) {
             Square revSq(~File(sq), ~Rank(sq));
@@ -20,7 +20,7 @@ struct HyperbolaSq : Square::arrayOf<__m128i> {
 extern const HyperbolaSq hyperbolaSq;
 
 enum direction_t { Horizont, Vertical, Diagonal, Antidiag };
-typedef Index<4, direction_t>::arrayOf<__m128i> Directions;
+typedef Index<4, direction_t>::arrayOf<i128_t> Directions;
 struct HyperbolaDir : SliderType::arrayOf< Square::arrayOf<Directions> > {
     HyperbolaDir () {
         const auto empty = ::combine(Bb{}, Bb{});
@@ -50,14 +50,14 @@ extern const HyperbolaDir hyperbolaDir;
  * Vector of bitboard and its bitreversed complement
  * used for sliding pieces attacks generation
  */
-class AttackBb : public BitArray<AttackBb, __m128i> {
-    typedef __m128i _t;
+class AttackBb : public BitArray<AttackBb, i128_t> {
+    typedef i128_t _t;
     _t occupied;
 
     static _t hyperbola(_t v) { return v ^ ::bitReverse(v); }
 
 public:
-    explicit AttackBb (Bb bb) : occupied( hyperbola(_mm_cvtsi64_si128(static_cast<__int64>(bb))) ) {}
+    explicit AttackBb (Bb bb) : occupied( hyperbola(_mm_cvtsi64_si128(static_cast<i64_t>(bb))) ) {}
 
     Bb attack(SliderType type, Square from) const {
         const auto& dir = ::hyperbolaDir[type][from];

@@ -1,7 +1,7 @@
 #ifndef BIT_OPS_HPP
 #define BIT_OPS_HPP
 
-#include <cstdint>
+#include "types.hpp"
 
 #if defined _MSC_VER
 #   include <intrin.h>
@@ -9,11 +9,6 @@
 
 #if defined _M_X64 || defined _M_AMD64 || defined __x86_64__ || defined __amd64__
 #   define PLATFORM_64
-#endif
-
-#if !defined _WIN32
-    typedef std::int32_t __int32;
-    typedef std::int64_t __int64;
 #endif
 
 #if defined __GNUC__
@@ -44,7 +39,7 @@
 #   endif
 #   define assert(test) (void)( (!!(test)) || (__debugbreak(), 0) )
 #elif defined ASSERT_DEBUG_BREAK && defined __GNUC__
-#   define assert(test) do { if (!(test)) __asm__("int $3"); } while(0)
+#   define assert(test) (void)( (!!(test)) || (__builtin_trap(), 0) )
 #else
 #   include <cassert>
 #endif
@@ -65,10 +60,8 @@ constexpr T withoutLsb(T n) { return n & static_cast<T>(n-1); }
 template <typename T>
 constexpr bool isSingleton(T n) { return (n != 0) && (::withoutLsb(n) == 0); }
 
-typedef unsigned index_t; //small numbers [0..N) with a known upper bound
-
 #if defined __GNUC__
-    INLINE index_t bsf(std::uint32_t b) {
+    INLINE index_t bsf(u32_t b) {
         assert (b != 0);
         return static_cast<index_t>(__builtin_ctz(b));
     }
@@ -158,27 +151,27 @@ typedef unsigned index_t; //small numbers [0..N) with a known upper bound
 
 #if !defined PLATFORM_64
 
-    constexpr unsigned __int32 lo(unsigned __int64 b) {
-        return small_cast<unsigned __int32>(b);
+    constexpr unsigned i32_t lo(unsigned i64_t b) {
+        return small_cast<unsigned i32_t>(b);
     }
 
-    constexpr unsigned __int32 hi(unsigned __int64 b) {
-        return static_cast<unsigned __int32>(b >> 32);
+    constexpr unsigned i32_t hi(unsigned i64_t b) {
+        return static_cast<unsigned i32_t>(b >> 32);
     }
 
-    constexpr unsigned __int64 combine(unsigned __int32 lo, unsigned __int32 hi) {
-        return (static_cast<unsigned __int64>(hi) << 32) | static_cast<unsigned __int64>(lo);
+    constexpr unsigned i64_t combine(unsigned i32_t lo, unsigned i32_t hi) {
+        return (static_cast<unsigned i64_t>(hi) << 32) | static_cast<unsigned i64_t>(lo);
     }
 
-    constexpr __int32 lo(__int64 b) {
-        return static_cast<__int32>( ::lo(static_cast<unsigned __int64>(b)) );
+    constexpr i32_t lo(i64_t b) {
+        return static_cast<i32_t>( ::lo(static_cast<unsigned i64_t>(b)) );
     }
 
-    constexpr __int32 hi(__int64 b) {
-        return static_cast<__int32>( ::hi(static_cast<unsigned __int64>(b)) );
+    constexpr i32_t hi(i64_t b) {
+        return static_cast<i32_t>( ::hi(static_cast<unsigned i64_t>(b)) );
     }
-    constexpr __int64 combine(__int32 lo, __int32 hi) {
-        return static_cast<__int64>( ::combine(static_cast<unsigned __int32>(lo), static_cast<unsigned __int32>(hi)) );
+    constexpr i64_t combine(i32_t lo, i32_t hi) {
+        return static_cast<i64_t>( ::combine(static_cast<unsigned i32_t>(lo), static_cast<unsigned i32_t>(hi)) );
     }
 
     INLINE index_t bsf(std::uint64_t b) {

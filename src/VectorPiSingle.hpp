@@ -6,7 +6,7 @@
 #include "VectorOf.hpp"
 
 class VectorPiSingle {
-    typedef __m128i _t;
+    typedef i128_t _t;
 
     union _u {
         Pi::arrayOf<unsigned char> _a;

@@ -1,8 +1,8 @@
 #ifndef TYPEDEFS_HPP
 #define TYPEDEFS_HPP
 
-#include <cstdint>
 #include <limits>
+#include "types.hpp"
 #include "Index.hpp"
 
 typedef index_t ply_t; //search tree depth (relative to root)
@@ -14,7 +14,7 @@ enum : ply_t {
 #endif
 };
 
-typedef std::uint64_t node_count_t;
+typedef u64_t node_count_t;
 enum : node_count_t {
     NodeCountNone = std::numeric_limits<node_count_t>::max(),
     NodeCountMax  = NodeCountNone - 1

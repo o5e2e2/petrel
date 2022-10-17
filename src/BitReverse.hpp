@@ -5,7 +5,7 @@
 #include "VectorOf.hpp"
 
 class BitReverse {
-    typedef __m128i _t;
+    typedef i128_t _t;
 
     union {
         unsigned char b[16];

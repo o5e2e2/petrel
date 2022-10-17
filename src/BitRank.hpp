@@ -8,7 +8,7 @@
 /**
  * a bit for each chessboard square of a rank
  */
-class BitRank : public BitSet<BitRank, File, std::uint8_t> {
+class BitRank : public BitSet<BitRank, File, u8_t> {
 public:
     using BitSet::BitSet;
 };

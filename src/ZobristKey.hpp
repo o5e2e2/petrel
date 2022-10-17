@@ -6,7 +6,7 @@
 
 class ZobristKey {
 public:
-    typedef std::uint64_t _t;
+    typedef u64_t _t;
     typedef PieceZobristType Index;
 
 private:

@@ -3,7 +3,8 @@
 
 #include "typedefs.hpp"
 
-typedef std::int16_t score_t;
+typedef i16_t score_t;
+
 enum class Score : score_t {
     None = std::numeric_limits<score_t>::min(),
     Maximum = std::numeric_limits<score_t>::max(),
