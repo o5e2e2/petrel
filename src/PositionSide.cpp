@@ -10,7 +10,7 @@
         squares.assertValid(pi);
 
         Square sq = squares.squareOf(pi);
-        assert (piecesBb.has(sq));
+        assert (hasPieceOn(sq));
 
         assert (!types.isPawn(pi) || pawnsBb.has(sq));
         assert (!types.isPawn(pi) || (!sq.on(Rank1) && !sq.on(Rank8)));
@@ -28,7 +28,7 @@
 Zobrist PositionSide::generateZobrist() const {
     Zobrist z{0};
 
-    for (Pi pi : alivePieces()) {
+    for (Pi pi : pieces()) {
         z.drop(typeOf(pi), squareOf(pi));
     }
 
@@ -125,7 +125,7 @@ void PositionSide::move(Pi pi, Square from, Square to) {
 
 void PositionSide::moveKing(Square from, Square to) {
     move(TheKing, King, from, to);
-    kingMoved(to);
+    updateMovedKing(to);
 }
 
 void PositionSide::movePawn(Pi pi, Square from, Square to) {
@@ -161,7 +161,7 @@ void PositionSide::promote(Pi pi, PromoType ty, Square from, Square to) {
     assertValid(pi, static_cast<PieceType>(ty), to);
 }
 
-void PositionSide::kingMoved(Square to) {
+void PositionSide::updateMovedKing(Square to) {
     //king move cannot check
     assert (traits.isEmpty(TheKing));
     assert (!::attacksFrom(King, to).has(opKing));
@@ -187,7 +187,7 @@ void PositionSide::castle(Square kingFrom, Square kingTo, Pi rook, Square rookFr
     traits.clearPinner(rook);
     setPinner(rook, Rook, rookTo);
 
-    kingMoved(kingTo);
+    updateMovedKing(kingTo);
     assertValid(rook, Rook, rookTo);
 }
 
@@ -268,10 +268,10 @@ void PositionSide::clearEnPassantKillers() {
     traits.clearEnPassants();
 }
 
-bool PositionSide::isPinned(Bb allOccupiedWithoutPinned) const {
+bool PositionSide::isPinned(Bb occupied) const {
     for (Pi pinner : pinners()) {
         Bb pinLine = ::between(opKing, squareOf(pinner));
-        if ((pinLine & allOccupiedWithoutPinned).none()) {
+        if ((pinLine & occupied).none()) {
             return true;
         }
     }
@@ -288,7 +288,7 @@ bool PositionSide::dropValid(PieceType ty, Square to) {
         pawnsBb += to;
     }
 
-    Pi pi = ty.is(King) ? Pi{TheKing} : (alivePieces() | Pi{TheKing}).seekVacant();
+    Pi pi = ty.is(King) ? Pi{TheKing} : (pieces() | Pi{TheKing}).seekVacant();
 
     evaluation.drop(ty, to);
     types.drop(pi, ty);

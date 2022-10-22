@@ -146,13 +146,13 @@ public:
             FOR_INDEX(File, file) {
                 Square sq(file,rank);
 
-                if (board.whitePieces.isOccupied(sq)) {
+                if (board.whitePieces.hasPieceOn(sq)) {
                     if (emptySqCount != 0) { out << emptySqCount; emptySqCount = 0; }
                     out << static_cast<io::char_type>(std::toupper( board.whitePieces.typeOf(sq).to_char() ));
                     continue;
                 }
 
-                if (board.blackPieces.isOccupied(~sq)) {
+                if (board.blackPieces.hasPieceOn(~sq)) {
                     if (emptySqCount != 0) { out << emptySqCount; emptySqCount = 0; }
                     out << board.blackPieces.typeOf(~sq).to_char();
                     continue;

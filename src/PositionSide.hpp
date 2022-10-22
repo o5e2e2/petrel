@@ -20,17 +20,13 @@ class PositionSide {
 
     Evaluation evaluation; //PST incremental evaluation
 
-    Bb piecesBb; //squares occupied by current side pieces
+    Bb piecesBb; //squares of current side pieces
     Bb pawnsBb; //squares of current side pawns
-    Bb occupiedBb; //all occupied squares by both sides, updated by combining both PositionSide::piecesBb
+    Bb occupiedBb; //squares occupied by pieces of both sides
 
     Square opKing; //location of the opponent's king
 
 public:
-    static Score evaluate(const PositionSide&, const PositionSide&);
-
-    Zobrist generateZobrist() const; //calculate Zobrist key from scratch
-
     #ifdef NDEBUG
         void assertValid(Pi) const {}
         void assertValid(Pi, PieceType, Square) const {}
@@ -39,15 +35,22 @@ public:
         void assertValid(Pi, PieceType, Square) const;
     #endif
 
-    const Bb& sideSquares() const { return piecesBb; }
+    // bitboard of squares occupied by current side
+    const Bb& piecesSquares() const { return piecesBb; }
+
+    // bitboard of squares occupied by both sides
     const Bb& occupied() const { return occupiedBb; }
-    bool isOccupied(Square sq) const { return piecesBb.has(sq); }
-    PiMask alivePieces() const { assert (squares.alivePieces() == types.alivePieces()); return squares.alivePieces(); }
+
+    const Bb& pawnsSquares() const { return pawnsBb; }
+
+    bool hasPieceOn(Square sq) const { assert (piecesBb.has(sq) == squares.hasPieceOn(sq)); return piecesBb.has(sq); }
+
+    // mask of all pieces on the board
+    PiMask pieces() const { assert (squares.pieces() == types.pieces()); return squares.pieces(); }
 
     Square squareOf(Pi pi) const { assertValid(pi); return squares.squareOf(pi); }
     Square kingSquare() const { return squareOf(TheKing); }
 
-    bool hasPieceOn(Square sq) const { assert (isOccupied(sq) == squares.hasPieceOn(sq)); return squares.hasPieceOn(sq); }
     Pi pieceOn(Square sq) const { Pi pi = squares.pieceOn(sq); assertValid(pi); return pi; }
     PiMask piecesOn(Rank rank) const { return squares.piecesOn(rank); }
 
@@ -55,7 +58,6 @@ public:
     PieceType typeOf(Pi pi) const { assertValid(pi); return types.typeOf(pi); }
     PieceType typeOf(Square sq) const { return typeOf(pieceOn(sq)); }
 
-    const Bb& pawnsSquares() const { return pawnsBb; }
     PiMask pawns() const { return types.piecesOfType(Pawn); }
     bool isPawn(Pi pi) const { assertValid(pi); return types.isPawn(pi); }
 
@@ -71,18 +73,31 @@ public:
     PiMask pinners() const { return traits.pinners(); }
     bool isPinned(Bb) const;
 
+    PiMask checkers() const { assert (traits.checkers() == attacks[opKing]); return traits.checkers(); }
+
     const MatrixPiBb& attacksMatrix() const { return attacks; }
     PiMask attackersTo(Square a) const { return attacks[a]; }
     PiMask attackersTo(Square a, Square b) const { return attacks[a] | attacks[b]; }
     PiMask attackersTo(Square a, Square b, Square c) const { return attacks[a] | attacks[b] | attacks[c]; }
 
-    PiMask checkers() const { assert (traits.checkers() == attacks[opKing]); return traits.checkers(); }
-
     Move createMove(Square from, Square to) const;
 
-//friend class Position;
+    static Score evaluate(const PositionSide&, const PositionSide&);
+
+    //calculate Zobrist key from scratch
+    Zobrist generateZobrist() const;
+
+private:
+    void move(Pi, PieceType, Square, Square);
+    void updateMovedKing(Square);
+    void setSliderAttacks(PiMask, Bb);
+    void setLeaperAttacks();
+    void setLeaperAttack(Pi, PieceType, Square);
+    void setPinner(Pi, PieceType, Square);
+
+friend class Position;
+
     static void swap(PositionSide&, PositionSide&);
-    static void finalSetup(PositionSide&, PositionSide&);
     static void syncOccupied(PositionSide&, PositionSide&);
 
     void setOpKing(Square);
@@ -104,18 +119,12 @@ public:
 
     //used only during initial position setup
     bool dropValid(PieceType, Square);
+    static void finalSetup(PositionSide&, PositionSide&);
 
-//friend class PositionFen;
+friend class PositionFen;
+
     bool setValidCastling(File);
     bool setValidCastling(CastlingSide);
-
-private:
-    void move(Pi, PieceType, Square, Square);
-    void kingMoved(Square);
-    void setSliderAttacks(PiMask, Bb);
-    void setLeaperAttacks();
-    void setLeaperAttack(Pi, PieceType, Square);
-    void setPinner(Pi, PieceType, Square);
 
 };
 

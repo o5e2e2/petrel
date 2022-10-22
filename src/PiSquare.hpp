@@ -24,7 +24,7 @@ public:
     }
 #endif
 
-    PiMask alivePieces() const { return notEmpty(); }
+    PiMask pieces() const { return notEmpty(); }
     PiMask piecesOn(Square sq) const { return *this == sq; }
     PiMask leftForward(Square sq) const { return *this < sq; }
     PiMask rightBackward(Square sq) const { return *this > sq; }

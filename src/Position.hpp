@@ -9,7 +9,6 @@ class Position {
 
     template <Side::_t> void updateSliderAttacks(PiMask);
     template <Side::_t> void updateSliderAttacks(PiMask, PiMask);
-    template <Side::_t> void capture(Square);
     template <Side::_t> void playKingMove(Square, Square);
     template <Side::_t> void playPawnMove(Pi, Square, Square);
     template <Side::_t> void playCastling(Pi, Square, Square);

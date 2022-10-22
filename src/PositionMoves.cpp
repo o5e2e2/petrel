@@ -36,7 +36,7 @@ void PositionMoves::generateLegalKingMoves() {
     constexpr Side Op{~My};
 
     //TRICK: our attacks do not hide under attacked king shadow
-    Bb kingMoves = ::attacksFrom(King, MY.kingSquare()) % (MY.sideSquares() | attackedSquares);
+    Bb kingMoves = ::attacksFrom(King, MY.kingSquare()) % (MY.piecesSquares() | attackedSquares);
     moves.set(TheKing, kingMoves);
 }
 
@@ -116,7 +116,7 @@ void PositionMoves::excludePinnedMoves(PiMask opPinners) {
         Bb piecesOnPinLine = pinLine & MY.occupied();
         assert (piecesOnPinLine.any());
 
-        if (piecesOnPinLine.isSingleton() && (piecesOnPinLine & MY.sideSquares()).any()) {
+        if (piecesOnPinLine.isSingleton() && (piecesOnPinLine & MY.piecesSquares()).any()) {
             //we discovered a true pinned piece
             Pi pinned = MY.pieceOn(piecesOnPinLine.index());
 
@@ -175,7 +175,7 @@ void PositionMoves::generateMoves() {
     }
 
     //the most general case: captures and non captures for all pieces
-    moves = MY.attacksMatrix() % MY.sideSquares();
+    moves = MY.attacksMatrix() % MY.piecesSquares();
 
     //pawns moves treated separately
     generatePawnMoves<My>();
@@ -320,7 +320,7 @@ Zobrist PositionMoves::createZobrist(Square from, Square to) const {
     mz.move(ty, from, to);
 
 capture:
-    if (OP.isOccupied(~to)) {
+    if (OP.hasPieceOn(~to)) {
         Pi victim = OP.pieceOn(~to);
         oz.clear(OP.typeOf(victim), ~to);
 

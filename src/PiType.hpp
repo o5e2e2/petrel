@@ -27,7 +27,7 @@ public:
     }
 #endif
 
-    PiMask alivePieces() const { return notEmpty(); }
+    PiMask pieces() const { return notEmpty(); }
     PiMask piecesOfType(PieceType ty) const { assert (!ty.is(King)); return anyOf(ty); }
     PiMask minors() const { return anyOf(Minor); }
     PiMask sliders() const { return anyOf(Slider); }

@@ -15,7 +15,7 @@ NodeControl Node::visitChildren() {
 
     auto parentMoves = parent.cloneMoves();
 
-    for (Pi pi : parent[My].alivePieces()) {
+    for (Pi pi : parent[My].pieces()) {
         Square from = parent[My].squareOf(pi);
 
         for (Square to : parentMoves[pi]) {

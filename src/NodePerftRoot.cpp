@@ -94,7 +94,7 @@ NodeControl NodePerftDivide::visitChildren() {
     auto _moves = cloneMoves();
     auto child = NodePerftDivide(*this);
 
-    for (Pi pi : (*this)[My].alivePieces()) {
+    for (Pi pi : (*this)[My].pieces()) {
         Square from = (*this)[My].squareOf(pi);
 
         for (Square to : _moves[pi]) {
