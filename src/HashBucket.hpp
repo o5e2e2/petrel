@@ -10,22 +10,22 @@ public:
     typedef i128_t _t;
 
 private:
-    Index::arrayOf<_t> _v;
+    Index::arrayOf<_t> v;
 
 public:
-    constexpr HashBucket() : _v{{{0,0}, {0,0}, {0,0}, {0,0}}} {}
-    constexpr const _t& operator[] (Index i) const { return _v[i]; }
+    constexpr HashBucket() : v{{{0,0}, {0,0}, {0,0}, {0,0}}} {}
+    constexpr const _t& operator[] (Index i) const { return v[i]; }
 
     HashBucket& operator = (const HashBucket& a) {
-        _mm_stream_si128(&_v[0], a[0]);
-        _mm_stream_si128(&_v[1], a[1]);
-        _mm_stream_si128(&_v[2], a[2]);
-        _mm_stream_si128(&_v[3], a[3]);
+        _mm_stream_si128(&v[0], a[0]);
+        _mm_stream_si128(&v[1], a[1]);
+        _mm_stream_si128(&v[2], a[2]);
+        _mm_stream_si128(&v[3], a[3]);
         return *this;
     }
 
     void set(Index i, _t m) {
-        _mm_stream_si128(&_v[i], m);
+        _mm_stream_si128(&v[i], m);
     }
 
 };

@@ -23,16 +23,16 @@ struct Square : Index<64, square_t> {
     constexpr Square () = default;
     constexpr Square (File file, Rank rank) : Index{static_cast<_t>(file + (rank << RankShift))} {}
 
-    constexpr explicit operator File() const { return static_cast<File::_t>(this->_v & File::Mask); }
-    constexpr explicit operator Rank() const { return static_cast<Rank::_t>(static_cast<unsigned>(this->_v) >> RankShift); }
+    constexpr explicit operator File() const { return static_cast<File::_t>(this->v & File::Mask); }
+    constexpr explicit operator Rank() const { return static_cast<Rank::_t>(static_cast<unsigned>(this->v) >> RankShift); }
     constexpr explicit operator PromoType() const { return static_cast<PromoType::_t>(+Rank(*this)); }
 
-    constexpr Square& flip() { this->_v = static_cast<_t>(this->_v ^ RankMask); return *this; }
-    constexpr Square operator ~ () const { return static_cast<_t>(this->_v ^ RankMask); }
-    constexpr Square rankForward() const { return static_cast<_t>(this->_v + A8 - A7); }
+    constexpr Square& flip() { this->v = static_cast<_t>(this->v ^ RankMask); return *this; }
+    constexpr Square operator ~ () const { return static_cast<_t>(this->v ^ RankMask); }
+    constexpr Square rankForward() const { return static_cast<_t>(this->v + A8 - A7); }
 
-    constexpr bool on(Rank rank) const { return (this->_v & RankMask) == static_cast<unsigned>(rank << RankShift); }
-    constexpr bool on(File file) const { return (this->_v & File::Mask) == file; }
+    constexpr bool on(Rank rank) const { return (this->v & RankMask) == static_cast<unsigned>(rank << RankShift); }
+    constexpr bool on(File file) const { return (this->v & File::Mask) == file; }
 
     constexpr Bb horizont() const;
     constexpr Bb vertical() const;
@@ -42,12 +42,12 @@ struct Square : Index<64, square_t> {
 
     // https://www.chessprogramming.org/0x88
     constexpr bool isValidOffset(signed f, signed r) const {
-        return ((static_cast<signed>(this->_v + (this->_v & 070)) + f + 16*r) & 0x88) == 0;
+        return ((static_cast<signed>(this->v + (this->v & 070)) + f + 16*r) & 0x88) == 0;
     }
 
     constexpr Square offset(signed f, signed r) const {
         assert (isValidOffset(f, r));
-        return static_cast<_t>(static_cast<signed>(this->_v) + f + (r << RankShift));
+        return static_cast<_t>(static_cast<signed>(this->v) + f + (r << RankShift));
     }
 
     friend io::ostream& operator << (io::ostream& out, Square sq) { return out << File(sq) << Rank(sq); }

@@ -41,13 +41,14 @@ side of view to the current one. Flipping operation reverses bytes
 order inside bitboard and switches ranks inside squares.
 
 * Bb bb: BitBoard -- bitset of bits for each square of the chessboard
-* Pi pi: Piece Index -- one of 16 piece slots in a byte vector; {TheKing} = slot dedicated to the king
-* VectorPi v: Vector of piece data
+* Pi pi: Piece Index -- one of 16 piece slots in a byte vector; {TheKing = 0} = slot dedicated to the king
+* PiBb : matrix of Pi x Bb, used for attack and move tables
+* PiVector v: Vector of piece data bytes
 * Side side: {My, Op} -- side to move, opposite side
 * Color color: {White, Black}
 * PieceType ty: {Queen, Rook, Bishop, Knight, Pawn, King} -- colorless kind of chess piece
 
-* typename _t _v: internal typename and value used inside generic classes
+* typename _t v: internal typename and value used inside generic classes
 
 * operator ~ used for flipping squares and bitboards between sides
 * operator %" is a shorcut to "and not" set operation

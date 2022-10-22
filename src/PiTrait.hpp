@@ -2,7 +2,7 @@
 #define PI_TRAIT_H
 
 #include "typedefs.hpp"
-#include "VectorPiBit.hpp"
+#include "PiBit.hpp"
 
 enum pi_trait_t {
     Castling,  // rooks with castling rights
@@ -11,8 +11,8 @@ enum pi_trait_t {
     Checker,   // any piece actually attacking enemy king
 };
 
-class PiTrait : protected VectorPiBit< PiTrait, Index<4, pi_trait_t> > {
-    typedef VectorPiBit< PiTrait, Index<4, pi_trait_t> > Base;
+class PiTrait : protected PiBit< PiTrait, Index<4, pi_trait_t> > {
+    typedef PiBit< PiTrait, Index<4, pi_trait_t> > Base;
 public:
     using Base::clear;
     using Base::isEmpty;

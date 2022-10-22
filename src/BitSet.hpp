@@ -4,7 +4,7 @@
 #include "bitops.hpp"
 #include "BitArray.hpp"
 
-template <class Self, class Index, class Value = unsigned int>
+template <class Self, class Index, class Value = index_t>
 class BitSet : public BitArray<Self, Value> {
     typedef BitArray<Self, Value> Base;
 
@@ -15,18 +15,18 @@ public:
     using typename Base::_t;
 
     constexpr BitSet () : Base{} {}
-    constexpr explicit BitSet (_t v) : Base{v} {}
+    constexpr explicit BitSet (_t b) : Base{b} {}
 
     constexpr BitSet (Index i) : BitSet{::singleton<_t>(i)} {}
     constexpr BitSet (typename Index::_t i) : BitSet{::singleton<_t>(i)} {}
 
-    constexpr _t withoutLsb() const { return ::withoutLsb(this->_v); }
+    constexpr _t withoutLsb() const { return ::withoutLsb(this->v); }
 
     constexpr bool has(Index i) const { return (self() & Self{i}).any(); }
     bool isSingleton() const { assert (self().any()); return withoutLsb() == 0; }
 
-    constexpr Index smallestOne() const { return static_cast<typename Index::_t>(::bsf(this->_v)); }
-    constexpr Index largestOne()  const { return static_cast<typename Index::_t>(::bsr(this->_v)); }
+    constexpr Index smallestOne() const { return static_cast<typename Index::_t>(::bsf(this->v)); }
+    constexpr Index largestOne()  const { return static_cast<typename Index::_t>(::bsr(this->v)); }
 
     Index index() const { assert (self().any() && self().isSingleton()); return *self(); }
 

@@ -8,10 +8,10 @@
 #include "Evaluation.hpp"
 #include "PerftRecord.hpp"
 #include "PieceTypeAttack.hpp"
+#include "PiOrder.hpp"
+#include "PiSingle.hpp"
 #include "Uci.hpp"
 #include "VectorOf.hpp"
-#include "VectorPiOrder.hpp"
-#include "VectorPiSingle.hpp"
 #include "Zobrist.hpp"
 
 /**
@@ -22,13 +22,13 @@ const HyperbolaDir hyperbolaDir; //12k
 const HyperbolaSq hyperbolaSq; //1k
 const PieceTypeAttack attacksFrom; //3k
 constexpr const VectorOf vectorOfAll; //4k
-constexpr const VectorPiSingle vectorPiSingle; //256
+constexpr const PiSingle piSingle; //256
 constexpr const PieceSquareTable pieceSquareTable; //1.5k 6*64*4
 constexpr const ZobristKey zobristKey; //64
 const CastlingRules castlingRules; //128
 constexpr const BitReverse bitReverse; //32
 constexpr const VectorBitCount bitCount; //16
-const VectorPiOrder::Sorted VectorPiOrder::sorted; //16
+const PiOrder::Sorted PiOrder::sorted; //16
 
 using io::czstring;
 template <> czstring PieceType::The_string{"qrbnpk"};

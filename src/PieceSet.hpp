@@ -13,14 +13,14 @@ public:
     using BitSet::BitSet;
 
     Pi seekVacant() const {
-        _t x = this->_v;
+        _t x = this->v;
         x = ~x & (x+1); //TRICK: isolate the lowest unset bit
         return PieceSet{x}.index();
     }
 
     index_t count() const {
         index_t total = 0;
-        for (_t x = this->_v; x; x &= x - 1) {
+        for (_t x = this->v; x; x &= x - 1) {
             total++;
         }
         return total;

@@ -2,7 +2,7 @@
 #define POSITION_SIDE_HPP
 
 #include "Evaluation.hpp"
-#include "MatrixPiBb.hpp"
+#include "PiBb.hpp"
 #include "Move.hpp"
 #include "PiTrait.hpp"
 #include "PiType.hpp"
@@ -13,7 +13,7 @@
 
 /// static information about pieces from one player's side (either side to move or its opponent)
 class PositionSide {
-    MatrixPiBb attacks; //squares attacked by a piece and pieces attacking to a square
+    PiBb attacks; //squares attacked by a piece and pieces attacking to a square
     PiType types; //chess type of each alive piece: king, pawn, knignt, bishop, rook, queen
     PiTrait traits; //rooks with castling rights, pawns affected by en passant, pinner pieces, checker pieces
     PiSquare squares; //onboard square locations of the alive pieces or 'NoSquare' special value
@@ -43,7 +43,7 @@ public:
 
     const Bb& pawnsSquares() const { return pawnsBb; }
 
-    bool hasPieceOn(Square sq) const { assert (piecesBb.has(sq) == squares.hasPieceOn(sq)); return piecesBb.has(sq); }
+    bool has(Square sq) const { assert (piecesBb.has(sq) == squares.has(sq)); return piecesBb.has(sq); }
 
     // mask of all pieces on the board
     PiMask pieces() const { assert (squares.pieces() == types.pieces()); return squares.pieces(); }
@@ -75,7 +75,7 @@ public:
 
     PiMask checkers() const { assert (traits.checkers() == attacks[opKing]); return traits.checkers(); }
 
-    const MatrixPiBb& attacksMatrix() const { return attacks; }
+    const PiBb& attacksMatrix() const { return attacks; }
     PiMask attackersTo(Square a) const { return attacks[a]; }
     PiMask attackersTo(Square a, Square b) const { return attacks[a] | attacks[b]; }
     PiMask attackersTo(Square a, Square b, Square c) const { return attacks[a] | attacks[b] | attacks[c]; }

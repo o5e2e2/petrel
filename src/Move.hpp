@@ -22,16 +22,16 @@ class Move {
     enum Type { Simple = false, Special = true };
 
     typedef index_t _t;
-    _t _v;
+    _t v;
 
-    constexpr Move (Square f, Square t, Type is_special) : _v{static_cast<_t>(f<<FromShift | t<<ToShift | is_special<<SpecialShift)} {}
+    constexpr Move (Square f, Square t, Type is_special) : v{static_cast<_t>(f<<FromShift | t<<ToShift | is_special<<SpecialShift)} {}
     constexpr static Move special(Square f, Square t) { return Move{f, t, Special}; }
 
-    constexpr bool isSpecial() const { return (_v & 1<<SpecialShift) != 0; }
+    constexpr bool isSpecial() const { return (v & 1<<SpecialShift) != 0; }
 
 public:
-    constexpr Move () : _v{0} {} //null move
-    constexpr Move (Square f, Square t) : _v{static_cast<_t>(f<<FromShift | t<<ToShift)} {}
+    constexpr Move () : v{0} {} //null move
+    constexpr Move (Square f, Square t) : v{static_cast<_t>(f<<FromShift | t<<ToShift)} {}
     constexpr Move operator ~ () const { return Move{~from(), ~to(), static_cast<Move::Type>(isSpecial())}; }
 
     constexpr static Move enPassant(Square f, Square t) { return Move::special(f, t); }
@@ -41,10 +41,10 @@ public:
         return Move::promotion(f, Square{File(t), static_cast<Rank::_t>(+ty)});
     }
 
-    constexpr operator bool() const { return _v != 0; }
+    constexpr operator bool() const { return v != 0; }
 
-    constexpr Square from() const { return static_cast<Square::_t>(_v >>FromShift & Square::Mask); }
-    constexpr Square to()   const { return static_cast<Square::_t>(_v >>ToShift & Square::Mask); }
+    constexpr Square from() const { return static_cast<Square::_t>(v >>FromShift & Square::Mask); }
+    constexpr Square to()   const { return static_cast<Square::_t>(v >>ToShift & Square::Mask); }
     constexpr PromoType promoType() const { return PromoType(to()); }
 
     static io::ostream& write(io::ostream&, Move, Color, ChessVariant = Orthodox);

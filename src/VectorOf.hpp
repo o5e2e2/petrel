@@ -3,26 +3,17 @@
 
 #include "bitops128.hpp"
 #include "BitRank.hpp"
-#include "Index.hpp"
 #include "typedefs.hpp"
 
+constexpr i128_t all(u8_t i) { return (i128_t)u8x16_t{ i,i,i,i, i,i,i,i, i,i,i,i, i,i,i,i }; }
+
 class VectorOf {
-    typedef unsigned char byte_t;
-    typedef ::Index<0x100> Index;
+    typedef Index<0x100> ByteIndex;
     typedef i128_t _t;
-
-    union _u {
-        Pi::arrayOf<byte_t> _a;
-        _t _m;
-    };
-
-    Index::arrayOf<_u> _v;
-
-    constexpr static _u all(byte_t i) { return {{ i,i,i,i, i,i,i,i, i,i,i,i, i,i,i,i }}; }
+    ByteIndex::arrayOf<_t> v;
 
 public:
-    constexpr VectorOf () :
-    _v {
+    constexpr VectorOf () : v {
         all(0x00), all(0x01), all(0x02), all(0x03), all(0x04), all(0x05), all(0x06), all(0x07), all(0x08), all(0x09), all(0x0a), all(0x0b), all(0x0c), all(0x0d), all(0x0e), all(0x0f),
         all(0x10), all(0x11), all(0x12), all(0x13), all(0x14), all(0x15), all(0x16), all(0x17), all(0x18), all(0x19), all(0x1a), all(0x1b), all(0x1c), all(0x1d), all(0x1e), all(0x1f),
         all(0x20), all(0x21), all(0x22), all(0x23), all(0x24), all(0x25), all(0x26), all(0x27), all(0x28), all(0x29), all(0x2a), all(0x2b), all(0x2c), all(0x2d), all(0x2e), all(0x2f),
@@ -45,9 +36,10 @@ public:
     }
     {}
 
-    constexpr const _t& operator[] (Index i) const { return _v[i]._m; }
-    constexpr const _t& operator[] (BitRank br) const { return (*this)[Index{static_cast<BitRank::_t>(br)}]; }
-    constexpr const _t& operator[] (Pi pi) const { return _v[pi]._m; }
+    constexpr const _t& operator[] (unsigned i) const { assert (i < ByteIndex::Size); return v[i]; }
+    constexpr const _t& operator[] (signed i) const { return (*this)[static_cast<unsigned>(i)]; }
+    constexpr const _t& operator[] (BitRank br) const { return v[static_cast<BitRank::_t>(br)]; }
+    constexpr const _t& operator[] (Pi pi) const { return v[pi]; }
 
 };
 

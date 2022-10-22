@@ -1,23 +1,21 @@
-#ifndef VECTOR_PI_SINGLE_HPP
-#define VECTOR_PI_SINGLE_HPP
+#ifndef PI_SINGLE_HPP
+#define PI_SINGLE_HPP
 
-#include "typedefs.hpp"
 #include "bitops128.hpp"
-#include "VectorOf.hpp"
+#include "typedefs.hpp"
 
-class VectorPiSingle {
+class PiSingle {
     typedef i128_t _t;
 
     union _u {
-        Pi::arrayOf<unsigned char> _a;
-        _t _m;
+        u8x16_t u8x16;
+        i128_t  i128;
     };
 
-    Pi::arrayOf<_u> _v;
+    Pi::arrayOf<_u> v;
 
 public:
-    constexpr VectorPiSingle () :
-    _v {{
+    constexpr PiSingle () : v {{
         {{0xff,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0}},
         {{0,0xff,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0}},
         {{0,0,0xff,0, 0,0,0,0, 0,0,0,0, 0,0,0,0}},
@@ -40,9 +38,9 @@ public:
     }}
     {}
 
-    constexpr const _t& operator[] (Pi pi) const { return _v[pi]._m; }
+    constexpr const _t& operator[] (Pi pi) const { return v[pi].i128; }
 };
 
-extern const VectorPiSingle vectorPiSingle;
+extern const PiSingle piSingle;
 
 #endif

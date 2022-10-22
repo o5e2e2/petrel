@@ -29,7 +29,6 @@ typedef Index<8, rank_t> Rank;
 template <> io::czstring Rank::The_string;
 constexpr Rank::_t rankForward(Rank rank) { return static_cast<Rank::_t>(rank + Rank8 - Rank7); }
 
-
 enum color_t { White, Black };
 typedef Index<2, color_t> Color;
 template <> io::czstring Color::The_string;
@@ -68,8 +67,5 @@ constexpr bool isLeaper(piece_type_t ty) { return ty >= Knight; }
 
 //encoding of the promoted piece type inside 12-bit move
 constexpr Rank::_t rankOf(PromoType::_t ty) { return static_cast<Rank::_t>(ty); }
-
-enum game_phase_t { Middlegame, Endgame };
-typedef Index<2, game_phase_t> GamePhase;
 
 #endif

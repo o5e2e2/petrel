@@ -146,13 +146,13 @@ public:
             FOR_INDEX(File, file) {
                 Square sq(file,rank);
 
-                if (board.whitePieces.hasPieceOn(sq)) {
+                if (board.whitePieces.has(sq)) {
                     if (emptySqCount != 0) { out << emptySqCount; emptySqCount = 0; }
                     out << static_cast<io::char_type>(std::toupper( board.whitePieces.typeOf(sq).to_char() ));
                     continue;
                 }
 
-                if (board.blackPieces.hasPieceOn(~sq)) {
+                if (board.blackPieces.has(~sq)) {
                     if (emptySqCount != 0) { out << emptySqCount; emptySqCount = 0; }
                     out << board.blackPieces.typeOf(~sq).to_char();
                     continue;
@@ -264,7 +264,7 @@ io::istream& PositionFen::readMove(io::istream& in, Square& from, Square& to) co
         to.flip();
     }
 
-    if (!in || !MY.hasPieceOn(from)) {
+    if (!in || !MY.has(from)) {
         return io::fail(in);
     }
 
@@ -286,7 +286,7 @@ io::istream& PositionFen::readMove(io::istream& in, Square& from, Square& to) co
         //else normal pawn move
     }
     else if (pi.is(TheKing)) {
-        if (MY.hasPieceOn(to)) { //Chess960 castling encoding
+        if (MY.has(to)) { //Chess960 castling encoding
             if (!MY.isCastling(to)) {
                 return io::fail(in);
             }
@@ -294,7 +294,7 @@ io::istream& PositionFen::readMove(io::istream& in, Square& from, Square& to) co
             return in;
         }
         if (from.is(E1) && to.is(G1)) {
-            if (!MY.hasPieceOn(H1) || !MY.isCastling(H1)) {
+            if (!MY.has(H1) || !MY.isCastling(H1)) {
                 return io::fail(in);
             }
             from = H1;
@@ -302,7 +302,7 @@ io::istream& PositionFen::readMove(io::istream& in, Square& from, Square& to) co
             return in;
         }
         if (from.is(E1) && to.is(C1)) {
-            if (!MY.hasPieceOn(A1) || !MY.isCastling(A1)) {
+            if (!MY.has(A1) || !MY.isCastling(A1)) {
                 return io::fail(in);
             }
             from = A1;
@@ -316,7 +316,7 @@ io::istream& PositionFen::readMove(io::istream& in, Square& from, Square& to) co
 }
 
 void PositionFen::limitMoves(io::istream& in) {
-    MatrixPiBb movesMatrix;
+    PiBb movesMatrix;
     movesMatrix.clear();
     index_t n = 0;
 
@@ -450,7 +450,7 @@ bool PositionFen::setEnPassant(File file) {
     if (MY.occupied().has(Square{file, Rank6})) { return false; }
 
     Square victimSquare(file, Rank4);
-    if (!OP.hasPieceOn(victimSquare)) { return false; }
+    if (!OP.has(victimSquare)) { return false; }
 
     Pi victim = OP.pieceOn(victimSquare);
     if (!OP.isPawn(victim)) { return false; }

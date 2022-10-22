@@ -2,11 +2,11 @@
 #define POSITION_MOVES_HPP
 
 #include "Position.hpp"
-#include "MatrixPiBb.hpp"
+#include "PiBb.hpp"
 #include "Zobrist.hpp"
 
 class PositionMoves : public Position {
-    MatrixPiBb moves; //generated moves from My side
+    PiBb moves; //generated moves from My side
     Bb attackedSquares; //squares attacked by all opponent pieces
 
     Zobrist zobrist{0};
@@ -35,7 +35,7 @@ protected:
     void generateMoves();
 
     void clearMove(Pi pi, Square sq) { moves.clear(pi, sq); }
-    void setMoves(const MatrixPiBb& m, index_t n) { moves = m; movesCount = n; }
+    void setMoves(const PiBb& m, index_t n) { moves = m; movesCount = n; }
 
     void setZobrist(const PositionMoves& parent, Square from, Square to) { zobrist = parent.createZobrist(from, to); }
     void setZobrist() { zobrist = generateZobrist(); }
@@ -45,7 +45,7 @@ public:
     index_t getMovesCount() const { return movesCount; }
     Score getStaticEval() const { return staticEval; }
 
-    MatrixPiBb cloneMoves() const { return MatrixPiBb{moves}; }
+    PiBb cloneMoves() const { return PiBb{moves}; }
 
     bool isLegalMove(Square from, Square to) const;
 };

@@ -7,19 +7,19 @@ class BitArrayBase {
 
 protected:
     typedef _ValueType _t;
-    _t _v;
+    _t v;
 
-    constexpr BitArrayBase () : _v{} {}
-    constexpr explicit BitArrayBase (_t v) : _v(v) {}
+    constexpr BitArrayBase () : v{} {}
+    constexpr explicit BitArrayBase (_t b) : v{b} {}
 
-    constexpr void operator &= (B b) { _v &= b._v; }
-    constexpr void operator |= (B b) { _v |= b._v; }
-    constexpr void operator ^= (B b) { _v ^= b._v; }
-    constexpr void operator %= (B b) { _v |= b._v; _v ^= b._v; }  //"and not"
-    bool operator == (B b) { return _v == b._v; }
+    constexpr void operator &= (B b) { v &= b.v; }
+    constexpr void operator |= (B b) { v |= b.v; }
+    constexpr void operator ^= (B b) { v ^= b.v; }
+    constexpr void operator %= (B b) { v |= b.v; v ^= b.v; }  //"and not"
+    bool operator == (B b) { return v == b.v; }
 
 public:
-    constexpr explicit operator _t () const { return _v; }
+    constexpr explicit operator _t () const { return v; }
 };
 
 /*

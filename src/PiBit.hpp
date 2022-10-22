@@ -1,12 +1,12 @@
-#ifndef VECTOR_PI_BIT_HPP
-#define VECTOR_PI_BIT_HPP
+#ifndef PI_BIT_HPP
+#define PI_BIT_HPP
 
 #include "BitArray128.hpp"
 #include "VectorOf.hpp"
 #include "PiMask.hpp"
 
 template <class Self, class Index>
-class VectorPiBit : public BitArray<Self, i128_t> {
+class PiBit : public BitArray<Self, i128_t> {
     typedef BitArray<Self, i128_t> Base;
 public:
     typedef typename Base::_t _t;
@@ -36,20 +36,20 @@ public:
 
     PiMask anyOf(index_type _Bit) const {
         _t mask = singleVector(_Bit);
-        return PiMask::cmpeq(mask, this->_v & mask);
+        return PiMask(mask, this->v & mask);
     }
 
     PiMask anyOf(element_type bitmask) const {
         _t mask = ::vectorOfAll[bitmask];
-        return PiMask::negate(PiMask::cmpeq(this->_v & mask, ::vectorOfAll[0]));
+        return PiMask::negate(PiMask(this->v & mask, ::vectorOfAll[0]));
     }
 
     PiMask notEmpty() const {
-        return PiMask::negate(PiMask::cmpeq(this->_v, ::vectorOfAll[0]));
+        return PiMask::negate(PiMask(this->v, ::vectorOfAll[0]));
     }
 
     void clear(index_type _Bit) {
-        this->_v &= exceptSingleVector(_Bit);
+        this->v &= exceptSingleVector(_Bit);
     }
 
     void clear(Pi pi, index_type _Bit) {
@@ -60,16 +60,6 @@ public:
     void set(Pi pi, index_type _Bit) {
         element_type mask{single(_Bit)};
         (*this)[pi] |= mask;
-    }
-
-    //clear 'cleanBit' only where 'ifBit' is set
-    void clearIf(index_type cleanBit, index_type ifBit) {
-        clearIf(cleanBit, single(ifBit));
-    }
-
-    //clear 'cleanBit' only where any of 'ifAnyMask' bits are set
-    void clearIf(index_type cleanBit, element_type ifAnyMask) {
-        this->_v &= exceptSingleVector(cleanBit) | PiMask::cmpeq(this->_v & ::vectorOfAll[ifAnyMask], ::vectorOfAll[0]);
     }
 
 };

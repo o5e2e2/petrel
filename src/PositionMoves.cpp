@@ -16,7 +16,7 @@ void PositionMoves::generateEnPassantMoves() {
     File epFile = OP.enPassantFile();
     assert (MY.enPassantPawns() <= ( MY.pawns() & MY.attackersTo(Square{epFile, Rank6}) ));
 
-    moves[Rank5] |= VectorPiRank(epFile) & VectorPiRank{MY.enPassantPawns()};
+    moves[Rank5] |= PiRank(epFile) & PiRank{MY.enPassantPawns()};
 }
 
 template <Side::_t My>
@@ -25,7 +25,7 @@ void PositionMoves::populateUnderpromotions() {
 
     //add underpromotions for each already generated legal queen promotion
     //TRICK: promoted piece type encoded inside pawn destination square rank
-    VectorPiRank promotionFiles = moves[Rank8] & VectorPiRank{MY.pawns()};
+    PiRank promotionFiles = moves[Rank8] & PiRank{MY.pawns()};
     moves[::rankOf(Rook)]   += promotionFiles;
     moves[::rankOf(Bishop)] += promotionFiles;
     moves[::rankOf(Knight)] += promotionFiles;
@@ -208,7 +208,7 @@ void PositionMoves::generateMoves() {
 }
 
 bool PositionMoves::isLegalMove(Square from, Square to) const {
-    if (!MY.hasPieceOn(from)) {
+    if (!MY.has(from)) {
         return false;
     }
     return moves.has(MY.pieceOn(from), to);
@@ -320,7 +320,7 @@ Zobrist PositionMoves::createZobrist(Square from, Square to) const {
     mz.move(ty, from, to);
 
 capture:
-    if (OP.hasPieceOn(~to)) {
+    if (OP.has(~to)) {
         Pi victim = OP.pieceOn(~to);
         oz.clear(OP.typeOf(victim), ~to);
 

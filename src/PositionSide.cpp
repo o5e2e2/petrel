@@ -7,10 +7,9 @@
 #ifndef NDEBUG
     void PositionSide::assertValid(Pi pi) const {
         types.assertValid(pi);
-        squares.assertValid(pi);
 
         Square sq = squares.squareOf(pi);
-        assert (hasPieceOn(sq));
+        assert (has(sq));
 
         assert (!types.isPawn(pi) || pawnsBb.has(sq));
         assert (!types.isPawn(pi) || (!sq.on(Rank1) && !sq.on(Rank8)));
@@ -320,7 +319,7 @@ bool PositionSide::setValidCastling(File file) {
     if (!kingSquare().on(Rank1)) { return false; }
 
     Square rookFrom(file, Rank1);
-    if (!hasPieceOn(rookFrom)) { return false; }
+    if (!has(rookFrom)) { return false; }
 
     Pi rook = pieceOn(rookFrom);
     if (!types.isRook(rook)) { return false; }

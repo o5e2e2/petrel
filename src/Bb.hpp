@@ -23,7 +23,7 @@ class Bb : public BitSet<Bb, Square, u64_t> {
 
 public:
     constexpr Bb () : BitSet() {}
-    constexpr explicit Bb (_t v) : BitSet{v} {}
+    constexpr explicit Bb (_t bb) : BitSet{bb} {}
 
     constexpr Bb (Square sq) : BitSet(sq) {}
     constexpr Bb (Square::_t sq) : BitSet(sq) {}
@@ -32,16 +32,16 @@ public:
     constexpr explicit Bb (Rank::_t r) : Bb{BB(0xff) << 8*r} {}
 
     //bidirectional signed shift
-    constexpr Bb (_t v, signed offset) : Bb( (offset >= 0) ? (v << offset) : (v >> -offset) ) {}
+    constexpr Bb (_t bb, signed offset) : Bb( (offset >= 0) ? (bb << offset) : (bb >> -offset) ) {}
 
-    constexpr explicit operator i64_t () const { return static_cast<i64_t>(this->_v); }
-    constexpr explicit operator u64_t () const { return static_cast<u64_t>(this->_v); }
+    constexpr explicit operator i64_t () const { return static_cast<i64_t>(this->v); }
+    constexpr explicit operator u64_t () const { return static_cast<u64_t>(this->v); }
 
-    Bb operator ~ () const { return Bb{::bswap(this->_v)}; }
+    Bb operator ~ () const { return Bb{::bswap(this->v)}; }
 
     void move(Square from, Square to) { assert (from != to); *this -= from; *this += to; }
 
-    constexpr BitRank operator[] (Rank r) const { return BitRank(small_cast<BitRank::_t>(this->_v >> 8*r)); }
+    constexpr BitRank operator[] (Rank r) const { return BitRank(small_cast<BitRank::_t>(this->v >> 8*r)); }
 
     constexpr friend Bb operator << (Bb bb, unsigned offset) { return Bb{static_cast<_t>(bb) << offset}; }
     constexpr friend Bb operator >> (Bb bb, unsigned offset) { return Bb{static_cast<_t>(bb) >> offset}; }

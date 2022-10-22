@@ -1,24 +1,17 @@
-#ifndef MATRIX_PI_BB_H
-#define MATRIX_PI_BB_H
+#ifndef PI_BB_H
+#define PI_BB_H
 
 #include "Bb.hpp"
-#include "VectorOf.hpp"
-#include "VectorPiRank.hpp"
+#include "PiRank.hpp"
 
-class MatrixPiBb {
-    Rank::arrayOf<VectorPiRank> matrix;
+/// array of 8 PiRank
+class PiBb {
+    Rank::arrayOf<PiRank> matrix;
 
 public:
-    constexpr MatrixPiBb () = default;
+    constexpr PiBb () = default;
 
-    friend bool operator == (const MatrixPiBb& a, const MatrixPiBb& b) {
-        FOR_INDEX(Rank, rank) {
-            if (a.matrix[rank] != b.matrix[rank]) { return false; }
-        }
-        return true;
-    }
-
-    friend void swap(MatrixPiBb& a, MatrixPiBb& b) {
+    friend void swap(PiBb& a, PiBb& b) {
         FOR_INDEX(Rank, rank) {
             using std::swap;
             swap(a.matrix[rank], b.matrix[rank]);
@@ -32,7 +25,7 @@ public:
     }
 
     void clear(Pi pi, Square sq) {
-        matrix[Rank(sq)] -= VectorPiRank{File(sq)} & PiMask{pi};
+        matrix[Rank(sq)] -= PiRank{File(sq)} & PiMask{pi};
     }
 
     void clear(Pi pi) {
@@ -43,7 +36,7 @@ public:
 
     void set(Pi pi, Rank rank, BitRank br) {
         //_mm_blendv_epi8
-        matrix[rank] = (matrix[rank] % PiMask{pi}) + (VectorPiRank{br} & PiMask{pi});
+        matrix[rank] = (matrix[rank] % PiMask{pi}) + (PiRank{br} & PiMask{pi});
     }
 
     void set(Pi pi, Bb bb) {
@@ -53,28 +46,22 @@ public:
     }
 
     void add(Pi pi, Rank rank, File file) {
-        matrix[rank] += VectorPiRank{file} & PiMask{pi};
+        matrix[rank] += PiRank{file} & PiMask{pi};
     }
 
     void add(Pi pi, Square sq) {
         add(pi, Rank(sq), File(sq));
     }
 
-    void add(Pi pi, Bb bb) {
-        FOR_INDEX(Rank, rank) {
-            matrix[rank] += VectorPiRank{bb[rank]} & PiMask{pi};
-        }
-    }
-
     bool has(Pi pi, Square sq) const {
-        return (matrix[Rank(sq)] & VectorPiRank{File(sq)} & PiMask{pi}).any();
+        return (matrix[Rank(sq)] & PiRank{File(sq)} & PiMask{pi}).any();
     }
 
-    const VectorPiRank& operator[] (Rank rank) const {
+    const PiRank& operator[] (Rank rank) const {
         return matrix[rank];
     }
 
-    VectorPiRank& operator[] (Rank rank) {
+    PiRank& operator[] (Rank rank) {
         return matrix[rank];
     }
 
@@ -104,28 +91,28 @@ public:
     void filter(Pi pi, Bb bb) {
         PiMask exceptPi{ PiMask::all() ^ PiMask{pi} };
         FOR_INDEX(Rank, rank) {
-            matrix[rank] &= VectorPiRank{bb[rank]} | exceptPi;
+            matrix[rank] &= PiRank{bb[rank]} | exceptPi;
         }
     }
 
-    friend MatrixPiBb operator % (const MatrixPiBb& from, Bb bb) {
-        MatrixPiBb result;
+    friend PiBb operator % (const PiBb& from, Bb bb) {
+        PiBb result;
         FOR_INDEX(Rank, rank) {
-            result.matrix[rank] = from.matrix[rank] % VectorPiRank{bb[rank]};
+            result.matrix[rank] = from.matrix[rank] % PiRank{bb[rank]};
         }
         return result;
     }
 
     void operator &= (Bb bb) {
         FOR_INDEX(Rank, rank) {
-            matrix[rank] &= VectorPiRank{bb[rank]};
+            matrix[rank] &= PiRank{bb[rank]};
         }
     }
 
-    friend MatrixPiBb operator & (const MatrixPiBb& from, Bb bb) {
-        MatrixPiBb result;
+    friend PiBb operator & (const PiBb& from, Bb bb) {
+        PiBb result;
         FOR_INDEX(Rank, rank) {
-            result.matrix[rank] = from.matrix[rank] & VectorPiRank{bb[rank]};
+            result.matrix[rank] = from.matrix[rank] & PiRank{bb[rank]};
         }
         return result;
     }

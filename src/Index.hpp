@@ -19,41 +19,41 @@ public:
     static const _t Begin = static_cast<_t>(0);
 
 protected:
-    _Storage_type _v;
+    _Storage_type v;
 
 public:
-    constexpr Index () : _v{Size} {}
-    constexpr Index (_t v) : _v{v} { assertValid(); }
+    constexpr Index () : v{Size} {}
+    constexpr Index (_t i) : v{i} { assertValid(); }
 
-    constexpr operator _t () const { return static_cast<_t>(_v); }
+    constexpr operator _t () const { return static_cast<_t>(v); }
 
     constexpr void assertValid() const { assert (isOk()); }
-    constexpr bool isOk() const { return static_cast<_Storage_type>(_v) < static_cast<_Storage_type>(Size); }
+    constexpr bool isOk() const { return static_cast<_Storage_type>(v) < static_cast<_Storage_type>(Size); }
 
-    constexpr bool is(_t v) const { return _v == v; }
+    constexpr bool is(_t i) const { return v == i; }
 
     constexpr Index& operator ++ () {
         assertValid();
-        ++_v;
+        ++v;
         return *this;
     }
 
     constexpr Index& operator -- () {
-        --_v;
+        --v;
         assertValid();
         return *this;
     }
 
     constexpr Index& flip() {
         assertValid();
-        _v ^= Mask;
+        v ^= Mask;
         return *this;
     }
     constexpr Index operator ~ () const { return Index{*this}.flip(); }
 
     bool from_char(io::char_type c) {
         if (const void* p = std::memchr(The_string, c, Size)) {
-            this->_v = static_cast<_t>(static_cast<io::czstring>(p) - The_string);
+            this->v = static_cast<_t>(static_cast<io::czstring>(p) - The_string);
             assert (c == to_char());
             return true;
         }

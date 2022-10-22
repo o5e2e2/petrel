@@ -75,7 +75,7 @@ void Position::playMove(Square from, Square to) {
     //simple non-pawn non-king move
     MY.move(pi, from, to);
 
-    if (OP.hasPieceOn(~to)) {
+    if (OP.has(~to)) {
         OP.capture(~to);
         updateSliderAttacks<My>(MY.attackersTo(from) | pi, OP.attackersTo(~from));
         return;
@@ -95,7 +95,7 @@ void Position::playPawnMove(Pi pi, Square from, Square to) {
 
         MY.promote(pi, ty, from, promotedTo);
 
-        if (OP.hasPieceOn(~promotedTo)) {
+        if (OP.has(~promotedTo)) {
             //promotion with capture
             OP.capture(~promotedTo);
             updateSliderAttacks<My>(MY.attackersTo(from) | pi, OP.attackersTo(~from));
@@ -110,7 +110,7 @@ void Position::playPawnMove(Pi pi, Square from, Square to) {
     MY.movePawn(pi, from, to);
 
     //possible en passant capture case already treated
-    if (OP.hasPieceOn(~to)) {
+    if (OP.has(~to)) {
         //simple pawn capture
         OP.capture(~to);
         updateSliderAttacks<My>(MY.attackersTo(from), OP.attackersTo(~from));
@@ -132,7 +132,7 @@ void Position::playKingMove(Square from, Square to) {
     MY.moveKing(from, to);
     OP.setOpKing(~to);
 
-    if (OP.hasPieceOn(~to)) {
+    if (OP.has(~to)) {
         //capture
         OP.capture(~to);
         updateSliderAttacks<My>(MY.attackersTo(from));

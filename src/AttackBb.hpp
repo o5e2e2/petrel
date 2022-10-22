@@ -63,14 +63,12 @@ public:
         const auto& dir = ::hyperbolaDir[type][from];
         const auto& sq = ::hyperbolaSq[from];
 
-        _t a;
-        a  = dir[Horizont] & _mm_sub_epi64(occupied & dir[Horizont], sq);
-        a ^= dir[Vertical] & _mm_sub_epi64(occupied & dir[Vertical], sq);
-        a ^= dir[Diagonal] & _mm_sub_epi64(occupied & dir[Diagonal], sq);
-        a ^= dir[Antidiag] & _mm_sub_epi64(occupied & dir[Antidiag], sq);
-        a  = hyperbola(a);
+        auto h = dir[Horizont] & _mm_sub_epi64(occupied & dir[Horizont], sq);
+        auto v = dir[Vertical] & _mm_sub_epi64(occupied & dir[Vertical], sq);
+        auto d = dir[Diagonal] & _mm_sub_epi64(occupied & dir[Diagonal], sq);
+        auto a = dir[Antidiag] & _mm_sub_epi64(occupied & dir[Antidiag], sq);
 
-        return Bb{static_cast<Bb::_t>( _mm_cvtsi128_si64(a) )};
+        return Bb{static_cast<Bb::_t>( _mm_cvtsi128_si64(hyperbola(h | v | d | a)) )};
     }
 
 };

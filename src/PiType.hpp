@@ -2,10 +2,10 @@
 #define PI_TYPE_H
 
 #include "typedefs.hpp"
-#include "VectorPiBit.hpp"
+#include "PiBit.hpp"
 
-class PiType : protected VectorPiBit<PiType, PieceType> {
-    typedef VectorPiBit<PiType, PieceType> Base;
+class PiType : protected PiBit<PiType, PieceType> {
+    typedef PiBit<PiType, PieceType> Base;
 
     typedef PieceType::_t _t;
     enum {

@@ -5,11 +5,11 @@
 #include "BitArray.hpp"
 
 template <>
-constexpr BitArrayBase<i128_t>::BitArrayBase () : _v{0,0} {}
+constexpr BitArrayBase<i128_t>::BitArrayBase () : v{0,0} {}
 
 template <>
 INLINE bool BitArrayBase<i128_t>::operator == (BitArrayBase<i128_t> a) {
-    return _mm_movemask_epi8( _mm_cmpeq_epi8(_v, a._v) ) == 0xffffu;
+    return _mm_movemask_epi8( _mm_cmpeq_epi8(v, a.v) ) == 0xffffu;
 }
 
 #endif

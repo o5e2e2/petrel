@@ -6,14 +6,14 @@
 
 #include "PieceSet.hpp"
 #include "VectorOf.hpp"
-#include "VectorPiSingle.hpp"
+#include "PiSingle.hpp"
 
 ///piece vector of boolean values: false (0) or true (0xff)
 class PiMask {
 public:
     typedef i128_t _t;
 private:
-    _t m;
+    _t v;
 
     typedef PiMask self_type;
     typedef self_type& self_ref;
@@ -23,27 +23,28 @@ private:
     void assertValid() const {}
 #else
     void assertValid() const {
-        auto v = _mm_cmpgt_epi8(::vectorOfAll[0], m);
-        assert (_mm_movemask_epi8(_mm_cmpeq_epi8(v, m)) == 0xffffu);
+        auto n = _mm_cmpgt_epi8(::vectorOfAll[0], v);
+        assert (_mm_movemask_epi8(_mm_cmpeq_epi8(v, n)) == 0xffffu);
     }
 #endif
 
-    explicit PiMask (_t a) : m{a} { assertValid(); }
+    friend class PiOrder;
+    explicit PiMask (_t a) : v{a} { assertValid(); }
 
 public:
-    constexpr operator _t () const { return m; }
+    constexpr operator _t () const { return v; }
 
-    constexpr PiMask () : m{0} {}
-    PiMask (Pi pi) : m{ ::vectorPiSingle[pi] } {}
+    constexpr PiMask () : v{0,0} {}
+    constexpr PiMask (Pi pi) : v( ::piSingle[pi] ) {}
+    PiMask (_t a, _t b) : v( _mm_cmpeq_epi8(a, b) ) {}
 
     static PiMask all() { return PiMask{ ::vectorOfAll[0xff] }; }
-    static PiMask cmpeq(_t a, _t b) { return PiMask { _mm_cmpeq_epi8(a, b) }; }
     static PiMask cmpgt(_t a, _t b) { return PiMask { _mm_cmpgt_epi8(a, b) }; }
-    static PiMask negate(_t a) { return PiMask::cmpeq(a, ::vectorOfAll[0]); }
+    static PiMask negate(_t a) { return PiMask(a, ::vectorOfAll[0]); }
 
     operator PieceSet() const {
         assertValid();
-        return PieceSet( static_cast<PieceSet::_t>(_mm_movemask_epi8(m)) );
+        return PieceSet( static_cast<PieceSet::_t>(_mm_movemask_epi8(v)) );
     }
 
     bool has(Pi pi) const { return PieceSet(*this).has(pi); }
@@ -66,13 +67,13 @@ public:
 
     bool any() const { return !none(); }
 
-    constexpr self_ref operator &= (self_cref a) { m &= a.m; return *this; }
-    constexpr self_ref operator |= (self_cref a) { m |= a.m; return *this; }
-    constexpr self_ref operator ^= (self_cref a) { m ^= a.m; return *this; }
-    constexpr self_ref operator %= (self_cref a) { m |= a.m; m ^= a.m; return *this; }  //"and not"
+    constexpr self_ref operator &= (self_cref a) { v &= a.v; return *this; }
+    constexpr self_ref operator |= (self_cref a) { v |= a.v; return *this; }
+    constexpr self_ref operator ^= (self_cref a) { v ^= a.v; return *this; }
+    constexpr self_ref operator %= (self_cref a) { v |= a.v; v ^= a.v; return *this; }  //"and not"
 
-    self_ref operator += (self_cref a) { assert ((*this & a).none()); m ^= a.m; return *this; }
-    self_ref operator -= (self_cref a) { assert (*this >= a); m ^= a.m; return *this; }
+    self_ref operator += (self_cref a) { assert ((*this & a).none()); v ^= a.v; return *this; }
+    self_ref operator -= (self_cref a) { assert (*this >= a); v ^= a.v; return *this; }
 
     friend bool operator == (self_type a, self_type b) { return (a ^ b).none(); }
     friend bool operator != (self_type a, self_type b) { return !(a == b); }

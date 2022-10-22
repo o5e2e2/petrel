@@ -12,14 +12,14 @@ public:
     typedef Zobrist Arg;
 
 private:
-    _t _v;
-    void change(Index ty, Square to) { _v ^= ::zobristKey(ty, to); }
+    _t v;
+    void change(Index ty, Square to) { v ^= ::zobristKey(ty, to); }
 
 public:
-    constexpr explicit Zobrist (_t z) : _v{z} {}
-    constexpr operator const _t& () const { return _v; }
+    constexpr explicit Zobrist (_t z) : v{z} {}
+    constexpr operator const _t& () const { return v; }
 
-    Zobrist (Arg my, Arg op) : _v{ my._v ^ ::bswap(op._v) } {}
+    Zobrist (Arg my, Arg op) : v{ my.v ^ ::bswap(op.v) } {}
 
     void drop(PieceType ty, Square to) { change(Index{ty}, to); }
     void clear(PieceType ty, Square from) { drop(ty, from); }
@@ -43,7 +43,7 @@ public:
         drop(ty, to);
     }
 
-    constexpr friend bool operator == (Arg a, Arg b) { return a._v == b._v; }
+    constexpr friend bool operator == (Arg a, Arg b) { return a.v == b.v; }
 
     friend io::ostream& operator << (io::ostream& out, Zobrist z) {
         auto flags(out.flags());

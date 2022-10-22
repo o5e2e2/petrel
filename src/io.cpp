@@ -22,10 +22,10 @@ istream& fail_rewind(istream& in) {
     return fail_pos(in, 0);
 }
 
-/// Tries to read the stream token and match it with the given token parameter.
+/// Read the input stream and try to match it with the given token parameter.
 /// The comparision is case insensitive and all sequential space symbols are equal to single space.
-/// @retval true: stream matches the given token, shift stream cursor past the matched token
-/// @retval false: failed to read stream or failed to match next stream token with the given token, stream state left unchanged
+/// @retval true: stream matches the given token, stream position is set forward past the matched token
+/// @retval false: failed to match stream with the given token, stream state reset back before call
 bool next(istream& in, czstring token) {
     if (token == nullptr) { token = ""; }
 
@@ -58,10 +58,12 @@ bool nextNone(istream& in) {
 
 ostream& app_version(ostream& out) {
 
-    out << "build ";
+#ifndef NDEBUG
+    out << " DEBUG";
+#endif
 
 #ifdef GIT_DATE
-    out << GIT_DATE;
+    out << ' ' << GIT_DATE;
 #else
     char_type year[] {__DATE__[7], __DATE__[8], __DATE__[9], __DATE__[10], '\0'};
 
@@ -88,21 +90,17 @@ ostream& app_version(ostream& out) {
 
     char_type day[] {((__DATE__[4] == ' ') ? '0' : __DATE__[4]), __DATE__[5], '\0'};
 
-    out << year << '-' << month << '-' << day;
-#endif
-
-#ifndef NDEBUG
-    out << " DEBUG";
+    out << ' ' << year << '-' << month << '-' << day;
 #endif
 
 #ifdef GIT_ORIGIN
-    out << ' ' << GIT_ORIGIN << ' ';
+    out << ' ' << GIT_ORIGIN;
 #else
     out << " https://bitbucket.org/alekspeshkov/petrel/src/";
 #endif
 
 #ifdef GIT_HASH
-    out << GIT_HASH;
+    out << ' ' << GIT_HASH;
 #endif
 
     return out;
@@ -110,23 +108,21 @@ ostream& app_version(ostream& out) {
 
 ostream& option_version(ostream& out) {
     return out
-        << "petrel " << app_version << '\n'
-        << "written by Aleks Peshkov (aleks.peshkov@gmail.com)\n"
+        << "petrel" << app_version << '\n'
+        << "(c) Aleks Peshkov (aleks.peshkov@gmail.com)\n"
     ;
 }
 
 ostream& option_help(ostream& out) {
     return out
-        << "petrel [-hv]\n"
-        << "    Petrel UCI chess engine. Plays the game of chess.\n\n"
-        << "    Options:\n"
-        << "      -h, --help        display this help and exit\n"
-        << "      -v, --version     output version information and exit\n"
+        << "    Petrel chess engine. The UCI protocol compatible.\n\n"
+        << "      -h, --help        display this help\n"
+        << "      -v, --version     display version information\n"
     ;
 }
 
 ostream& option_invalid(ostream& err) {
-    return err << "petrel: invalid option\n";
+    return err << "petrel: unkown option\n";
 }
 
 ostream& uci_error(ostream& err, istream& context) {
