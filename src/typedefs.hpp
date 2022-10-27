@@ -6,13 +6,7 @@
 #include "Index.hpp"
 
 typedef index_t ply_t; //search tree depth (relative to root)
-enum : ply_t {
-#ifndef NDEBUG
-    DepthMax = 20
-#else
-    DepthMax = 1000
-#endif
-};
+enum : ply_t { MaxDepth = 127 };
 
 typedef u64_t node_count_t;
 enum : node_count_t {

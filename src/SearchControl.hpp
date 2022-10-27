@@ -21,7 +21,7 @@ class SearchControl {
     PerftTT transpositionTable;
     Timer timer;
 
-    PvMoves<DepthMax> pvMoves;
+    PvMoves pvMoves;
 
 public:
     ply_t ply = 0; //distance to root of the current node

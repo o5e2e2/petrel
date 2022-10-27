@@ -4,20 +4,21 @@
 #include "typedefs.hpp"
 #include "Move.hpp"
 
-template<index_t Depth>
 class PvMoves {
-    std::array< std::array<Move, Depth+1>, Depth> pv;
+    enum { N = ::MaxDepth + 1 };
+    std::array< std::array<Move, N>, N> pv;
 
 public:
     PvMoves () { clear(); }
 
     void clear() {
-        for (index_t ply = 0; ply < Depth; ++ply) {
+        for (index_t ply = 0; ply < N; ++ply) {
             pv[ply][0] = Move{};
         }
     }
 
     void operator() (ply_t ply, Move move) {
+        assert (ply < N-1);
         pv[ply][0] = move;
         Move* target = &pv[ply][1];
         Move* source = &pv[ply + 1][0];

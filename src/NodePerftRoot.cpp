@@ -32,7 +32,7 @@ NodeControl NodePerftRootDepth::visitChildren() {
 }
 
 NodeControl NodePerftRootIterative::visitChildren() {
-    for (draft = 1; draft <= DepthMax; ++draft) {
+    for (draft = 1; draft <= MaxDepth; ++draft) {
         auto c = NodePerftRoot(*this, control, draft).visitChildren();
         if (c != NodeControl::Continue) { break; }
 
@@ -117,7 +117,7 @@ NodeControl NodePerftDivideDepth::visitChildren() {
 }
 
 NodeControl NodePerftDivideIterative::visitChildren() {
-    for (draft = 1; draft <= DepthMax; ++draft) {
+    for (draft = 1; draft <= MaxDepth; ++draft) {
         auto c = NodePerftDivide(*this, control, draft).visitChildren();
         if (c != NodeControl::Continue) { break; }
 

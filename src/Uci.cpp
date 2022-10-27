@@ -132,7 +132,7 @@ void Uci::go() {
     limit.positionMoves = positionFen;
 
     while (command) {
-        if      (next("depth"))    { command >> limit.depth; limit.depth = std::min(limit.depth, static_cast<ply_t>(DepthMax)); }
+        if      (next("depth"))    { command >> limit.depth; limit.depth = std::min(limit.depth, static_cast<ply_t>(MaxDepth)); }
         else if (next("wtime"))    { command >> limit.time[whiteSide]; }
         else if (next("btime"))    { command >> limit.time[blackSide]; }
         else if (next("winc"))     { command >> limit.inc[whiteSide]; }

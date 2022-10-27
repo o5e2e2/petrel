@@ -5,7 +5,7 @@
 #include "SearchLimit.hpp"
 
 NodeAbRoot::NodeAbRoot (const SearchLimit& limit, SearchControl& searchControl):
-    NodeAbPv(limit.positionMoves, searchControl, 1), depthLimit(limit.depth ? limit.depth : DepthMax)
+    NodeAbPv(limit.positionMoves, searchControl, 1), depthLimit(limit.depth ? limit.depth : MaxDepth)
 {}
 
 NodeControl NodeAbRoot::searchIteration() {
