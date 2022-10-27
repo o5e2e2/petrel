@@ -1,8 +1,8 @@
 #include "PositionSide.hpp"
-#include "BetweenSquares.hpp"
+#include "AttackBb.hpp"
 #include "CastlingRules.hpp"
 #include "PieceTypeAttack.hpp"
-#include "AttackBb.hpp"
+#include "SquaresInBetween.hpp"
 
 #ifndef NDEBUG
     void PositionSide::assertValid(Pi pi) const {
@@ -205,7 +205,7 @@ void PositionSide::setPinner(Pi pi, PieceType ty, Square sq) {
     assert (isSlider(ty));
     assert (!traits.isPinner(pi));
 
-    if (::attacksFrom(ty, sq).has(opKing) && ::between(opKing, sq).any()) {
+    if (::attacksFrom(ty, sq).has(opKing) && ::inBetween(opKing, sq).any()) {
         traits.setPinner(pi);
     }
 }
@@ -219,7 +219,7 @@ void PositionSide::setOpKing(Square king) {
     for (Pi pi : types.sliders()) {
         Square sq = squareOf(pi);
         if (::attacksFrom(typeOf(pi), sq).has(opKing)) {
-            assert (::between(opKing, sq).any()); //king should not be in check
+            assert (::inBetween(opKing, sq).any()); //king should not be in check
             traits.setPinner(pi);
         }
     }
@@ -269,7 +269,7 @@ void PositionSide::clearEnPassantKillers() {
 
 bool PositionSide::isPinned(Bb occupied) const {
     for (Pi pinner : pinners()) {
-        Bb pinLine = ::between(opKing, squareOf(pinner));
+        Bb pinLine = ::inBetween(opKing, squareOf(pinner));
         if ((pinLine & occupied).none()) {
             return true;
         }

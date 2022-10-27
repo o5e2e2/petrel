@@ -2,7 +2,6 @@
 
 #include "io.hpp"
 #include "AttackBb.hpp"
-#include "BetweenSquares.hpp"
 #include "BitReverse.hpp"
 #include "CastlingRules.hpp"
 #include "Evaluation.hpp"
@@ -10,6 +9,7 @@
 #include "PieceTypeAttack.hpp"
 #include "PiOrder.hpp"
 #include "PiSingle.hpp"
+#include "SquaresInBetween.hpp"
 #include "Uci.hpp"
 #include "VectorOf.hpp"
 #include "Zobrist.hpp"
@@ -17,7 +17,7 @@
 /**
 * Startup constant initialization
 */
-const BetweenSquares between; //32k
+const SquaresInBetween inBetween; //32k
 const HyperbolaDir hyperbolaDir; //12k
 const HyperbolaSq hyperbolaSq; //1k
 const PieceTypeAttack attacksFrom; //3k

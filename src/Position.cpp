@@ -1,5 +1,4 @@
 #include "Position.hpp"
-#include "BetweenSquares.hpp"
 #include "CastlingRules.hpp"
 #include "PieceTypeAttack.hpp"
 

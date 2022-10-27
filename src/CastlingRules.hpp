@@ -2,7 +2,7 @@
 #define CASTLING_RULES_HPP
 
 #include "Bb.hpp"
-#include "BetweenSquares.hpp"
+#include "SquaresInBetween.hpp"
 
 class CastlingRules {
     struct Rules {
@@ -27,13 +27,13 @@ public:
 
                 switch (CastlingRules::castlingSide(king, rook)) {
                     case QueenSide:
-                        castlingRules[kingFile][rookFile].unimpeded  = ((::between(king, C1)+C1) | (::between(rook, D1)+D1)) % (Bb{king} + rook);
-                        castlingRules[kingFile][rookFile].unattacked = (::between(king, C1)+C1) | king;
+                        castlingRules[kingFile][rookFile].unimpeded  = ((::inBetween(king, C1)+C1) | (::inBetween(rook, D1)+D1)) % (Bb{king} + rook);
+                        castlingRules[kingFile][rookFile].unattacked = (::inBetween(king, C1)+C1) | king;
                         break;
 
                     case KingSide:
-                        castlingRules[kingFile][rookFile].unimpeded  = ((::between(king, G1)+G1) | (::between(rook, F1)+F1)) % (Bb{king} + rook);
-                        castlingRules[kingFile][rookFile].unattacked = (::between(king, G1)+G1) | king;
+                        castlingRules[kingFile][rookFile].unimpeded  = ((::inBetween(king, G1)+G1) | (::inBetween(rook, F1)+F1)) % (Bb{king} + rook);
+                        castlingRules[kingFile][rookFile].unattacked = (::inBetween(king, G1)+G1) | king;
                         break;
                 }
             }

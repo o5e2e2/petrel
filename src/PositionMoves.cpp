@@ -2,6 +2,7 @@
 
 #include "CastlingRules.hpp"
 #include "PieceTypeAttack.hpp"
+#include "SquaresInBetween.hpp"
 
 #define MY (*this)[My]
 #define OP (*this)[Op]
@@ -112,7 +113,7 @@ void PositionMoves::excludePinnedMoves(PiMask opPinners) {
 
         assert (::attacksFrom(OP.typeOf(pinner), pinFrom).has(MY.kingSquare()));
 
-        const Bb& pinLine = ::between(MY.kingSquare(), pinFrom);
+        const Bb& pinLine = ::inBetween(MY.kingSquare(), pinFrom);
         Bb piecesOnPinLine = pinLine & MY.occupied();
         assert (piecesOnPinLine.any());
 
@@ -141,7 +142,7 @@ void PositionMoves::generateCheckEvasions() {
         Pi checker = checkers.index();
         Square checkFrom{~OP.squareOf(checker)};
 
-        const Bb& checkLine = ::between(MY.kingSquare(), checkFrom);
+        const Bb& checkLine = ::inBetween(MY.kingSquare(), checkFrom);
 
         //general case: check evasion moves of all pieces
         moves = MY.attacksMatrix() & (checkLine + checkFrom);
