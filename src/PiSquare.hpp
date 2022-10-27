@@ -1,10 +1,10 @@
 #ifndef PI_SQUARE_HPP
 #define PI_SQUARE_HPP
 
-#include "io.hpp"
 #include "typedefs.hpp"
 #include "Square.hpp"
 #include "VectorPiEnum.hpp"
+#include "PiMask.hpp"
 #include "VectorOf.hpp"
 
 class PiSquare : protected VectorPiEnum<Square::_t> {

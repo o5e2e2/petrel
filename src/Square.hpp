@@ -12,7 +12,7 @@ enum square_t {
     A4, B4, C4, D4, E4, F4, G4, H4,
     A3, B3, C3, D3, E3, F3, G3, H3,
     A2, B2, C2, D2, E2, F2, G2, H2,
-    A1, B1, C1, D1, E1, F1, G1, H1
+    A1, B1, C1, D1, E1, F1, G1, H1,
 };
 
 class Bb;
@@ -29,7 +29,7 @@ struct Square : Index<64, square_t> {
 
     constexpr Square& flip() { this->_v = static_cast<_t>(this->_v ^ RankMask); return *this; }
     constexpr Square operator ~ () const { return static_cast<_t>(this->_v ^ RankMask); }
-    constexpr Square rankForward() const { return static_cast<_t>(this->_v - A7 + A8); }
+    constexpr Square rankForward() const { return static_cast<_t>(this->_v + A8 - A7); }
 
     constexpr bool on(Rank rank) const { return (this->_v & RankMask) == static_cast<unsigned>(rank << RankShift); }
     constexpr bool on(File file) const { return (this->_v & File::Mask) == file; }
@@ -40,13 +40,17 @@ struct Square : Index<64, square_t> {
     constexpr Bb antidiag() const;
     constexpr Bb operator() (signed fileOffset, signed rankOffset) const;
 
-    constexpr signed x88(signed fileOffset, signed rankOffset) const {
-        return static_cast<signed>(this->_v + (this->_v & 070)) + fileOffset + 16*rankOffset;
+    // https://www.chessprogramming.org/0x88
+    constexpr bool isValidOffset(signed f, signed r) const {
+        return ((static_cast<signed>(this->_v + (this->_v & 070)) + f + 16*r) & 0x88) == 0;
     }
 
-    friend io::ostream& operator << (io::ostream& out, Square sq) {
-        return out << File(sq) << Rank(sq);
+    constexpr Square offset(signed f, signed r) const {
+        assert (isValidOffset(f, r));
+        return static_cast<_t>(static_cast<signed>(this->_v) + f + (r << RankShift));
     }
+
+    friend io::ostream& operator << (io::ostream& out, Square sq) { return out << File(sq) << Rank(sq); }
 
     friend io::istream& operator >> (io::istream& in, Square& sq) {
         auto here = in.tellg();

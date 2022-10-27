@@ -20,14 +20,14 @@ enum : node_count_t {
     NodeCountMax  = NodeCountNone - 1
 };
 
-enum file_t { FileA, FileB, FileC, FileD, FileE, FileF, FileG, FileH };
+enum file_t { FileA, FileB, FileC, FileD, FileE, FileF, FileG, FileH, };
 typedef Index<8, file_t> File;
 template <> io::czstring File::The_string;
 
-enum rank_t { Rank8, Rank7, Rank6, Rank5, Rank4, Rank3, Rank2, Rank1 };
+enum rank_t { Rank8, Rank7, Rank6, Rank5, Rank4, Rank3, Rank2, Rank1, };
 typedef Index<8, rank_t> Rank;
 template <> io::czstring Rank::The_string;
-constexpr Rank::_t rankForward(Rank rank) { return static_cast<Rank::_t>(rank - Rank7 + Rank8); }
+constexpr Rank::_t rankForward(Rank rank) { return static_cast<Rank::_t>(rank + Rank8 - Rank7); }
 
 
 enum color_t { White, Black };

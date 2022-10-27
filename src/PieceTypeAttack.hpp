@@ -9,14 +9,11 @@ class PieceTypeAttack {
 public:
     constexpr PieceTypeAttack () {
         FOR_INDEX (Square, sq) {
-            attack[Rook][sq] = sq.vertical() + sq.horizont();
+            attack[Rook][sq]   = sq.vertical() + sq.horizont();
             attack[Bishop][sq] = sq.diagonal() + sq.antidiag();
+            attack[Queen][sq]  = attack[Rook][sq] + attack[Bishop][sq];
 
-            attack[Queen][sq] =
-                sq.vertical() + sq.horizont() +
-                sq.diagonal() + sq.antidiag();
-
-            attack[Pawn][sq] = sq(-1, -1) + sq(+1, -1);
+            attack[Pawn][sq] = sq(-1, Rank3 - Rank2) + sq(+1, Rank3 - Rank2);
 
             attack[Knight][sq] =
                 sq(+2, +1) + sq(+2, -1) + sq(+1, +2) + sq(+1, -2) +

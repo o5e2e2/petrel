@@ -62,12 +62,7 @@ public:
 
 };
 
-constexpr Bb Square::operator() (signed fileOffset, signed rankOffset) const {
-    return (x88(fileOffset, rankOffset) & 0x88)
-        ? Bb{}
-        : Bb{static_cast<_t>((x88(fileOffset, rankOffset) + (x88(fileOffset, rankOffset) & 7)) >> 1)}
-    ;
-}
+constexpr Bb Square::operator() (signed f, signed r) const { return isValidOffset(f, r) ? Bb{offset(f, r)} : Bb{}; }
 constexpr Bb Square::horizont() const { return Bb{Rank(*this)} - *this; }
 constexpr Bb Square::vertical() const { return Bb{File(*this)} - *this; }
 constexpr Bb Square::diagonal() const { return Bb{BB(0x0102040810204080), 8*(Rank(*this) + +File(*this) - 7)} - *this; }
