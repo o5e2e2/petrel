@@ -72,20 +72,26 @@ public:
 
     //bitboard of the given piece
     Bb operator[] (Pi pi) const {
-        Bb::_t b{0};
+        union {
+            Bb::_t bb;
+            Rank::arrayOf<BitRank::_t> br;
+        };
         FOR_INDEX(Rank, rank) {
-            b += static_cast<Bb::_t>(static_cast<BitRank::_t>((matrix[rank][pi]))) << 8*rank;
+            br[rank] = static_cast<BitRank::_t>(matrix[rank][pi]);
         }
-        return Bb{b};
+        return Bb{bb};
     }
 
     //bitboard of squares affected by all pieces
     Bb gather() const {
-        Bb::_t b{0};
+        union {
+            Bb::_t bb;
+            Rank::arrayOf<BitRank::_t> br;
+        };
         FOR_INDEX(Rank, rank) {
-            b += static_cast<Bb::_t>(static_cast<BitRank::_t>(matrix[rank].gather())) << 8*rank;
+            br[rank] = static_cast<BitRank::_t>(matrix[rank].gather());
         }
-        return Bb{b};
+        return Bb{bb};
     }
 
     void filter(Pi pi, Bb bb) {
