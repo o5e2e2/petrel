@@ -1,17 +1,15 @@
 #include "PerftTT.hpp"
 #include "HashBucket.hpp"
 #include "PerftRecord.hpp"
-#include "PerftRecordDual.hpp"
+#include "PerftRecordSmall.hpp"
 
 namespace {
-    typedef Index<3>::arrayOf<PerftRecord> Bucket;
-
     union BucketUnion {
         HashBucket m;
         struct {
-            Bucket b;
-            PerftRecordDual s;
-        } b;
+            Index<3>::arrayOf<PerftRecord> b;
+            Index<2>::arrayOf<PerftRecordSmall> d;
+        } v;
     };
 }
 
@@ -24,17 +22,17 @@ node_count_t PerftTT::get(Zobrist z, ply_t d) {
     auto origin = reinterpret_cast<HashBucket*>(hashMemory.seek(z));
     BucketUnion u = *reinterpret_cast<BucketUnion*>(origin);
 
-    if (d < 2 && u.b.s[d].isKeyMatch(z)) {
+    if (d < 2 && u.v.d[d].isKeyMatch(z, d)) {
         ++counter.hits;
-        return u.b.s[d].getNodes();
+        return u.v.d[d].getNodes();
     }
 
-    if (u.b.b[2].isKeyMatch(z, d)) {
+    if (u.v.b[2].isKeyMatch(z, d)) {
         ++counter.hits;
-        auto n = u.b.b[2].getNodes();
-        if (u.b.b[1].getDepth() <= d) {
-            u.b.b[2].setAge(hashAge);
-            if (u.b.b[0].getDepth() <= d) {
+        auto n = u.v.b[2].getNodes();
+        if (u.v.b[1].getDepth() <= d) {
+            u.v.b[2].setAge(hashAge);
+            if (u.v.b[0].getDepth() <= d) {
                 origin->set(0, u.m[2]);
                 origin->set(1, u.m[0]);
             }
@@ -46,20 +44,20 @@ node_count_t PerftTT::get(Zobrist z, ply_t d) {
         return n;
     }
 
-    if (u.b.b[1].isKeyMatch(z, d)) {
+    if (u.v.b[1].isKeyMatch(z, d)) {
         ++counter.hits;
-        auto n = u.b.b[1].getNodes();
-        if (u.b.b[0].getDepth() <= d) {
-            u.b.b[1].setAge(hashAge);
+        auto n = u.v.b[1].getNodes();
+        if (u.v.b[0].getDepth() <= d) {
+            u.v.b[1].setAge(hashAge);
             origin->set(1, u.m[0]);
             origin->set(0, u.m[1]);
         }
         return n;
     }
 
-    if (u.b.b[0].isKeyMatch(z, d)) {
+    if (u.v.b[0].isKeyMatch(z, d)) {
         ++counter.hits;
-        auto n = u.b.b[0].getNodes();
+        auto n = u.v.b[0].getNodes();
         return n;
     }
 
@@ -72,32 +70,32 @@ void PerftTT::set(Zobrist z, ply_t d, node_count_t n) {
     auto origin = reinterpret_cast<HashBucket*>(hashMemory.seek(z));
     BucketUnion u = *reinterpret_cast<BucketUnion*>(origin);
 
-    if (d < 2 && d < u.b.b[2].getDepth() && u.b.b[2].isAgeMatch(hashAge)) {
+    if (d < 2 && d < u.v.b[2].getDepth() && u.v.b[2].isAgeMatch(hashAge)) {
         //deep slots are occupied, update only short slot if possible
         assert (d == 0 || d == 1);
-        u.b.s.set(d, z, n);
+        u.v.d[d].set(z, d, n);
         origin->set(3, u.m[3]);
         return;
     }
 
     //the shallowest deep slot would be overwritten anyway
-    if (u.b.b[2].getDepth() < 2) {
+    if (u.v.b[2].getDepth() < 2) {
         //so we move it into the short slot if possible
-        assert (u.b.b[2].getDepth() == 0 || u.b.b[2].getDepth() == 1);
-        u.b.s.set(u.b.b[2].getDepth(), u.b.b[2].getKey(), u.b.b[2].getNodes());
+        assert (u.v.b[2].getDepth() == 0 || u.v.b[2].getDepth() == 1);
+        u.v.d[u.v.b[2].getDepth()].set(u.v.b[2].getKey(), u.v.b[2].getDepth(), u.v.b[2].getNodes());
         origin->set(3, u.m[3]);
     }
 
-    u.b.b[2].set(z, d, n, hashAge);
+    u.v.b[2].set(z, d, n, hashAge);
 
-    if (d < u.b.b[1].getDepth() && u.b.b[1].isAgeMatch(hashAge)) {
+    if (d < u.v.b[1].getDepth() && u.v.b[1].isAgeMatch(hashAge)) {
         origin->set(2, u.m[2]);
         return;
     }
 
     origin->set(2, u.m[1]);
 
-    if (d < u.b.b[0].getDepth() && u.b.b[0].isAgeMatch(hashAge)) {
+    if (d < u.v.b[0].getDepth() && u.v.b[0].isAgeMatch(hashAge)) {
         //move current data in the middle slot
         origin->set(1, u.m[2]);
         return;
