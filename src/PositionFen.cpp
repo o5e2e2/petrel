@@ -321,9 +321,9 @@ void PositionFen::limitMoves(io::istream& in) {
     index_t n = 0;
 
     while (in) {
-        Square from;
-        Square to;
         auto beforeMove = in.tellg();
+
+        Square from; Square to;
 
         if (!readMove(in, from, to) || !isLegalMove(from, to)) {
             io::fail_pos(in, beforeMove);
@@ -351,8 +351,8 @@ void PositionFen::limitMoves(io::istream& in) {
 void PositionFen::playMoves(io::istream& in) {
     while (in) {
         auto beforeMove = in.tellg();
-        Square from;
-        Square to;
+
+        Square from; Square to;
 
         if (!readMove(in, from, to) || !isLegalMove(from, to)) {
             io::fail_pos(in, beforeMove);
@@ -378,24 +378,24 @@ io::istream& PositionFen::setBoard(io::istream& in) {
         return io::fail(in);
     }
 
-    auto beforeColorToMove = in.tellg();
+    auto beforeColor = in.tellg();
     in >> colorToMove;
 
     if (!in) {
         //invalid side to move
-        return io::fail_pos(in, beforeColorToMove);
+        return io::fail_pos(in, beforeColor);
     }
 
     Position pos;
 
     if (!board.dropPieces(pos, colorToMove)) {
         //missing one or both kings
-        return io::fail_pos(in, beforeColorToMove);
+        return io::fail_pos(in, beforeColor);
     }
 
     if (!pos.afterDrop()) {
         //the side to move king left in check
-        return io::fail_pos(in, beforeColorToMove);
+        return io::fail_pos(in, beforeColor);
     }
 
     static_cast<Position&>(*this) = pos;
@@ -471,11 +471,11 @@ io::istream& PositionFen::setEnPassant(io::istream& in) {
         return in;
     }
 
-    auto beforeEp = in.tellg();
+    auto beforeSquare = in.tellg();
     Square ep;
     if (in >> ep) {
         if (!ep.on(colorToMove.is(White) ? Rank6 : Rank3) || !setEnPassant( File(ep) )) {
-            return io::fail_pos(in, beforeEp);
+            return io::fail_pos(in, beforeSquare);
         }
     }
     return in;

@@ -29,8 +29,8 @@ istream& fail_rewind(istream& in) {
 bool next(istream& in, czstring token) {
     if (token == nullptr) { token = ""; }
 
-    auto pos_before = in.tellg();
-    auto state_before = in.rdstate();
+    auto state = in.rdstate();
+    auto before = in.tellg();
 
     using std::isspace;
     do {
@@ -46,8 +46,8 @@ bool next(istream& in, czstring token) {
         return true;
     }
 
-    in.clear(state_before);
-    in.seekg(pos_before);
+    in.seekg(before);
+    in.clear(state);
     return false;
 }
 

@@ -35,7 +35,7 @@ protected:
     void generateMoves();
 
     void clearMove(Pi pi, Square sq) { moves.clear(pi, sq); }
-    void setMoves(const PiBb& m, index_t n) { moves = m; movesCount = n; }
+    void setMoves(const PiBb& m, index_t n) { moves = m; movesCount = n; assert (moves.count() == n);  }
 
     void setZobrist(const PositionMoves& parent, Square from, Square to) { zobrist = parent.createZobrist(from, to); }
     void setZobrist() { zobrist = generateZobrist(); }

@@ -53,7 +53,7 @@ struct Square : Index<64, square_t> {
     friend io::ostream& operator << (io::ostream& out, Square sq) { return out << File(sq) << Rank(sq); }
 
     friend io::istream& operator >> (io::istream& in, Square& sq) {
-        auto here = in.tellg();
+        auto before = in.tellg();
 
         File file{File::Begin};
         Rank rank{Rank::Begin};
@@ -63,7 +63,7 @@ struct Square : Index<64, square_t> {
             sq = Square{file, rank};
         }
         else {
-            io::fail_pos(in, here);
+            io::fail_pos(in, before);
         }
         return in;
     }
