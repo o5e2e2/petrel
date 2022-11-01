@@ -5,22 +5,23 @@ then
 
     cat << EOF
 Usage:
-$0 [engine] [script]
+$0 [engine] [scenario]
 EOF
 
 exit
 fi
 
 engine=$1
-script=$2
+scenario=$2
 eol=$'\n'
 
-expect="set timeout -1$eol"
-expect+="spawn $engine$eol"
+script="set timeout -1$eol"
+script+="spawn $engine$eol"
 
-ex=""
+expect=""
+send=""
 
-exec 4<$script
+exec 4<$scenario
 while read -r -u4 line || [[ -n $line ]];
 do
     #skip blank lines
@@ -35,29 +36,40 @@ do
         continue
     fi
 
-    #collect expect lines together
-    if [[ $line = \;* ]]
+    #collect EXPECT lines together
+    if [[ $line = \<* ]]
     then
-        ex+="${line:1}\r\n"
+        if [[ -n $send ]]
+        then
+            script+="send \"$send\"$eol"
+            send=""
+        fi
+        expect+="${line:1}\r\n"
         continue
     fi
 
-    if [[ -n $ex ]]
+    #collect SEND lines together
+
+    if [[ -n $expect ]]
     then
-        expect+="expect \"$ex\"$eol"
-        ex=""
+        script+="expect \"$expect\"$eol"
+        expect=""
     fi
 
-    expect+="send \"$line\r\"$eol"
+    send+="$line\r"
 done
 
-if [[ -n $ex ]]
+if [[ -n $expect ]]
 then
-    expect+="expect \"$ex\"$eol"
-    ex=""
+    script+="expect \"$expect\"$eol"
 fi
 
-expect+="expect eof$eol"
-expect+="puts \"TEST PASSED\"$eol"
+if [[ -n $send ]]
+then
+    script+="send \"$send\"$eol"
+fi
 
-echo "$expect" | expect -
+script+="expect eof$eol"
+script+="puts \"TEST PASSED\"$eol"
+
+echo "$script" | expect -
