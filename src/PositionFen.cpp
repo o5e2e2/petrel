@@ -320,7 +320,7 @@ void PositionFen::limitMoves(io::istream& in) {
     movesMatrix.clear();
     index_t n = 0;
 
-    while (in) {
+    while (in >> std::ws, !in.eof()) {
         auto beforeMove = in.tellg();
 
         Square from; Square to;
@@ -343,9 +343,7 @@ void PositionFen::limitMoves(io::istream& in) {
         return;
     }
 
-    if (in.eof()) {
-        io::fail_rewind(in);
-    }
+    io::fail_rewind(in);
 }
 
 void PositionFen::playMoves(io::istream& in) {
