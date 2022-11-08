@@ -12,11 +12,14 @@
 template <size_t _Size, typename _Value_type = index_t, typename _Storage_type = index_t>
 class Index {
     static io::czstring The_string;
+
 public:
     typedef _Value_type _t;
 
     enum { Size = _Size, Mask = Size-1 };
     static const _t Begin = static_cast<_t>(0);
+
+    template <typename T> using arrayOf = std::array<T, Size>;
 
 protected:
     _Storage_type v;
@@ -59,21 +62,17 @@ public:
         }
         return false;
     }
-    constexpr const io::char_type& to_char() const { return The_string[*this]; }
 
-    friend io::istream& operator >> (io::istream& in, Index& i) {
+    constexpr const io::char_type& to_char() const { return The_string[*this]; }
+    friend io::ostream& operator << (io::ostream& out, Index i) { return out << i.to_char(); }
+
+    friend io::istream& read(io::istream& in, Index& i) {
         io::char_type c;
         if (in.get(c)) {
             if (!i.from_char(c)) { io::fail_char(in); }
         }
         return in;
     }
-
-    friend io::ostream& operator << (io::ostream& out, Index i) {
-        return out << i.to_char();
-    }
-
-    template <typename T> using arrayOf = std::array<T, Size>;
 
 };
 

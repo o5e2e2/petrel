@@ -55,21 +55,11 @@ void Position::playMove(Square from, Square to) {
     assert (!MY.hasEnPassant());
     assert (!OP.hasEnPassant());
 
-    if (MY.isPawn(pi)) {
-        playPawnMove<My>(pi, from, to);
-        return;
-    }
+    if (MY.isPawn(pi)) { playPawnMove<My>(pi, from, to); return; }
+    if (MY.kingSquare().is(from)) { playKingMove<My>(from, to); return; }
 
-    if (MY.kingSquare().is(from)) {
-        playKingMove<My>(from, to);
-        return;
-    }
-
-    if (MY.kingSquare().is(to)) {
-        //castling move encoded as castling rook captures own king
-        playCastling<My>(pi, from, to);
-        return;
-    }
+    //castling move encoded as castling rook captures own king
+    if (MY.kingSquare().is(to)) { playCastling<My>(pi, from, to); return; }
 
     //simple non-pawn non-king move
     MY.move(pi, from, to);
@@ -188,14 +178,10 @@ void Position::setLegalEnPassant(Pi pi, Square to) {
     Square ep(File(to), Rank3);
 
     Bb killers = ~OP.pawnsSquares() & ::attacksFrom(Pawn, ep);
-    if (killers.none()) {
-        return;
-    }
+    if (killers.none()) { return; }
 
-    if (MY.isPinned(MY.occupied())) {
-        assert ((MY.checkers() % pi).any());
-        return; //discovered check found
-    }
+    //discovered check
+    if (MY.isPinned(MY.occupied())) { assert ((MY.checkers() % pi).any()); return; }
     assert ((MY.checkers() % pi).none());
 
     for (Square killer : killers) {
@@ -215,7 +201,9 @@ bool Position::dropValid(Side My, PieceType ty, Square to) {
 bool Position::afterDrop() {
     PositionSide::finalSetup(MY, OP);
     updateSliderAttacks<Op>(OP.pieces(), MY.pieces());
-    return MY.checkers().none(); //not in check
+
+    //should be not in check
+    return MY.checkers().none();
 }
 
 #undef MY

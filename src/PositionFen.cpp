@@ -29,69 +29,67 @@ class FenToBoard {
     bool drop(Color, PieceType, Square);
 
 public:
-    friend io::istream& operator >> (io::istream&, FenToBoard&);
+    friend io::istream& read(io::istream&, FenToBoard&);
     bool dropPieces(Position& pos, Color colorToMove);
 };
 
-io::istream& operator >> (io::istream& in, FenToBoard& board) {
-    in >> std::ws;
-
+io::istream& read(io::istream& in, FenToBoard& board) {
     File file{FileA}; Rank rank{Rank8};
+
     for (io::char_type c; in.get(c); ) {
         if (std::isalpha(c) && rank.isOk() && file.isOk()) {
             Color color = std::isupper(c) ? White : Black;
             c = static_cast<io::char_type>(std::tolower(c));
 
-            PieceType ty{PieceType::Begin};
-            if ( ty.from_char(c) && board.drop(color, ty, Square{file, rank}) ) {
-                ++file;
-                continue;
+            PieceType ty;
+            if (!ty.from_char(c) || !board.drop(color, ty, Square{file, rank})) {
+                return io::fail_char(in);
             }
-            io::fail_char(in);
-        }
-        else if ('1' <= c && c <= '8' && rank.isOk() && file.isOk()) {
-            int b = c - '0'; //convert digit symbol to int
 
-            //skip blank squares
-            int f = file + b;
-            if (f <= static_cast<int>(File::Size)) {
-                //avoid out of range initialization check
-                file = static_cast<File::_t>(f-1);
-                ++file;
-                continue;
-            }
-            io::fail_char(in);
+            ++file;
+            continue;
         }
-        else if (c == '/' && rank.isOk()) {
+
+        if ('1' <= c && c <= '8' && rank.isOk() && file.isOk()) {
+            //convert digit symbol to offset and skip blank squares
+            auto  f = file + (c - '0');
+            if (f > static_cast<int>(File::Size)) {
+                return io::fail_char(in);
+            }
+
+            //avoid out of range initialization check
+            file = static_cast<File::_t>(f-1);
+            ++file;
+            continue;
+        }
+
+        if (c == '/' && rank.isOk()) {
             ++rank;
             file = FileA;
             continue;
         }
-        else if (std::isblank(c)) {
-            break; //end of board description field
+
+        //end of board description field
+        if (std::isblank(c)) {
+            break;
         }
 
-        //otherwise it is an input error
-        io::fail_char(in);
+        //parsing error
+        return io::fail_char(in);
     }
+
     return in;
 }
 
 bool FenToBoard::drop(Color color, PieceType ty, Square sq) {
-    //our position representaion cannot hold more then 16 total pieces per color
-    if (pieceCount[color] == Pi::Size) {
-        return false;
-    }
+    //the position representaion cannot hold more then 16 total pieces per color
+    if (pieceCount[color] == Pi::Size) { return false; }
 
     //max one king per each color
-    if (ty.is(King) && !pieces[color][King].empty()) {
-        return false;
-    }
+    if (ty.is(King) && !pieces[color][King].empty()) { return false; }
 
     //illegal pawn location
-    if (ty.is(Pawn) && (sq.on(Rank1) || sq.on(Rank8))) {
-        return false;
-    }
+    if (ty.is(Pawn) && (sq.on(Rank1) || sq.on(Rank8))) { return false; }
 
     ++pieceCount[color];
     pieces[color][ty].insert(color.is(White) ? sq : ~sq);
@@ -101,9 +99,7 @@ bool FenToBoard::drop(Color color, PieceType ty, Square sq) {
 bool FenToBoard::dropPieces(Position& position, Color colorToMove) {
     //each side should have one king
     FOR_INDEX(Color, color) {
-        if (pieces[color][King].empty()) {
-            return false;
-        }
+        if (pieces[color][King].empty()) { return false; }
     }
 
     Position pos;
@@ -115,10 +111,7 @@ bool FenToBoard::dropPieces(Position& position, Color colorToMove) {
             while (!pieces[color][ty].empty()) {
                 auto piece = pieces[color][ty].begin();
 
-                if (!pos.dropValid(side, ty, *piece)) {
-                    //should never happen
-                    return false;
-                }
+                if (!pos.dropValid(side, ty, *piece)) { return false; }
 
                 pieces[color][ty].erase(piece);
             }
@@ -187,10 +180,7 @@ class CastlingToFen {
                     break;
             }
 
-            if (color.is(White)) {
-                castlingSymbol = static_cast<io::char_type>(std::toupper(castlingSymbol));
-            }
-
+            if (color.is(White)) { castlingSymbol = static_cast<io::char_type>(std::toupper(castlingSymbol)); }
             castlingSet.insert(castlingSymbol);
         }
     }
@@ -202,14 +192,11 @@ public:
     }
 
     friend io::ostream& operator << (io::ostream& out, const CastlingToFen& castling) {
-        if (castling.castlingSet.empty()) {
-            return out << '-';
-        }
+        if (castling.castlingSet.empty()) { return out << '-'; }
 
         for (auto castlingSymbol : castling.castlingSet) {
             out << castlingSymbol;
         }
-
         return out;
     }
 };
@@ -223,9 +210,7 @@ public:
         op{side}, enPassantRank{colorToMove.is(White) ? Rank6 : Rank3} {}
 
     friend io::ostream& operator << (io::ostream& out, const EnPassantToFen& enPassant) {
-        if (!enPassant.op.hasEnPassant()) {
-            return out << '-';
-        }
+        if (!enPassant.op.hasEnPassant()) { return out << '-'; }
 
         return out << Square{enPassant.op.enPassantFile(), enPassant.enPassantRank};
     }
@@ -257,59 +242,52 @@ void PositionFen::write(io::ostream& out, const Move pv[]) const {
 }
 
 io::istream& PositionFen::readMove(io::istream& in, Square& from, Square& to) const {
-    in >> std::ws >> from >> to;
+    if (!read(in, from) || !read(in, to)) { return in; }
 
-    if (colorToMove.is(Black)) {
-        from.flip();
-        to.flip();
-    }
+    if (colorToMove.is(Black)) { from.flip(); to.flip(); }
 
-    if (!in || !MY.has(from)) {
-        return io::fail(in);
-    }
-
+    if (!MY.has(from)) { return io::fail(in); }
     Pi pi = MY.pieceOn(from);
 
     //convert special moves (castling, promotion, ep) to the internal move format
     if (MY.isPawn(pi)) {
         if (from.on(Rank7)) {
             PromoType promo{Queen};
-            in >> promo;
+            read(in, promo);
             in.clear(); //promotion piece is optional
             to = Square{File(to), static_cast<Rank::_t>(+promo)};
             return in;
         }
+
         if (from.on(Rank5) && OP.hasEnPassant() && OP.enPassantFile().is(File(to))) {
             to = Square{File(to), Rank5};
             return in;
         }
-        //else normal pawn move
+
+        //else is normal pawn move
+        return in;
     }
-    else if (pi.is(TheKing)) {
+
+    if (pi.is(TheKing)) {
         if (MY.has(to)) { //Chess960 castling encoding
-            if (!MY.isCastling(to)) {
-                return io::fail(in);
-            }
+            if (!MY.isCastling(to)) { return io::fail(in); }
+
             std::swap(from, to);
             return in;
         }
         if (from.is(E1) && to.is(G1)) {
-            if (!MY.has(H1) || !MY.isCastling(H1)) {
-                return io::fail(in);
-            }
-            from = H1;
-            to = E1;
+            if (!MY.has(H1) || !MY.isCastling(H1)) { return io::fail(in); }
+
+            from = H1; to = E1;
             return in;
         }
         if (from.is(E1) && to.is(C1)) {
-            if (!MY.has(A1) || !MY.isCastling(A1)) {
-                return io::fail(in);
-            }
-            from = A1;
-            to = E1;
+            if (!MY.has(A1) || !MY.isCastling(A1)) { return io::fail(in); }
+
+            from = A1; to = E1;
             return in;
         }
-        //else normal king move
+        //else is normal king move
     }
 
     return in;
@@ -320,7 +298,7 @@ void PositionFen::limitMoves(io::istream& in) {
     movesMatrix.clear();
     index_t n = 0;
 
-    while (in >> std::ws, !in.eof()) {
+    while (in >> std::ws && !in.eof()) {
         auto beforeMove = in.tellg();
 
         Square from; Square to;
@@ -347,7 +325,7 @@ void PositionFen::limitMoves(io::istream& in) {
 }
 
 void PositionFen::playMoves(io::istream& in) {
-    while (in) {
+    while (in >> std::ws && !in.eof()) {
         auto beforeMove = in.tellg();
 
         Square from; Square to;
@@ -362,39 +340,22 @@ void PositionFen::playMoves(io::istream& in) {
     }
 }
 
-io::istream& PositionFen::setBoard(io::istream& in) {
+io::istream& PositionFen::readBoard(io::istream& in) {
     FenToBoard board;
+    if (!read(in, board)) { return in; };
 
-    in >> board >> std::ws;
+    in >> std::ws;
     if (in.eof()) {
         //missing board data
         return io::fail_rewind(in);
     }
 
-    if (!in) {
-        //specific board character is invalid
-        return io::fail(in);
-    }
-
     auto beforeColor = in.tellg();
-    in >> colorToMove;
-
-    if (!in) {
-        //invalid side to move
-        return io::fail_pos(in, beforeColor);
-    }
+    if (!read(in, colorToMove)) { return in; }
 
     Position pos;
-
-    if (!board.dropPieces(pos, colorToMove)) {
-        //missing one or both kings
-        return io::fail_pos(in, beforeColor);
-    }
-
-    if (!pos.afterDrop()) {
-        //the side to move king left in check
-        return io::fail_pos(in, beforeColor);
-    }
+    if (!board.dropPieces(pos, colorToMove)) { return io::fail_pos(in, beforeColor); }
+    if (!pos.afterDrop()) { return io::fail_pos(in, beforeColor); }
 
     static_cast<Position&>(*this) = pos;
     return in;
@@ -408,12 +369,8 @@ bool PositionFen::setCastling(Side My, CastlingSide castlingSide) {
     return MY.setValidCastling(castlingSide);
 }
 
-io::istream& PositionFen::setCastling(io::istream& in) {
-    in >> std::ws;
-    if (in.peek() == '-') {
-        in.ignore();
-        return in;
-    }
+io::istream& PositionFen::readCastling(io::istream& in) {
+    if (in.peek() == '-') { return in.ignore(); }
 
     for (io::char_type c; in.get(c) && !std::isblank(c); ) {
         if (std::isalpha(c)) {
@@ -422,18 +379,14 @@ io::istream& PositionFen::setCastling(io::istream& in) {
 
             c = static_cast<io::char_type>(std::tolower(c));
 
-            CastlingSide castlingSide{CastlingSide::Begin};
+            CastlingSide castlingSide;
             if (castlingSide.from_char(c)) {
-                if (setCastling(side, castlingSide)) {
-                    continue;
-                }
+                if (setCastling(side, castlingSide)) { continue; }
             }
             else {
-                File file{File::Begin};
+                File file;
                 if (file.from_char(c)) {
-                    if (setCastling(side, file)) {
-                        continue;
-                    }
+                    if (setCastling(side, file)) { continue; }
                 }
             }
         }
@@ -454,24 +407,19 @@ bool PositionFen::setEnPassant(File file) {
     if (!OP.isPawn(victim)) { return false; }
 
     //check against illegal en passant set field like "8/5bk1/8/2Pp4/8/1K6/8/8 w - d6"
-    if (OP.isPinned(OP.occupied() - victimSquare)) {
-        return false;
-    }
+    if (OP.isPinned(OP.occupied() - victimSquare)) { return false; }
 
     setLegalEnPassant<Op>(victim, victimSquare);
     return true;
 }
 
-io::istream& PositionFen::setEnPassant(io::istream& in) {
-    in >> std::ws;
-    if (in.peek() == '-') {
-        in.ignore();
-        return in;
-    }
+io::istream& PositionFen::readEnPassant(io::istream& in) {
+    if (in.peek() == '-') { return in.ignore(); }
+
+    Square ep;
 
     auto beforeSquare = in.tellg();
-    Square ep;
-    if (in >> ep) {
+    if (read(in, ep)) {
         if (!ep.on(colorToMove.is(White) ? Rank6 : Rank3) || !setEnPassant( File(ep) )) {
             return io::fail_pos(in, beforeSquare);
         }
@@ -480,9 +428,14 @@ io::istream& PositionFen::setEnPassant(io::istream& in) {
 }
 
 void PositionFen::readFen(io::istream& in) {
-    setBoard(in) && setCastling(in) && setEnPassant(in);
+    in >> std::ws;
+    readBoard(in);
+    in >> std::ws;
+    readCastling(in);
+    in >> std::ws;
+    readEnPassant(in);
 
-    if (in) {
+    if (in && !in.eof()) {
         unsigned _fifty;
         unsigned _moves;
         in >> _fifty >> _moves;

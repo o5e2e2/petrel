@@ -133,11 +133,7 @@ void PositionMoves::generateCheckEvasions() {
 
     PiMask checkers = OP.checkers();
 
-    if (!checkers.isSingleton()) {
-        //multiple (double) checker's case: no moves except king's ones are possible
-        moves.clear();
-    }
-    else {
+    if (checkers.isSingleton()) {
         //single checker case
         Pi checker = checkers.index();
         Square checkFrom{~OP.squareOf(checker)};
@@ -154,10 +150,11 @@ void PositionMoves::generateCheckEvasions() {
 
         populateUnderpromotions<My>();
 
-        if (MY.hasEnPassant()) {
-            assert (OP.enPassantPawns() == checkers);
-            generateEnPassantMoves<My>();
-        }
+        if (MY.hasEnPassant()) { assert (OP.enPassantPawns() == checkers); generateEnPassantMoves<My>(); }
+    }
+    else {
+        //double check case: no moves except king's ones are possible
+        moves.clear();
     }
 
     generateLegalKingMoves<My>();
@@ -188,9 +185,7 @@ void PositionMoves::generateMoves() {
 
     populateUnderpromotions<My>();
 
-    if (MY.hasEnPassant()) {
-        generateEnPassantMoves<My>();
-    }
+    if (MY.hasEnPassant()) { generateEnPassantMoves<My>(); }
 
     generateLegalKingMoves<My>();
 }
@@ -209,10 +204,7 @@ void PositionMoves::generateMoves() {
 }
 
 bool PositionMoves::isLegalMove(Square from, Square to) const {
-    if (!MY.has(from)) {
-        return false;
-    }
-    return moves.has(MY.pieceOn(from), to);
+    return MY.has(from) && moves.has(MY.pieceOn(from), to);
 }
 
 void PositionMoves::playMove(Square from, Square to) {
