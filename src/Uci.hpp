@@ -13,7 +13,7 @@ class Uci {
 
     std::istringstream command; //current input command line
     bool next(io::czstring token) { return io::next(command, token); }
-    bool nextNone() { return io::nextNone(command); }
+    bool nextNothing() { return io::nextNothing(command); }
 
     //UCI command handlers
     void go();

@@ -19,7 +19,7 @@ namespace io {
     istream& fail_rewind(istream&);
 
     bool next(istream&, czstring);
-    bool nextNone(istream&);
+    bool nextNothing(istream&);
 
     ostream& option_help(ostream&);
     ostream& option_version(ostream&);

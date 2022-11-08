@@ -12,7 +12,7 @@ Uci::Uci (io::ostream& out):
 
 void Uci::operator() (io::istream& in, io::ostream& err) {
     for (std::string currentLine; std::getline(in, currentLine); ) {
-        command.clear(); //clear errors from the previous command
+        command.clear(); //clear state from the previous command
         command.str(std::move(currentLine));
         command >> std::ws;
 
@@ -27,8 +27,8 @@ void Uci::operator() (io::istream& in, io::ostream& err) {
         else if (next("quit"))      { break; }
         else if (next("exit"))      { break; }
 
-        if (!nextNone()) {
-            //parsing error if something left unparsed
+        //parsing error detected or something left unparsed
+        if (!nextNothing()) {
             io::uci_error(err, command);
         }
     }
@@ -107,7 +107,7 @@ void Uci::setHash() {
 }
 
 void Uci::position() {
-    if (nextNone()) {
+    if (nextNothing()) {
         searchControl.infoPosition();
         return;
     }

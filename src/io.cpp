@@ -51,7 +51,7 @@ bool next(istream& in, czstring token) {
     return false;
 }
 
-bool nextNone(istream& in) {
+bool nextNothing(istream& in) {
     in >> std::ws;
     return in.eof();
 }
