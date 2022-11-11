@@ -7,8 +7,8 @@ namespace {
     union BucketUnion {
         HashBucket m;
         struct {
-            Index<3>::arrayOf<PerftRecord> b;
             Index<2>::arrayOf<PerftRecordSmall> d;
+            Index<3>::arrayOf<PerftRecord> b;
         } v;
     };
 }
@@ -32,20 +32,19 @@ node_count_t PerftTT::get(Zobrist z, ply_t d) {
         return u.v.d[1].getNodes();
     }
 
-    if (u.v.b[2].isKeyMatch(z, d)) {
+    if (u.v.b[0].isKeyMatch(z, d)) {
         ++counter.hits;
-        auto n = u.v.b[2].getNodes();
+        auto n = u.v.b[0].getNodes();
         if (d >= u.v.b[1].getDepth()) {
-            u.v.b[2].setAge(hashAge);
-            if (d >= u.v.b[0].getDepth()) {
-                origin->set(0, u.m[2]);
-                origin->set(1, u.m[0]);
-                origin->set(2, u.m[1]);
+            u.v.b[0].setAge(hashAge);
+            if (d >= u.v.b[2].getDepth()) {
+                origin->set(3, u.m[1]);
+                origin->set(2, u.m[3]);
             }
             else {
-                origin->set(1, u.m[2]);
                 origin->set(2, u.m[1]);
             }
+            origin->set(1, u.m[2]);
         }
         return n;
     }
@@ -53,17 +52,17 @@ node_count_t PerftTT::get(Zobrist z, ply_t d) {
     if (u.v.b[1].isKeyMatch(z, d)) {
         ++counter.hits;
         auto n = u.v.b[1].getNodes();
-        if (d >= u.v.b[0].getDepth()) {
+        if (d >= u.v.b[2].getDepth()) {
             u.v.b[1].setAge(hashAge);
-            origin->set(0, u.m[1]);
-            origin->set(1, u.m[0]);
+            origin->set(3, u.m[2]);
+            origin->set(2, u.m[3]);
         }
         return n;
     }
 
-    if (u.v.b[0].isKeyMatch(z, d)) {
+    if (u.v.b[2].isKeyMatch(z, d)) {
         ++counter.hits;
-        auto n = u.v.b[0].getNodes();
+        auto n = u.v.b[2].getNodes();
         return n;
     }
 
@@ -76,51 +75,46 @@ void PerftTT::set(Zobrist z, ply_t d, node_count_t n) {
     auto origin = reinterpret_cast<HashBucket*>(hashMemory.seek(z));
     BucketUnion u = *reinterpret_cast<BucketUnion*>(origin);
 
-    auto b2d = u.v.b[2].getDepth();
+    auto b2d = u.v.b[0].getDepth();
 
-    if (d < 3 && d < b2d && u.v.b[2].isAgeMatch(hashAge)) {
+    if (u.v.b[0].isAgeMatch(hashAge) && d < 3 && d < b2d) {
         //deep slots are occupied, update only short slot if possible
 
         if (d == 0) {
             u.v.d[0].set(z, d, n);
         }
         else {
-            std::swap(u.v.d[0], u.v.d[1]);
+            u.v.d[0] = u.v.d[1];
             u.v.d[1].set(z, d, n);
         }
-        origin->set(3, u.m[3]);
+        origin->set(0, u.m[0]);
         return;
     }
 
-    //the shallowest deep slot would be overwritten anyway
-    //so we move it into the short slot if possible
     if (b2d < 3) {
-        if (b2d == 0) {
-            u.v.d[0].set(u.v.b[2].getKey(), b2d, u.v.b[2].getNodes());
-        }
-        else {
-            u.v.d[1].set(u.v.b[2].getKey(), b2d, u.v.b[2].getNodes());
-        }
-        origin->set(3, u.m[3]);
+        //the shallowest deep slot would be overwritten anyway
+        //so we move it into the short slot if possible
+
+        u.v.d[0] = u.v.d[1];
+        u.v.d[1].set(u.v.b[0].getKey(), b2d, u.v.b[0].getNodes());
+        origin->set(0, u.m[0]);
     }
 
-    u.v.b[2].set(z, d, n, hashAge);
+    u.v.b[0].set(z, d, n, hashAge);
 
-    if (d < u.v.b[1].getDepth() && u.v.b[1].isAgeMatch(hashAge)) {
-        origin->set(2, u.m[2]);
+    if (u.v.b[1].isAgeMatch(hashAge) && d < u.v.b[1].getDepth()) {
+        origin->set(1, u.m[1]);
         return;
     }
+    origin->set(1, u.m[2]);
 
-    if (d < u.v.b[0].getDepth() && u.v.b[0].isAgeMatch(hashAge)) {
+    if (u.v.b[2].isAgeMatch(hashAge) && d < u.v.b[2].getDepth()) {
         //move current data in the middle slot
-        origin->set(1, u.m[2]);
         origin->set(2, u.m[1]);
         return;
     }
 
     //move current data in the deepest slot
-    origin->set(0, u.m[2]);
-    origin->set(1, u.m[0]);
-    origin->set(2, u.m[1]);
-
+    origin->set(2, u.m[3]);
+    origin->set(3, u.m[1]);
 }
