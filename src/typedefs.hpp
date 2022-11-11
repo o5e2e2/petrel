@@ -16,12 +16,33 @@ enum : node_count_t {
 
 enum file_t { FileA, FileB, FileC, FileD, FileE, FileF, FileG, FileH, };
 typedef Index<8, file_t> File;
-template <> io::czstring File::The_string;
+
+template <> inline
+io::char_type File::to_char() const { return static_cast<io::char_type>('a' + this->v); }
+
+template <> inline
+bool File::from_char(io::char_type c) {
+    File file{ static_cast<File::_t>(c - 'a') };
+    if (!file.isValid()) { return false; }
+    this->v = file;
+    return true;
+}
 
 enum rank_t { Rank8, Rank7, Rank6, Rank5, Rank4, Rank3, Rank2, Rank1, };
 typedef Index<8, rank_t> Rank;
-template <> io::czstring Rank::The_string;
+
 constexpr Rank::_t rankForward(Rank rank) { return static_cast<Rank::_t>(rank + Rank8 - Rank7); }
+
+template <> inline
+io::char_type Rank::to_char() const { return static_cast<io::char_type>('8' - this->v); }
+
+template <> inline
+bool Rank::from_char(io::char_type c) {
+    Rank rank{ static_cast<Rank::_t>('8' - c) };
+    if (!rank.isValid()) { return false; }
+    this->v = rank;
+    return true;
+}
 
 enum color_t { White, Black };
 typedef Index<2, color_t> Color;
@@ -37,7 +58,6 @@ template <> io::czstring CastlingSide::The_string;
 
 enum piece_index_t { TheKing };
 typedef Index<16, piece_index_t> Pi; //piece index
-template <> io::czstring Pi::The_string;
 
 enum piece_type_t {
     Queen = 0,
@@ -54,7 +74,12 @@ typedef Index<4, piece_type_t> PromoType;
 typedef Index<6, piece_type_t> PieceType;
 typedef Index<8, piece_type_t> PieceZobristType;
 template <> io::czstring PieceType::The_string;
-template <> io::czstring PromoType::The_string;
+
+template <> inline
+io::char_type PromoType::to_char() const { return reinterpret_cast<const PieceType*>(this)->to_char(); }
+
+template <> inline
+bool PromoType::from_char(io::char_type c) { return reinterpret_cast<PieceType*>(this)->from_char(c); }
 
 constexpr bool isSlider(piece_type_t ty) { return ty < Knight; }
 constexpr bool isLeaper(piece_type_t ty) { return ty >= Knight; }

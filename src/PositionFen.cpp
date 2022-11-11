@@ -37,7 +37,7 @@ io::istream& read(io::istream& in, FenToBoard& board) {
     File file{FileA}; Rank rank{Rank8};
 
     for (io::char_type c; in.get(c); ) {
-        if (std::isalpha(c) && rank.isOk() && file.isOk()) {
+        if (std::isalpha(c) && rank.isValid() && file.isValid()) {
             Color color = std::isupper(c) ? White : Black;
             c = static_cast<io::char_type>(std::tolower(c));
 
@@ -50,7 +50,7 @@ io::istream& read(io::istream& in, FenToBoard& board) {
             continue;
         }
 
-        if ('1' <= c && c <= '8' && rank.isOk() && file.isOk()) {
+        if ('1' <= c && c <= '8' && rank.isValid() && file.isValid()) {
             //convert digit symbol to offset and skip blank squares
             auto  f = file + (c - '0');
             if (f > static_cast<int>(File::Size)) {
@@ -63,7 +63,7 @@ io::istream& read(io::istream& in, FenToBoard& board) {
             continue;
         }
 
-        if (c == '/' && rank.isOk()) {
+        if (c == '/' && rank.isValid()) {
             ++rank;
             file = FileA;
             continue;
@@ -98,16 +98,16 @@ bool FenToBoard::drop(Color color, PieceType ty, Square sq) {
 
 bool FenToBoard::dropPieces(Position& position, Color colorToMove) {
     //each side should have one king
-    FOR_INDEX(Color, color) {
+    FOR_EACH(Color, color) {
         if (pieces[color][King].empty()) { return false; }
     }
 
     Position pos;
 
-    FOR_INDEX(Color, color) {
+    FOR_EACH(Color, color) {
         Side side = colorToMove.is(color) ? My : Op;
 
-        FOR_INDEX(PieceType, ty) {
+        FOR_EACH(PieceType, ty) {
             while (!pieces[color][ty].empty()) {
                 auto piece = pieces[color][ty].begin();
 
@@ -133,10 +133,10 @@ public:
         {}
 
     friend io::ostream& operator << (io::ostream& out, const BoardToFen& board) {
-        FOR_INDEX(Rank, rank) {
+        FOR_EACH(Rank, rank) {
             index_t emptySqCount = 0;
 
-            FOR_INDEX(File, file) {
+            FOR_EACH(File, file) {
                 Square sq(file,rank);
 
                 if (board.whitePieces.has(sq)) {

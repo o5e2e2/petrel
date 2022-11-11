@@ -11,7 +11,7 @@ constexpr i128_t combine(Bb lo, Bb hi) {
 
 struct HyperbolaSq : Square::arrayOf<i128_t> {
     HyperbolaSq () {
-        FOR_INDEX(Square, sq) {
+        FOR_EACH(Square, sq) {
             Square revSq(~File(sq), ~Rank(sq));
             (*this)[sq] = ::combine(Bb{sq}, Bb{revSq});
         }
@@ -24,7 +24,7 @@ typedef Index<4, direction_t>::arrayOf<i128_t> Directions;
 struct HyperbolaDir : SliderType::arrayOf< Square::arrayOf<Directions> > {
     HyperbolaDir () {
         const auto empty = ::combine(Bb{}, Bb{});
-        FOR_INDEX(Square, sq) {
+        FOR_EACH(Square, sq) {
             Square revSq{~File(sq), ~Rank(sq)};
 
             (*this)[Queen][sq][Horizont] = ::combine(sq.horizont(), revSq.horizont());

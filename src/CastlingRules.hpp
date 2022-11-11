@@ -14,8 +14,8 @@ class CastlingRules {
 
 public:
     constexpr CastlingRules () {
-        FOR_INDEX(File, kingFile) {
-            FOR_INDEX(File, rookFile) {
+        FOR_EACH(File, kingFile) {
+            FOR_EACH(File, rookFile) {
                 Square king(kingFile, Rank1);
                 Square rook(rookFile, Rank1);
 

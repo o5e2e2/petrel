@@ -20,14 +20,14 @@ class PiOrder {
 
     PiVector v;
 
-    bool isOk() const {
+    bool isValid() const {
         _t a = _mm_shuffle_epi8(static_cast<_t>(v), static_cast<_t>(v));
         return _mm_movemask_epi8(_mm_cmpeq_epi8(a, sorted)) == 0xffffu;
     }
 
 public:
     PiOrder () : v(sorted) {}
-    PiOrder (_t o) : v(o) { assert (isOk()); }
+    PiOrder (_t o) : v(o) { assert (isValid()); }
 
     PiMask order(PiMask a) const {
         return PiMask{_mm_shuffle_epi8(static_cast<PiMask::_t>(a), v)};

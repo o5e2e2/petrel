@@ -9,10 +9,10 @@ class SquaresInBetween {
 
 public:
     constexpr SquaresInBetween () {
-        FOR_INDEX(Square, from) {
+        FOR_EACH(Square, from) {
             Bb belowFrom{ ::singleton<Bb::_t>(from)-1 };
 
-            FOR_INDEX(Square, to) {
+            FOR_EACH(Square, to) {
                 Bb belowTo{ ::singleton<Bb::_t>(to)-1 };
 
                 Bb areaInBetween = (belowFrom ^ belowTo) % to;

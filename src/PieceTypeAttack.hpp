@@ -8,7 +8,7 @@ class PieceTypeAttack {
     PieceType::arrayOf< Square::arrayOf<Bb> > attack;
 public:
     constexpr PieceTypeAttack () {
-        FOR_INDEX (Square, sq) {
+        FOR_EACH (Square, sq) {
             attack[Rook][sq]   = sq.vertical() + sq.horizont();
             attack[Bishop][sq] = sq.diagonal() + sq.antidiag();
             attack[Queen][sq]  = attack[Rook][sq] + attack[Bishop][sq];

@@ -12,14 +12,14 @@ public:
     constexpr PiBb () = default;
 
     friend void swap(PiBb& a, PiBb& b) {
-        FOR_INDEX(Rank, rank) {
+        FOR_EACH(Rank, rank) {
             using std::swap;
             swap(a.matrix[rank], b.matrix[rank]);
         }
     }
 
     void clear() {
-        FOR_INDEX(Rank, rank) {
+        FOR_EACH(Rank, rank) {
             matrix[rank].clear();
         }
     }
@@ -29,7 +29,7 @@ public:
     }
 
     void clear(Pi pi) {
-        FOR_INDEX(Rank, rank) {
+        FOR_EACH(Rank, rank) {
             matrix[rank] %= PiMask{pi};
         }
     }
@@ -40,7 +40,7 @@ public:
     }
 
     void set(Pi pi, Bb bb) {
-        FOR_INDEX(Rank, rank) {
+        FOR_EACH(Rank, rank) {
             set(pi, rank, bb[rank]);
         }
     }
@@ -76,7 +76,7 @@ public:
             Bb::_t bb;
             Rank::arrayOf<BitRank::_t> br;
         };
-        FOR_INDEX(Rank, rank) {
+        FOR_EACH(Rank, rank) {
             br[rank] = static_cast<BitRank::_t>(matrix[rank][pi]);
         }
         return Bb{bb};
@@ -88,7 +88,7 @@ public:
             Bb::_t bb;
             Rank::arrayOf<BitRank::_t> br;
         };
-        FOR_INDEX(Rank, rank) {
+        FOR_EACH(Rank, rank) {
             br[rank] = static_cast<BitRank::_t>(matrix[rank].gather());
         }
         return Bb{bb};
@@ -96,28 +96,28 @@ public:
 
     void filter(Pi pi, Bb bb) {
         PiMask exceptPi{ PiMask::all() ^ PiMask{pi} };
-        FOR_INDEX(Rank, rank) {
+        FOR_EACH(Rank, rank) {
             matrix[rank] &= PiRank{bb[rank]} | exceptPi;
         }
     }
 
     friend PiBb operator % (const PiBb& from, Bb bb) {
         PiBb result;
-        FOR_INDEX(Rank, rank) {
+        FOR_EACH(Rank, rank) {
             result.matrix[rank] = from.matrix[rank] % PiRank{bb[rank]};
         }
         return result;
     }
 
     void operator &= (Bb bb) {
-        FOR_INDEX(Rank, rank) {
+        FOR_EACH(Rank, rank) {
             matrix[rank] &= PiRank{bb[rank]};
         }
     }
 
     friend PiBb operator & (const PiBb& from, Bb bb) {
         PiBb result;
-        FOR_INDEX(Rank, rank) {
+        FOR_EACH(Rank, rank) {
             result.matrix[rank] = from.matrix[rank] & PiRank{bb[rank]};
         }
         return result;
@@ -125,7 +125,7 @@ public:
 
     index_t count() const {
         VectorBitCount::_t sum = ::vectorOfAll[0];
-        FOR_INDEX(Rank, rank) {
+        FOR_EACH(Rank, rank) {
             sum = _mm_add_epi8(sum, ::bitCount.bytes( static_cast<VectorBitCount::_t>(matrix[rank]) ));
         }
         return ::bitCount.total(sum);

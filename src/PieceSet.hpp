@@ -30,7 +30,7 @@ public:
         auto flags(out.flags());
 
         out << std::hex;
-        FOR_INDEX(Pi, pi) {
+        FOR_EACH(Pi, pi) {
             out << (v.has(pi) ? pi : '.');
         }
 

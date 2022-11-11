@@ -16,7 +16,7 @@ enum square_t {
 };
 
 class Bb;
-struct Square : Index<64, square_t> {
+struct Square : Index<64, square_t, Square> {
     enum { RankShift = 3, RankMask = (Rank::Mask << RankShift) };
 
     using Index::Index;

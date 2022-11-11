@@ -30,14 +30,9 @@ constexpr const BitReverse bitReverse; //32
 constexpr const VectorBitCount bitCount; //16
 const PiOrder::Sorted PiOrder::sorted; //16
 
-using io::czstring;
-template <> czstring PieceType::The_string{"qrbnpk"};
-template <> czstring PromoType::The_string{"qrbn"};
-template <> czstring Color::The_string{"wb"};
-template <> czstring CastlingSide::The_string{"kq"};
-template <> czstring File::The_string{"abcdefgh"};
-template <> czstring Rank::The_string{"87654321"};
-template <> czstring Pi::The_string{"K123456789abcdef"};
+template <> io::czstring PieceType::The_string{"qrbnpk"};
+template <> io::czstring Color::The_string{"wb"};
+template <> io::czstring CastlingSide::The_string{"kq"};
 
 int main(int argc, const char* argv[]) {
     if (argc > 1) {
