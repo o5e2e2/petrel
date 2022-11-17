@@ -1,7 +1,7 @@
 #ifndef PI_VECTOR_HPP
 #define PI_VECTOR_HPP
 
-#include "types128.hpp"
+#include "bitops128.hpp"
 #include "typedefs.hpp"
 
 class PiVector {

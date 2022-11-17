@@ -124,7 +124,7 @@ public:
     }
 
     index_t count() const {
-        VectorBitCount::_t sum = ::vectorOfAll[0];
+        VectorBitCount::_t sum{0,0};
         FOR_EACH(Rank, rank) {
             sum = _mm_add_epi8(sum, ::bitCount.bytes( static_cast<VectorBitCount::_t>(matrix[rank]) ));
         }

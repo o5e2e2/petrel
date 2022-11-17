@@ -23,7 +23,7 @@ private:
     void assertValid() const {}
 #else
     void assertValid() const {
-        auto n = _mm_cmpgt_epi8(::vectorOfAll[0], v);
+        auto n = _mm_cmpgt_epi8(_t{0,0}, v);
         assert (_mm_movemask_epi8(_mm_cmpeq_epi8(v, n)) == 0xffffu);
     }
 #endif

@@ -9,11 +9,12 @@
 
 class PiSquare : protected PiVector {
     enum { None = 0xff };
+    static constexpr _t allNone() { return i128_t{-1, -1}; }
 
     PiMask piecesOn(Square sq) const { return PiMask(v, ::vectorOfAll[sq]); }
     bool none(Square sq) { return piecesOn(sq).none(); }
 
-    PiMask notEmpty() const { return PiMask::cmpgt(v, ::vectorOfAll[None]); }
+    PiMask notEmpty() const { return PiMask::cmpgt(v, allNone()); }
     bool isEmpty(Pi pi) const { return get(pi) == None; }
 
 #ifdef NDEBUG
@@ -26,7 +27,7 @@ class PiSquare : protected PiVector {
 #endif
 
 public:
-    constexpr PiSquare () : PiVector(::vectorOfAll[None]) {}
+    constexpr PiSquare () : PiVector(allNone()) {}
 
     PiMask pieces() const { return notEmpty(); }
     PiMask piecesOn(Rank rank) const { return PiMask( v & ::vectorOfAll[0xff ^ File::Mask], ::vectorOfAll[rank << 3]); }

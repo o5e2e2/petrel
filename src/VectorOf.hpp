@@ -5,8 +5,6 @@
 #include "BitRank.hpp"
 #include "typedefs.hpp"
 
-constexpr i128_t all(u8_t i) { return (i128_t)u8x16_t{ i,i,i,i, i,i,i,i, i,i,i,i, i,i,i,i }; }
-
 class VectorOf {
     typedef Index<0x100> ByteIndex;
     typedef i128_t _t;

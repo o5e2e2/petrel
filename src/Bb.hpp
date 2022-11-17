@@ -34,8 +34,7 @@ public:
     //bidirectional signed shift
     constexpr Bb (_t bb, signed offset) : Bb( (offset >= 0) ? (bb << offset) : (bb >> -offset) ) {}
 
-    constexpr explicit operator i64_t () const { return static_cast<i64_t>(this->v); }
-    constexpr explicit operator u64_t () const { return static_cast<u64_t>(this->v); }
+    constexpr explicit operator _t () const { return static_cast<_t>(this->v); }
 
     Bb operator ~ () const { return Bb{::bswap(this->v)}; }
 
