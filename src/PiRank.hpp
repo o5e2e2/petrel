@@ -5,7 +5,7 @@
 #include "Bb.hpp"
 #include "Square.hpp"
 #include "VectorBitCount.hpp"
-#include "VectorOf.hpp"
+#include "VectorOfAll.hpp"
 #include "PiBit.hpp"
 
 struct PiRank : PiBit<PiRank, File> {

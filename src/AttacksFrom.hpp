@@ -1,13 +1,13 @@
-#ifndef PIECE_TYPE_ATTACK_HPP
-#define PIECE_TYPE_ATTACK_HPP
+#ifndef ATTACKS_FROM_HPP
+#define ATTACKS_FROM_HPP
 
 #include "Bb.hpp"
 
 //attack bitboards of the piece types on the empty board (3k)
-class PieceTypeAttack {
+class AttacksFrom {
     PieceType::arrayOf< Square::arrayOf<Bb> > attack;
 public:
-    constexpr PieceTypeAttack () {
+    constexpr AttacksFrom () {
         FOR_EACH (Square, sq) {
             attack[Rook][sq]   = sq.vertical() + sq.horizont();
             attack[Bishop][sq] = sq.diagonal() + sq.antidiag();
@@ -28,6 +28,6 @@ public:
     constexpr const Bb& operator() (PieceType ty, Square sq) const { return attack[ty][sq]; }
 };
 
-extern const PieceTypeAttack attacksFrom;
+extern const AttacksFrom attacksFrom;
 
 #endif

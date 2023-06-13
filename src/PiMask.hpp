@@ -5,7 +5,7 @@
 #include "typedefs.hpp"
 
 #include "PieceSet.hpp"
-#include "VectorOf.hpp"
+#include "VectorOfAll.hpp"
 #include "PiSingle.hpp"
 
 ///piece vector of boolean values: false (0) or true (0xff)

@@ -1,17 +1,20 @@
-#ifndef VECTOR_OF_HPP
-#define VECTOR_OF_HPP
+#ifndef VECTOR_OF_ALL_HPP
+#define VECTOR_OF_ALL_HPP
 
 #include "bitops128.hpp"
 #include "BitRank.hpp"
 #include "typedefs.hpp"
 
-class VectorOf {
-    typedef Index<0x100> ByteIndex;
+constexpr u8x16_t all(u8_t i) { return {{ i,i,i,i, i,i,i,i, i,i,i,i, i,i,i,i }}; }
+
+class VectorOfAll {
     typedef i128_t _t;
-    ByteIndex::arrayOf<_t> v;
+    typedef Index<0x100> ByteIndex;
+
+    ByteIndex::arrayOf<u8x16_t> v;
 
 public:
-    constexpr VectorOf () : v {
+    constexpr VectorOfAll () : v {
         all(0x00), all(0x01), all(0x02), all(0x03), all(0x04), all(0x05), all(0x06), all(0x07), all(0x08), all(0x09), all(0x0a), all(0x0b), all(0x0c), all(0x0d), all(0x0e), all(0x0f),
         all(0x10), all(0x11), all(0x12), all(0x13), all(0x14), all(0x15), all(0x16), all(0x17), all(0x18), all(0x19), all(0x1a), all(0x1b), all(0x1c), all(0x1d), all(0x1e), all(0x1f),
         all(0x20), all(0x21), all(0x22), all(0x23), all(0x24), all(0x25), all(0x26), all(0x27), all(0x28), all(0x29), all(0x2a), all(0x2b), all(0x2c), all(0x2d), all(0x2e), all(0x2f),
@@ -34,13 +37,13 @@ public:
     }
     {}
 
-    constexpr const _t& operator[] (unsigned i) const { assert (i < ByteIndex::Size); return v[i]; }
+    constexpr const _t& operator[] (unsigned i) const { assert (i < ByteIndex::Size); return v[i].i128; }
     constexpr const _t& operator[] (signed i) const { return (*this)[static_cast<unsigned>(i)]; }
-    constexpr const _t& operator[] (BitRank br) const { return v[static_cast<BitRank::_t>(br)]; }
-    constexpr const _t& operator[] (Pi pi) const { return v[pi]; }
+    constexpr const _t& operator[] (BitRank br) const { return v[static_cast<BitRank::_t>(br)].i128; }
+    constexpr const _t& operator[] (Pi pi) const { return v[pi].i128; }
 
 };
 
-extern const VectorOf vectorOfAll;
+extern const VectorOfAll vectorOfAll;
 
 #endif

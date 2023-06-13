@@ -1,7 +1,7 @@
 #include "PositionMoves.hpp"
 
 #include "CastlingRules.hpp"
-#include "PieceTypeAttack.hpp"
+#include "AttacksFrom.hpp"
 #include "SquaresInBetween.hpp"
 
 #define MY (*this)[My]

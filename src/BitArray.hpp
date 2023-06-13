@@ -51,9 +51,11 @@ public:
     constexpr Self& operator &= (Arg a) { Base::operator &= (a); return self(); }
     constexpr Self& operator |= (Arg a) { Base::operator |= (a); return self(); }
     constexpr Self& operator ^= (Arg a) { Base::operator ^= (a); return self(); }
-    constexpr Self& operator %= (Arg a) { Base::operator %= (a); return self(); }  //"and not"
     constexpr Self& operator += (Arg a) { assert (none(a)); return self() ^= a; }
     constexpr Self& operator -= (Arg a) { assert (self() >= a); return self() ^= a; }
+
+    // AND NOT operator
+    constexpr Self& operator %= (Arg a) { Base::operator %= (a); return self(); }
 
     constexpr friend bool operator == (Arg a, Arg b) { return a.operator== (b); }
     constexpr friend bool operator != (Arg a, Arg b) { return !(a == b); }
@@ -62,9 +64,9 @@ public:
     constexpr friend Self operator &  (Arg a, Arg b) { return Self{a} &= b; }
     constexpr friend Self operator |  (Arg a, Arg b) { return Self{a} |= b; }
     constexpr friend Self operator ^  (Arg a, Arg b) { return Self{a} ^= b; }
-    constexpr friend Self operator %  (Arg a, Arg b) { return Self{a} %= b; }
     constexpr friend Self operator +  (Arg a, Arg b) { return Self{a} += b; }
     constexpr friend Self operator -  (Arg a, Arg b) { return Self{a} -= b; }
+    constexpr friend Self operator %  (Arg a, Arg b) { return Self{a} %= b; }
 
 };
 

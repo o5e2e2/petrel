@@ -7,12 +7,7 @@
 class PiSingle {
     typedef i128_t _t;
 
-    union _u {
-        u8x16_t u8x16;
-        i128_t  i128;
-    };
-
-    Pi::arrayOf<_u> v;
+    Pi::arrayOf<u8x16_t> v;
 
 public:
     constexpr PiSingle () : v {{

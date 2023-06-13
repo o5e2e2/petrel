@@ -1,7 +1,7 @@
 #include "PositionSide.hpp"
 #include "AttackBb.hpp"
 #include "CastlingRules.hpp"
-#include "PieceTypeAttack.hpp"
+#include "AttacksFrom.hpp"
 #include "SquaresInBetween.hpp"
 
 #ifndef NDEBUG

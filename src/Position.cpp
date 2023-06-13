@@ -1,6 +1,6 @@
 #include "Position.hpp"
 #include "CastlingRules.hpp"
-#include "PieceTypeAttack.hpp"
+#include "AttacksFrom.hpp"
 
 #define MY (*this)[My]
 #define OP (*this)[Op]

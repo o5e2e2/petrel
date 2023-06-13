@@ -2,16 +2,16 @@
 
 #include "io.hpp"
 #include "AttackBb.hpp"
+#include "AttacksFrom.hpp"
 #include "BitReverse.hpp"
 #include "CastlingRules.hpp"
 #include "Evaluation.hpp"
 #include "PerftRecord.hpp"
-#include "PieceTypeAttack.hpp"
 #include "PiOrder.hpp"
 #include "PiSingle.hpp"
 #include "SquaresInBetween.hpp"
 #include "Uci.hpp"
-#include "VectorOf.hpp"
+#include "VectorOfAll.hpp"
 #include "Zobrist.hpp"
 
 /**
@@ -20,8 +20,8 @@
 const SquaresInBetween inBetween; //32k
 const HyperbolaDir hyperbolaDir; //12k
 const HyperbolaSq hyperbolaSq; //1k
-const PieceTypeAttack attacksFrom; //3k
-constexpr const VectorOf vectorOfAll; //4k
+const AttacksFrom attacksFrom; //3k
+constexpr const VectorOfAll vectorOfAll; //4k
 constexpr const PieceSquareTable pieceSquareTable; //1.5k 6*64*4
 constexpr const PiSingle piSingle; //256
 constexpr const ZobristKey zobristKey; //64

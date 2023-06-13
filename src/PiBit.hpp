@@ -2,7 +2,7 @@
 #define PI_BIT_HPP
 
 #include "BitArray128.hpp"
-#include "VectorOf.hpp"
+#include "VectorOfAll.hpp"
 #include "PiMask.hpp"
 
 template <class Self, class Index>
