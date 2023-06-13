@@ -3,7 +3,7 @@
 
 #include <chrono>
 
-typedef std::chrono::milliseconds Duration; //internal type
+typedef std::chrono::milliseconds Duration; //internal time unit
 using std::chrono::duration_cast;
 
 #endif

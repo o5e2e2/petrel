@@ -58,6 +58,7 @@ template <> io::czstring CastlingSide::The_string;
 
 enum piece_index_t { TheKing };
 typedef Index<16, piece_index_t> Pi; //piece index
+template <> io::czstring Pi::The_string;
 
 enum piece_type_t {
     Queen = 0,

@@ -1,5 +1,6 @@
 #debug = yes
 CXX = clang++
+#CXX = g++
 
 SRC_DIR ?= src
 DEBUG_DIR ?= debug

@@ -4,7 +4,7 @@
 #include "io.hpp"
 #include "Duration.hpp"
 
-typedef std::chrono::milliseconds Milliseconds; //UCI i/o type
+typedef std::chrono::milliseconds Milliseconds; //UCI time duration unit
 
 template <typename duration_type>
 constexpr auto milliseconds(duration_type duration)

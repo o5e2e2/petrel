@@ -25,9 +25,7 @@ public:
         }
     }
 
-    constexpr const Bb& operator() (PieceType ty, Square sq) const {
-        return attack[ty][sq];
-    }
+    constexpr const Bb& operator() (PieceType ty, Square sq) const { return attack[ty][sq]; }
 };
 
 extern const PieceTypeAttack attacksFrom;

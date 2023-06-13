@@ -22,8 +22,8 @@ const HyperbolaDir hyperbolaDir; //12k
 const HyperbolaSq hyperbolaSq; //1k
 const PieceTypeAttack attacksFrom; //3k
 constexpr const VectorOf vectorOfAll; //4k
-constexpr const PiSingle piSingle; //256
 constexpr const PieceSquareTable pieceSquareTable; //1.5k 6*64*4
+constexpr const PiSingle piSingle; //256
 constexpr const ZobristKey zobristKey; //64
 const CastlingRules castlingRules; //128
 constexpr const BitReverse bitReverse; //32
@@ -33,6 +33,7 @@ const PiOrder::Sorted PiOrder::sorted; //16
 template <> io::czstring PieceType::The_string{"qrbnpk"};
 template <> io::czstring Color::The_string{"wb"};
 template <> io::czstring CastlingSide::The_string{"kq"};
+template <> io::czstring Pi::The_string{"KQRrBbNn12345678"};
 
 int main(int argc, const char* argv[]) {
     if (argc > 1) {

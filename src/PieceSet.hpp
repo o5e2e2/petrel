@@ -27,14 +27,9 @@ public:
     }
 
     friend io::ostream& operator << (io::ostream& out, PieceSet v) {
-        auto flags(out.flags());
-
-        out << std::hex;
         FOR_EACH(Pi, pi) {
-            out << (v.has(pi) ? pi : '.');
+            if (v.has(pi)) { out << pi; } else { out << '.'; }
         }
-
-        out.flags(flags);
         return out;
     }
 
