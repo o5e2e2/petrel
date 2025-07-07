@@ -6,14 +6,17 @@
 #include "PositionMoves.hpp"
 #include "Move.hpp"
 
+using in::istream;
+using out::ostream;
+
 class PositionFen : public PositionMoves {
     Color colorToMove = White; //root position color for moves long algebraic format output
     ChessVariant chessVariant = Orthodox; //format of castling moves output
 
-    io::istream& readBoard(io::istream&);
-    io::istream& readCastling(io::istream&);
-    io::istream& readEnPassant(io::istream&);
-    io::istream& readMove(io::istream&, Square&, Square&) const;
+    istream& readBoard(istream&);
+    istream& readCastling(istream&);
+    istream& readEnPassant(istream&);
+    istream& readMove(istream&, Square&, Square&) const;
 
     bool setCastling(Side, File);
     bool setCastling(Side, CastlingSide);
@@ -25,13 +28,13 @@ public:
 
     void setChessVariant(ChessVariant v) { chessVariant = v; }
     void setStartpos();
-    void readFen(io::istream&);
-    void playMoves(io::istream&);
-    void limitMoves(io::istream&);
+    void readFen(istream&);
+    void playMoves(istream&);
+    void limitMoves(istream&);
 
-    friend io::ostream& operator << (io::ostream&, const PositionFen&);
-    void write(io::ostream&, Move) const;
-    void write(io::ostream&, const Move[]) const;
+    friend ostream& operator << (ostream&, const PositionFen&);
+    ostream& write(ostream&, Move, ply_t = 0) const;
+    ostream& write(ostream&, const Move[], ply_t = 0) const;
 };
 
 #endif

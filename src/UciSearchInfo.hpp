@@ -1,7 +1,7 @@
 #ifndef UCI_SEARCH_INFO_HPP
 #define UCI_SEARCH_INFO_HPP
 
-#include "io.hpp"
+#include "out.hpp"
 #include "typedefs.hpp"
 #include "Score.hpp"
 #include "SpinLock.hpp"
@@ -12,8 +12,10 @@ class Move;
 class PerftTT;
 class PositionFen;
 
+using out::ostream;
+
 class UciSearchInfo {
-    io::ostream& out; //output stream
+    ostream& out; //output stream
     const PositionFen& positionFen; //current position
 
     TimePoint fromSearchStart;
@@ -22,13 +24,11 @@ class UciSearchInfo {
     mutable bool isreadyWaiting = false; //set when got 'isready' command while thinking
     mutable node_count_t lastInfoNodes = 0;
 
-    void write(io::ostream&, const Move&) const;
-    void write(io::ostream&, const Move[]) const;
-    void nps(io::ostream&, node_count_t, const PerftTT&) const;
-    void info_nps(io::ostream&, node_count_t, const PerftTT&) const;
+    ostream& nps(ostream&, node_count_t, const PerftTT&) const;
+    ostream& info_nps(ostream&, node_count_t, const PerftTT&) const;
 
 public:
-    UciSearchInfo (io::ostream&, const PositionFen&);
+    UciSearchInfo (ostream&, const PositionFen&);
 
     //called from Uci
     void isready(bool) const;
@@ -39,6 +39,8 @@ public:
     void clear();
 
     void readyok(node_count_t, const PerftTT&) const;
+    ostream& write(ostream&, const Move& move, ply_t = 0) const;
+    ostream& write(ostream&, const Move[], ply_t = 0) const;
 
     void bestmove(const Move[], Score, node_count_t, const PerftTT&) const;
     void report_depth(ply_t, const Move[], Score, node_count_t, const PerftTT&) const;

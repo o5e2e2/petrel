@@ -6,14 +6,16 @@
 #include "SearchControl.hpp"
 #include "UciSearchInfo.hpp"
 
+using out::ostream;
+
 class Uci {
     PositionFen positionFen; //root position between 'position' and 'go' commands
     UciSearchInfo info; //output with multithread synchronization
     SearchControl searchControl;
 
     std::istringstream command; //current input command line
-    bool next(io::czstring token) { return io::next(command, token); }
-    bool nextNothing() { return io::nextNothing(command); }
+    bool next(io::czstring token) { return in::next(command, token); }
+    bool nextNothing() { return in::nextNothing(command); }
 
     //UCI command handlers
     void go();
@@ -23,8 +25,8 @@ class Uci {
     void ucinewgame();
 
 public:
-    Uci (io::ostream&);
-    void operator() (io::istream&, io::ostream& = std::cerr);
+    Uci (ostream&);
+    void operator() (in::istream&, ostream& = std::cerr);
 };
 
 #endif

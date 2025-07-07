@@ -29,11 +29,11 @@ class FenToBoard {
     bool drop(Color, PieceType, Square);
 
 public:
-    friend io::istream& read(io::istream&, FenToBoard&);
+    friend istream& read(istream&, FenToBoard&);
     bool dropPieces(Position& pos, Color colorToMove);
 };
 
-io::istream& read(io::istream& in, FenToBoard& board) {
+istream& read(istream& in, FenToBoard& board) {
     File file{FileA}; Rank rank{Rank8};
 
     for (io::char_type c; in.get(c); ) {
@@ -132,7 +132,7 @@ public:
         blackPieces{b}
         {}
 
-    friend io::ostream& operator << (io::ostream& out, const BoardToFen& board) {
+    friend ostream& operator << (ostream& out, const BoardToFen& board) {
         FOR_EACH(Rank, rank) {
             index_t emptySqCount = 0;
 
@@ -191,7 +191,7 @@ public:
         insert(blackPieces, Black, chessVariant);
     }
 
-    friend io::ostream& operator << (io::ostream& out, const CastlingToFen& castling) {
+    friend ostream& operator << (ostream& out, const CastlingToFen& castling) {
         if (castling.castlingSet.empty()) { return out << '-'; }
 
         for (auto castlingSymbol : castling.castlingSet) {
@@ -209,7 +209,7 @@ public:
     EnPassantToFen (const PositionSide& side, Color colorToMove):
         op{side}, enPassantRank{colorToMove.is(White) ? Rank6 : Rank3} {}
 
-    friend io::ostream& operator << (io::ostream& out, const EnPassantToFen& enPassant) {
+    friend ostream& operator << (ostream& out, const EnPassantToFen& enPassant) {
         if (!enPassant.op.hasEnPassant()) { return out << '-'; }
 
         return out << Square{enPassant.op.enPassantFile(), enPassant.enPassantRank};
@@ -218,7 +218,7 @@ public:
 
 } //end of anonymous namespace
 
-io::ostream& operator << (io::ostream& out, const PositionFen& pos) {
+ostream& operator << (ostream& out, const PositionFen& pos) {
     auto& whitePieces = pos[pos.sideOf(White)];
     auto& blackPieces = pos[pos.sideOf(Black)];
 
@@ -233,15 +233,15 @@ io::ostream& operator << (io::ostream& out, const PositionFen& pos) {
     return out;
 }
 
-void PositionFen::write(io::ostream& out, Move move) const {
-    Move::write(out, move, colorToMove, chessVariant);
+ostream& PositionFen::write(ostream& out, Move move, ply_t ply) const {
+    return Move::write(out, move, static_cast<color_t>(colorToMove ^ (ply & 1)), chessVariant);
 }
 
-void PositionFen::write(io::ostream& out, const Move pv[]) const {
-    Move::write(out, pv, colorToMove, chessVariant);
+ostream& PositionFen::write(ostream& out, const Move pv[], ply_t ply) const {
+    return Move::write(out, pv, static_cast<color_t>(colorToMove ^ (ply & 1)), chessVariant);
 }
 
-io::istream& PositionFen::readMove(io::istream& in, Square& from, Square& to) const {
+istream& PositionFen::readMove(istream& in, Square& from, Square& to) const {
     if (!read(in, from) || !read(in, to)) { return in; }
 
     if (colorToMove.is(Black)) { from.flip(); to.flip(); }
@@ -293,7 +293,7 @@ io::istream& PositionFen::readMove(io::istream& in, Square& from, Square& to) co
     return in;
 }
 
-void PositionFen::limitMoves(io::istream& in) {
+void PositionFen::limitMoves(istream& in) {
     PiBb movesMatrix;
     movesMatrix.clear();
     index_t n = 0;
@@ -324,7 +324,7 @@ void PositionFen::limitMoves(io::istream& in) {
     io::fail_rewind(in);
 }
 
-void PositionFen::playMoves(io::istream& in) {
+void PositionFen::playMoves(istream& in) {
     while (in >> std::ws && !in.eof()) {
         auto beforeMove = in.tellg();
 
@@ -340,7 +340,7 @@ void PositionFen::playMoves(io::istream& in) {
     }
 }
 
-io::istream& PositionFen::readBoard(io::istream& in) {
+istream& PositionFen::readBoard(istream& in) {
     FenToBoard board;
     if (!read(in, board)) { return in; };
 
@@ -369,7 +369,7 @@ bool PositionFen::setCastling(Side My, CastlingSide castlingSide) {
     return MY.setValidCastling(castlingSide);
 }
 
-io::istream& PositionFen::readCastling(io::istream& in) {
+istream& PositionFen::readCastling(istream& in) {
     if (in.peek() == '-') { return in.ignore(); }
 
     for (io::char_type c; in.get(c) && !std::isblank(c); ) {
@@ -413,7 +413,7 @@ bool PositionFen::setEnPassant(File file) {
     return true;
 }
 
-io::istream& PositionFen::readEnPassant(io::istream& in) {
+istream& PositionFen::readEnPassant(istream& in) {
     if (in.peek() == '-') { return in.ignore(); }
 
     Square ep;
@@ -427,7 +427,7 @@ io::istream& PositionFen::readEnPassant(io::istream& in) {
     return in;
 }
 
-void PositionFen::readFen(io::istream& in) {
+void PositionFen::readFen(istream& in) {
     in >> std::ws;
     readBoard(in);
     in >> std::ws;

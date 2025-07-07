@@ -1,30 +1,12 @@
 #ifndef IO_HPP
 #define IO_HPP
 
-#include <cctype>
-#include <iostream>
-#include <iomanip>
-#include <sstream>
+#include "in.hpp"
+#include "out.hpp"
 
 namespace io {
-    using std::istream;
-    using std::ostream;
-
-    typedef ostream::char_type char_type;
-    typedef const char_type* czstring;
-
-    istream& fail(istream&);
-    istream& fail_char(istream&);
-    istream& fail_pos(istream&, std::streampos);
-    istream& fail_rewind(istream&);
-
-    bool next(istream&, czstring);
-    bool nextNothing(istream&);
-
-    ostream& option_help(ostream&);
-    ostream& option_version(ostream&);
-    ostream& option_invalid(ostream&);
-    ostream& uci_error(ostream&, istream&);
+    using namespace in;
+    using namespace out;
 }
 
 #endif

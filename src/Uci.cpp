@@ -2,7 +2,13 @@
 #include "Milliseconds.hpp"
 #include "SearchLimit.hpp"
 
-Uci::Uci (io::ostream& out):
+namespace {
+    ostream& uci_error(ostream& err, io::istream& context) {
+        return err << "parsing error: " << context.rdbuf() << '\n';
+    }
+}
+
+Uci::Uci (ostream& out):
     positionFen{},
     info(out, positionFen),
     searchControl(info)
@@ -10,7 +16,7 @@ Uci::Uci (io::ostream& out):
     ucinewgame();
 }
 
-void Uci::operator() (io::istream& in, io::ostream& err) {
+void Uci::operator() (io::istream& in, ostream& err) {
     for (std::string currentLine; std::getline(in, currentLine); ) {
         command.clear(); //clear state from the previous command
         command.str(std::move(currentLine));
@@ -29,7 +35,7 @@ void Uci::operator() (io::istream& in, io::ostream& err) {
 
         //parsing error detected or something left unparsed
         if (!nextNothing()) {
-            io::uci_error(err, command);
+            uci_error(err, command);
         }
     }
 }

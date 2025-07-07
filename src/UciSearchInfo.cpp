@@ -14,12 +14,12 @@ namespace {
     template <typename T>
     constexpr T permil(T n, T m) { return (n * 1000) / m; }
 
-    io::ostream& operator << (io::ostream& out, Score a) {
+    ostream& operator << (ostream& out, Score a) {
         return out << static_cast<score_t>(a);
     }
 }
 
-UciSearchInfo::UciSearchInfo (io::ostream& o, const PositionFen& p) :
+UciSearchInfo::UciSearchInfo (ostream& o, const PositionFen& p) :
     out(o),
     positionFen(p)
 {}
@@ -72,15 +72,15 @@ void UciSearchInfo::readyok(node_count_t nodes, const PerftTT& tt) const {
     }
 }
 
-void UciSearchInfo::write(io::ostream& o, const Move& move) const {
-    positionFen.write(o, move);
+ostream& UciSearchInfo::write(ostream& o, const Move& move, ply_t ply) const {
+    return positionFen.write(o, move, ply);
 }
 
-void UciSearchInfo::write(io::ostream& o, const Move pv[]) const {
-    positionFen.write(o, pv);
+ostream& UciSearchInfo::write(ostream& o, const Move pv[], ply_t ply) const {
+    return positionFen.write(o, pv, ply);
 }
 
-void UciSearchInfo::nps(io::ostream& o, node_count_t nodes, const PerftTT& tt) const {
+ostream& UciSearchInfo::nps(ostream& o, node_count_t nodes, const PerftTT& tt) const {
     if (lastInfoNodes == nodes) {
         //return;
     }
@@ -104,15 +104,17 @@ void UciSearchInfo::nps(io::ostream& o, node_count_t nodes, const PerftTT& tt) c
         o << " hreads " << counter.reads;
         o << " hhitratio " << ::permil(counter.hits, counter.reads);
     }
+    return o;
 }
 
-void UciSearchInfo::info_nps(io::ostream& o, node_count_t nodes, const PerftTT& tt) const {
+ostream& UciSearchInfo::info_nps(ostream& o, node_count_t nodes, const PerftTT& tt) const {
     std::ostringstream buffer;
     nps(buffer, nodes, tt);
 
     if (!buffer.str().empty()) {
         o << "info" << buffer.str() << '\n';
     }
+    return o;
 }
 
 void UciSearchInfo::bestmove(const Move pv[], Score bestScore, node_count_t nodes, const PerftTT& tt) const {
