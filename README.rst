@@ -1,13 +1,9 @@
 Developer's notes about source code internals
 =============================================
 
-The code created to compile with recent GCC with C++11 features support.
-Latest code is not tested with MinGW for Windows, but should be fixed easily.
-
-The engine extensively uses PSHUFB processor instruction that is
-available only on SSSE3 instruction set. Porting to ARM NEON should be possible.
-Porting to platform without rich SIMD instruction set is possible only with
-large performance penalty.
+The engine extensively uses PSHUFB x86 processor instruction that is
+available only on SSSE3 instruction set. Porting to platform without
+SIMD instruction support is quite possible but with noticable performance penalty.
 
 Chess programming code details
 ------------------------------
@@ -53,5 +49,22 @@ order inside bitboard and switches ranks inside squares.
 * operator ~ used for flipping squares and bitboards between sides
 * operator %" is a shorcut to "and not" set operation
 * operator +, "operator -" for bitsets with assert test that sets are disjoint
+
+Universal Chess Interface (UCI) extensions
+------------------------------------------
+
+* <position> -- <fen> or <startpos> are optional:
+    <ucinewgame> sets up default chess starting position, then the previuos set position is used
+    <moves> are optional
+    so, <position e2e4> is just enough to make first move
+    <position> without any options show current position FEN.
+
+* <quit> is return, <exit> is return from
+
+* <setoption> can be abbreviated to short form like <set hash 1>
+
+* <go perft> and <go divide> can use any UCI search limits (movetime, depth, nodes, limitmoves)
+
+* set hash can set size in bytes(b), kilobytes(k), megabytes(m, default), gigabytes(g)
 
 Aleks Peshkov (mailto:aleks.peshkov@gmail.com)

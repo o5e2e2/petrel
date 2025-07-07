@@ -15,7 +15,7 @@ CXXFLAGS += -DGIT_DATE=\"$(GIT_DATE)\" -DGIT_HASH=\"$(GIT_HASH)\" -DGIT_ORIGIN=\
 ifeq ($(debug),yes)
 	BUILD_DIR = $(DEBUG_DIR)
 	CXXFLAGS += -DDEBUG -ggdb
-	OPTIMIZATIONS = -Og -O1
+	OPTIMIZATIONS = -Og -O0
 else
 	BUILD_DIR = $(RELEASE_DIR)
 	CXXFLAGS += -DNDEBUG
@@ -47,6 +47,10 @@ DEPS = $(patsubst %.o, %.d, $(OBJECTS))
 .PHONY: all test test-hash clean
 
 all: $(TARGET)
+
+run: all
+	clear
+	$(TARGET)
 
 test: all
 	$(EXPECT) $(TARGET) $(TEST_DIR)/test.rc

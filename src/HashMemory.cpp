@@ -44,7 +44,7 @@ void HashMemory::free() {
 }
 
 void HashMemory::resize(size_t bytes) {
-    bytes = std::max(PageSize, round(bytes));
+    bytes = round(std::max(PageSize, bytes));
 
     if (bytes == info.currentSize) {
         clear();
