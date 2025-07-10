@@ -9,68 +9,46 @@
 class Evaluation {
 public:
     typedef PieceSquareTable::_t _t;
-    typedef index_t game_phase_t;
-
-    static constexpr PieceType::arrayOf<game_phase_t> tyGamePhase = {{ 1025, 477, 365, 337, 0, 0}};
-    enum : game_phase_t { minEG = 518, maxMG = 6192, phaseRange = maxMG - minEG };
 
 private:
-    _t pst;
-    game_phase_t gamePhase;
+    _t v;
 
-    constexpr void f(PieceType ty, Square from) { pst -= pieceSquareTable(ty, from); }
-    constexpr void t(PieceType ty, Square to) { pst += pieceSquareTable(ty, to); }
-
-    constexpr Score e(game_phase_t opGamePhase) const {
-        const game_phase_t phase = std::max(static_cast<game_phase_t>(minEG), std::min(static_cast<game_phase_t>(maxMG), static_cast<game_phase_t>(this->gamePhase + opGamePhase)));
-        const auto factorMG = static_cast<double>(phase - minEG) / static_cast<double>(phaseRange);
-        const auto factorEG = 1.0 - factorMG;
-
-        auto mpst = pst & 0xffff;
-        auto epst = pst >> 16;
-        return static_cast<Score>(mpst * factorMG + epst * factorEG);
-    }
+    constexpr void from(PieceType ty, Square f) { v -= pieceSquareTable(ty, f); }
+    constexpr void to(PieceType ty, Square t) { v += pieceSquareTable(ty, t); }
 
 public:
-    constexpr Evaluation () : pst{0}, gamePhase{0} {}
-    Evaluation (const Evaluation&) = default;
+    constexpr Evaluation () : v{} {}
 
+    // https://www.chessprogramming.org/PeSTO%27s_Evaluation_Function
     static Score evaluate(const Evaluation& my, const Evaluation& op) {
-        return my.e(op.gamePhase) - op.e(my.gamePhase);
+        constexpr const u16_t PieceMatMax = 32; // initial sum of non pawn pieces material points
+
+        auto myMaterial = std::min(my.v.s.pieceMat, PieceMatMax);
+        auto opMaterial = std::min(op.v.s.pieceMat, PieceMatMax);
+
+        auto myScore = static_cast<signed>(my.v.s.openingPst * opMaterial + my.v.s.endgamePst * (PieceMatMax-opMaterial));
+        auto opScore = static_cast<signed>(op.v.s.openingPst * myMaterial + op.v.s.endgamePst * (PieceMatMax-myMaterial));
+
+        return static_cast<Score>((myScore - opScore) / static_cast<signed>(PieceMatMax));
     }
 
-    void drop(PieceType ty, Square to) {
-        t(ty, to);
-        gamePhase += tyGamePhase[ty];
-    }
+    void drop(PieceType ty, Square t) { to(ty, t); }
+    void capture(PieceType ty, Square f) { from(ty, f); }
+    void move(PieceType ty, Square f, Square t) { assert (f != t); from(ty, f); to(ty, t); }
 
-    void capture(PieceType ty, Square from) {
-        f(ty, from);
-        gamePhase -= tyGamePhase[ty];
-    }
-
-    void move(PieceType ty, Square from, Square to) {
-        assert (from != to);
-
-        f(ty, from);
-        t(ty, to);
+    //TRICK: removing pawn does not alter material value
+    void promote(Square f, Square t, PromoType ty) {
+        assert (f.on(Rank7) && t.on(Rank8));
+        from(Pawn, f);
+        to(static_cast<PieceType::_t>(ty), t);
     }
 
     void castle(Square kingFrom, Square kingTo, Square rookFrom, Square rookTo) {
         assert (kingFrom != rookFrom);
         assert (kingTo != rookTo);
 
-        f(King, kingFrom);
-        f(Rook, rookFrom);
-        t(Rook, rookTo);
-        t(King, kingTo);
-    }
-
-    void promote(Square from, Square to, PromoType ty) {
-        assert (from.on(Rank7) && to.on(Rank8));
-
-        f(Pawn, from);
-        drop(static_cast<PieceType::_t>(ty), to);
+        from(King, kingFrom); from(Rook, rookFrom);
+        to(Rook, rookTo); to(King, kingTo);
     }
 
 };

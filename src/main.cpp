@@ -17,15 +17,15 @@
 /**
 * Startup constant initialization
 */
-const SquaresInBetween inBetween; //32k
-const HyperbolaDir hyperbolaDir; //12k
-const HyperbolaSq hyperbolaSq; //1k
-const AttacksFrom attacksFrom; //3k
-constexpr const VectorOfAll vectorOfAll; //4k
-constexpr const PieceSquareTable pieceSquareTable; //1.5k 6*64*4
+const SquaresInBetween inBetween; //32k 64*64*8
+const HyperbolaDir hyperbolaDir; ////12k 3*64*4*16
+const HyperbolaSq hyperbolaSq; //1k 64*16
+const AttacksFrom attacksFrom; //3k 6*64*8
+constexpr const VectorOfAll vectorOfAll; //4k 256*16
+const PieceSquareTable pieceSquareTable; //3k 6*64*8
 constexpr const PiSingle piSingle; //256
-constexpr const ZobristKey zobristKey; //64
 const CastlingRules castlingRules; //128
+constexpr const ZobristKey zobristKey; //64 8*8
 constexpr const BitReverse bitReverse; //32
 constexpr const VectorBitCount bitCount; //16
 const PiOrder::Sorted PiOrder::sorted; //16
