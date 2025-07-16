@@ -23,10 +23,6 @@ bool Rank::from_char(io::char_type c) {
     return true;
 }
 
-enum color_t { White, Black };
-typedef Index<2, color_t> Color;
-template <> io::czstring Color::The_string;
-
 enum side_to_move_t {
     My, // side to move
     Op  // opposite to side to move
