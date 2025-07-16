@@ -13,10 +13,6 @@ namespace {
 
     template <typename T>
     constexpr T permil(T n, T m) { return (n * 1000) / m; }
-
-    ostream& operator << (ostream& out, Score a) {
-        return out << static_cast<score_t>(a);
-    }
 }
 
 UciSearchInfo::UciSearchInfo (ostream& o, const PositionFen& p) :
@@ -32,6 +28,7 @@ void UciSearchInfo::clear() {
 void UciSearchInfo::position() const {
     OUTPUT(ob);
     ob << "info fen " << positionFen << '\n';
+    ob << "info " << positionFen.evaluate() << '\n';
 }
 
 void UciSearchInfo::uciok(const HashInfo& hashInfo) const {

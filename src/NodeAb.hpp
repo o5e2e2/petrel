@@ -11,12 +11,13 @@ protected:
     ply_t ply = 0; //distance from root
     ply_t draft = 0; //remaining depth
 
-    Score score = Score::None;
-    Score alpha = Score::Minimum;
-    Score beta = Score::Maximum;
+    Score score = NoScore;
+    Score alpha = MinusInfinity;
+    Score beta = PlusInfinity;
 
     NodeAb (const PositionMoves& p, SearchControl& c) : Node{p, c}, parent{*this} {}
 
+    Score staticEval();
     NodeControl visit(Move);
     NodeControl negamax(Score, Move);
 

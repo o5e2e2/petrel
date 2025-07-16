@@ -6,14 +6,22 @@
 NodeControl NodeAb::visit(Move move) {
     RETURN_IF_ABORT (control.countNode());
 
-    score = Score::None;
+    score = NoScore;
     alpha = -parent.beta;
     beta = -parent.alpha;
 
     draft = parent.draft > 0 ? parent.draft-1 : 0;
     makeMove(parent, move);
 
-    if (movesCount() == 0 || draft == 0) {
+    bool inCheck = NodeAb::inCheck();
+
+    if (movesCount() == 0) {
+        //checkmated or stalemated
+        score = inCheck ? Score::checkmated(ply) : DrawScore;
+        return parent.negamax(score, move);
+    }
+
+    if (draft == 0 && !inCheck) {
         score = staticEval();
     }
     else {
@@ -43,6 +51,8 @@ NodeControl NodeAb::negamax(Score childScore, Move move) {
 }
 
 NodeControl NodeAb::visitChildren() {
+    assert (MinusInfinity <= alpha && alpha < beta && beta <= PlusInfinity);
+
     NodeAb child{*this};
 
     const Move& move = control.getPv(0)[ply];
@@ -59,4 +69,9 @@ NodeControl NodeAb::visitChildren() {
     }
 
     return NodeControl::Continue;
+}
+
+Score NodeAb::staticEval()
+{
+    return Position::evaluate().clamp();
 }
