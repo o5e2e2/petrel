@@ -9,7 +9,7 @@ typedef Index<2, color_t> Color;
 template <> io::czstring Color::The_string;
 
 // color to move of the given ply
-constexpr Color operator << (Color c, ply_t ply) { return static_cast<Color::_t>((ply ^ static_cast<unsigned>(c)) & Color::Mask); }
+constexpr Color operator << (Color c, Ply ply) { return static_cast<Color::_t>((ply ^ static_cast<unsigned>(c)) & Color::Mask); }
 
 enum chess_variant_t { Orthodox, Chess960 };
 typedef Index<2, chess_variant_t> ChessVariant;
